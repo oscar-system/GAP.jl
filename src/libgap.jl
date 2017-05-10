@@ -58,14 +58,28 @@ function libgap_call_func_list( func :: GapObj, list :: GapObj )
 end
 
 function libgap_DoExecFunc0args( func :: GapObj )
-    return GapObj( ccall( (:CallFuncList, "libgap")
+    return GapObj( ccall( (:libgap_DoExecFunc0args, "libgap")
                    , Ptr{Void}
                    , (Ptr{Void},)
                    , func.data ) )
 end
 
 function libgap_DoExecFunc1args( func :: GapObj, arg1 :: GapObj )
-    return GapObj( ccall( (:CallFuncList, "libgap")
+    return GapObj( ccall( (:libgap_DoExecFunc1args, "libgap")
+                   , Ptr{Void}
+                   , (Ptr{Void}, Ptr{Void})
+                   , func.data, arg1.data ) )
+end
+
+function libgap_DoOperation0args( func :: GapObj )
+    return GapObj( ccall( (:libgap_DoOperation0args, "libgap")
+                   , Ptr{Void}
+                   , (Ptr{Void},)
+                   , func.data ) )
+end
+
+function libgap_DoOperation1args( func :: GapObj, arg1 :: GapObj )
+    return GapObj( ccall( (:libgap_DoOperation1args, "libgap")
                    , Ptr{Void}
                    , (Ptr{Void}, Ptr{Void})
                    , func.data, arg1.data ) )
@@ -79,10 +93,10 @@ function libgap_ValGVar( name :: String )
 end
 
 function libgap_String_StringObj( str :: GapObj )
-    return bytestring( ccall( (:libgap_String_StringObj, "libgap")
-                             , Ptr{UInt8}
-                             , (Ptr{Void}, )
-                             , str.data ) )
+    return unsafe_string( ccall( (:libgap_String_StringObj, "libgap")
+                                 , Ptr{UInt8}
+                                 , (Ptr{Void}, )
+                                 , str.data ) )
 end
 
 function libgap_unbox_int(ref :: GapObj)
