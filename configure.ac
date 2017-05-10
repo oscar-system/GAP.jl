@@ -59,6 +59,8 @@ AC_SUBST(JULIA_LDPATH)
 AC_SUBST(JULIA_LDFLAGS)
 AC_SUBST(JULIA_CPPFLAGS)
 
+AC_DEFINE(JULIA_LDPATH, [$JULIA_LDPATH], [path to Julia installation])
+
 dnl ##
 dnl ## Detect pointer size to distinguish 32 and 64 bit builds
 dnl ##
@@ -73,10 +75,17 @@ case $host_os in
 esac
 AM_CONDITIONAL([SYS_IS_CYGWIN], [test "$CYGWIN" = "yes"])
 if test "$CYGWIN" = "yes"; then
-  AC_DEFINE(SYS_IS_CYGWIN32, 1, are we on CYGWIN?)
+  AC_DEFINE(SYS_IS_CYGWIN32, 1, [are we on CYGWIN?])
 else
-  AC_DEFINE(SYS_IS_CYGWIN32, 0, are we on CYGWIN?)
+  AC_DEFINE(SYS_IS_CYGWIN32, 0, [are we on CYGWIN?])
 fi
+
+case $host_os in
+  *darwin* ) DARWIN=yes;;
+         * ) DARWIN=no;;
+esac
+AM_CONDITIONAL([SYS_IS_DARWIN], [test "$DARWIN" = "yes"])
+
 
 dnl ##
 dnl ## Rebuild configure if VERSION file changes
