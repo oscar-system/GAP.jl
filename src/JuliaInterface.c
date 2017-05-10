@@ -97,10 +97,10 @@ Obj JuliaEvalString( Obj self, Obj string )
 Obj JuliaUnbox( Obj self, Obj obj )
 {   
     jl_value_t* julia_obj=GET_JULIA_OBJ( obj );
-    if(jl_is_int64(julia_obj)){
+    if(jl_typeis(julia_obj, jl_int64_type)){
         return INTOBJ_INT( jl_unbox_int64( julia_obj ) );
     }
-    else if(jl_is_float64(julia_obj)){
+    else if(jl_typeis(julia_obj, jl_float64_type)){
         return NEW_MACFLOAT( jl_unbox_float64( julia_obj ) );
     }
     return Fail;
