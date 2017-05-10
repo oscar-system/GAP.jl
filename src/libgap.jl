@@ -111,18 +111,3 @@ function libgap_GC_unpin(obj :: GapObj)
            , obj.data )
 end
 
-libgap_initialize( [ "binary/lol"
-                     , "-l"
-                     , "/home/makx/dev/gap"
-                     , "-T"
-                     , "-r"
-                     , "-A"
-                     , "-q"
-                     , "-m"
-                     , "512m" ] )
-
-libgap_viewstring = libgap_ValGVar("ViewString")
-
-
-
-# libgap_finalize()
