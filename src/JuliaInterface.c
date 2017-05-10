@@ -5,6 +5,14 @@
 #include "src/compiled.h"          /* GAP headers */
 #include <julia.h>
 
+#undef PACKAGE_BUGREPORT
+#undef PACKAGE_NAME
+#undef PACKAGE_STRING
+#undef PACKAGE_TARNAME
+#undef PACKAGE_URL
+#undef PACKAGE_VERSION
+#include "pkgconfig.h"
+
 
 Obj TheTypeJuliaFunction;
 Obj TheTypeJuliaObject;
@@ -58,13 +66,6 @@ Obj NewJuliaObj(jl_value_t* C)
     o = NewBag(T_JULIA_OBJ, 1 * sizeof(Obj));
     SET_JULIA_OBJ(o, C);
     return o;
-}
-
-Obj InitializeJulia( Obj self, Obj string )
-{
-    jl_init(CSTR_STRING(string));
-    jl_gc_enable(0);
-    return True;
 }
 
 Obj JuliaFunction( Obj self, Obj string )
@@ -128,7 +129,6 @@ typedef Obj (* GVarFunc)(/*arguments*/);
 
 // Table of functions to export
 static StructGVarFunc GVarFuncs [] = {
-    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", InitializeJulia, 1, "string"),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaFunction, 1, "string" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaCallFunc1Arg, 2, "func,obj" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaCallFunc2Arg, 3, "func,obj1,obj2" ),
@@ -156,6 +156,12 @@ static Int InitKernel( StructInitInfo *module )
     
     InitMarkFuncBags(T_JULIA_FUNC, &MarkNoSubBags);
     InitMarkFuncBags(T_JULIA_OBJ, &MarkNoSubBags);
+
+    // Initialize libjulia
+    jl_init(JULIA_LDPATH);
+
+    // HACK: disable the julia garbage collector for now
+    jl_gc_enable(0);
 
     /* return success                                                      */
     return 0;

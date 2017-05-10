@@ -59,7 +59,7 @@ AC_SUBST(JULIA_LDPATH)
 AC_SUBST(JULIA_LDFLAGS)
 AC_SUBST(JULIA_CPPFLAGS)
 
-AC_DEFINE(JULIA_LDPATH, [$JULIA_LDPATH], [path to Julia installation])
+AC_DEFINE_UNQUOTED(JULIA_LDPATH, ["$JULIA_LDPATH"], [path to Julia installation])
 
 dnl ##
 dnl ## Detect pointer size to distinguish 32 and 64 bit builds
