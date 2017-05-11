@@ -16,19 +16,16 @@ function EvalString(str :: String)
     // win.
 end
 
-function to_gap(str :: String)
-    return libgap_StringObj_String(str)
-end
-
-function to_gap(v :: Int32)
-    return libgap_IntObj_Int(v)
-end
-
-function to_gap(v :: Int64)
-    return libgap_IntObj_Int(v)
-end
+to_gap(str :: String)         = libgap_StringObj_String(str)
+to_gap(v :: Int32)            = libgap_IntObj_Int(v);
+to_gap(v :: Int64)            = libgap_IntObj_Int(v);
 
 function to_gap(v :: Array{GapObj, 1})
+
+end
+
+function to_gap(v :: Array{Any, 1})
+    return to_gap(map(to_gap, v))
 end
 
 function GAPFunction(str::name)

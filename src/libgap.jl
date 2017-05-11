@@ -7,6 +7,8 @@
 
 import Base: length
 
+Libdl.dlopen("libgap", Libdl.RTLD_GLOBAL)
+
 function libgap_initialize( argv::Array{String,1}, env::Array{String,1} )
     ccall( (:libgap_initialize, "libgap")
            , Void
@@ -27,10 +29,13 @@ immutable GapObj
 end
 
 function libgap_eval_string( cmd :: String )
-    return GapObj( ccall( (:libgap_eval_string, "libgap")
+    out = Array(UInt8, 32768)
+    err = Array(UInt8, 32768)
+    res = GapObj( ccall( (:libgap_eval_string, "libgap")
                           , Ptr{Void}
-                          , (Ptr{UInt8},)
-                          , cmd ) );
+                          , (Ptr{UInt8},Ptr{UInt8},Csize_t,Ptr{UInt8},Csize_t)
+                          , cmd, out, sizeof(out), err, sizeof(err) ) );
+    return (res, unsafe_string(pointer(out)), unsafe_string(pointer(err)))
 end
 
 function libgap_get_tnum(ref :: GapObj)
@@ -110,17 +115,18 @@ function libgap_StringObj_String(str :: String)
                    , str ) )
 end
 
-
-function libgap_unbox_int(ref :: GapObj)
-    if libgap_get_tnum(ref) == 0
-        return Nullable{Int64}(libgap_Int_IntObj(ref))
-    else
-        return Nullable{Int64}()
-    end
+function libgap_NewPList(cap :: UInt64)
+    return GapObj( ccall( (:libgap_NewPList, "libgap")
+                          , Ptr{UInt8}
+                          , (UInt64,)
+                          , cap ) )
 end
 
-function libgap_box_int(val :: Int64)
-    return libgap_IntObj_Int(val)
+function libgap_NewPList(cap :: UInt64)
+    return GapObj( ccall( (:libgap_NewPRec, "libgap")
+                          , Ptr{UInt8}
+                          , (UInt64,)
+                          , cap ) )
 end
 
 function libgap_GC_pin(obj :: GapObj)
