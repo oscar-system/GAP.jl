@@ -13,9 +13,25 @@
 #undef PACKAGE_VERSION
 #include "pkgconfig.h"
 
-
 Obj TheTypeJuliaFunction;
 Obj TheTypeJuliaObject;
+
+jl_function_t* julia_array_pop;
+jl_function_t* julia_array_push;
+jl_function_t* julia_array_setindex;
+jl_value_t* GAP_MEMORY_STORAGE_INTS;
+jl_value_t* GAP_MEMORY_STORAGE;
+
+jl_value_t* get_next_julia_position(){
+    jl_value_t* position_jl = jl_call1( julia_array_pop, GAP_MEMORY_STORAGE_INTS );
+    int position = jl_unbox_int64( position_jl );
+    if(jl_unbox_int64(jl_eval_string("length(GAP_MEMORY_STORAGE_INTS)"))==0){
+        jl_call2( julia_array_push, GAP_MEMORY_STORAGE, jl_box_int64( 0 ) );
+        jl_value_t* new_position_jl = jl_box_int64( position + 1 );
+        jl_call2( julia_array_push, GAP_MEMORY_STORAGE_INTS, new_position_jl );
+    }
+    return position_jl;
+}
 
 void SET_JULIA_FUNC(Obj o, jl_function_t* f) {
     ADDR_OBJ(o)[0] = (Obj)f;
@@ -63,9 +79,19 @@ Obj NewJuliaFunc(jl_function_t* C)
 Obj NewJuliaObj(jl_value_t* C)
 {
     Obj o;
-    o = NewBag(T_JULIA_OBJ, 1 * sizeof(Obj));
+    o = NewBag(T_JULIA_OBJ, 2 * sizeof(Obj));
     SET_JULIA_OBJ(o, C);
+    jl_value_t* input_position_jl = get_next_julia_position();
+    ADDR_OBJ(o)[1] = (Obj)input_position_jl;
+    jl_call3( julia_array_setindex, GAP_MEMORY_STORAGE, C, input_position_jl );
     return o;
+}
+
+void JuliaObjFreeFunc( Obj val )
+{
+    jl_value_t* list_number = (jl_value_t*)(ADDR_OBJ(val)[1]);
+    jl_call3( julia_array_setindex, GAP_MEMORY_STORAGE, jl_box_int64( 0 ), list_number );
+    jl_call2( julia_array_push, GAP_MEMORY_STORAGE_INTS, list_number );
 }
 
 Obj JuliaFunction( Obj self, Obj string )
@@ -156,13 +182,21 @@ static Int InitKernel( StructInitInfo *module )
     
     InitMarkFuncBags(T_JULIA_FUNC, &MarkNoSubBags);
     InitMarkFuncBags(T_JULIA_OBJ, &MarkNoSubBags);
-
+    
+    InitFreeFuncBag(T_JULIA_OBJ, &JuliaObjFreeFunc );
+    
     // Initialize libjulia
 //     jl_init(JULIA_LDPATH);
     jl_init();
 
     // HACK: disable the julia garbage collector for now
-    jl_gc_enable(0);
+//     jl_gc_enable(0);
+    
+    julia_array_pop = jl_get_function( jl_base_module, "pop!" );
+    julia_array_push = jl_get_function( jl_base_module, "push!" );
+    julia_array_setindex = jl_get_function( jl_base_module, "setindex!" );
+    GAP_MEMORY_STORAGE = jl_eval_string( "GAP_MEMORY_STORAGE = [ ]" );
+    GAP_MEMORY_STORAGE_INTS = jl_eval_string( "GAP_MEMORY_STORAGE_INTS = [ 1 ]" );
 
     /* return success                                                      */
     return 0;
