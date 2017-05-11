@@ -10,10 +10,10 @@ type Permutation{sz}
 end
 
 function EvalString(str :: String)
-    // Create stringstream
-    // readall
-    // return list of obj
-    // win.
+#   Create stringstream
+#     readall
+#     return list of obj
+#     win.
 end
 
 to_gap(str :: String)         = libgap_StringObj_String(str)
@@ -28,7 +28,7 @@ function to_gap(v :: Array{Any, 1})
     return to_gap(map(to_gap, v))
 end
 
-function GAPFunction(str::name)
+function GAPFunction(name :: String)
     return function(args...)
         func = libgap_ValueGlobal(name)
         gargs = []
