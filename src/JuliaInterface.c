@@ -158,7 +158,8 @@ static Int InitKernel( StructInitInfo *module )
     InitMarkFuncBags(T_JULIA_OBJ, &MarkNoSubBags);
 
     // Initialize libjulia
-    jl_init(JULIA_LDPATH);
+//     jl_init(JULIA_LDPATH);
+    jl_init();
 
     // HACK: disable the julia garbage collector for now
     jl_gc_enable(0);
