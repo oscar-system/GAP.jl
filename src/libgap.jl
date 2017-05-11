@@ -1,15 +1,19 @@
 #
 # This is a very hacky prototype calling libgap from julia
 #
+# It is intended to be a low level interface to the C functions
+# the higher level API can be found in gap.jl
+#
 
 import Base: length
 
-function libgap_initialize( argv::Array{String,1} )
+function libgap_initialize( argv::Array{String,1}, env::Array{String,1} )
     ccall( (:libgap_initialize, "libgap")
            , Void
-           , (Int32, Ptr{Ptr{UInt8}})
+           , (Int32, Ptr{Ptr{UInt8}}, Ptr{Ptr{UInt8}})
            , length(argv)
-           , argv)
+           , argv
+           , env )
 end
 
 function libgap_finalize( )
@@ -98,6 +102,14 @@ function libgap_String_StringObj( str :: GapObj )
                                  , (Ptr{Void}, )
                                  , str.data ) )
 end
+
+function libgap_StringObj_String(str :: String)
+    return GapObj( ccall( (:libgap_StringObj_String, "libgap")
+                   , Ptr{Void}
+                   , (Ptr{UInt8}, )
+                   , str ) )
+end
+
 
 function libgap_unbox_int(ref :: GapObj)
     if libgap_get_tnum(ref) == 0
