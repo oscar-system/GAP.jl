@@ -5,7 +5,7 @@
 # the higher level API can be found in gap.jl
 #
 
-import Base: length
+import Base: length, convert
 
 Libdl.dlopen("libgap", Libdl.RTLD_GLOBAL)
 
@@ -28,10 +28,14 @@ immutable GapObj
     data :: Ptr{Void}
 end
 
-function libgap_eval_string( cmd :: String )
+function convert(::Type{Ptr{UInt8}}, obj :: GapObj)
+    return obj.data
+end
+
+function libgap_EvalString( cmd :: String )
     out = Array(UInt8, 32768)
     err = Array(UInt8, 32768)
-    res = GapObj( ccall( (:libgap_eval_string, "libgap")
+    res = GapObj( ccall( (:libgap_EvalString, "libgap")
                           , Ptr{Void}
                           , (Ptr{UInt8},Ptr{UInt8},Csize_t,Ptr{UInt8},Csize_t)
                           , cmd, out, sizeof(out), err, sizeof(err) ) );
@@ -59,7 +63,7 @@ function libgap_Int_IntObj(obj :: GapObj)
                            , obj.data ) )
 end
 
-function libgap_call_func_list( func :: GapObj, list :: GapObj )
+function libgap_CallFuncList( func :: GapObj, list :: GapObj )
     return GapObj( ccall( (:CallFuncList, "libgap")
                           , Ptr{Void}
                           , (Ptr{Void}, Ptr{Void})
@@ -111,8 +115,8 @@ end
 function libgap_StringObj_String(str :: String)
     return GapObj( ccall( (:libgap_StringObj_String, "libgap")
                    , Ptr{Void}
-                   , (Ptr{UInt8}, )
-                   , str ) )
+                   , (Ptr{UInt8}, Csize_t )
+                   , str, length(str) ) )
 end
 
 function libgap_NewPList(cap :: UInt64)
@@ -122,12 +126,32 @@ function libgap_NewPList(cap :: UInt64)
                           , cap ) )
 end
 
-function libgap_NewPList(cap :: UInt64)
-    return GapObj( ccall( (:libgap_NewPRec, "libgap")
-                          , Ptr{UInt8}
-                          , (UInt64,)
-                          , cap ) )
+function libgap_NewPList(cap :: Int64)
+    libgap_NewPList(UInt64(cap))
 end
+
+function libgap_SetLenPList(list :: GapObj, len :: Int64)
+    ccall( (:libgap_SetLenPList, "libgap")
+           , Void
+           , (Ptr{UInt8}, UInt64)
+           , list.data, len )
+end
+
+function libgap_SetElmPList(list :: GapObj, pos :: Int64, val :: GapObj)
+    ccall( (:libgap_SetElmPList, "libgap")
+           , Void
+           , (Ptr{UInt8}, UInt64, Ptr{UInt8})
+           , list.data, UInt64(pos), val.data )
+end
+
+function libgap_ElmPList(list :: GapObj, pos :: UInt64)
+    return GapObj( ccall( (:libgap_SetElmPList, "libgap")
+                          , Ptr{UInt8}
+                          , (Ptr{UInt8}, UInt64)
+                          , list.data, pos ) ) 
+end
+
+
 
 function libgap_GC_pin(obj :: GapObj)
     ccall( (:libgap_GC_pin, "libgap")
