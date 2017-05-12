@@ -143,6 +143,15 @@ Obj JuliaBox( Obj self, Obj obj )
     return Fail;
 }
 
+Obj JuliaSetVal( Obj self, Obj name, Obj julia_val )
+{
+    
+    jl_value_t* julia_obj=GET_JULIA_OBJ( julia_val );
+    jl_sym_t* julia_symbol = jl_symbol( CSTR_STRING( name ) );
+    jl_set_global( jl_main_module, julia_symbol, julia_obj );
+    return 0;
+}
+
 
 
 typedef Obj (* GVarFunc)(/*arguments*/);
@@ -161,6 +170,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaEvalString, 1, "string" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaUnbox, 1, "obj" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaBox, 1, "obj" ),
+    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaSetVal, 2, "name,val" ),
 
 	{ 0 } /* Finish with an empty entry */
 
