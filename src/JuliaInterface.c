@@ -129,6 +129,11 @@ Obj JuliaUnbox( Obj self, Obj obj )
     else if(jl_typeis(julia_obj, jl_float64_type)){
         return NEW_MACFLOAT( jl_unbox_float64( julia_obj ) );
     }
+    else if(jl_typeis(julia_obj, jl_string_type)){
+        Obj return_string;
+        C_NEW_STRING( return_string, jl_string_len( julia_obj ), jl_string_data( julia_obj ) );
+        return return_string;
+    }
     return Fail;
 }
 
@@ -139,6 +144,9 @@ Obj JuliaBox( Obj self, Obj obj )
     }
     else if(IS_MACFLOAT(obj)){
         return NewJuliaObj( jl_box_float64( VAL_MACFLOAT( obj ) ) );
+    }
+    else if(IS_STRING(obj)){
+        return NewJuliaObj( jl_cstr_to_string( CSTR_STRING( obj ) ) );
     }
     return Fail;
 }
