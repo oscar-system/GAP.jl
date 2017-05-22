@@ -101,6 +101,11 @@ Obj JuliaFunction( Obj self, Obj string )
     
 }
 
+Obj JuliaCallFunc0Arg( Obj self, Obj func )
+{
+    return NewJuliaObj( jl_call0( GET_JULIA_FUNC( func ) ) );
+}
+
 Obj JuliaCallFunc1Arg( Obj self, Obj func, Obj arg )
 {
     return NewJuliaObj( jl_call1( GET_JULIA_FUNC( func ), GET_JULIA_OBJ( arg ) ) );
@@ -109,6 +114,11 @@ Obj JuliaCallFunc1Arg( Obj self, Obj func, Obj arg )
 Obj JuliaCallFunc2Arg( Obj self, Obj func, Obj arg1, Obj arg2 )
 {
     return NewJuliaObj( jl_call2( GET_JULIA_FUNC( func ), GET_JULIA_OBJ( arg1 ), GET_JULIA_OBJ( arg2 ) ) );
+}
+
+Obj JuliaCallFunc3Arg( Obj self, Obj func, Obj arg1, Obj arg2, Obj arg3 )
+{
+    return NewJuliaObj( jl_call3( GET_JULIA_FUNC( func ), GET_JULIA_OBJ( arg1 ), GET_JULIA_OBJ( arg2 ), GET_JULIA_OBJ( arg3 ) ) );
 }
 
 Obj JuliaEvalString( Obj self, Obj string )
@@ -173,8 +183,10 @@ typedef Obj (* GVarFunc)(/*arguments*/);
 // Table of functions to export
 static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaFunction, 1, "string" ),
+    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaCallFunc0Arg, 1, "func" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaCallFunc1Arg, 2, "func,obj" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaCallFunc2Arg, 3, "func,obj1,obj2" ),
+    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaCallFunc3Arg, 4, "func,obj1,obj2,obj3" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaEvalString, 1, "string" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaUnbox, 1, "obj" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaBox, 1, "obj" ),
