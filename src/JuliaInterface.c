@@ -15,6 +15,7 @@
 
 Obj TheTypeJuliaFunction;
 Obj TheTypeJuliaObject;
+Obj TheTypeJuliaArray;
 
 jl_function_t* julia_array_pop;
 jl_function_t* julia_array_push;
@@ -41,6 +42,9 @@ void SET_JULIA_OBJ(Obj o, jl_value_t* p) {
     ADDR_OBJ(o)[0] = (Obj)p;
 }
 
+void SET_JULIA_ARRAY(Obj o, jl_array_t* a) {
+    ADDR_OBJ(o)[0] = (Obj)a;
+}
 
 jl_function_t* GET_JULIA_FUNC(Obj o) {
     return (jl_function_t*)(ADDR_OBJ(o)[0]);
@@ -49,6 +53,10 @@ jl_function_t* GET_JULIA_FUNC(Obj o) {
 
 jl_value_t* GET_JULIA_OBJ(Obj o) {
     return (jl_value_t*)(ADDR_OBJ(o)[0]);
+}
+
+jl_array_t* GET_JULIA_ARRAY(Obj o) {
+    return (jl_array_t*)(ADDR_OBJ(o)[0]);
 }
 
 Obj JuliaFunctionTypeFunc(Obj o)
@@ -61,12 +69,19 @@ Obj JuliaObjectTypeFunc(Obj o)
     return TheTypeJuliaObject;
 }
 
+Obj JuliaArrayTypeFunc(Obj o)
+{
+    return TheTypeJuliaArray;
+}
+
 
 #define IS_JULIA_FUNC(o) (TNUM_OBJ(o) == T_JULIA_FUNC)
 #define IS_JULIA_OBJ(o) (TNUM_OBJ(o) == T_JULIA_OBJ)
+#define IS_JULIA_ARRAY(o) (TNUM_OBJ(o) == T_JULIA_ARRAY)
 
 UInt T_JULIA_FUNC = 0;
 UInt T_JULIA_OBJ = 0;
+UInt T_JULIA_ARRAY = 0;
 
 Obj NewJuliaFunc(jl_function_t* C)
 {
@@ -81,6 +96,17 @@ Obj NewJuliaObj(jl_value_t* C)
     Obj o;
     o = NewBag(T_JULIA_OBJ, 2 * sizeof(Obj));
     SET_JULIA_OBJ(o, C);
+    jl_value_t* input_position_jl = get_next_julia_position();
+    ADDR_OBJ(o)[1] = (Obj)input_position_jl;
+    jl_call3( julia_array_setindex, GAP_MEMORY_STORAGE, C, input_position_jl );
+    return o;
+}
+
+Obj NewJuliaArray(jl_array_t* C)
+{
+    Obj o;
+    o = NewBag(T_JULIA_ARRAY, 2 * sizeof(Obj));
+    SET_JULIA_ARRAY(o, C);
     jl_value_t* input_position_jl = get_next_julia_position();
     ADDR_OBJ(o)[1] = (Obj)input_position_jl;
     jl_call3( julia_array_setindex, GAP_MEMORY_STORAGE, C, input_position_jl );
@@ -133,31 +159,79 @@ Obj JuliaEvalString( Obj self, Obj string )
 Obj JuliaUnbox( Obj self, Obj obj )
 {   
     jl_value_t* julia_obj=GET_JULIA_OBJ( obj );
+    
+    // small int
     if(jl_typeis(julia_obj, jl_int64_type)){
         return INTOBJ_INT( jl_unbox_int64( julia_obj ) );
     }
+    if(jl_typeis(julia_obj, jl_int32_type)){
+        return INTOBJ_INT( jl_unbox_int32( julia_obj ) );
+    }
+    if(jl_typeis(julia_obj, jl_int16_type)){
+        return INTOBJ_INT( jl_unbox_int16( julia_obj ) );
+    }
+    if(jl_typeis(julia_obj, jl_int8_type)){
+        return INTOBJ_INT( jl_unbox_int8( julia_obj ) );
+    }
+    
+    // float
     else if(jl_typeis(julia_obj, jl_float64_type)){
         return NEW_MACFLOAT( jl_unbox_float64( julia_obj ) );
     }
+    else if(jl_typeis(julia_obj, jl_float32_type)){
+        return NEW_MACFLOAT( jl_unbox_float32( julia_obj ) );
+    }
+    
+    // string
     else if(jl_typeis(julia_obj, jl_string_type)){
         Obj return_string;
         C_NEW_STRING( return_string, jl_string_len( julia_obj ), jl_string_data( julia_obj ) );
         return return_string;
     }
+    
+    // bool
+    else if(jl_typeis(julia_obj, jl_bool_type)){
+        if(jl_unbox_bool(julia_obj)==0){
+            return False;
+        }
+        else{
+            return True;
+        }
+    }
+    
+    
+    
     return Fail;
 }
 
 Obj JuliaBox( Obj self, Obj obj )
 {   
+    //integer, small and large
     if(IS_INTOBJ(obj)){
         return NewJuliaObj( jl_box_int64( INT_INTOBJ( obj ) ) );
+        // TODO: BIGINT
     }
+    
+    //float
     else if(IS_MACFLOAT(obj)){
         return NewJuliaObj( jl_box_float64( VAL_MACFLOAT( obj ) ) );
     }
+    
+    //string
     else if(IS_STRING(obj)){
         return NewJuliaObj( jl_cstr_to_string( CSTR_STRING( obj ) ) );
     }
+    
+    //bool
+    else if(obj == True){
+        return NewJuliaObj( jl_box_bool( 1 ) );
+    }
+    else if(obj == False){
+        return NewJuliaObj( jl_box_bool( 0 ) );
+    }
+    
+    //perm TODO
+    
     return Fail;
 }
 
@@ -206,12 +280,15 @@ static Int InitKernel( StructInitInfo *module )
     
     InitCopyGVar( "TheTypeJuliaFunction", &TheTypeJuliaFunction );
     InitCopyGVar( "TheTypeJuliaObject", &TheTypeJuliaObject );
+    InitCopyGVar( "TheTypeJuliaArray", &TheTypeJuliaArray );
     
     T_JULIA_FUNC = RegisterPackageTNUM("JuliaFunction", JuliaFunctionTypeFunc );
     T_JULIA_OBJ = RegisterPackageTNUM("JuliaObject", JuliaObjectTypeFunc );
+    T_JULIA_ARRAY = RegisterPackageTNUM("JuliaArray", JuliaArrayTypeFunc );
     
     InitMarkFuncBags(T_JULIA_FUNC, &MarkNoSubBags);
     InitMarkFuncBags(T_JULIA_OBJ, &MarkNoSubBags);
+    InitMarkFuncBags(T_JULIA_ARRAY, &MarkNoSubBags);
     
     InitFreeFuncBag(T_JULIA_OBJ, &JuliaObjFreeFunc );
     
