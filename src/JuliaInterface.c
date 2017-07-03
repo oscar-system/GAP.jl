@@ -15,7 +15,6 @@
 
 Obj TheTypeJuliaFunction;
 Obj TheTypeJuliaObject;
-Obj TheTypeJuliaArray;
 
 jl_function_t* julia_array_pop;
 jl_function_t* julia_array_push;
@@ -42,10 +41,6 @@ void SET_JULIA_OBJ(Obj o, jl_value_t* p) {
     ADDR_OBJ(o)[0] = (Obj)p;
 }
 
-void SET_JULIA_ARRAY(Obj o, jl_array_t* a) {
-    ADDR_OBJ(o)[0] = (Obj)a;
-}
-
 jl_function_t* GET_JULIA_FUNC(Obj o) {
     return (jl_function_t*)(ADDR_OBJ(o)[0]);
 }
@@ -53,10 +48,6 @@ jl_function_t* GET_JULIA_FUNC(Obj o) {
 
 jl_value_t* GET_JULIA_OBJ(Obj o) {
     return (jl_value_t*)(ADDR_OBJ(o)[0]);
-}
-
-jl_array_t* GET_JULIA_ARRAY(Obj o) {
-    return (jl_array_t*)(ADDR_OBJ(o)[0]);
 }
 
 Obj JuliaFunctionTypeFunc(Obj o)
@@ -69,19 +60,11 @@ Obj JuliaObjectTypeFunc(Obj o)
     return TheTypeJuliaObject;
 }
 
-Obj JuliaArrayTypeFunc(Obj o)
-{
-    return TheTypeJuliaArray;
-}
-
-
 #define IS_JULIA_FUNC(o) (TNUM_OBJ(o) == T_JULIA_FUNC)
 #define IS_JULIA_OBJ(o) (TNUM_OBJ(o) == T_JULIA_OBJ)
-#define IS_JULIA_ARRAY(o) (TNUM_OBJ(o) == T_JULIA_ARRAY)
 
 UInt T_JULIA_FUNC = 0;
 UInt T_JULIA_OBJ = 0;
-UInt T_JULIA_ARRAY = 0;
 
 Obj NewJuliaFunc(jl_function_t* C)
 {
@@ -96,17 +79,6 @@ Obj NewJuliaObj(jl_value_t* C)
     Obj o;
     o = NewBag(T_JULIA_OBJ, 2 * sizeof(Obj));
     SET_JULIA_OBJ(o, C);
-    jl_value_t* input_position_jl = get_next_julia_position();
-    ADDR_OBJ(o)[1] = (Obj)input_position_jl;
-    jl_call3( julia_array_setindex, GAP_MEMORY_STORAGE, C, input_position_jl );
-    return o;
-}
-
-Obj NewJuliaArray(jl_array_t* C)
-{
-    Obj o;
-    o = NewBag(T_JULIA_ARRAY, 2 * sizeof(Obj));
-    SET_JULIA_ARRAY(o, C);
     jl_value_t* input_position_jl = get_next_julia_position();
     ADDR_OBJ(o)[1] = (Obj)input_position_jl;
     jl_call3( julia_array_setindex, GAP_MEMORY_STORAGE, C, input_position_jl );
@@ -156,10 +128,8 @@ Obj JuliaEvalString( Obj self, Obj string )
     return 0;
 }
 
-Obj JuliaUnbox( Obj self, Obj obj )
+Obj JuliaUnbox_internal( jl_value_t* julia_obj )
 {   
-    jl_value_t* julia_obj=GET_JULIA_OBJ( obj );
-    
     // small int
     if(jl_typeis(julia_obj, jl_int64_type)){
         return INTOBJ_INT( jl_unbox_int64( julia_obj ) );
@@ -199,51 +169,110 @@ Obj JuliaUnbox( Obj self, Obj obj )
         }
     }
     
-    
+    // array (1-dim)
+    else if(jl_typeis(julia_obj,jl_array_any_type)){
+        Obj current_element;
+        jl_array_t* array_ptr = (jl_array_t*)julia_obj;
+        size_t len = jl_array_len(array_ptr);
+        Obj return_list = NEW_PLIST( T_PLIST, len );
+        SET_LEN_PLIST( return_list, len );
+        for(size_t i=0;i<len;i++){
+            jl_value_t* current_jl_element = jl_arrayref( array_ptr, i );
+            current_element = JuliaUnbox_internal( current_jl_element );
+            SET_ELM_PLIST( return_list, i+1, current_element );
+            CHANGED_BAG( return_list );
+        }
+        return return_list;
+    }
     
     return Fail;
 }
 
-Obj JuliaBox( Obj self, Obj obj )
+Obj JuliaUnbox( Obj self, Obj obj ){
+    
+    jl_value_t* julia_obj = GET_JULIA_OBJ( obj );
+    
+    return JuliaUnbox_internal( julia_obj );
+    
+}
+
+jl_value_t* JuliaBox_internal( Obj obj )
 {   
     //integer, small and large
     if(IS_INTOBJ(obj)){
-        return NewJuliaObj( jl_box_int64( INT_INTOBJ( obj ) ) );
+        return jl_box_int64( INT_INTOBJ( obj ) );
         // TODO: BIGINT
     }
     
     //float
     else if(IS_MACFLOAT(obj)){
-        return NewJuliaObj( jl_box_float64( VAL_MACFLOAT( obj ) ) );
+        return jl_box_float64( VAL_MACFLOAT( obj ) );
     }
     
     //string
     else if(IS_STRING(obj)){
-        return NewJuliaObj( jl_cstr_to_string( CSTR_STRING( obj ) ) );
+        return jl_cstr_to_string( CSTR_STRING( obj ) );
     }
     
     //bool
     else if(obj == True){
-        return NewJuliaObj( jl_box_bool( 1 ) );
+        return jl_box_bool( 1 );
     }
     else if(obj == False){
-        return NewJuliaObj( jl_box_bool( 0 ) );
+        return jl_box_bool( 0 );
     }
     
-    //perm TODO
+    //perm
+    else if(TNUM_OBJ(obj) == T_PERM2){
+        jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_uint16_type,1);
+        jl_array_t* new_perm_array = jl_alloc_array_1d(array_type, DEG_PERM2(obj));
+        UInt2* perm_array = ADDR_PERM2(obj);
+        for(size_t i=0;i<DEG_PERM2(obj);i++){
+            jl_arrayset(new_perm_array, jl_box_uint16( perm_array[ i ] ), i );
+        }
+        return (jl_value_t*)(new_perm_array);
+    }
     
-    return Fail;
+    else if(TNUM_OBJ(obj) == T_PERM4){
+        jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_uint32_type,1);
+        jl_array_t* new_perm_array = jl_alloc_array_1d(array_type, DEG_PERM4(obj));
+        UInt4* perm_array = ADDR_PERM4(obj);
+        for(size_t i=0;i<DEG_PERM4(obj);i++){
+            jl_arrayset(new_perm_array, jl_box_uint32( perm_array[ i ] ), i );
+        }
+        return (jl_value_t*)(new_perm_array);
+    }
+    
+    // plist
+    else if(IS_PLIST(obj)){
+        size_t len = LEN_PLIST(obj);
+        jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_any_type,1);
+        jl_array_t* new_array = jl_alloc_array_1d(array_type, len);
+        for(size_t i=0;i<len;i++){
+            jl_arrayset(new_array,JuliaBox_internal(ELM_PLIST(obj,i+1)),i);
+        }
+        return (jl_value_t*)(new_array);
+    }
+    
+    return 0;
 }
 
 Obj JuliaSetVal( Obj self, Obj name, Obj julia_val )
 {
-    
     jl_value_t* julia_obj=GET_JULIA_OBJ( julia_val );
     jl_sym_t* julia_symbol = jl_symbol( CSTR_STRING( name ) );
     jl_set_global( jl_main_module, julia_symbol, julia_obj );
     return 0;
 }
 
+Obj JuliaBox( Obj self, Obj obj )
+{
+    jl_value_t* julia_ptr = JuliaBox_internal( obj );
+    if( julia_ptr == 0)
+        return Fail;
+    return NewJuliaObj( julia_ptr );
+    
+}
 
 
 typedef Obj (* GVarFunc)(/*arguments*/);
@@ -280,15 +309,12 @@ static Int InitKernel( StructInitInfo *module )
     
     InitCopyGVar( "TheTypeJuliaFunction", &TheTypeJuliaFunction );
     InitCopyGVar( "TheTypeJuliaObject", &TheTypeJuliaObject );
-    InitCopyGVar( "TheTypeJuliaArray", &TheTypeJuliaArray );
     
     T_JULIA_FUNC = RegisterPackageTNUM("JuliaFunction", JuliaFunctionTypeFunc );
     T_JULIA_OBJ = RegisterPackageTNUM("JuliaObject", JuliaObjectTypeFunc );
-    T_JULIA_ARRAY = RegisterPackageTNUM("JuliaArray", JuliaArrayTypeFunc );
     
     InitMarkFuncBags(T_JULIA_FUNC, &MarkNoSubBags);
     InitMarkFuncBags(T_JULIA_OBJ, &MarkNoSubBags);
-    InitMarkFuncBags(T_JULIA_ARRAY, &MarkNoSubBags);
     
     InitFreeFuncBag(T_JULIA_OBJ, &JuliaObjFreeFunc );
     
