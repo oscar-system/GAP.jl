@@ -287,6 +287,22 @@ Obj JuliaBox( Obj self, Obj obj )
 }
 
 
+// Obj JuliaCallFuncXArg( Obj self, Obj func, Obj args )
+// {
+//     int32_t len = LEN_PLIST( args );
+//     jl_value_t** arg_pointer;
+//     JL_GC_PUSHARGS(arg_pointer, len);
+//     Obj current_element;
+//     for(int32_t i=0;i<len;i++){
+//         current_element = ELM_PLIST( args, i + 1 );
+//         arg_pointer[ i ] = JuliaBox_internal(current_element);
+//     }
+//     jl_value_t * return_val = jl_call( GET_JULIA_FUNC( func ), arg_pointer, len );
+//     JL_GC_POP();
+//     return NewJuliaObj( return_val );
+// }
+
+
 typedef Obj (* GVarFunc)(/*arguments*/);
 
 #define GVAR_FUNC_TABLE_ENTRY(srcfile, name, nparam, params) \
@@ -302,10 +318,12 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaCallFunc1Arg, 2, "func,obj" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaCallFunc2Arg, 3, "func,obj1,obj2" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaCallFunc3Arg, 4, "func,obj1,obj2,obj3" ),
+//     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaCallFuncXArg, 2, "func,arg_list" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaEvalString, 1, "string" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaUnbox, 1, "obj" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaBox, 1, "obj" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaSetVal, 2, "name,val" ),
+    
 
 	{ 0 } /* Finish with an empty entry */
 
