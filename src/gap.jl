@@ -11,12 +11,12 @@ end
 type Permutation{sz}
 end
 
-function EvalString(str :: String)
-#   Create stringstream
-#     readall
-#     return list of obj
-#     win.
-end
+# function EvalString(str :: String)
+# #   Create stringstream
+# #     readall
+# #     return list of obj
+# #     win.
+# end
 
 to_gap(str :: String)         = libgap_StringObj_String(str)
 to_gap(v :: Int32)            = libgap_IntObj_Int(v)
@@ -33,6 +33,10 @@ end
 
 function to_gap(v :: Array{Any, 1}) :: Array{GapObj, 1}
     return to_gap(map(to_gap, v))
+end
+
+function GAPFunctionPointer( name :: String )
+    return libgap_ValueGlobal(name)
 end
 
 function GAPFunction(name :: String)

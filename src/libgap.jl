@@ -35,7 +35,7 @@ end
 function libgap_EvalString( cmd :: String )
     out = Array(UInt8, 32768)
     err = Array(UInt8, 32768)
-    res = GapObj( ccall( (:libgap_EvalString, "libgap")
+    res = GapObj( ccall( (:libgap_eval_string, "libgap")
                           , Ptr{Void}
                           , (Ptr{UInt8},Ptr{UInt8},Csize_t,Ptr{UInt8},Csize_t)
                           , cmd, out, sizeof(out), err, sizeof(err) ) );
@@ -57,10 +57,10 @@ function libgap_IntObj_Int(val :: Int64)
 end
 
 function libgap_Int_IntObj(obj :: GapObj)
-     return GapObj( ccall( (:libgap_Int_IntObj, "libgap")
-                           , Int64
-                           , (Ptr{Void}, )
-                           , obj.data ) )
+     return ccall( (:libgap_Int_IntObj, "libgap")
+                    , Int64
+                    , (Ptr{Void}, )
+                    , obj.data )
 end
 
 function libgap_CallFuncList( func :: GapObj, list :: GapObj )
@@ -120,10 +120,12 @@ function libgap_StringObj_String(str :: String)
 end
 
 function libgap_NewPList(cap :: UInt64)
-    return GapObj( ccall( (:libgap_NewPList, "libgap")
+    o = GapObj( ccall( (:libgap_NewPList, "libgap")
                           , Ptr{UInt8}
                           , (UInt64,)
                           , cap ) )
+    libgap_GC_pin( o )
+    return o
 end
 
 function libgap_NewPList(cap :: Int64)
@@ -145,10 +147,19 @@ function libgap_SetElmPList(list :: GapObj, pos :: Int64, val :: GapObj)
 end
 
 function libgap_ElmPList(list :: GapObj, pos :: UInt64)
-    return GapObj( ccall( (:libgap_SetElmPList, "libgap")
+    return GapObj( ccall( (:libgap_ElmPList, "libgap")
                           , Ptr{UInt8}
                           , (Ptr{UInt8}, UInt64)
                           , list.data, pos ) ) 
+end
+
+libgap_ElmPList(list::GapObj,pos::Int64) = libgap_ElmPList(list,UInt64(pos))
+
+function libgap_LenPlist( list :: GapObj ) :: GapObj
+    return GapObj( ccall( (:libgap_LenPlist, "libgap")
+                          , Ptr{UInt8}
+                          , (Ptr{UInt8},)
+                          , list.data, ) ) 
 end
 
 
