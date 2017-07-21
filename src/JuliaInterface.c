@@ -143,6 +143,18 @@ Obj JuliaUnbox_internal( jl_value_t* julia_obj )
     if(jl_typeis(julia_obj, jl_int8_type)){
         return INTOBJ_INT( jl_unbox_int8( julia_obj ) );
     }
+    if(jl_typeis(julia_obj, jl_uint64_type)){
+        return INTOBJ_INT( jl_unbox_uint64( julia_obj ) );
+    }
+    if(jl_typeis(julia_obj, jl_uint32_type)){
+        return INTOBJ_INT( jl_unbox_uint32( julia_obj ) );
+    }
+    if(jl_typeis(julia_obj, jl_uint16_type)){
+        return INTOBJ_INT( jl_unbox_uint16( julia_obj ) );
+    }
+    if(jl_typeis(julia_obj, jl_uint8_type)){
+        return INTOBJ_INT( jl_unbox_uint8( julia_obj ) );
+    }
     
     // float
     else if(jl_typeis(julia_obj, jl_float64_type)){
@@ -170,7 +182,7 @@ Obj JuliaUnbox_internal( jl_value_t* julia_obj )
     }
     
     // array (1-dim)
-    else if(jl_typeis(julia_obj,jl_array_any_type)){
+    else if(jl_is_array(julia_obj)){
         Obj current_element;
         jl_array_t* array_ptr = (jl_array_t*)julia_obj;
         size_t len = jl_array_len(array_ptr);
