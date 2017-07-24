@@ -155,11 +155,11 @@ end
 
 libgap_ElmPList(list::GapObj,pos::Int64) = libgap_ElmPList(list,UInt64(pos))
 
-function libgap_LenPlist( list :: GapObj ) :: GapObj
-    return GapObj( ccall( (:libgap_LenPlist, "libgap")
-                          , Ptr{UInt8}
+function libgap_LenPlist( list :: GapObj ) :: Int64
+    return ccall( (:libgap_LenPlist, "libgap")
+                          , Int64
                           , (Ptr{UInt8},)
-                          , list.data, ) ) 
+                          , list.data, ) 
 end
 
 
