@@ -130,6 +130,8 @@ Obj JuliaEvalString( Obj self, Obj string )
 
 Obj JuliaUnbox_internal( jl_value_t* julia_obj )
 {   
+    size_t i;
+
     // small int
     if(jl_typeis(julia_obj, jl_int64_type)){
         return INTOBJ_INT( jl_unbox_int64( julia_obj ) );
@@ -188,7 +190,7 @@ Obj JuliaUnbox_internal( jl_value_t* julia_obj )
         size_t len = jl_array_len(array_ptr);
         Obj return_list = NEW_PLIST( T_PLIST, len );
         SET_LEN_PLIST( return_list, len );
-        for(size_t i=0;i<len;i++){
+        for(i=0;i<len;i++){
             jl_value_t* current_jl_element = jl_arrayref( array_ptr, i );
             current_element = JuliaUnbox_internal( current_jl_element );
             SET_ELM_PLIST( return_list, i+1, current_element );
@@ -210,6 +212,8 @@ Obj JuliaUnbox( Obj self, Obj obj ){
 
 jl_value_t* JuliaBox_internal( Obj obj )
 {   
+    size_t i;
+
     //integer, small and large
     if(IS_INTOBJ(obj)){
         return jl_box_int64( INT_INTOBJ( obj ) );
@@ -239,7 +243,7 @@ jl_value_t* JuliaBox_internal( Obj obj )
         jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_uint16_type,1);
         jl_array_t* new_perm_array = jl_alloc_array_1d(array_type, DEG_PERM2(obj));
         UInt2* perm_array = ADDR_PERM2(obj);
-        for(size_t i=0;i<DEG_PERM2(obj);i++){
+        for(i=0;i<DEG_PERM2(obj);i++){
             jl_arrayset(new_perm_array, jl_box_uint16( perm_array[ i ] ), i );
         }
         return (jl_value_t*)(new_perm_array);
@@ -249,7 +253,7 @@ jl_value_t* JuliaBox_internal( Obj obj )
         jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_uint32_type,1);
         jl_array_t* new_perm_array = jl_alloc_array_1d(array_type, DEG_PERM4(obj));
         UInt4* perm_array = ADDR_PERM4(obj);
-        for(size_t i=0;i<DEG_PERM4(obj);i++){
+        for(i=0;i<DEG_PERM4(obj);i++){
             jl_arrayset(new_perm_array, jl_box_uint32( perm_array[ i ] ), i );
         }
         return (jl_value_t*)(new_perm_array);
@@ -260,7 +264,7 @@ jl_value_t* JuliaBox_internal( Obj obj )
         size_t len = LEN_PLIST(obj);
         jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_any_type,1);
         jl_array_t* new_array = jl_alloc_array_1d(array_type, len);
-        for(size_t i=0;i<len;i++){
+        for(i=0;i<len;i++){
             jl_arrayset(new_array,JuliaBox_internal(ELM_PLIST(obj,i+1)),i);
         }
         return (jl_value_t*)(new_array);
