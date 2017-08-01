@@ -52,7 +52,6 @@ InstallMethod( CallFuncList,
         
     fi;
     
-#     return JuliaUnbox( JuliaCallFuncXArg( julia_func, List( argument_list, JuliaBox ) ) );
-    return fail;
+    return JuliaUnbox( JuliaCallFuncXArg( julia_func, List( argument_list, JuliaBox ) ) );
     
 end );
