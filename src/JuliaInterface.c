@@ -13,6 +13,9 @@
 #undef PACKAGE_VERSION
 #include "pkgconfig.h"
 
+#define JULIAINTERFACE_EXCEPTION_HANDLER if (jl_exception_occurred()) \
+                                             ErrorQuit( jl_typeof_str(jl_exception_occurred()), 0, 0 );
+
 Obj TheTypeJuliaFunction;
 Obj TheTypeJuliaObject;
 
@@ -27,8 +30,10 @@ jl_value_t* get_next_julia_position(){
     int position = jl_unbox_int64( position_jl );
     if(jl_unbox_int64(jl_eval_string("length(GAP_MEMORY_STORAGE_INTS)"))==0){
         jl_call2( julia_array_push, GAP_MEMORY_STORAGE, jl_box_int64( 0 ) );
+        JULIAINTERFACE_EXCEPTION_HANDLER
         jl_value_t* new_position_jl = jl_box_int64( position + 1 );
         jl_call2( julia_array_push, GAP_MEMORY_STORAGE_INTS, new_position_jl );
+        JULIAINTERFACE_EXCEPTION_HANDLER
     }
     return position_jl;
 }
@@ -82,6 +87,7 @@ Obj NewJuliaObj(jl_value_t* C)
     jl_value_t* input_position_jl = get_next_julia_position();
     ADDR_OBJ(o)[1] = (Obj)input_position_jl;
     jl_call3( julia_array_setindex, GAP_MEMORY_STORAGE, C, input_position_jl );
+    JULIAINTERFACE_EXCEPTION_HANDLER
     return o;
 }
 
@@ -89,39 +95,52 @@ void JuliaObjFreeFunc( Obj val )
 {
     jl_value_t* list_number = (jl_value_t*)(ADDR_OBJ(val)[1]);
     jl_call3( julia_array_setindex, GAP_MEMORY_STORAGE, jl_box_int64( 0 ), list_number );
+    JULIAINTERFACE_EXCEPTION_HANDLER
     jl_call2( julia_array_push, GAP_MEMORY_STORAGE_INTS, list_number );
+    JULIAINTERFACE_EXCEPTION_HANDLER
 }
 
 Obj JuliaFunction( Obj self, Obj string )
 {
-    
-    return NewJuliaFunc( jl_get_function(jl_base_module, CSTR_STRING( string ) ) );
-    
+    jl_function_t* function = jl_get_function(jl_main_module, CSTR_STRING( string ) );
+    if(function==0)
+        ErrorQuit( "Function is not defined in julia", 0, 0 );
+    return NewJuliaFunc( function );
 }
 
 Obj JuliaCallFunc0Arg( Obj self, Obj func )
 {
-    return NewJuliaObj( jl_call0( GET_JULIA_FUNC( func ) ) );
+    jl_value_t* return_value = jl_call0( GET_JULIA_FUNC( func ) );
+    JULIAINTERFACE_EXCEPTION_HANDLER
+    return NewJuliaObj( return_value );
 }
 
 Obj JuliaCallFunc1Arg( Obj self, Obj func, Obj arg )
 {
-    return NewJuliaObj( jl_call1( GET_JULIA_FUNC( func ), GET_JULIA_OBJ( arg ) ) );
+    jl_value_t* return_value = jl_call1( GET_JULIA_FUNC( func ), GET_JULIA_OBJ( arg ) );
+    JULIAINTERFACE_EXCEPTION_HANDLER
+    return NewJuliaObj( return_value );
+
 }
 
 Obj JuliaCallFunc2Arg( Obj self, Obj func, Obj arg1, Obj arg2 )
 {
-    return NewJuliaObj( jl_call2( GET_JULIA_FUNC( func ), GET_JULIA_OBJ( arg1 ), GET_JULIA_OBJ( arg2 ) ) );
+    jl_value_t* return_value = jl_call2( GET_JULIA_FUNC( func ), GET_JULIA_OBJ( arg1 ), GET_JULIA_OBJ( arg2 ) );
+    JULIAINTERFACE_EXCEPTION_HANDLER
+    return NewJuliaObj( return_value );
 }
 
 Obj JuliaCallFunc3Arg( Obj self, Obj func, Obj arg1, Obj arg2, Obj arg3 )
 {
-    return NewJuliaObj( jl_call3( GET_JULIA_FUNC( func ), GET_JULIA_OBJ( arg1 ), GET_JULIA_OBJ( arg2 ), GET_JULIA_OBJ( arg3 ) ) );
+    jl_value_t* return_value = jl_call3( GET_JULIA_FUNC( func ), GET_JULIA_OBJ( arg1 ), GET_JULIA_OBJ( arg2 ), GET_JULIA_OBJ( arg3 ) );
+    JULIAINTERFACE_EXCEPTION_HANDLER
+    return NewJuliaObj( return_value );
 }
 
 Obj JuliaEvalString( Obj self, Obj string )
 {
     jl_value_t* result = jl_eval_string( CSTR_STRING( string ) );
+    JULIAINTERFACE_EXCEPTION_HANDLER
     if(!jl_is_nothing(result)){
       return NewJuliaObj( result );
     }
@@ -202,16 +221,14 @@ Obj JuliaUnbox_internal( jl_value_t* julia_obj )
     return Fail;
 }
 
-Obj JuliaUnbox( Obj self, Obj obj ){
-    
+Obj JuliaUnbox( Obj self, Obj obj )
+{
     jl_value_t* julia_obj = GET_JULIA_OBJ( obj );
-    
     return JuliaUnbox_internal( julia_obj );
-    
 }
 
 jl_value_t* JuliaBox_internal( Obj obj )
-{   
+{
     size_t i;
 
     //integer, small and large
@@ -277,7 +294,9 @@ Obj JuliaSetVal( Obj self, Obj name, Obj julia_val )
 {
     jl_value_t* julia_obj=GET_JULIA_OBJ( julia_val );
     jl_sym_t* julia_symbol = jl_symbol( CSTR_STRING( name ) );
+    JULIAINTERFACE_EXCEPTION_HANDLER
     jl_set_global( jl_main_module, julia_symbol, julia_obj );
+    JULIAINTERFACE_EXCEPTION_HANDLER
     return 0;
 }
 
@@ -287,11 +306,25 @@ Obj JuliaBox( Obj self, Obj obj )
     if( julia_ptr == 0)
         return Fail;
     return NewJuliaObj( julia_ptr );
-    
 }
 
 
-// Obj JuliaCallFuncXArg( Obj self, Obj func, Obj args )
+Obj JuliaCallFuncXArg( Obj self, Obj func, Obj args )
+{
+    int32_t len = LEN_PLIST( args );
+    Obj current_element;
+    int32_t i;
+    jl_value_t* arg_pointer[len];
+    for(i=0;i<len;i++){
+        current_element = ELM_PLIST( args, i + 1 );
+        arg_pointer[ i ] = GET_JULIA_OBJ(current_element);
+    }
+    jl_value_t * return_val = jl_call( GET_JULIA_FUNC( func ), arg_pointer, len );
+    JULIAINTERFACE_EXCEPTION_HANDLER
+    current_element = NewJuliaObj( return_val );
+    return current_element;
+}
+
 // {
 //     int32_t len = LEN_PLIST( args );
 //     jl_value_t** arg_pointer;
@@ -322,7 +355,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaCallFunc1Arg, 2, "func,obj" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaCallFunc2Arg, 3, "func,obj1,obj2" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaCallFunc3Arg, 4, "func,obj1,obj2,obj3" ),
-//     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaCallFuncXArg, 2, "func,arg_list" ),
+    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaCallFuncXArg, 2, "func,arg_list" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaEvalString, 1, "string" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaUnbox, 1, "obj" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaBox, 1, "obj" ),
