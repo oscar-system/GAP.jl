@@ -108,6 +108,19 @@ Obj JuliaFunction( Obj self, Obj string )
     return NewJuliaFunc( function );
 }
 
+Obj JuliaFunctionByModule( Obj self, Obj function_name, Obj module_name )
+{
+    jl_value_t* module_value = jl_eval_string( CSTR_STRING( module_name) );
+    JULIAINTERFACE_EXCEPTION_HANDLER
+    if(!jl_is_module(module_value))
+        ErrorQuit("Not a module",0,0);
+    jl_module_t* module_t = (jl_module_t*)module_value;
+    jl_function_t* function = jl_get_function(module_t, CSTR_STRING( function_name ) );
+    if(function==0)
+        ErrorQuit( "Function is not defined in julia", 0, 0 );
+    return NewJuliaFunc( function );
+}
+
 Obj JuliaCallFunc0Arg( Obj self, Obj func )
 {
     jl_value_t* return_value = jl_call0( GET_JULIA_FUNC( func ) );
@@ -327,18 +340,10 @@ Obj JuliaCallFuncXArg( Obj self, Obj func, Obj args )
     return current_element;
 }
 
+
+// Obj JuliaGetGlobalVariable( Obj self, Obj name )
 // {
-//     int32_t len = LEN_PLIST( args );
-//     jl_value_t** arg_pointer;
-//     JL_GC_PUSHARGS(arg_pointer, len);
-//     Obj current_element;
-//     for(int32_t i=0;i<len;i++){
-//         current_element = ELM_PLIST( args, i + 1 );
-//         arg_pointer[ i ] = JuliaBox_internal(current_element);
-//     }
-//     jl_value_t * return_val = jl_call( GET_JULIA_FUNC( func ), arg_pointer, len );
-//     JL_GC_POP();
-//     return NewJuliaObj( return_val );
+//
 // }
 
 
@@ -353,6 +358,7 @@ typedef Obj (* GVarFunc)(/*arguments*/);
 // Table of functions to export
 static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaFunction, 1, "string" ),
+    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaFunctionByModule, 2, "function_name,module_name" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaCallFunc0Arg, 1, "func" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaCallFunc1Arg, 2, "func,obj" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaCallFunc2Arg, 3, "func,obj1,obj2" ),
