@@ -14,7 +14,7 @@
 #include "pkgconfig.h"
 
 #define JULIAINTERFACE_EXCEPTION_HANDLER if (jl_exception_occurred()) \
-                                             ErrorQuit( jl_typeof_str(jl_exception_occurred()), 0, 0 );
+    ErrorQuit( jl_typeof_str(jl_exception_occurred()), 0, 0 );
 
 Obj TheTypeJuliaFunction;
 Obj TheTypeJuliaObject;
@@ -132,7 +132,9 @@ Obj JuliaCallFunc2Arg( Obj self, Obj func, Obj arg1, Obj arg2 )
 
 Obj JuliaCallFunc3Arg( Obj self, Obj func, Obj arg1, Obj arg2, Obj arg3 )
 {
-    jl_value_t* return_value = jl_call3( GET_JULIA_FUNC( func ), GET_JULIA_OBJ( arg1 ), GET_JULIA_OBJ( arg2 ), GET_JULIA_OBJ( arg3 ) );
+    jl_value_t* return_value = jl_call3( GET_JULIA_FUNC( func ), GET_JULIA_OBJ( arg1 ),
+                                                                 GET_JULIA_OBJ( arg2 ),
+                                                                 GET_JULIA_OBJ( arg3 ) );
     JULIAINTERFACE_EXCEPTION_HANDLER
     return NewJuliaObj( return_value );
 }
@@ -148,7 +150,7 @@ Obj JuliaEvalString( Obj self, Obj string )
 }
 
 Obj JuliaUnbox_internal( jl_value_t* julia_obj )
-{   
+{
     size_t i;
 
     // small int
@@ -176,7 +178,7 @@ Obj JuliaUnbox_internal( jl_value_t* julia_obj )
     if(jl_typeis(julia_obj, jl_uint8_type)){
         return INTOBJ_INT( jl_unbox_uint8( julia_obj ) );
     }
-    
+
     // float
     else if(jl_typeis(julia_obj, jl_float64_type)){
         return NEW_MACFLOAT( jl_unbox_float64( julia_obj ) );
@@ -184,14 +186,14 @@ Obj JuliaUnbox_internal( jl_value_t* julia_obj )
     else if(jl_typeis(julia_obj, jl_float32_type)){
         return NEW_MACFLOAT( jl_unbox_float32( julia_obj ) );
     }
-    
+
     // string
     else if(jl_typeis(julia_obj, jl_string_type)){
         Obj return_string;
         C_NEW_STRING( return_string, jl_string_len( julia_obj ), jl_string_data( julia_obj ) );
         return return_string;
     }
-    
+
     // bool
     else if(jl_typeis(julia_obj, jl_bool_type)){
         if(jl_unbox_bool(julia_obj)==0){
@@ -201,7 +203,7 @@ Obj JuliaUnbox_internal( jl_value_t* julia_obj )
             return True;
         }
     }
-    
+
     // array (1-dim)
     else if(jl_is_array(julia_obj)){
         Obj current_element;
@@ -217,7 +219,7 @@ Obj JuliaUnbox_internal( jl_value_t* julia_obj )
         }
         return return_list;
     }
-    
+
     return Fail;
 }
 
@@ -236,17 +238,17 @@ jl_value_t* JuliaBox_internal( Obj obj )
         return jl_box_int64( INT_INTOBJ( obj ) );
         // TODO: BIGINT
     }
-    
+
     //float
     else if(IS_MACFLOAT(obj)){
         return jl_box_float64( VAL_MACFLOAT( obj ) );
     }
-    
+
     //string
     else if(IS_STRING(obj)){
         return jl_cstr_to_string( CSTR_STRING( obj ) );
     }
-    
+
     //bool
     else if(obj == True){
         return jl_box_bool( 1 );
@@ -254,7 +256,7 @@ jl_value_t* JuliaBox_internal( Obj obj )
     else if(obj == False){
         return jl_box_bool( 0 );
     }
-    
+
     //perm
     else if(TNUM_OBJ(obj) == T_PERM2){
         jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_uint16_type,1);
@@ -265,7 +267,7 @@ jl_value_t* JuliaBox_internal( Obj obj )
         }
         return (jl_value_t*)(new_perm_array);
     }
-    
+
     else if(TNUM_OBJ(obj) == T_PERM4){
         jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_uint32_type,1);
         jl_array_t* new_perm_array = jl_alloc_array_1d(array_type, DEG_PERM4(obj));
@@ -275,7 +277,7 @@ jl_value_t* JuliaBox_internal( Obj obj )
         }
         return (jl_value_t*)(new_perm_array);
     }
-    
+
     // plist
     else if(IS_PLIST(obj)){
         size_t len = LEN_PLIST(obj);
@@ -286,7 +288,7 @@ jl_value_t* JuliaBox_internal( Obj obj )
         }
         return (jl_value_t*)(new_array);
     }
-    
+
     return 0;
 }
 
@@ -360,7 +362,6 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaUnbox, 1, "obj" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaBox, 1, "obj" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaSetVal, 2, "name,val" ),
-    
 
 	{ 0 } /* Finish with an empty entry */
 
@@ -373,25 +374,25 @@ static Int InitKernel( StructInitInfo *module )
 {
     /* init filters and functions                                          */
     InitHdlrFuncsFromTable( GVarFuncs );
-    
+
     InitCopyGVar( "TheTypeJuliaFunction", &TheTypeJuliaFunction );
     InitCopyGVar( "TheTypeJuliaObject", &TheTypeJuliaObject );
-    
+
     T_JULIA_FUNC = RegisterPackageTNUM("JuliaFunction", JuliaFunctionTypeFunc );
     T_JULIA_OBJ = RegisterPackageTNUM("JuliaObject", JuliaObjectTypeFunc );
-    
+
     InitMarkFuncBags(T_JULIA_FUNC, &MarkNoSubBags);
     InitMarkFuncBags(T_JULIA_OBJ, &MarkNoSubBags);
-    
+
     InitFreeFuncBag(T_JULIA_OBJ, &JuliaObjFreeFunc );
-    
+
     // Initialize libjulia
 //     jl_init(JULIA_LDPATH);
     jl_init();
 
     // HACK: disable the julia garbage collector for now
 //     jl_gc_enable(0);
-    
+
     julia_array_pop = jl_get_function( jl_base_module, "pop!" );
     julia_array_push = jl_get_function( jl_base_module, "push!" );
     julia_array_setindex = jl_get_function( jl_base_module, "setindex!" );
