@@ -341,10 +341,13 @@ Obj JuliaCallFuncXArg( Obj self, Obj func, Obj args )
 }
 
 
-// Obj JuliaGetGlobalVariable( Obj self, Obj name )
-// {
-//
-// }
+Obj JuliaGetGlobalVariable( Obj self, Obj name )
+{
+    jl_sym_t* symbol = jl_symbol( CSTR_STRING( name ) );
+    jl_value_t* value = jl_get_global( jl_main_module, symbol );
+    JULIAINTERFACE_EXCEPTION_HANDLER
+    return NewJuliaObj( value );
+}
 
 
 typedef Obj (* GVarFunc)(/*arguments*/);
@@ -368,6 +371,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaUnbox, 1, "obj" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaBox, 1, "obj" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaSetVal, 2, "name,val" ),
+    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaGetGlobalVariable, 1, "name" ),
 
 	{ 0 } /* Finish with an empty entry */
 
