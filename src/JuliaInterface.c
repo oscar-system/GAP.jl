@@ -350,6 +350,15 @@ Obj JuliaGetGlobalVariable( Obj self, Obj name )
 }
 
 
+Obj JuliaGetFieldOfObject( Obj self, Obj super_obj, Obj field_name )
+{
+    jl_value_t* extracted_superobj = GET_JULIA_OBJ( super_obj );
+    jl_value_t* field_value = jl_get_field( extracted_superobj, CSTR_STRING( field_name ) );
+    JULIAINTERFACE_EXCEPTION_HANDLER
+    return NewJuliaObj( field_value );
+}
+
+
 typedef Obj (* GVarFunc)(/*arguments*/);
 
 #define GVAR_FUNC_TABLE_ENTRY(srcfile, name, nparam, params) \
@@ -372,6 +381,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaBox, 1, "obj" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaSetVal, 2, "name,val" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaGetGlobalVariable, 1, "name" ),
+    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaGetFieldOfObject, 2, "obj,name" ),
 
 	{ 0 } /* Finish with an empty entry */
 
