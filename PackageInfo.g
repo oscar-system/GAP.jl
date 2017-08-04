@@ -64,8 +64,14 @@ Dependencies := rec(
 ),
 
 AvailabilityTest := function()
-        return true;
-    end,
+  if Filename( DirectoriesPackagePrograms( "JuliaInterface" ),
+               "JuliaInterface.so" ) = fail then
+    LogPackageLoadingMessage( PACKAGE_WARNING,
+        [ "The kernel module of JuliaInterface is not available." ] );
+    return false;
+  fi;
+  return true;
+end,
 
 TestFile := "tst/testall.g",
 

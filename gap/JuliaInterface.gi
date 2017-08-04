@@ -6,6 +6,17 @@
 
 BindJuliaFunc( "string" );
 
+BindJuliaFunc( "include" );
+
+BindGlobal( "JuliaKnownFiles", [] );
+
+BindGlobal( "JuliaIncludeFile", function( filename )
+    if not filename in JuliaKnownFiles then
+      JuliaCallFunc1Arg( GetJuliaFunc( "include" ), JuliaBox( filename ) );
+      AddSet( JuliaKnownFiles, filename );
+    fi;
+end );
+
 
 InstallMethod( ViewString,
                [ IsJuliaObject ],
