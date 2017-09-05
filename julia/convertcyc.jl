@@ -23,4 +23,3 @@ juliabox_cycs = function( lst, denom, N, mode )
       return res
     end
 end
-

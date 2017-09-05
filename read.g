@@ -5,6 +5,7 @@
 #
 ReadPackage( "JuliaInterface", "gap/JuliaInterface.gi");
 
+ReadPackage( "JuliaInterface", "gap/BindCFunction.gi" );
 
 dirs:= DirectoriesPackageLibrary( "JuliaInterface", "julia" );
 
@@ -15,4 +16,3 @@ BindJuliaFunc( "juliabox_cycs" );
 ReadPackage( "JuliaInterface", "gap/shortestvectors.g");
 JuliaIncludeFile( Filename( dirs, "shortestvectors.jl" ) );
 BindJuliaFunc( "shortestvectors" );
-

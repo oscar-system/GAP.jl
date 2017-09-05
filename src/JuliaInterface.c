@@ -358,8 +358,65 @@ Obj JuliaGetFieldOfObject( Obj self, Obj super_obj, Obj field_name )
     return NewJuliaObj( field_value );
 }
 
+// Functions for accessing GAP macros
+Obj MyFuncSUM(Obj self, Obj a, Obj b){
+    return SUM(a,b);
+}
+
+Int LengthList( Obj list ){
+    return LEN_PLIST( list );
+}
+
+Obj Elm0_List( Obj list, int pos ){
+    return ELM_PLIST( list, pos );
+}
+
+#define INITIALIZE_JULIA_CPOINTER(name)\
+gap_ptr = jl_box_voidpointer( name );\
+gap_symbol = jl_symbol( "gap_" #name );\
+JULIAINTERFACE_EXCEPTION_HANDLER \
+jl_set_global( jl_main_module, gap_symbol, gap_ptr );\
+JULIAINTERFACE_EXCEPTION_HANDLER
+
+Obj JuliaInitializeGAPFunctionPointers( Obj self )
+{
+    jl_value_t* gap_ptr;
+    jl_sym_t * gap_symbol;
+
+    INITIALIZE_JULIA_CPOINTER(DoOperation2Args);
+    INITIALIZE_JULIA_CPOINTER(MyFuncSUM);
+    INITIALIZE_JULIA_CPOINTER(LengthList);
+    INITIALIZE_JULIA_CPOINTER(Elm0_List);
+    INITIALIZE_JULIA_CPOINTER(True);
+    INITIALIZE_JULIA_CPOINTER(False);
+
+    return NULL;
+}
 
 typedef Obj (* GVarFunc)(/*arguments*/);
+
+#define GVAR_FUNC_TABLE_ENTRY_WITH_NAME(srcfile, name, nparam, params, string_name) \
+ {string_name, nparam, \
+  params, \
+  (GVarFunc)name, \
+  srcfile ":JuliaFunc" }
+// FIXME: Provide better name
+
+
+Obj JuliaBindCFunction_internal( Obj self, Obj string_name, Obj cfunction_string,
+                                           Obj number_args_gap, Obj arg_names_gap )
+{
+    void* ccall_pointer = jl_unbox_voidpointer( jl_eval_string( CSTR_STRING( cfunction_string ) ) );
+    size_t number_args = INT_INTOBJ( number_args_gap );
+    char* arg_names = CSTR_STRING( arg_names_gap );
+    StructGVarFunc current_function[] = {
+        GVAR_FUNC_TABLE_ENTRY_WITH_NAME( "JuliaInterface.c", ccall_pointer,
+                                         number_args, arg_names, CSTR_STRING( string_name ) ),
+        { 0 } };
+    InitHdlrFuncsFromTable( current_function );
+    InitGVarFuncsFromTable( current_function );
+    return NULL;
+}
 
 #define GVAR_FUNC_TABLE_ENTRY(srcfile, name, nparam, params) \
   {#name, nparam, \
@@ -382,7 +439,8 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaSetVal, 2, "name,val" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaGetGlobalVariable, 1, "name" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaGetFieldOfObject, 2, "obj,name" ),
-
+    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaInitializeGAPFunctionPointers, 0, "" ),
+    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaBindCFunction_internal, 4, "string_name" ),
 	{ 0 } /* Finish with an empty entry */
 
 };
