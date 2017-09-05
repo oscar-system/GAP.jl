@@ -2,7 +2,7 @@
 ##  auxiliary code for translating between GAP's cyclotomics
 ##  and Nemo's number field elements
 
-using Nemo
+# using Nemo
 
 juliabox_cycs = function( lst, denom, N, mode )
     local f, x, n, m, mat, d, res
