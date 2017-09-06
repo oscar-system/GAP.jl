@@ -62,7 +62,7 @@ const IdentityPerm = Permutation2( 0, UInt16[] )
 Base.show( io::IO, perm::Permutation2 ) = print( io, "<permutation: ", perm.imgs, ">" )
 
 # provide the methods
-EqPerm22 = function( pL::Permutation2, pR::Permutation2 )
+function EqPerm22( pL::Permutation2, pR::Permutation2 )
     local degL, degR, pLimgs, pRimgs, p
 
     degL::UInt16 = pL.degree
@@ -120,7 +120,7 @@ EqPerm22 = function( pL::Permutation2, pR::Permutation2 )
 end
 
 
-LtPerm22 = function( pL::Permutation2, pR::Permutation2 )
+function LtPerm22( pL::Permutation2, pR::Permutation2 )
     local degL, degR, pLimgs, pRimgs, p
 
     # get the degrees of the permutations
@@ -167,7 +167,7 @@ LtPerm22 = function( pL::Permutation2, pR::Permutation2 )
 end
 
 
-ProdPerm22 = function( pL::Permutation2, pR::Permutation2 )
+function ProdPerm22( pL::Permutation2, pR::Permutation2 )
     local degL, degR, prd, img
 
     # get the degrees of the permutations
@@ -204,7 +204,7 @@ ProdPerm22 = function( pL::Permutation2, pR::Permutation2 )
 end
 
 
-PowPerm2Int = function( pL::Permutation2, n::Int )
+function PowPerm2Int( pL::Permutation2, n::Int )
     local deg, pLimgs, pow
 
     # handle zeroth and first powers separately
@@ -339,7 +339,7 @@ PowPerm2Int = function( pL::Permutation2, n::Int )
 end
 
 
-PowIntPerm2 = function( n::Int, pR::Permutation2 )
+function PowIntPerm2( n::Int, pR::Permutation2 )
     local img
 
     # permutations do not act on negative integers
@@ -359,7 +359,7 @@ PowIntPerm2 = function( n::Int, pR::Permutation2 )
 end
 
 
-QuoIntPerm2 = function( n::Int, pR::Permutation2 )
+function QuoIntPerm2( n::Int, pR::Permutation2 )
     local pre, pRimgs
 
     # permutations do not act on negative integers
@@ -382,7 +382,7 @@ QuoIntPerm2 = function( n::Int, pR::Permutation2 )
 end
 
 
-LargestMovedPointPerm = function( perm::Permutation2 )
+function LargestMovedPointPerm( perm::Permutation2 )
     local permimgs, sup
 
     permimgs::Array{UInt16,1} = perm.imgs
@@ -400,7 +400,7 @@ LargestMovedPointPerm = function( perm::Permutation2 )
 end
 
 
-OrderPerm = function( perm::Permutation2 )
+function OrderPerm( perm::Permutation2 )
     local permimgs, ptKnown2, ord, p, len, q, gcd, s, t
 
     permimgs::Array{UInt16,1} = perm.imgs
@@ -447,12 +447,12 @@ OrderPerm = function( perm::Permutation2 )
 end
 
 
-OnePerm = function( perm::Permutation2 )
+function OnePerm( perm::Permutation2 )
     return IdentityPerm
 end
 
 
-InvPerm = function( perm::Permutation2 )
+function InvPerm( perm::Permutation2 )
     return PowPerm2Int( perm, -1 )
 end
 
