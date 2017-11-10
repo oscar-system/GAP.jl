@@ -16,6 +16,8 @@
 #define JULIAINTERFACE_EXCEPTION_HANDLER if (jl_exception_occurred()) \
     ErrorQuit( jl_typeof_str(jl_exception_occurred()), 0, 0 );
 
+#include "gap_macros.c"
+
 Obj TheTypeJuliaFunction;
 Obj TheTypeJuliaObject;
 
@@ -150,6 +152,22 @@ Obj JuliaCallFunc3Arg( Obj self, Obj func, Obj arg1, Obj arg2, Obj arg3 )
                                                                  GET_JULIA_OBJ( arg3 ) );
     JULIAINTERFACE_EXCEPTION_HANDLER
     return NewJuliaObj( return_value );
+}
+
+Obj JuliaCallFuncXArg( Obj self, Obj func, Obj args )
+{
+    int32_t len = LEN_PLIST( args );
+    Obj current_element;
+    int32_t i;
+    jl_value_t* arg_pointer[len];
+    for(i=0;i<len;i++){
+        current_element = ELM_PLIST( args, i + 1 );
+        arg_pointer[ i ] = GET_JULIA_OBJ(current_element);
+    }
+    jl_value_t * return_val = jl_call( GET_JULIA_FUNC( func ), arg_pointer, len );
+    JULIAINTERFACE_EXCEPTION_HANDLER
+    current_element = NewJuliaObj( return_val );
+    return current_element;
 }
 
 Obj JuliaEvalString( Obj self, Obj string )
@@ -305,16 +323,6 @@ jl_value_t* JuliaBox_internal( Obj obj )
     return 0;
 }
 
-Obj JuliaSetVal( Obj self, Obj name, Obj julia_val )
-{
-    jl_value_t* julia_obj=GET_JULIA_OBJ( julia_val );
-    jl_sym_t* julia_symbol = jl_symbol( CSTR_STRING( name ) );
-    JULIAINTERFACE_EXCEPTION_HANDLER
-    jl_set_global( jl_main_module, julia_symbol, julia_obj );
-    JULIAINTERFACE_EXCEPTION_HANDLER
-    return 0;
-}
-
 Obj JuliaBox( Obj self, Obj obj )
 {
     jl_value_t* julia_ptr = JuliaBox_internal( obj );
@@ -324,22 +332,15 @@ Obj JuliaBox( Obj self, Obj obj )
 }
 
 
-Obj JuliaCallFuncXArg( Obj self, Obj func, Obj args )
+Obj JuliaSetVal( Obj self, Obj name, Obj julia_val )
 {
-    int32_t len = LEN_PLIST( args );
-    Obj current_element;
-    int32_t i;
-    jl_value_t* arg_pointer[len];
-    for(i=0;i<len;i++){
-        current_element = ELM_PLIST( args, i + 1 );
-        arg_pointer[ i ] = GET_JULIA_OBJ(current_element);
-    }
-    jl_value_t * return_val = jl_call( GET_JULIA_FUNC( func ), arg_pointer, len );
+    jl_value_t* julia_obj=GET_JULIA_OBJ( julia_val );
+    jl_sym_t* julia_symbol = jl_symbol( CSTR_STRING( name ) );
     JULIAINTERFACE_EXCEPTION_HANDLER
-    current_element = NewJuliaObj( return_val );
-    return current_element;
+    jl_set_global( jl_main_module, julia_symbol, julia_obj );
+    JULIAINTERFACE_EXCEPTION_HANDLER
+    return 0;
 }
-
 
 Obj JuliaGetGlobalVariable( Obj self, Obj name )
 {
@@ -358,38 +359,14 @@ Obj JuliaGetFieldOfObject( Obj self, Obj super_obj, Obj field_name )
     return NewJuliaObj( field_value );
 }
 
-// Functions for accessing GAP macros
-Obj MyFuncSUM(Obj self, Obj a, Obj b){
-    return SUM(a,b);
-}
-
-Int LengthList( Obj list ){
-    return LEN_PLIST( list );
-}
-
-Obj Elm0_List( Obj list, int pos ){
-    return ELM_PLIST( list, pos );
-}
-
-#define INITIALIZE_JULIA_CPOINTER(name)\
-gap_ptr = jl_box_voidpointer( name );\
-gap_symbol = jl_symbol( "gap_" #name );\
-JULIAINTERFACE_EXCEPTION_HANDLER \
-jl_set_global( jl_main_module, gap_symbol, gap_ptr );\
-JULIAINTERFACE_EXCEPTION_HANDLER
-
-Obj JuliaInitializeGAPFunctionPointers( Obj self )
+Obj JuliaSetGAPFuncAsJuliaObjFunc_internal( Obj self, Obj func, Obj name, Obj number_args )
 {
-    jl_value_t* gap_ptr;
-    jl_sym_t * gap_symbol;
-
-    INITIALIZE_JULIA_CPOINTER(DoOperation2Args);
-    INITIALIZE_JULIA_CPOINTER(MyFuncSUM);
-    INITIALIZE_JULIA_CPOINTER(LengthList);
-    INITIALIZE_JULIA_CPOINTER(Elm0_List);
-    INITIALIZE_JULIA_CPOINTER(True);
-    INITIALIZE_JULIA_CPOINTER(False);
-
+    jl_function_t* set_gap_func_obj = jl_get_function( jl_main_module, "GapFunc" );
+    jl_value_t* gap_func_obj = jl_call2(set_gap_func_obj,
+                                        jl_box_voidpointer(func),
+                                        jl_box_int64(INT_INTOBJ(number_args)));
+    jl_sym_t* function_name = jl_symbol( CSTR_STRING( name ) );
+    jl_set_global( jl_main_module, function_name, gap_func_obj );
     return NULL;
 }
 
@@ -439,8 +416,8 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaSetVal, 2, "name,val" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaGetGlobalVariable, 1, "name" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaGetFieldOfObject, 2, "obj,name" ),
-    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaInitializeGAPFunctionPointers, 0, "" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaBindCFunction_internal, 4, "string_name" ),
+    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaSetGAPFuncAsJuliaObjFunc_internal, 3, "func,name,nr"),
 	{ 0 } /* Finish with an empty entry */
 
 };
@@ -465,11 +442,10 @@ static Int InitKernel( StructInitInfo *module )
     InitFreeFuncBag(T_JULIA_OBJ, &JuliaObjFreeFunc );
 
     // Initialize libjulia
-//     jl_init(JULIA_LDPATH);
     jl_init();
 
-    // HACK: disable the julia garbage collector for now
-//     jl_gc_enable(0);
+    // Initialize GAP function pointers in Julia
+    JuliaInitializeGAPFunctionPointers( );
 
     julia_array_pop = jl_get_function( jl_base_module, "pop!" );
     julia_array_push = jl_get_function( jl_base_module, "push!" );
