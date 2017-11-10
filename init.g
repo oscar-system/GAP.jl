@@ -9,8 +9,6 @@ if _PATH_SO <> fail then
 fi;
 Unbind(_PATH_SO);
 
-JuliaInitializeGAPFunctionPointers();
-
 ReadPackage( "JuliaInterface", "gap/JuliaInterface.gd");
 
 ReadPackage( "JuliaInterface", "gap/BindCFunction.gd" );
