@@ -43,3 +43,38 @@ InstallGlobalFunction( JuliaBindCFunction,
     JuliaBindCFunction_internal( gap_name, cfunction_call_string, nr_args, arg_names );
 
 end );
+
+InstallGlobalFunction( JuliaSetGAPFuncAsJuliaObjFunc,
+  function( func, name, nr_args )
+    local name_string;
+
+    name_string := Concatenation( "gap_", name );
+    JuliaSetGAPFuncAsJuliaObjFunc_internal( func, name_string, nr_args );
+end );
+
+BindGlobal( "AddGapJuliaFuncs",
+  function( )
+    local all_necessary_funcs, current_name, current_func;
+
+    all_necessary_funcs := Filtered( NamesGVars(),
+      function( i )
+        local glob;
+        if not IsBoundGlobal( i ) then
+            return false;
+        fi;
+        glob := ValueGlobal( i );
+        if IsFunction( glob ) and
+          not IsOperation( glob ) and
+          NumberArgumentsFunction( glob ) >=0  then
+            return true;
+        fi;
+        return false;
+    end );
+
+    for current_name in all_necessary_funcs do
+        current_func := ValueGlobal( current_name );
+        JuliaSetGAPFuncAsJuliaObjFunc( current_func, current_name,
+                                       NumberArgumentsFunction( current_func ) );
+    od;
+
+end );

@@ -9,6 +9,10 @@ ReadPackage( "JuliaInterface", "gap/BindCFunction.gi" );
 
 dirs:= DirectoriesPackageLibrary( "JuliaInterface", "julia" );
 
+JuliaIncludeFile( Filename( dirs, "gaptypes.jl" ) );
+
+AddGapJuliaFuncs();
+
 ReadPackage( "JuliaInterface", "gap/convertcyc.g");
 JuliaIncludeFile( Filename( dirs, "convertcyc.jl" ) );
 BindJuliaFunc( "juliabox_cycs" );

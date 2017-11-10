@@ -9,3 +9,5 @@
 #############################################################################
 
 DeclareGlobalFunction( "JuliaBindCFunction" );
+
+DeclareGlobalFunction( "JuliaSetGAPFuncAsJuliaObjFunc" );
