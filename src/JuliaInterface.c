@@ -25,6 +25,34 @@ jl_function_t* julia_array_setindex;
 jl_value_t* GAP_MEMORY_STORAGE_INTS;
 jl_value_t* GAP_MEMORY_STORAGE;
 
+/* utilities for wrapped Julia objects and functions */
+Obj JuliaFuncCopyFunc(Obj obj, Int mut)
+{
+    /* always immutable, so nothing to do */
+    return obj;
+}
+Obj JuliaObjCopyFunc(Obj obj, Int mut)
+{
+    /* always immutable in GAP, so nothing to do */
+    return obj;
+}
+void JuliaFuncCleanFunc(Obj obj)
+{
+}
+void JuliaObjCleanFunc(Obj obj)
+{
+}
+Int JuliaFuncIsMutableFunc(Obj obj)
+{
+    /* always immutable */
+    return 0L;
+}
+Int JuliaObjIsMutableFunc(Obj obj)
+{
+    /* always immutable as GAP object */
+    return 0L;
+}
+
 jl_value_t* get_next_julia_position(){
     jl_value_t* position_jl = jl_call1( julia_array_pop, GAP_MEMORY_STORAGE_INTS );
     int position = jl_unbox_int64( position_jl );
@@ -461,8 +489,16 @@ static Int InitKernel( StructInitInfo *module )
 
     InitMarkFuncBags(T_JULIA_FUNC, &MarkNoSubBags);
     InitMarkFuncBags(T_JULIA_OBJ, &MarkNoSubBags);
+    
+    CopyObjFuncs[T_JULIA_FUNC] = &JuliaFuncCopyFunc;
+    CleanObjFuncs[T_JULIA_FUNC] = &JuliaFuncCleanFunc;
+    IsMutableObjFuncs[T_JULIA_FUNC] = &JuliaFuncIsMutableFunc;
+    CopyObjFuncs[T_JULIA_OBJ] = &JuliaObjCopyFunc;
+    CleanObjFuncs[T_JULIA_OBJ] = &JuliaObjCleanFunc;
+    IsMutableObjFuncs[T_JULIA_OBJ] = &JuliaObjIsMutableFunc;
 
     InitFreeFuncBag(T_JULIA_OBJ, &JuliaObjFreeFunc );
+    /* no free func for julia function objects ??? */
 
     // Initialize libjulia
 //     jl_init(JULIA_LDPATH);
