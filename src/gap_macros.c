@@ -63,7 +63,7 @@ Obj CallXArgs(Obj func, Obj arg_list)
 Obj MakeGapArgList( int length, Obj* array )
 {
   Obj list = NEW_PLIST(T_PLIST,length);
-  SET_LEN_PLIST(list,length);
+  SET_LEN_PLIST(list,0);
   for(int i=0;i<length;i++)
   {
     PushPlist(list,array[i]);
@@ -76,14 +76,14 @@ int pin_gap_obj( Obj obj )
 {
     Obj pos;
     if(LEN_PLIST(gap_obj_gc_list_positions) == 0){
-        pos = INTOBJ_INT( LEN_PLIST(gap_obj_gc_list) );
+        pos = INTOBJ_INT( LEN_PLIST(gap_obj_gc_list) + 1 );
     }else{
         pos = PopPlist( gap_obj_gc_list_positions );
     }
     AssPlist( gap_obj_gc_list, INT_INTOBJ( pos ), obj );
     if(LEN_PLIST(gap_obj_gc_list_positions) == 0)
     {
-        PushPlist( gap_obj_gc_list_positions, INTOBJ_INT( LEN_PLIST( gap_obj_gc_list ) ) );
+        PushPlist( gap_obj_gc_list_positions, INTOBJ_INT( LEN_PLIST( gap_obj_gc_list ) + 1 ) );
     }
     return INT_INTOBJ( pos );
 }
