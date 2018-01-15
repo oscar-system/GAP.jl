@@ -2,6 +2,7 @@
 // This file should be completely obsolete
 // once LibGap is completed
 
+
 Obj MyFuncSUM(Obj self, Obj a, Obj b){
     return SUM(a,b);
 }
@@ -59,6 +60,40 @@ Obj CallXArgs(Obj func, Obj arg_list)
     return CALL_XARGS(func,arg_list);
 }
 
+Obj MakeGapArgList( int length, Obj* array )
+{
+  Obj list = NEW_PLIST(T_PLIST,length);
+  SET_LEN_PLIST(list,0);
+  for(int i=0;i<length;i++)
+  {
+    PushPlist(list,array[i]);
+  }
+  return list;
+}
+
+
+int pin_gap_obj( Obj obj )
+{
+    Obj pos;
+    if(LEN_PLIST(gap_obj_gc_list_positions) == 0){
+        pos = INTOBJ_INT( LEN_PLIST(gap_obj_gc_list) + 1 );
+    }else{
+        pos = PopPlist( gap_obj_gc_list_positions );
+    }
+    AssPlist( gap_obj_gc_list, INT_INTOBJ( pos ), obj );
+    if(LEN_PLIST(gap_obj_gc_list_positions) == 0)
+    {
+        PushPlist( gap_obj_gc_list_positions, INTOBJ_INT( LEN_PLIST( gap_obj_gc_list ) + 1 ) );
+    }
+    return INT_INTOBJ( pos );
+}
+
+void unpin_gap_obj( int pos )
+{
+    AssPlist( gap_obj_gc_list, pos, True );
+    PushPlist( gap_obj_gc_list_positions, INTOBJ_INT( pos ) );
+}
+
 #define INITIALIZE_JULIA_CPOINTER(name)\
 gap_ptr = jl_box_voidpointer( name );\
 gap_symbol = jl_symbol( "gap_" #name );\
@@ -71,22 +106,11 @@ void JuliaInitializeGAPFunctionPointers( )
     jl_value_t* gap_ptr;
     jl_sym_t * gap_symbol;
 
-    INITIALIZE_JULIA_CPOINTER(DoOperation0Args);
-    INITIALIZE_JULIA_CPOINTER(DoOperation1Args);
-    INITIALIZE_JULIA_CPOINTER(DoOperation2Args);
-    INITIALIZE_JULIA_CPOINTER(DoOperation3Args);
-    INITIALIZE_JULIA_CPOINTER(DoOperation4Args);
-    INITIALIZE_JULIA_CPOINTER(DoOperation5Args);
-    INITIALIZE_JULIA_CPOINTER(DoOperation6Args);
-    INITIALIZE_JULIA_CPOINTER(DoOperationXArgs);
-    INITIALIZE_JULIA_CPOINTER(Call0Args);
-    INITIALIZE_JULIA_CPOINTER(Call1Args);
-    INITIALIZE_JULIA_CPOINTER(Call2Args);
-    INITIALIZE_JULIA_CPOINTER(Call3Args);
-    INITIALIZE_JULIA_CPOINTER(Call4Args);
-    INITIALIZE_JULIA_CPOINTER(Call5Args);
-    INITIALIZE_JULIA_CPOINTER(Call6Args);
-    INITIALIZE_JULIA_CPOINTER(CallXArgs);
+    INITIALIZE_JULIA_CPOINTER(MakeGapArgList);
+    INITIALIZE_JULIA_CPOINTER(pin_gap_obj);
+    INITIALIZE_JULIA_CPOINTER(unpin_gap_obj);
+    INITIALIZE_JULIA_CPOINTER(CallFuncList);
+
     INITIALIZE_JULIA_CPOINTER(MyFuncSUM);
     INITIALIZE_JULIA_CPOINTER(LengthList);
     INITIALIZE_JULIA_CPOINTER(Elm0_List);

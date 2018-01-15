@@ -22,13 +22,3 @@ InstallGlobalFunction( GetJuliaFunc,
     fi;
     return __JuliaFunctions.(julia_name);
 end );
-
-
-DeclareCategory( "IsJuliaFunction", IsObject );
-DeclareCategory( "IsJuliaObject", IsObject );
-
-JuliaFunctionFamily := NewFamily( "JuliaFunctionFamily" );
-JuliaObjectFamily := NewFamily( "JuliaObjectFamily" );
-
-BindGlobal("TheTypeJuliaFunction", NewType( JuliaFunctionFamily, IsJuliaFunction ));
-BindGlobal("TheTypeJuliaObject", NewType( JuliaObjectFamily, IsJuliaObject ));

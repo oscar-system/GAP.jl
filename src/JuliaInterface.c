@@ -3,6 +3,7 @@
  */
 
 #include "src/compiled.h"          /* GAP headers */
+#include "src/objset.h"
 #include <julia.h>
 
 #undef PACKAGE_BUGREPORT
@@ -16,10 +17,15 @@
 #define JULIAINTERFACE_EXCEPTION_HANDLER if (jl_exception_occurred()) \
     ErrorQuit( jl_typeof_str(jl_exception_occurred()), 0, 0 );
 
+Obj gap_obj_gc_list;
+Obj gap_obj_gc_list_positions;
+
 #include "gap_macros.c"
 
 Obj TheTypeJuliaFunction;
 Obj TheTypeJuliaObject;
+
+#include "julia_macros.c"
 
 jl_function_t* julia_array_pop;
 jl_function_t* julia_array_push;
@@ -61,7 +67,7 @@ jl_value_t* get_next_julia_position(){
     if(jl_unbox_int64(jl_eval_string("length(GAP_MEMORY_STORAGE_INTS)"))==0){
         jl_call2( julia_array_push, GAP_MEMORY_STORAGE, jl_box_int64( 0 ) );
         JULIAINTERFACE_EXCEPTION_HANDLER
-        jl_value_t* new_position_jl = jl_box_int64( position + 1 );
+        jl_value_t* new_position_jl = jl_box_int64( jl_unbox_int64(jl_eval_string("length(GAP_MEMORY_STORAGE)")) + 1 );
         jl_call2( julia_array_push, GAP_MEMORY_STORAGE_INTS, new_position_jl );
         JULIAINTERFACE_EXCEPTION_HANDLER
     }
@@ -390,9 +396,8 @@ Obj JuliaGetFieldOfObject( Obj self, Obj super_obj, Obj field_name )
 Obj JuliaSetGAPFuncAsJuliaObjFunc_internal( Obj self, Obj func, Obj name, Obj number_args )
 {
     jl_function_t* set_gap_func_obj = jl_get_function( jl_main_module, "GapFunc" );
-    jl_value_t* gap_func_obj = jl_call2(set_gap_func_obj,
-                                        jl_box_voidpointer(func),
-                                        jl_box_int64(INT_INTOBJ(number_args)));
+    jl_value_t* gap_func_obj = jl_call1(set_gap_func_obj,
+                                        jl_box_voidpointer(func));
     jl_sym_t* function_name = jl_symbol( CSTR_STRING( name ) );
     jl_set_global( jl_main_module, function_name, gap_func_obj );
     return NULL;
@@ -445,7 +450,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaGetGlobalVariable, 1, "name" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaGetFieldOfObject, 2, "obj,name" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaBindCFunction_internal, 4, "string_name,cfunction_string,number_args_gap,arg_names_gap" ),
-    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaSetGAPFuncAsJuliaObjFunc_internal, 3, "func,name,nr"),
+    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaSetGAPFuncAsJuliaObjFunc_internal, 2, "func,name"),
 	{ 0 } /* Finish with an empty entry */
 
 };
@@ -488,6 +493,9 @@ static Int InitKernel( StructInitInfo *module )
     julia_array_setindex = jl_get_function( jl_base_module, "setindex!" );
     GAP_MEMORY_STORAGE = jl_eval_string( "GAP_MEMORY_STORAGE = [ ]" );
     GAP_MEMORY_STORAGE_INTS = jl_eval_string( "GAP_MEMORY_STORAGE_INTS = [ 1 ]" );
+
+    InitCopyGVar( "gap_obj_gc_list", &gap_obj_gc_list );
+    InitCopyGVar( "gap_obj_gc_list_positions", &gap_obj_gc_list_positions );
 
     /* return success                                                      */
     return 0;
