@@ -3,7 +3,6 @@
  */
 
 #include "src/compiled.h"          /* GAP headers */
-#include "src/objset.h"
 #include <julia.h>
 
 #undef PACKAGE_BUGREPORT
@@ -471,7 +470,7 @@ static Int InitKernel( StructInitInfo *module )
 
     InitMarkFuncBags(T_JULIA_FUNC, &MarkNoSubBags);
     InitMarkFuncBags(T_JULIA_OBJ, &MarkNoSubBags);
-    
+
     CopyObjFuncs[T_JULIA_FUNC] = &JuliaFuncCopyFunc;
     CleanObjFuncs[T_JULIA_FUNC] = &JuliaFuncCleanFunc;
     IsMutableObjFuncs[T_JULIA_FUNC] = &JuliaFuncIsMutableFunc;

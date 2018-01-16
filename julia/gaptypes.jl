@@ -11,13 +11,13 @@ gap_object_finalizer = function(obj)
     ccall(gap_unpin_gap_obj,Void,(Cint,),obj.index)
 end
 
-struct GapObj
+mutable struct GapObj
     ptr::Ptr{Void}
     index
     function GapObj(ptr::Ptr{Void})
         index = ccall(gap_pin_gap_obj,Cint,(Ptr{Void},),ptr)
         new_obj = new(ptr,index)
-#         finalizer(new_obj,gap_object_finalizer)
+        finalizer(new_obj,gap_object_finalizer)
         return new_obj
     end
 end
