@@ -364,6 +364,33 @@ Obj JuliaBox( Obj self, Obj obj )
     return NewJuliaObj( julia_ptr );
 }
 
+Obj JuliaTuple( Obj self, Obj list )
+{
+    jl_datatype_t* tuple_type = 0;
+    jl_svec_t* params = 0;
+    jl_svec_t* param_types = 0;
+    jl_value_t* result = 0;
+    JL_GC_PUSH4(&tuple_type, &params, &param_types, &result);
+
+    if(!IS_PLIST(list)){
+        ErrorQuit("argument is not a plain list",0,0);
+    }
+    int len = LEN_PLIST(list);
+    params = jl_alloc_svec(len);
+    param_types = jl_alloc_svec(len);
+    for(int i=0;i<len;i++){
+        jl_value_t* current_obj = JuliaBox_internal(ELM_PLIST(list,i+1));
+        jl_svecset( params, i, current_obj );
+        jl_svecset( param_types, i, jl_typeof(current_obj) );
+    }
+    tuple_type = jl_apply_tuple_type(param_types);
+    JULIAINTERFACE_EXCEPTION_HANDLER
+    result = jl_new_structv(tuple_type,jl_svec_data(params),len);
+    JULIAINTERFACE_EXCEPTION_HANDLER
+    JL_GC_POP();
+    return NewJuliaObj( result );
+}
+
 
 Obj JuliaSetVal( Obj self, Obj name, Obj julia_val )
 {
@@ -450,6 +477,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaGetFieldOfObject, 2, "obj,name" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaBindCFunction_internal, 4, "string_name,cfunction_string,number_args_gap,arg_names_gap" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaSetGAPFuncAsJuliaObjFunc_internal, 2, "func,name"),
+    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaTuple, 1, "list"),
 	{ 0 } /* Finish with an empty entry */
 
 };
