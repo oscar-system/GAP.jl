@@ -409,6 +409,10 @@ Obj JuliaSetVal( Obj self, Obj name, Obj julia_val )
 Obj JuliaGetGlobalVariable( Obj self, Obj name )
 {
     jl_sym_t* symbol = jl_symbol( CSTR_STRING( name ) );
+    if(!jl_boundp(jl_main_module,symbol)){
+        ErrorMayQuit( "variable is not bound in module main", 0, 0 );
+        return NULL;
+    }
     jl_value_t* value = jl_get_global( jl_main_module, symbol );
     JULIAINTERFACE_EXCEPTION_HANDLER
     return NewJuliaObj( value );
@@ -418,6 +422,10 @@ Obj JuliaGetGlobalVariableByModule( Obj self, Obj name, Obj module_name )
 {
     jl_sym_t* symbol = jl_symbol( CSTR_STRING( name ) );
     jl_module_t* module_t = get_module_from_string( CSTR_STRING( module_name ) );
+    if(!jl_boundp(module_t,symbol)){
+        ErrorMayQuit( "variable is not bound", 0, 0 );
+        return NULL;
+    }
     jl_value_t* value = jl_get_global( module_t, symbol );
     JULIAINTERFACE_EXCEPTION_HANDLER
     return NewJuliaObj( value );
