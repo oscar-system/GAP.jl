@@ -284,6 +284,13 @@ Obj JuliaUnbox_internal( jl_value_t* julia_obj )
         return return_list;
     }
 
+    else if(jl_is_symbol(julia_obj)){
+      Obj return_string;
+      char* symbol_name = jl_symbol_name((jl_sym_t*)julia_obj);
+      C_NEW_STRING( return_string, strlen( symbol_name ), symbol_name );
+      return return_string;
+    }
+
     return Fail;
 }
 
@@ -315,10 +322,10 @@ jl_value_t* JuliaBox_internal( Obj obj )
 
     //bool
     else if(obj == True){
-        return jl_box_bool( 1 );
+        return jl_true;
     }
     else if(obj == False){
-        return jl_box_bool( 0 );
+        return jl_false;
     }
 
     //perm
