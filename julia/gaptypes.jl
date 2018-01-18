@@ -5,6 +5,17 @@
 #     ptr::Ptr{Void}
 # end
 
+module GAPUtils
+
+function get_symbols_in_module(module_t)
+    list = filter(i->isdefined(module_t,i) && isa(eval((:($module_t.$i))),Function),names(module_t))
+    return list
+end
+
+export get_symbols_in_module
+
+end
+
 module GAP
 
 gap_funcs = Array{Any,1}();

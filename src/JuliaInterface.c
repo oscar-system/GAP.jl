@@ -14,7 +14,7 @@
 #include "pkgconfig.h"
 
 #define JULIAINTERFACE_EXCEPTION_HANDLER if (jl_exception_occurred()) \
-    ErrorQuit( jl_typeof_str(jl_exception_occurred()), 0, 0 );
+    ErrorMayQuit( jl_typeof_str(jl_exception_occurred()), 0, 0 );
 
 Obj gap_obj_gc_list;
 Obj gap_obj_gc_list_positions;
@@ -139,7 +139,7 @@ Obj JuliaFunction( Obj self, Obj string )
 {
     jl_function_t* function = jl_get_function(jl_main_module, CSTR_STRING( string ) );
     if(function==0)
-        ErrorQuit( "Function is not defined in julia", 0, 0 );
+        ErrorMayQuit( "Function is not defined in julia", 0, 0 );
     return NewJuliaFunc( function );
 }
 
@@ -148,7 +148,7 @@ Obj JuliaFunctionByModule( Obj self, Obj function_name, Obj module_name )
     jl_module_t* module_t = get_module_from_string( CSTR_STRING( module_name ) );
     jl_function_t* function = jl_get_function(module_t, CSTR_STRING( function_name ) );
     if(function==0)
-        ErrorQuit( "Function is not defined in julia", 0, 0 );
+        ErrorMayQuit( "Function is not defined in julia", 0, 0 );
     return NewJuliaFunc( function );
 }
 
@@ -377,7 +377,7 @@ Obj JuliaTuple( Obj self, Obj list )
     JL_GC_PUSH4(&tuple_type, &params, &param_types, &result);
 
     if(!IS_PLIST(list)){
-        ErrorQuit("argument is not a plain list",0,0);
+        ErrorMayQuit("argument is not a plain list",0,0);
     }
     int len = LEN_PLIST(list);
     params = jl_alloc_svec(len);
@@ -436,7 +436,7 @@ Obj JuliaSetGAPFuncAsJuliaObjFunc_internal( Obj self, Obj func, Obj name, Obj nu
     jl_value_t* module_value = jl_eval_string( "GAP" );
     JULIAINTERFACE_EXCEPTION_HANDLER
     if(!jl_is_module(module_value))
-      ErrorQuit("GAP module not yet defined",0,0);
+      ErrorMayQuit("GAP module not yet defined",0,0);
     jl_module_t* module_t = (jl_module_t*)module_value;
     jl_function_t* set_gap_func_obj = jl_get_function( module_t, "GapFunc" );
     JULIAINTERFACE_EXCEPTION_HANDLER
