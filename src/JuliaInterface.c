@@ -145,11 +145,7 @@ Obj JuliaFunction( Obj self, Obj string )
 
 Obj JuliaFunctionByModule( Obj self, Obj function_name, Obj module_name )
 {
-    jl_value_t* module_value = jl_eval_string( CSTR_STRING( module_name) );
-    JULIAINTERFACE_EXCEPTION_HANDLER
-    if(!jl_is_module(module_value))
-        ErrorQuit("Not a module",0,0);
-    jl_module_t* module_t = (jl_module_t*)module_value;
+    jl_module_t* module_t = get_module_from_string( CSTR_STRING( module_name ) );
     jl_function_t* function = jl_get_function(module_t, CSTR_STRING( function_name ) );
     if(function==0)
         ErrorQuit( "Function is not defined in julia", 0, 0 );
@@ -365,6 +361,7 @@ jl_value_t* JuliaBox_internal( Obj obj )
 
 Obj JuliaBox( Obj self, Obj obj )
 {
+
     jl_value_t* julia_ptr = JuliaBox_internal( obj );
     if( julia_ptr == 0)
         return Fail;
@@ -401,7 +398,7 @@ Obj JuliaTuple( Obj self, Obj list )
 
 Obj JuliaSetVal( Obj self, Obj name, Obj julia_val )
 {
-    jl_value_t* julia_obj=GET_JULIA_OBJ( julia_val );
+    jl_value_t* julia_obj= GET_JULIA_OBJ( julia_val );
     jl_sym_t* julia_symbol = jl_symbol( CSTR_STRING( name ) );
     JULIAINTERFACE_EXCEPTION_HANDLER
     jl_set_global( jl_main_module, julia_symbol, julia_obj );
@@ -417,6 +414,14 @@ Obj JuliaGetGlobalVariable( Obj self, Obj name )
     return NewJuliaObj( value );
 }
 
+Obj JuliaGetGlobalVariableByModule( Obj self, Obj name, Obj module_name )
+{
+    jl_sym_t* symbol = jl_symbol( CSTR_STRING( name ) );
+    jl_module_t* module_t = get_module_from_string( CSTR_STRING( module_name ) );
+    jl_value_t* value = jl_get_global( module_t, symbol );
+    JULIAINTERFACE_EXCEPTION_HANDLER
+    return NewJuliaObj( value );
+}
 
 Obj JuliaGetFieldOfObject( Obj self, Obj super_obj, Obj field_name )
 {
@@ -428,11 +433,20 @@ Obj JuliaGetFieldOfObject( Obj self, Obj super_obj, Obj field_name )
 
 Obj JuliaSetGAPFuncAsJuliaObjFunc_internal( Obj self, Obj func, Obj name, Obj number_args )
 {
-    jl_function_t* set_gap_func_obj = jl_get_function( jl_main_module, "GapFunc" );
+    jl_value_t* module_value = jl_eval_string( "GAP" );
+    JULIAINTERFACE_EXCEPTION_HANDLER
+    if(!jl_is_module(module_value))
+      ErrorQuit("GAP module not yet defined",0,0);
+    jl_module_t* module_t = (jl_module_t*)module_value;
+    jl_function_t* set_gap_func_obj = jl_get_function( module_t, "GapFunc" );
+    JULIAINTERFACE_EXCEPTION_HANDLER
     jl_value_t* gap_func_obj = jl_call1(set_gap_func_obj,
                                         jl_box_voidpointer(func));
+    JULIAINTERFACE_EXCEPTION_HANDLER
     jl_sym_t* function_name = jl_symbol( CSTR_STRING( name ) );
-    jl_set_global( jl_main_module, function_name, gap_func_obj );
+    JULIAINTERFACE_EXCEPTION_HANDLER
+    jl_set_global( module_t, function_name, gap_func_obj );
+    JULIAINTERFACE_EXCEPTION_HANDLER
     return NULL;
 }
 
@@ -481,6 +495,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaBox, 1, "obj" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaSetVal, 2, "name,val" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaGetGlobalVariable, 1, "name" ),
+    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaGetGlobalVariableByModule, 2, "name,module" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaGetFieldOfObject, 2, "obj,name" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaBindCFunction_internal, 4, "string_name,cfunction_string,number_args_gap,arg_names_gap" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaSetGAPFuncAsJuliaObjFunc_internal, 2, "func,name"),

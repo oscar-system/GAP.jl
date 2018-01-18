@@ -32,7 +32,7 @@ InstallGlobalFunction( JuliaBindCFunction,
         return;
     fi;
 
-    cfunction_call_string := Concatenation( "cfunction(prepare_func_for_gap(", julia_name,")" );
+    cfunction_call_string := Concatenation( "cfunction(GAP.prepare_func_for_gap(", julia_name,")" );
     cfunction_call_string := Concatenation( cfunction_call_string, ",Ptr{Void},(" );
     for i in [ 0 .. nr_args ] do
         cfunction_call_string := Concatenation( cfunction_call_string, "Ptr{Void}," );
@@ -46,10 +46,7 @@ end );
 
 InstallGlobalFunction( JuliaSetGAPFuncAsJuliaObjFunc,
   function( func, name )
-    local name_string;
-
-    name_string := Concatenation( "gap_", name );
-    JuliaSetGAPFuncAsJuliaObjFunc_internal( func, name_string );
+    JuliaSetGAPFuncAsJuliaObjFunc_internal( func, name );
 end );
 
 BindGlobal( "AddGapJuliaFuncs",
