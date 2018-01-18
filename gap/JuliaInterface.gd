@@ -22,3 +22,5 @@ InstallGlobalFunction( GetJuliaFunc,
     fi;
     return __JuliaFunctions.(julia_name);
 end );
+
+DeclareGlobalFunction( "ImportJuliaModuleIntoGAP" );

@@ -110,7 +110,10 @@ void JuliaInitializeGAPFunctionPointers( )
     INITIALIZE_JULIA_CPOINTER(pin_gap_obj);
     INITIALIZE_JULIA_CPOINTER(unpin_gap_obj);
     INITIALIZE_JULIA_CPOINTER(CallFuncList);
+    INITIALIZE_JULIA_CPOINTER(RNamName);
+    INITIALIZE_JULIA_CPOINTER(ElmPRec);
 
+// Those might not be necessary anymore
     INITIALIZE_JULIA_CPOINTER(MyFuncSUM);
     INITIALIZE_JULIA_CPOINTER(LengthList);
     INITIALIZE_JULIA_CPOINTER(Elm0_List);

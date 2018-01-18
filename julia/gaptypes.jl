@@ -7,12 +7,17 @@
 
 module GAPUtils
 
-function get_symbols_in_module(module_t)
+function get_function_symbols_in_module(module_t)
     list = filter(i->isdefined(module_t,i) && isa(eval((:($module_t.$i))),Function),names(module_t))
     return list
 end
 
-export get_symbols_in_module
+function get_variable_symbols_in_module(module_t)
+    list = filter(i->isdefined(module_t,i) && ! isa(eval((:($module_t.$i))),Function),names(module_t))
+    return list
+end
+
+export get_function_symbols_in_module, get_variable_symbols_in_module
 
 end
 

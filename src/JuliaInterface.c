@@ -361,7 +361,9 @@ jl_value_t* JuliaBox_internal( Obj obj )
 
 Obj JuliaBox( Obj self, Obj obj )
 {
-
+    if(IS_JULIA_OBJ(obj)){
+        return obj;
+    }
     jl_value_t* julia_ptr = JuliaBox_internal( obj );
     if( julia_ptr == 0)
         return Fail;
@@ -395,6 +397,19 @@ Obj JuliaTuple( Obj self, Obj list )
     return NewJuliaObj( result );
 }
 
+Obj JuliaSymbol( Obj self, Obj name )
+{
+    jl_sym_t* julia_symbol = jl_symbol( CSTR_STRING( name ) );
+    JULIAINTERFACE_EXCEPTION_HANDLER
+    return NewJuliaObj( (jl_value_t*)julia_symbol );
+}
+
+Obj JuliaModule( Obj self, Obj name )
+{
+    jl_module_t* julia_module = get_module_from_string( CSTR_STRING( name ) );
+    JULIAINTERFACE_EXCEPTION_HANDLER
+    return NewJuliaObj( (jl_value_t*)julia_module );
+}
 
 Obj JuliaSetVal( Obj self, Obj name, Obj julia_val )
 {
@@ -508,6 +523,9 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaBindCFunction_internal, 4, "string_name,cfunction_string,number_args_gap,arg_names_gap" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaSetGAPFuncAsJuliaObjFunc_internal, 2, "func,name"),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaTuple, 1, "list"),
+    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaSymbol, 1, "name"),
+    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaModule, 1, "name"),
+
 	{ 0 } /* Finish with an empty entry */
 
 };
