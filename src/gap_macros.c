@@ -3,7 +3,7 @@
 // once LibGap is completed
 
 
-Obj MyFuncSUM(Obj self, Obj a, Obj b){
+Obj MyFuncSUM(Obj a, Obj b){
     return SUM(a,b);
 }
 
@@ -75,12 +75,13 @@ Obj MakeGapArgList( int length, Obj* array )
 int pin_gap_obj( Obj obj )
 {
     Obj pos;
-    if(LEN_PLIST(gap_obj_gc_list_positions) == 0){
-        pos = INTOBJ_INT( LEN_PLIST(gap_obj_gc_list) + 1 );
-    }else{
-        pos = PopPlist( gap_obj_gc_list_positions );
-    }
+    Obj gap_obj_gc_list_positions = ValGVar( GVarName( "gap_obj_gc_list_positions" ) );
+    pos = PopPlist( gap_obj_gc_list_positions );
+    Obj gap_obj_gc_list = ValGVar( GVarName( "gap_obj_gc_list" ) );
     AssPlist( gap_obj_gc_list, INT_INTOBJ( pos ), obj );
+    gap_obj_gc_list = ValGVar( GVarName( "gap_obj_gc_list" ) );
+    CHANGED_BAG(gap_obj_gc_list);
+    gap_obj_gc_list_positions = ValGVar( GVarName( "gap_obj_gc_list_positions" ) );
     if(LEN_PLIST(gap_obj_gc_list_positions) == 0)
     {
         PushPlist( gap_obj_gc_list_positions, INTOBJ_INT( LEN_PLIST( gap_obj_gc_list ) + 1 ) );
@@ -90,7 +91,9 @@ int pin_gap_obj( Obj obj )
 
 void unpin_gap_obj( int pos )
 {
+    Obj gap_obj_gc_list = ValGVar( GVarName( "gap_obj_gc_list" ) );
     AssPlist( gap_obj_gc_list, pos, True );
+    Obj gap_obj_gc_list_positions = ValGVar( GVarName( "gap_obj_gc_list_positions" ) );
     PushPlist( gap_obj_gc_list_positions, INTOBJ_INT( pos ) );
 }
 

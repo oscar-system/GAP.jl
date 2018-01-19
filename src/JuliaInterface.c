@@ -16,8 +16,8 @@
 #define JULIAINTERFACE_EXCEPTION_HANDLER if (jl_exception_occurred()) \
     ErrorMayQuit( jl_typeof_str(jl_exception_occurred()), 0, 0 );
 
-Obj gap_obj_gc_list;
-Obj gap_obj_gc_list_positions;
+UInt gap_obj_gc_list_master;
+UInt gap_obj_gc_list_positions_master;
 
 #include "gap_macros.c"
 
@@ -32,7 +32,9 @@ jl_function_t* julia_array_setindex;
 jl_value_t* GAP_MEMORY_STORAGE_INTS;
 jl_value_t* GAP_MEMORY_STORAGE;
 
-/* utilities for wrapped Julia objects and functions */
+/*
+ * utilities for wrapped Julia objects and functions
+ */
 Obj JuliaFuncCopyFunc(Obj obj, Int mut)
 {
     /* always immutable, so nothing to do */
@@ -498,6 +500,22 @@ Obj JuliaBindCFunction_internal( Obj self, Obj string_name, Obj cfunction_string
     return NULL;
 }
 
+Obj JuliaGAPRatInt( Obj self, Obj integer )
+{
+    jl_module_t* module_t = get_module_from_string( "GAP" );
+    jl_function_t* func = jl_get_function( module_t, "GAPRat" );
+    jl_value_t* rat_obj = jl_call1( func, jl_box_voidpointer( (void*)integer ) );
+    return NewJuliaObj( rat_obj );
+}
+
+Obj JuliaObjGAPRat( Obj self, Obj gap_rat )
+{
+    jl_module_t* module_t = get_module_from_string( "GAP" );
+    jl_function_t* func = jl_get_function( module_t, "get_gaprat_ptr" );
+    void* rat_obj = jl_unbox_voidpointer( jl_call1( func, GET_JULIA_OBJ( gap_rat ) ) );
+    return (Obj)rat_obj;
+}
+
 #define GVAR_FUNC_TABLE_ENTRY(srcfile, name, nparam, params) \
   {#name, nparam, \
    params, \
@@ -525,6 +543,8 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaTuple, 1, "list"),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaSymbol, 1, "name"),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaModule, 1, "name"),
+    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaGAPRatInt, 1, "number"),
+    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaObjGAPRat, 1, "obj"),
 
 	{ 0 } /* Finish with an empty entry */
 
@@ -568,9 +588,6 @@ static Int InitKernel( StructInitInfo *module )
     julia_array_setindex = jl_get_function( jl_base_module, "setindex!" );
     GAP_MEMORY_STORAGE = jl_eval_string( "GAP_MEMORY_STORAGE = [ ]" );
     GAP_MEMORY_STORAGE_INTS = jl_eval_string( "GAP_MEMORY_STORAGE_INTS = [ 1 ]" );
-
-    InitCopyGVar( "gap_obj_gc_list", &gap_obj_gc_list );
-    InitCopyGVar( "gap_obj_gc_list_positions", &gap_obj_gc_list_positions );
 
     /* return success                                                      */
     return 0;

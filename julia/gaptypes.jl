@@ -23,6 +23,10 @@ end
 
 module GAP
 
+import Base: +
+
+export gap_funcs, prepare_func_for_gap, GapObj, GapFunc, gap_object_finalizer, GAPRat, get_gaprat_ptr
+
 gap_funcs = Array{Any,1}();
 
 gap_object_finalizer = function(obj)
@@ -44,6 +48,23 @@ struct GapFunc
     ptr::Ptr{Void}
 end
 
+struct GAPRat
+    obj::GapObj
+end
+
+function GAPRat(ptr::Ptr{Void})
+    return GAPRat(GapObj(ptr))
+end
+
+function +(a::GAPRat,b::GAPRat)
+    ptr = ccall(Main.gap_MyFuncSUM,Ptr{Void},(Ptr{Void},Ptr{Void}),a.obj.ptr,b.obj.ptr)
+    return GAPRat(GapObj(ptr))
+end
+
+function get_gaprat_ptr(a::GAPRat)
+    return a.obj.ptr
+end
+
 function(func::GapFunc)(args...)
     arg_array = collect(args)
     arg_array = map(i->i.ptr,arg_array)
@@ -63,7 +84,5 @@ function prepare_func_for_gap(gap_func)
     push!(gap_funcs,return_func)
     return return_func
 end
-
-export gap_funcs, prepare_func_for_gap, GapObj, GapFunc, gap_object_finalizer
 
 end

@@ -43,23 +43,23 @@ InstallMethod( CallFuncList,
 
     if Length( argument_list ) = 0 then
 
-        return  JuliaCallFunc0Arg( julia_func );
+        return JuliaCallFunc0Arg( julia_func );
 
     elif Length( argument_list ) = 1 then
 
-        return  JuliaCallFunc1Arg( julia_func, JuliaBox( argument_list[ 1 ] ) );
+        return JuliaCallFunc1Arg( julia_func, JuliaBox( argument_list[ 1 ] ) );
 
     elif Length( argument_list ) = 2 then
 
-        return  JuliaCallFunc2Arg( julia_func, JuliaBox( argument_list[ 1 ] ), JuliaBox( argument_list[ 2 ] ) );
+        return JuliaCallFunc2Arg( julia_func, JuliaBox( argument_list[ 1 ] ), JuliaBox( argument_list[ 2 ] ) );
 
     elif Length( argument_list ) = 3 then
 
-        return  JuliaCallFunc3Arg( julia_func, JuliaBox( argument_list[ 1 ] ), JuliaBox( argument_list[ 2 ] ), JuliaBox( argument_list[ 3 ] ) );
+        return JuliaCallFunc3Arg( julia_func, JuliaBox( argument_list[ 1 ] ), JuliaBox( argument_list[ 2 ] ), JuliaBox( argument_list[ 3 ] ) );
 
     fi;
 
-    return  JuliaCallFuncXArg( julia_func, List( argument_list, JuliaBox ) );
+    return JuliaCallFuncXArg( julia_func, List( argument_list, JuliaBox ) );
 
 end );
 
