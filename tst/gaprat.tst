@@ -47,5 +47,8 @@ false
 gap> JuliaUnbox( GetJuliaFunc( "iszero" )( zero ) );
 true
 
+gap> JuliaObjGAPRat( JuliaCallFunc2Arg( JuliaFunctionByModule( "GAPRat", "GAPRatModule" ), JuliaBox( 1 ), JuliaBox( 2 ) ) );
+1/2
+
 ##
 gap> STOP_TEST( "gaprat.tst", 1 );

@@ -21,6 +21,11 @@ function GAPRat(ptr::Ptr{Void})
     return GAPRat(GapObj(ptr))
 end
 
+function GAPRat(numerator::Int,denominator::Int)
+    x = ccall(Main.gap_create_rational,Ptr{Void},(Cint,Cint),numerator,denominator)
+    return GAPRat(x)
+end
+
 function get_gaprat_ptr(a::GAPRat)
     return a.obj.ptr
 end

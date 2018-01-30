@@ -120,6 +120,19 @@ Obj MakeGapArgList( int length, Obj* array )
   return list;
 }
 
+Obj create_rational( int numerator, int denominator )
+{
+    Obj numerator_obj = INTOBJ_INT( numerator );
+    Obj denominator_obj = INTOBJ_INT( denominator );
+
+    Obj rational_obj = NewBag( T_RAT, 2 * sizeof(Obj) );
+
+    SET_NUM_RAT( rational_obj, numerator_obj );
+    SET_DEN_RAT( rational_obj, denominator_obj );
+
+    return rational_obj;
+}
+
 
 int pin_gap_obj( Obj obj )
 {
@@ -165,6 +178,9 @@ void JuliaInitializeGAPFunctionPointers( )
     INITIALIZE_JULIA_CPOINTER(RNamName);
     INITIALIZE_JULIA_CPOINTER(ElmPRec);
     INITIALIZE_JULIA_CPOINTER(INTOBJ_INT);
+
+    INITIALIZE_JULIA_CPOINTER(INTOBJ_INT);
+    INITIALIZE_JULIA_CPOINTER(create_rational);
 
 // Those might not be necessary anymore
 
