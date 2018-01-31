@@ -27,7 +27,7 @@ module GAP
 
 #import Base: +
 
-export gap_funcs, prepare_func_for_gap, GapObj, GapFunc, gap_object_finalizer, GAPRat, get_gaprat_ptr
+export gap_funcs, prepare_func_for_gap, GapObj, GapFunc, gap_object_finalizer
 
 gap_funcs = Array{Any,1}();
 
@@ -55,22 +55,22 @@ end
 #T We would like to have the following in the module GAPRatModule,
 #T but this does not work ...
 
-struct GAPRat
-    obj::GapObj
-end
-
-function GAPRat(ptr::Ptr{Void})
-    return GAPRat(GapObj(ptr))
-end
-
-# function +(a::GAPRat,b::GAPRat)
-#     ptr = ccall(Main.gap_MyFuncSUM,Ptr{Void},(Ptr{Void},Ptr{Void}),a.obj.ptr,b.obj.ptr)
+# struct GAPRat
+#     obj::GapObj
+# end
+#
+# function GAPRat(ptr::Ptr{Void})
 #     return GAPRat(GapObj(ptr))
 # end
-
-function get_gaprat_ptr(a::GAPRat)
-    return a.obj.ptr
-end
+#
+# # function +(a::GAPRat,b::GAPRat)
+# #     ptr = ccall(Main.gap_MyFuncSUM,Ptr{Void},(Ptr{Void},Ptr{Void}),a.obj.ptr,b.obj.ptr)
+# #     return GAPRat(GapObj(ptr))
+# # end
+#
+# function get_gaprat_ptr(a::GAPRat)
+#     return a.obj.ptr
+# end
 
 ##########################
 
@@ -95,4 +95,3 @@ function prepare_func_for_gap(gap_func)
 end
 
 end
-

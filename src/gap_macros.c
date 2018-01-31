@@ -22,11 +22,11 @@ Obj MyFuncINV(Obj a){
     return INV(a);
 }
 
-Obj MyFuncEQ(Obj a, Obj b){
+int MyFuncEQ(Obj a, Obj b){
     return EQ(a,b);
 }
 
-Obj MyFuncLT(Obj a, Obj b){
+int MyFuncLT(Obj a, Obj b){
     return LT(a,b);
 }
 
@@ -164,6 +164,7 @@ void JuliaInitializeGAPFunctionPointers( )
     INITIALIZE_JULIA_CPOINTER(CallFuncList);
     INITIALIZE_JULIA_CPOINTER(RNamName);
     INITIALIZE_JULIA_CPOINTER(ElmPRec);
+    INITIALIZE_JULIA_CPOINTER(INTOBJ_INT);
 
 // Those might not be necessary anymore
 

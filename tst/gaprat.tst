@@ -38,8 +38,8 @@ gap> JuliaObjGAPRat( GetJuliaFunc( "//" )( x, x ) );
 gap> JuliaObjGAPRat( GetJuliaFunc( "^" )( x, y ) );
 81
 
-# gap> JuliaObjGAPRat( GetJuliaFunc( "^" )( x, 2 ) );
-# 81
+gap> JuliaObjGAPRat( GetJuliaFunc( "^" )( x, 2 ) );
+9
 gap> JuliaObjGAPRat( GetJuliaFunc( "mod" )( x, y ) );
 3
 gap> JuliaUnbox( GetJuliaFunc( "iszero" )( x ) );
@@ -49,4 +49,3 @@ true
 
 ##
 gap> STOP_TEST( "gaprat.tst", 1 );
-

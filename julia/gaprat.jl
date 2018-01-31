@@ -9,21 +9,21 @@ module GAPRatModule
 
 import Base: zero, -, one, inv, ==, isless, +, *, //, ^, mod, iszero
 
-import GAP: GapObj, GAPRat, get_gaprat_ptr
+import GAP: GapObj
 
-# export GAPRat, get_gaprat_ptr
+export GAPRat, get_gaprat_ptr
 
-# struct GAPRat
-#     obj::GapObj
-# end
-# 
-# function GAPRat(ptr::Ptr{Void})
-#     return GAPRat(GAP.GapObj(ptr))
-# end
-# 
-# function get_gaprat_ptr(a::GAPRat)
-#     return a.obj.ptr
-# end
+struct GAPRat
+    obj::GapObj
+end
+
+function GAPRat(ptr::Ptr{Void})
+    return GAPRat(GapObj(ptr))
+end
+
+function get_gaprat_ptr(a::GAPRat)
+    return a.obj.ptr
+end
 
 #T These are currently in julia/gaptypes.jl,
 #T they should better be defined here, but then GAP crashes ...
@@ -99,12 +99,13 @@ function ^( a::GAPRat, b::GAPRat )
     return GAPRat( GapObj(ptr) )
 end
 
-#T function ^( a::GAPRat, b::Int )
-#T # TODO: turn 'b' into a GAP integer object!
-#T     ptr = ccall( Main.gap_MyFuncPOW, Ptr{Void},
-#T                 (Ptr{Void}, Int), a.obj.ptr, b )
-#T     return GAPRat( GapObj(ptr) )
-#T end
+function ^( a::GAPRat, b::Int )
+# TODO: turn 'b' into a GAP integer object!
+    int_ptr = ccall( Main.gap_INTOBJ_INT, Ptr{Void}, (Int,), b )
+    ptr = ccall( Main.gap_MyFuncPOW, Ptr{Void},
+                (Ptr{Void}, Int), a.obj.ptr, int_ptr )
+    return GAPRat( GapObj(ptr) )
+end
 
 function mod( a::GAPRat, b::GAPRat )
     ptr = ccall( Main.gap_MyFuncMOD, Ptr{Void},
@@ -119,10 +120,9 @@ end
 
 
 #T defined in Nemo
-#T function isone( a::GAPRat )
-#T     return Bool( ccall( Main.gap_MyFuncONE, Ptr{Void},
-#T                 (Ptr{Void},), a.obj.ptr ) == a.obj.ptr )
-#T end
+# function isone( a::GAPRat )
+#     return GAPRat( ccall( Main.gap_MyFuncONE, Ptr{Void},(Ptr{Void},), a.obj.ptr ) == a
+# end
 
 #T defined in Nemo
 #T isunit( a::GAPRat ) = ! iszero( a )
@@ -160,4 +160,3 @@ end
 #T   then support also 'divexact' (add ad hoc methods)
 
 end
-

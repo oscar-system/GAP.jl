@@ -502,7 +502,7 @@ Obj JuliaBindCFunction_internal( Obj self, Obj string_name, Obj cfunction_string
 
 Obj JuliaGAPRatInt( Obj self, Obj integer )
 {
-    jl_module_t* module_t = get_module_from_string( "GAP" );
+    jl_module_t* module_t = get_module_from_string( "GAPRatModule" );
     jl_function_t* func = jl_get_function( module_t, "GAPRat" );
     jl_value_t* rat_obj = jl_call1( func, jl_box_voidpointer( (void*)integer ) );
     return NewJuliaObj( rat_obj );
@@ -510,7 +510,7 @@ Obj JuliaGAPRatInt( Obj self, Obj integer )
 
 Obj JuliaObjGAPRat( Obj self, Obj gap_rat )
 {
-    jl_module_t* module_t = get_module_from_string( "GAP" );
+    jl_module_t* module_t = get_module_from_string( "GAPRatModule" );
     jl_function_t* func = jl_get_function( module_t, "get_gaprat_ptr" );
     void* rat_obj = jl_unbox_voidpointer( jl_call1( func, GET_JULIA_OBJ( gap_rat ) ) );
     return (Obj)rat_obj;
