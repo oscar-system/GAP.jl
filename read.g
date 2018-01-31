@@ -13,6 +13,8 @@ JuliaIncludeFile( Filename( dirs, "gaptypes.jl" ) );
 
 AddGapJuliaFuncs();
 
+JuliaIncludeFile( Filename( dirs, "gaprat.jl" ) );
+
 # ReadPackage( "JuliaInterface", "gap/convertcyc.g");
 # JuliaIncludeFile( Filename( dirs, "convertcyc.jl" ) );
 # BindJuliaFunc( "juliabox_cycs" );
