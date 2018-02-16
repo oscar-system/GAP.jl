@@ -122,7 +122,7 @@ Obj NewJuliaObj(jl_value_t* C)
     o = NewBag(T_JULIA_OBJ, 2 * sizeof(Obj));
     SET_JULIA_OBJ(o, C);
     jl_value_t* input_position_jl = get_next_julia_position();
-    ADDR_OBJ(o)[1] = (Obj)input_position_jl;
+    ADDR_OBJ(o)[1] = (Obj)jl_unbox_int64( input_position_jl );
     jl_call3( julia_array_setindex, GAP_MEMORY_STORAGE, C, input_position_jl );
     JULIAINTERFACE_EXCEPTION_HANDLER
     return o;
@@ -130,8 +130,8 @@ Obj NewJuliaObj(jl_value_t* C)
 
 void JuliaObjFreeFunc( Obj val )
 {
-    jl_value_t* list_number = (jl_value_t*)(ADDR_OBJ(val)[1]);
-    jl_call3( julia_array_setindex, GAP_MEMORY_STORAGE, jl_box_int64( 0 ), list_number );
+    jl_value_t* list_number = jl_box_int64((long)(ADDR_OBJ(val)[1]));
+    jl_call3( julia_array_setindex, GAP_MEMORY_STORAGE, jl_true, list_number );
     JULIAINTERFACE_EXCEPTION_HANDLER
     jl_call2( julia_array_push, GAP_MEMORY_STORAGE_INTS, list_number );
     JULIAINTERFACE_EXCEPTION_HANDLER
