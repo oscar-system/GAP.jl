@@ -47,14 +47,14 @@ Status := "dev",
 
 AbstractHTML   :=  "",
 
-PackageDoc := rec(
+PackageDoc := [ rec(
   BookName  := "JuliaInterface",
   ArchiveURLSubset := ["doc"],
   HTMLStart := "doc/chap0.html",
   PDFFile   := "doc/manual.pdf",
   SixFile   := "doc/manual.six",
   LongTitle := "Test interface to julia",
-),
+) ],
 
 Dependencies := rec(
   GAP := ">= 4.6",
@@ -73,10 +73,12 @@ AvailabilityTest := function()
   return true;
 end,
 
+# the string must be bound, will be modified in read.g
+BannerString := DefaultPackageBannerString( ~ ),
+
 TestFile := "tst/testall.g",
 
 #Keywords := [ "TODO" ],
 
 ));
-
 

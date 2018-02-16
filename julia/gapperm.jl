@@ -1,74 +1,95 @@
+##############################################################################
+##
+##  gapperm.jl
+##
+##  This is an experimental implementation of permutations in Julia.
+##  The code was translated more or less literally from GAP's 'src/permutat.c'.
 
-# experimental code for permutations in julia,
-# translated more or less literally from GAP's src/permutat.c
+#T use @inbounds for the loops
+#T specify types for local variables
 
-#T JuliaInterface seems not to support 'using' statements (?),
-#T we have only 'include'
-# module GAPPermutations
-# 
-# import Base.length, Base.similar, Base.zeros
-# import Base.==, Base.<, Base.*, Base.^
+module GAPPermutations
+
+import Base: length, similar, zeros, ==, isless, *, one, inv, ^, /
+
 # import Base.hash
-# 
-# export Permutation
-# export IdentityPerm
-# export EqPerm22, LtPerm22, ProdPerm22, PowPerm2Int, PowIntPerm2, QuoIntPerm2
-# export LargestMovedPointPerm, OrderPerm, OnePerm, InvPerm
-# 
+
+export Permutation, Permutation2or4, IdentityPerm, LargestMovedPointPerm,
+       OrderPerm
+
 # export hash
 
-#T use @inbounds for the loops!
-#T specify types for local variables!
-
-# create the julia type
-#T for the moment, only `Perm2' is considered,
-#T meaning permutations of positive 16 bit integers;
-#T `Perm4' would mean permutations of 32 bit integers
-immutable Permutation2
+# create the julia types
+immutable Permutation2 # means permutations of positive 16 bit integers
     degree::UInt16
     imgs::Array{UInt16,1}
-
-#   function Permutation( imgsarray::Array{UInt16,1} )
-#       new( length( imgsarray ), imgsarray )
-#   end
 end
 
-function Permutation( imgsarray::Array{UInt16,1} )
+immutable Permutation4 # means permutations of positive 32 bit integers 
+    degree::UInt32
+    imgs::Array{UInt32,1}
+end
+
+Permutation2or4 = Union{ Permutation2, Permutation4 }
+
+
 #T *check* the input?
+function Permutation( degree::UInt16, imgsarray::Array{UInt16,1} )
+    return Permutation2( degree, imgsarray )
+   end
+
+function Permutation( degree::UInt32, imgsarray::Array{UInt32,1} )
+    return Permutation4( degree, imgsarray )
+   end
+
+function Permutation( imgsarray::Array{UInt16,1} )
     return Permutation2( length( imgsarray ), imgsarray )
    end
 
+function Permutation( imgsarray::Array{UInt32,1} )
+    return Permutation4( length( imgsarray ), imgsarray )
+   end
+
 function Permutation( imgsarray::Array{Int,1} )
-        local conv
+        local conv16, conv32
 
-        conv::Array{UInt16,1} = convert( Array{UInt16,1}, imgsarray )
-
-        return Permutation2( length( conv ), conv )
+        if length( imgsarray ) <= 2^16
+          conv16::Array{UInt16,1} = convert( Array{UInt16,1}, imgsarray )
+          return Permutation2( length( conv16 ), conv16 )
+        else
+          conv32::Array{UInt32,1} = convert( Array{UInt32,1}, imgsarray )
+          return Permutation4( length( conv32 ), conv32 )
+        end
     end
 
-#T JuliaBox creates Array{Any,1}
+# Note that 'JuliaBox' creates Array{Any,1}.
 function Permutation( imgsarray::Array{Any,1} )
-        local conv
+        local conv16, conv32
 
-        conv::Array{UInt16,1} = convert( Array{UInt16,1}, imgsarray )
-
-        return Permutation2( length( conv ), conv )
+        if length( imgsarray ) <= 2^16
+          conv16::Array{UInt16,1} = convert( Array{UInt16,1}, imgsarray )
+          return Permutation2( length( conv16 ), conv16 )
+        else
+          conv32::Array{UInt32,1} = convert( Array{UInt32,1}, imgsarray )
+          return Permutation4( length( conv32 ), conv32 )
+        end
     end
 
 
 const IdentityPerm = Permutation2( 0, UInt16[] )
 
-# (julia abbreviates long lists automatically)
-Base.show( io::IO, perm::Permutation2 ) = print( io, "<permutation: ", perm.imgs, ">" )
+# Julia automatically abbreviates long lists.
+Base.show( io::IO, perm::Permutation2or4 ) = print( io, "<permutation: ",
+                                                    perm.imgs, ">" )
 
-# provide the methods
-function EqPerm22( pL::Permutation2, pR::Permutation2 )
+# Provide the methods
+function EqPerm( pL::Permutation2or4, pR::Permutation2or4 )
     local degL, degR, pLimgs, pRimgs, p
 
-    degL::UInt16 = pL.degree
-    degR::UInt16 = pR.degree
-    pLimgs::Array{UInt16,1} = pL.imgs
-    pRimgs::Array{UInt16,1} = pR.imgs
+    degL = pL.degree
+    degR = pR.degree
+    pLimgs = pL.imgs
+    pRimgs = pR.imgs
 
     # if perms/trans are different sizes, check final element as an early
     # check
@@ -84,7 +105,7 @@ function EqPerm22( pL::Permutation2, pR::Permutation2 )
       end
     end
 
-    # search for a difference and return False if you find one
+    # search for a difference and return false if you find one
     if degL <= degR
       for p in (degL+1):degR
         if pRimgs[p] != p
@@ -120,14 +141,14 @@ function EqPerm22( pL::Permutation2, pR::Permutation2 )
 end
 
 
-function LtPerm22( pL::Permutation2, pR::Permutation2 )
+function LtPerm( pL::Permutation2or4, pR::Permutation2or4 )
     local degL, degR, pLimgs, pRimgs, p
 
     # get the degrees of the permutations
-    degL::Int = pL.degree
-    degR::Int = pR.degree
-    pLimgs::Array{UInt16,1} = pL.imgs
-    pRimgs::Array{UInt16,1} = pR.imgs
+    degL = pL.degree
+    degR = pR.degree
+    pLimgs = pL.imgs
+    pRimgs = pR.imgs
 
     # search for a difference and return if you find one
     if degL <= degR
@@ -167,20 +188,22 @@ function LtPerm22( pL::Permutation2, pR::Permutation2 )
 end
 
 
-function ProdPerm22( pL::Permutation2, pR::Permutation2 )
-    local degL, degR, prd, img
+function ProdPerm( pL::Permutation2or4, pR::Permutation2or4 )
+    local degL, degR, prd, len, img
 
     # get the degrees of the permutations
-    degL::UInt16 = pL.degree
-    degR::UInt16 = pR.degree
-    pLimgs::Array{UInt16,1} = pL.imgs
-    pRimgs::Array{UInt16,1} = pR.imgs
+    degL = pL.degree
+    degR = pR.degree
+    pLimgs = pL.imgs
+    pRimgs = pR.imgs
 
     # compute the size of the result and allocate a bag
     if degL < degR
       prd = similar( pRimgs )
+      len = degR
     else
       prd = similar( pLimgs )
+      len = degL
     end
 
     # if the left (inner) permutation has smaller degree, it is very easy
@@ -191,7 +214,6 @@ function ProdPerm22( pL::Permutation2, pR::Permutation2 )
       for p in (degL+1):degR
         @inbounds prd[p] = pRimgs[p]
       end
-    # otherwise we have to use the macro 'IMAGE'
     else
       for p in 1:degL
         @inbounds img = pLimgs[p]
@@ -200,11 +222,11 @@ function ProdPerm22( pL::Permutation2, pR::Permutation2 )
     end
 
     # return the result
-    return Permutation2( length( prd ), prd )
+    return Permutation( len, prd )
 end
 
 
-function PowPerm2Int( pL::Permutation2, n::Int )
+function PowPermInt( pL::Permutation2or4, n::Int )
     local deg, pLimgs, pow
 
     # handle zeroth and first powers separately
@@ -215,8 +237,8 @@ function PowPerm2Int( pL::Permutation2, n::Int )
     end
 
     # get the operands and allocate the result list
-    deg::Int = pL.degree
-    pLimgs::Array{UInt16,1} = pL.imgs
+    deg = pL.degree
+    pLimgs = pL.imgs
     pow = similar( pLimgs )
 
     # compute the power by repeated mapping for small positive exponents
@@ -236,23 +258,23 @@ function PowPerm2Int( pL::Permutation2, n::Int )
 
         # make sure that the buffer bag is large enough
         # clear the buffer bag
-        ptKnown = zeros( pLimgs )
+        ptKnown = falses( pLimgs )
 
         # loop over all cycles
         for p in 1:deg
 
             # if we haven't looked at this cycle so far
-            if ptKnown[p] == 0
+            if ! ptKnown[p]
 
                 # find the length of this cycle
                 len = 1
                 q = pLimgs[p]
                 while q != p
-                  ptKnown[q] = 1
+                  ptKnown[q] = true
                   len += 1
                   q = pLimgs[q]
                 end
-            
+
                 # raise this cycle to the power <n> mod <len>
                 r = p
                 for e in 1:mod( n, len )
@@ -297,7 +319,7 @@ function PowPerm2Int( pL::Permutation2, n::Int )
 
         # make sure that the buffer bag is large enough
         # clear the buffer bag
-        ptKnown = zeros( pLimgs )
+        ptKnown = falses( pLimgs )
 
         # get pointer to the permutation and the power
         exp = -n
@@ -306,13 +328,13 @@ function PowPerm2Int( pL::Permutation2, n::Int )
         for p in 1:deg
 
             # if we haven't looked at this cycle so far
-            if ptKnown[p] == 0
+            if ! ptKnown[p]
 
                 # find the length of this cycle
                 len = 1
                 q = pLimgs[p]
                 while q != p
-                  ptKnown[q] = 1
+                  ptKnown[q] = true
                   len += 1
                   q = pLimgs[q]
                 end
@@ -335,11 +357,11 @@ function PowPerm2Int( pL::Permutation2, n::Int )
     end
 
     # return the result
-    return Permutation2( length( pow ), pow )
+    return Permutation( deg, pow )
 end
 
 
-function PowIntPerm2( n::Int, pR::Permutation2 )
+function PowIntPerm( n::Int, pR::Permutation2or4 )
     local img
 
     # permutations do not act on negative integers
@@ -359,7 +381,7 @@ function PowIntPerm2( n::Int, pR::Permutation2 )
 end
 
 
-function QuoIntPerm2( n::Int, pR::Permutation2 )
+function QuoIntPerm( n::Int, pR::Permutation2or4 )
     local pre, pRimgs
 
     # permutations do not act on negative integers
@@ -367,7 +389,7 @@ function QuoIntPerm2( n::Int, pR::Permutation2 )
       error( "Perm. Operations: <point> must be a positive integer (not %n)" )
     end
 
-    pRimgs::Array{UInt16,1} = pR.imgs
+    pRimgs = pR.imgs
 
     # compute the preimage
     pre = n
@@ -382,10 +404,10 @@ function QuoIntPerm2( n::Int, pR::Permutation2 )
 end
 
 
-function LargestMovedPointPerm( perm::Permutation2 )
+function LargestMovedPointPerm( perm::Permutation2or4 )
     local permimgs, sup
 
-    permimgs::Array{UInt16,1} = perm.imgs
+    permimgs = perm.imgs
     sup = 0
 
     # find the largest moved point
@@ -400,15 +422,14 @@ function LargestMovedPointPerm( perm::Permutation2 )
 end
 
 
-function OrderPerm( perm::Permutation2 )
+function OrderPerm( perm::Permutation2or4 )
     local permimgs, ptKnown2, ord, p, len, q, gcd, s, t
 
-    permimgs::Array{UInt16,1} = perm.imgs
+    permimgs = perm.imgs
 
     # make sure that the buffer bag is large enough
     # clear the buffer bag
-    ptKnown2 = zeros( permimgs )
-#T better booleans? or shorter integers, indep. of permimgs?
+    ptKnown2 = falses( permimgs )
 
     # start with order 1
     ord = 1
@@ -417,14 +438,14 @@ function OrderPerm( perm::Permutation2 )
     for p in 1:perm.degree
 
         # if we haven't looked at this cycle so far
-        if ( ptKnown2[p] == 0 && permimgs[p] != p )
+        if ( ! ptKnown2[p] && permimgs[p] != p )
 
             # find the length of this cycle
             len = 1
             q = permimgs[p]
             while q != p
               len += 1
-              ptKnown2[q] = 1
+              ptKnown2[q] = true
               q = permimgs[q]
             end
 
@@ -447,23 +468,107 @@ function OrderPerm( perm::Permutation2 )
 end
 
 
-function OnePerm( perm::Permutation2 )
+function OnePerm( perm::Permutation2or4 )
     return IdentityPerm
 end
 
 
-function InvPerm( perm::Permutation2 )
-    return PowPerm2Int( perm, -1 )
+function InvPerm( perm::Permutation2or4 )
+    return PowPermInt( perm, -1 )
 end
 
-# overload the multiplication operator
-#function *( pL::Permutation2, pR::Permutation2 )
-#    return ProdPerm22( pL, pR )
-#end;
+
+# Overload the Julia operations.
+function ==( pL::Permutation2or4, pR::Permutation2or4 )
+    return EqPerm( pL, pR )
+end
+
+function isless( pL::Permutation2or4, pR::Permutation2or4 )
+    return LtPerm( pL, pR )
+end
+
+function *( pL::Permutation2or4, pR::Permutation2or4 )
+    return ProdPerm( pL, pR )
+end
+
+function one( perm::Permutation2or4 )
+    return IdentityPerm
+end
+
+function inv( perm::Permutation2or4 )
+    return InvPerm( perm )
+end
+
+function ^( perm::Permutation2or4, n::Int )
+    return PowPermInt( perm, n )
+end
+
+function ^( n::Int, perm::Permutation2or4 )
+    return PowIntPerm( n, perm )
+end
+
+function /( n::Int, perm::Permutation2or4 )
+    return QuoIntPerm( n, perm )
+end
+
 
 # hash function so Permutations can be keys in dictionaries, etc.
-hash( p::Permutation2, h::UInt64 ) = hash( p.imgs, h );
+# hash( p::Permutation2or4, h::UInt64 ) = hash( p.imgs, h );
 
+# using Requests
+# 
+# function PermutationFromMeatAxeFile( filename::String )
+#     local l::HttpCommon,
+#           str::String,
+#           spl::Array{String,1},
+#           header::Array{String,1},
+#           n::Integer,
+#           imgs
+# 
+#     # Fetch and read the file.
+#     if startswith( filename, "http://" )
+#       l = get( url )
+#       if l.status != 200
+#         error( "file ", filename, " not found" )
+#       end
+#       str = readstring( l )
+#       spl = split( str, "\n", keep = false )
+#     else
+#       try
+#         spl = readlines( filename )
+#       catch( e )
+#         error( e )
+#       end
+#     end
+# 
+#     # Evaluate the file header.
+#     header = split( shift!( spl ), " ", keep = false )
+#     if length( header ) != 4
+#       error( "corrupted header of MeatAxe file ", filename )
+#       # or too large degree ...
+#     elseif header[1] != "12"
+#       error( "MeatAxe file ", filename, " does not contain a permutation" )
+#     elseif header[2] != "1"
+#       error( "MeatAxe file ", filename, " contains more than one permutation?" )
+#     end
+# 
+#     # Turn the lines of the file into integers.
+#     n = parse( Int, header[3] )
+#     if n != length( spl )
+#       error( "number of images does not fit" )
+#     elseif n <= 2^16
+#       imgs::Array{UInt16} = map( x -> parse( UInt16, x ), spl )
+#     else
+#       imgs::Array{UInt32} = map( x -> parse( UInt32, x ), spl )
+#     end
+# 
+#     # Create the permutation.
+#     return Permutation( n, imgs )
 # end
 
+# PermutationFromMeatAxeFile( "HSG1-p1100aB0.m1" )  # if locally available
+# PermutationFromMeatAxeFile(
+#     "http://brauer.maths.qmul.ac.uk/Atlas/spor/M11/mtx/M11G1-p11B0.m1" )
+
+end
 
