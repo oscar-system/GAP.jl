@@ -39,14 +39,14 @@ cd(wdir)
    
    try
       println("Cloning GAP ... ")
-      run(`git clone https://github.com/markuspf/gap/`)
-      cd(joinpath("$wdir", "gap"))
-      run(`git checkout gap-library`)
+      run(`git clone https://github.com/markuspf/libgap/`)
+      cd(joinpath("$wdir", "libgap"))
+      run(`git checkout libgap-devel`)
    catch
-      if ispath(joinpath("$wdir", "gap"))
-         cd(joinpath("$wdir", "gap"))
+      if ispath(joinpath("$wdir", "libgap"))
+         cd(joinpath("$wdir", "libgap"))
          run(`git fetch`)
-         run(`git checkout gap-library`)
+         run(`git checkout libgap-devel`)
       end
    end
       
