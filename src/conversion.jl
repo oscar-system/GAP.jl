@@ -2,24 +2,24 @@ include( "gap.jl" )
 gc_enable(false)
 
 function from_gap_int16(obj :: GapObj) :: Int16
-    x = libgap_Int_IntObj( obj )
+    x = libgap.Int_IntObj( obj )
     return Int16(x)
 end
 
 function from_gap_int32(obj :: GapObj) :: Int32
-    x = libgap_Int_IntObj( obj )
+    x = libgap.Int_IntObj( obj )
     return Int32(x)
 end
 
-from_gap_int64(obj :: GapObj) = libgap_Int_IntObj(obj)
+from_gap_int64(obj :: GapObj) = libgap.Int_IntObj(obj)
 
-from_gap_string(obj :: GapObj) = libgap_String_StringObj(obj)
+from_gap_string(obj :: GapObj) = libgap.String_StringObj(obj)
 
 function from_gap_list( obj :: GapObj) :: Array{GapObj}
-    len = libgap_LenPlist( obj )
+    len = libgap.LenPList( obj )
     array = Array{GapObj}(len)
     for i in 1:len
-        array[i] = libgap_ElmPList(obj,i)
+        array[i] = libgap.ElmPList(obj,i)
     end
     return array
 end
