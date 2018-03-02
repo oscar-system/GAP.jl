@@ -490,14 +490,14 @@ Obj JuliaBindCFunction_internal( Obj self, Obj string_name, Obj cfunction_string
 {
     void* ccall_pointer = jl_unbox_voidpointer( jl_eval_string( CSTR_STRING( cfunction_string ) ) );
     size_t number_args = INT_INTOBJ( number_args_gap );
-    char* arg_names = CSTR_STRING( arg_names_gap );
-    StructGVarFunc current_function[] = {
-        GVAR_FUNC_TABLE_ENTRY_WITH_NAME( "JuliaInterface.c", ccall_pointer,
-                                         number_args, arg_names, CSTR_STRING( string_name ) ),
-        { 0 } };
-    InitHdlrFuncsFromTable( current_function );
-    InitGVarFuncsFromTable( current_function );
-    return NULL;
+    // char* arg_names = CSTR_STRING( arg_names_gap );
+    // StructGVarFunc current_function[] = {
+    //     GVAR_FUNC_TABLE_ENTRY_WITH_NAME( "JuliaInterface.c", ccall_pointer,
+    //                                      number_args, arg_names, CSTR_STRING( string_name ) ),
+    //     { 0 } };
+    // InitHdlrFuncsFromTable( current_function );
+    // InitGVarFuncsFromTable( current_function );
+    return NewFunction(string_name, number_args, arg_names_gap, ccall_pointer );
 }
 
 Obj JuliaGAPRatInt( Obj self, Obj integer )

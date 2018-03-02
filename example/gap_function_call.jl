@@ -1,3 +1,3 @@
 function IsPrimeInt(a)
-    return gap_IsPrimeInt(a)
+    return GAP.IsPrimeInt(a)
 end

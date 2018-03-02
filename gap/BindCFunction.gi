@@ -10,7 +10,7 @@
 
 InstallGlobalFunction( JuliaBindCFunction,
   function( julia_name, gap_name, nr_args, arg_names )
-    local cfunction_call_string, i;
+    local cfunction_call_string, i, cfunc;
 
     if not IsString( julia_name ) then
         Error( "first argument must be a string" );
@@ -27,8 +27,8 @@ InstallGlobalFunction( JuliaBindCFunction,
         return;
     fi;
 
-    if not IsString( arg_names ) then
-        Error( "fourth argument must be a string" );
+    if not IsList( arg_names ) then
+        Error( "fourth argument must be a list of strings" );
         return;
     fi;
 
@@ -40,7 +40,7 @@ InstallGlobalFunction( JuliaBindCFunction,
     Remove( cfunction_call_string );
     cfunction_call_string := Concatenation( cfunction_call_string, "))" );
 
-    JuliaBindCFunction_internal( gap_name, cfunction_call_string, nr_args, arg_names );
+    return JuliaBindCFunction_internal( gap_name, cfunction_call_string, nr_args, arg_names );
 
 end );
 
