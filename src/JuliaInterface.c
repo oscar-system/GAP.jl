@@ -372,6 +372,64 @@ Obj JuliaBox( Obj self, Obj obj )
     return NewJuliaObj( julia_ptr );
 }
 
+// dict: A GAP object, holding a pointer to a julia dict
+// returns: A list, consisting of two lists:
+//   1. A list containing the keys
+//   2. A list containing the values
+Obj JuliaUnbox_record_dict( Obj self, Obj dict )
+{
+    if(!IS_JULIA_OBJ(dict)){
+        ErrorQuit( "input must be a boxed julia object", 0, 0 );
+        return NULL;
+    }
+    // FIXME: Check for dict
+    jl_value_t* julia_dict = GET_JULIA_OBJ( dict );
+
+    // Currently, keys have offset 1, while values have offset 2.
+    jl_array_t* dict_slots = (jl_array_t*)jl_get_field(julia_dict,"slots");
+    jl_array_t* dict_indices = (jl_array_t*)jl_get_field(julia_dict,"keys");
+    jl_array_t* dict_values = (jl_array_t*)jl_get_field(julia_dict,"vals");
+
+    // Prepare lists of keys, values
+    size_t len = jl_array_len(dict_indices);
+    Obj indices_gap = NEW_PLIST( T_PLIST, len );
+    Obj values_gap = NEW_PLIST( T_PLIST, len );
+
+    // 
+    Obj current_element;
+    jl_value_t* current_value;
+    jl_value_t* current_index;
+    size_t real_index = 0;
+
+    // Store keys and values in GAP list
+    for(size_t i = 0; i < len; ++i )
+    {
+        if(! jl_unbox_uint8(jl_arrayref(dict_slots,i)))
+        {
+            continue;
+        }
+        real_index++;
+        current_value = jl_arrayref( dict_values, i );
+        current_index = jl_arrayref( dict_indices, i );
+        SET_ELM_PLIST( values_gap, real_index, NewJuliaObj( current_value ) );
+        CHANGED_BAG( values_gap );
+        SET_ELM_PLIST( indices_gap, real_index, NewJuliaObj( current_index ) );
+        CHANGED_BAG( indices_gap );
+    }
+
+    SET_LEN_PLIST( indices_gap, real_index );
+    SET_LEN_PLIST( values_gap, real_index );
+
+    // Construct and return list
+    Obj return_list = NEW_PLIST( T_PLIST, 2 );
+    SET_LEN_PLIST( return_list, 2 );
+    SET_ELM_PLIST( return_list, 1, indices_gap );
+    CHANGED_BAG( return_list );
+    SET_ELM_PLIST( return_list, 2, values_gap );
+    CHANGED_BAG( return_list );
+    return return_list;
+}
+
 Obj JuliaTuple( Obj self, Obj list )
 {
     jl_datatype_t* tuple_type = 0;
@@ -545,6 +603,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaModule, 1, "name"),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaGAPRatInt, 1, "number"),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaObjGAPRat, 1, "obj"),
+    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaUnbox_record_dict, 1, "dict"),
 
 	{ 0 } /* Finish with an empty entry */
 
