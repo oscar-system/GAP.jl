@@ -24,3 +24,5 @@ InstallGlobalFunction( GetJuliaFunc,
 end );
 
 DeclareGlobalFunction( "ImportJuliaModuleIntoGAP" );
+
+DeclareGlobalFunction( "JuliaStructuralUnbox" );
