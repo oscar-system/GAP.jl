@@ -278,7 +278,7 @@ Obj JuliaUnbox_internal( jl_value_t* julia_obj )
                 continue;
             }
             jl_value_t* current_jl_element = jl_arrayref( array_ptr, i );
-            current_element = JuliaUnbox_internal( current_jl_element );
+            current_element = NewJuliaObj( current_jl_element );
             SET_ELM_PLIST( return_list, i+1, current_element );
             CHANGED_BAG( return_list );
         }
