@@ -294,6 +294,11 @@ Obj JuliaUnbox_internal( jl_value_t* julia_obj )
 
 Obj JuliaUnbox( Obj self, Obj obj )
 {
+    if(!IS_JULIA_OBJ(obj))
+    {
+        ErrorMayQuit( "<obj> is not a boxed julia obj", 0, 0 );
+        return NULL;
+    }
     jl_value_t* julia_obj = GET_JULIA_OBJ( obj );
     return JuliaUnbox_internal( julia_obj );
 }
