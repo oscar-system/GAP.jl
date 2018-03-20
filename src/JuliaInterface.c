@@ -309,6 +309,7 @@ Obj JuliaUnbox( Obj self, Obj obj )
 jl_value_t* JuliaBox_internal( Obj obj )
 {
     size_t i;
+    Obj current;
 
     //integer, small and large
     if(IS_INTOBJ(obj)){
@@ -361,6 +362,10 @@ jl_value_t* JuliaBox_internal( Obj obj )
         jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_any_type,1);
         jl_array_t* new_array = jl_alloc_array_1d(array_type, len);
         for(i=0;i<len;i++){
+            current = ELM_PLIST(obj,i+1);
+            if(current == NULL){
+                continue;
+            }
             jl_arrayset(new_array,JuliaBox_internal(ELM_PLIST(obj,i+1)),i);
         }
         return (jl_value_t*)(new_array);
