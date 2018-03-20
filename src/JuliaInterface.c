@@ -274,6 +274,9 @@ Obj JuliaUnbox_internal( jl_value_t* julia_obj )
         Obj return_list = NEW_PLIST( T_PLIST, len );
         SET_LEN_PLIST( return_list, len );
         for(i=0;i<len;i++){
+            if(!jl_array_isassigned(array_ptr,i)){
+                continue;
+            }
             jl_value_t* current_jl_element = jl_arrayref( array_ptr, i );
             current_element = JuliaUnbox_internal( current_jl_element );
             SET_ELM_PLIST( return_list, i+1, current_element );
