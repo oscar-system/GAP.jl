@@ -87,7 +87,8 @@ InstallGlobalFunction( JuliaStructuralUnbox,
     local unboxed_obj;
     unboxed_obj := JuliaUnbox( object );
     if IsList( unboxed_obj ) and not IsString( unboxed_obj ) then
-        return List( unboxed_obj, JuliaUnbox );
+        return List( unboxed_obj, JuliaStructuralUnbox );
     fi;
     return unboxed_obj;
 end );
+
