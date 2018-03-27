@@ -10,7 +10,7 @@ SetPackageInfo( rec(
 
 PackageName := "JuliaInterface",
 Subtitle := "Test interface to julia",
-Version := "0.1",
+Version := "0.2",
 Date := "09/05/2017", # dd/mm/yyyy format
 
 Persons := [
