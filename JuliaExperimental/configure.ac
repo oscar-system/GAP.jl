@@ -31,6 +31,7 @@ dnl ##
 dnl ## Set the language
 dnl ##
 AC_PROG_CC
+AC_PROG_CC_C99
 AC_LANG([C])
 
 dnl ##
@@ -43,6 +44,23 @@ dnl ##
 dnl ## Locate the GAP root dir
 dnl ##
 AC_FIND_GAP
+
+dnl ##
+dnl ## Set julia
+dnl ##
+AC_ARG_WITH([julia],
+    [AC_HELP_STRING([--with-julia=<path>], [specify root of julia installation])],
+    [JULIA="$with_julia"],
+    [JULIA="$PWD"]
+)
+JULIA_CPPFLAGS="-I$JULIA/include/julia"
+JULIA_LDPATH="$JULIA/lib"
+JULIA_LDFLAGS="-L$JULIA_LDPATH"
+AC_SUBST(JULIA_LDPATH)
+AC_SUBST(JULIA_LDFLAGS)
+AC_SUBST(JULIA_CPPFLAGS)
+
+AC_DEFINE_UNQUOTED(JULIA_LDPATH, ["$JULIA_LDPATH"], [path to Julia installation])
 
 dnl ##
 dnl ## Detect pointer size to distinguish 32 and 64 bit builds
@@ -62,6 +80,13 @@ if test "$CYGWIN" = "yes"; then
 else
   AC_DEFINE(SYS_IS_CYGWIN32, 0, are we on CYGWIN?)
 fi
+
+case $host_os in
+  *darwin* ) DARWIN=yes;;
+         * ) DARWIN=no;;
+esac
+AM_CONDITIONAL([SYS_IS_DARWIN], [test "$DARWIN" = "yes"])
+
 
 dnl ##
 dnl ## Rebuild configure if VERSION file changes
