@@ -25,7 +25,7 @@ JuliaTypeInfo:= juliaobj -> JuliaUnbox( Julia.Base.string(
 ##  Notify the Julia part.
 ##
 JuliaIncludeFile(
-    Filename( DirectoriesPackageLibrary( "JuliaInterface", "julia" ),
+    Filename( DirectoriesPackageLibrary( "JuliaExperimental", "julia" ),
     "numfield.jl" ) );
 
 ImportJuliaModuleIntoGAP( "Core" );

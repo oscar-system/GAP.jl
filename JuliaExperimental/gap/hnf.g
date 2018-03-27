@@ -14,7 +14,7 @@
 ##  Notify the Julia part.
 ##
 JuliaIncludeFile(
-    Filename( DirectoriesPackageLibrary( "JuliaInterface", "julia" ),
+    Filename( DirectoriesPackageLibrary( "JuliaExperimental", "julia" ),
     "hnf.jl" ) );
 
 ImportJuliaModuleIntoGAP( "GAPHNFModule" );

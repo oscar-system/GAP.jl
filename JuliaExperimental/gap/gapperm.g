@@ -28,7 +28,7 @@
 ##  Notify the Julia part.
 ##
 JuliaIncludeFile(
-    Filename( DirectoriesPackageLibrary( "JuliaInterface", "julia" ),
+    Filename( DirectoriesPackageLibrary( "JuliaExperimental", "julia" ),
     "gapperm.jl" ) );
 
 ImportJuliaModuleIntoGAP( "Base" );

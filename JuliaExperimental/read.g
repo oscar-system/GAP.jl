@@ -5,27 +5,27 @@
 #
 ReadPackage( "JuliaExperimental", "gap/JuliaExperimental.gi");
 
-# ReadPackage( "JuliaInterface", "gap/convertcyc.g");
+# ReadPackage( "JuliaExperimental", "gap/convertcyc.g");
 # JuliaIncludeFile( Filename( dirs, "convertcyc.jl" ) );
 # BindJuliaFunc( "juliabox_cycs" );
 # 
-# ReadPackage( "JuliaInterface", "gap/shortestvectors.g");
+# ReadPackage( "JuliaExperimental", "gap/shortestvectors.g");
 # JuliaIncludeFile( Filename( dirs, "shortestvectors.jl" ) );
 # BindJuliaFunc( "shortestvectors" );
 
 
 
 # Use Julia to compute the HNF of an integer matrix.
-ReadPackage( "JuliaInterface", "gap/hnf.g");
+ReadPackage( "JuliaExperimental", "gap/hnf.g");
 
 
 # GAP integers and rationals in Julia.
-ReadPackage( "JuliaInterface", "gap/gaprat.g");
+ReadPackage( "JuliaExperimental", "gap/gaprat.g");
 
 
 # Julia permutations
-ReadPackage( "JuliaInterface", "gap/gapperm.g");
+ReadPackage( "JuliaExperimental", "gap/gapperm.g");
 
 
 # Nemo's number fields.
-ReadPackage( "JuliaInterface", "gap/numfield.g");
+ReadPackage( "JuliaExperimental", "gap/numfield.g");
