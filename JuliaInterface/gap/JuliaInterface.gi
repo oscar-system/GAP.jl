@@ -4,6 +4,22 @@
 # Implementations
 #
 
+#! @Arguments function_name[,module_name]
+#! @Returns a Julia function
+#! @Desctiption
+#!  Returns the GAP object corresponding to the Julia function
+#!  with name <A>function_name</A> in module <A>module_name</A>.
+#!  The default module is Main.
+InstallGlobalFunction( JuliaFunction,
+  function( arglist... )
+    if Length( arglist ) = 1 and IsString( arglist[ 1 ] ) then
+        return __JuliaFunction( arglist[ 1 ] );
+    elif Length( arglist ) = 2 and ForAll( arglist, IsString ) then
+        return CallFuncList( __JuliaFunctionByModule, arglist );
+    fi;
+    Error( "arguments must be strings function_name[,module_name]" );
+end );
+
 BindJuliaFunc( "string" );
 
 BindJuliaFunc( "include" );
@@ -16,7 +32,6 @@ BindGlobal( "JuliaIncludeFile", function( filename )
       AddSet( JuliaKnownFiles, filename );
     fi;
 end );
-
 
 InstallMethod( ViewString,
                [ IsJuliaObject ],
@@ -70,12 +85,12 @@ InstallGlobalFunction( ImportJuliaModuleIntoGAP,
     JuliaEvalString( Concatenation( "using ", name ) );
     Julia.(name) := rec();
     current_module_rec := Julia.(name);
-    julia_list_func := JuliaFunctionByModule( "get_function_symbols_in_module", "GAPUtils" );
+    julia_list_func := JuliaFunction( "get_function_symbols_in_module", "GAPUtils" );
     function_list := JuliaStructuralUnbox( julia_list_func( JuliaModule( name ) ) );
     for i in function_list do
-        current_module_rec.(i) := JuliaFunctionByModule( i, name );
+        current_module_rec.(i) := JuliaFunction( i, name );
     od;
-    julia_list_func := JuliaFunctionByModule( "get_variable_symbols_in_module", "GAPUtils" );
+    julia_list_func := JuliaFunction( "get_variable_symbols_in_module", "GAPUtils" );
     variable_list := JuliaStructuralUnbox( julia_list_func( JuliaModule( name ) ) );
     for i in variable_list do
         current_module_rec.(i) := JuliaGetGlobalVariableByModule( i, name );

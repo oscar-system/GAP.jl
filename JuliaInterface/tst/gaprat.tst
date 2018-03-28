@@ -9,7 +9,7 @@ gap> JuliaObjGAPRat( x );
 3
 
 ##  create GAPRat objects in Julia
-gap> gaprat:= JuliaFunctionByModule( "GAPRat", "GAPRatModule" );;
+gap> gaprat:= JuliaFunction( "GAPRat", "GAPRatModule" );;
 gap> JuliaObjGAPRat( gaprat( JuliaBox( 1 ), JuliaBox( 2 ) ) );
 1/2
 

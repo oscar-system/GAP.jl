@@ -137,7 +137,10 @@ void JuliaObjFreeFunc( Obj val )
     JULIAINTERFACE_EXCEPTION_HANDLER
 }
 
-Obj JuliaFunction( Obj self, Obj string )
+/*
+ * Returns the function with name <string> from the Julia main module.
+ */
+Obj __JuliaFunction( Obj self, Obj string )
 {
     jl_function_t* function = jl_get_function(jl_main_module, CSTR_STRING( string ) );
     if(function==0)
@@ -145,7 +148,10 @@ Obj JuliaFunction( Obj self, Obj string )
     return NewJuliaFunc( function );
 }
 
-Obj JuliaFunctionByModule( Obj self, Obj function_name, Obj module_name )
+/*
+ * Returns the function with name <function_name> from the Julia module with name <module_name>.
+ */
+Obj __JuliaFunctionByModule( Obj self, Obj function_name, Obj module_name )
 {
     jl_module_t* module_t = get_module_from_string( CSTR_STRING( module_name ) );
     jl_function_t* function = jl_get_function(module_t, CSTR_STRING( function_name ) );
@@ -595,8 +601,8 @@ Obj JuliaObjGAPRat( Obj self, Obj gap_rat )
 
 // Table of functions to export
 static StructGVarFunc GVarFuncs [] = {
-    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaFunction, 1, "string" ),
-    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaFunctionByModule, 2, "function_name,module_name" ),
+    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", __JuliaFunction, 1, "string" ),
+    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", __JuliaFunctionByModule, 2, "function_name,module_name" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaCallFunc0Arg, 1, "func" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaCallFunc1Arg, 2, "func,obj" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaCallFunc2Arg, 3, "func,obj1,obj2" ),

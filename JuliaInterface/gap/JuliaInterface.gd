@@ -6,6 +6,8 @@
 
 BindGlobal( "__JuliaFunctions", rec( ) );
 
+DeclareGlobalFunction( "JuliaFunction" );
+
 DeclareGlobalFunction( "BindJuliaFunc" );
 InstallGlobalFunction( BindJuliaFunc,
   function( julia_name )
