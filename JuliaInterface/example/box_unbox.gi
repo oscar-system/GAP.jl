@@ -6,13 +6,13 @@ int := JuliaBox( 11 );
 JuliaUnbox( int );
 
 string := JuliaBox( "bla" );
-JuliaCallFunc1Arg( julia_print, string );
+julia_print( string );
 JuliaUnbox( string );
 
 bool := JuliaBox( true );
-JuliaCallFunc1Arg( julia_print, bool );
+julia_print( bool );
 JuliaUnbox( bool );
 
 bool := JuliaBox( false );
-JuliaCallFunc1Arg( julia_print, bool );
+julia_print( bool );
 JuliaUnbox( bool );

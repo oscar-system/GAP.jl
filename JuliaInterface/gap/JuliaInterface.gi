@@ -20,6 +20,33 @@ InstallGlobalFunction( JuliaFunction,
     Error( "arguments must be strings function_name[,module_name]" );
 end );
 
+InstallMethod( CallFuncList,
+               [ IsJuliaFunction, IsList ],
+
+  function( julia_func, argument_list )
+
+    if Length( argument_list ) = 0 then
+
+        return __JuliaCallFunc0Arg( julia_func );
+
+    elif Length( argument_list ) = 1 then
+
+        return __JuliaCallFunc1Arg( julia_func, JuliaBox( argument_list[ 1 ] ) );
+
+    elif Length( argument_list ) = 2 then
+
+        return __JuliaCallFunc2Arg( julia_func, JuliaBox( argument_list[ 1 ] ), JuliaBox( argument_list[ 2 ] ) );
+
+    elif Length( argument_list ) = 3 then
+
+        return __JuliaCallFunc3Arg( julia_func, JuliaBox( argument_list[ 1 ] ), JuliaBox( argument_list[ 2 ] ), JuliaBox( argument_list[ 3 ] ) );
+
+    fi;
+
+    return __JuliaCallFuncXArg( julia_func, List( argument_list, JuliaBox ) );
+
+end );
+
 BindJuliaFunc( "string" );
 
 BindJuliaFunc( "include" );
@@ -28,7 +55,7 @@ BindGlobal( "JuliaKnownFiles", [] );
 
 BindGlobal( "JuliaIncludeFile", function( filename )
     if not filename in JuliaKnownFiles then
-      JuliaCallFunc1Arg( GetJuliaFunc( "include" ), JuliaBox( filename ) );
+      __JuliaFunctions.include( filename );
       AddSet( JuliaKnownFiles, filename );
     fi;
 end );
@@ -47,7 +74,7 @@ InstallMethod( String,
 
   function( julia_obj )
 
-    return JuliaUnbox( JuliaCallFunc1Arg( __JuliaFunctions.string, julia_obj ) );
+    return JuliaUnbox( __JuliaFunctions.string( julia_obj ) );
 
 end );
 
@@ -58,23 +85,23 @@ InstallMethod( CallFuncList,
 
     if Length( argument_list ) = 0 then
 
-        return JuliaCallFunc0Arg( julia_func );
+        return __JuliaCallFunc0Arg( julia_func );
 
     elif Length( argument_list ) = 1 then
 
-        return JuliaCallFunc1Arg( julia_func, JuliaBox( argument_list[ 1 ] ) );
+        return __JuliaCallFunc1Arg( julia_func, JuliaBox( argument_list[ 1 ] ) );
 
     elif Length( argument_list ) = 2 then
 
-        return JuliaCallFunc2Arg( julia_func, JuliaBox( argument_list[ 1 ] ), JuliaBox( argument_list[ 2 ] ) );
+        return __JuliaCallFunc2Arg( julia_func, JuliaBox( argument_list[ 1 ] ), JuliaBox( argument_list[ 2 ] ) );
 
     elif Length( argument_list ) = 3 then
 
-        return JuliaCallFunc3Arg( julia_func, JuliaBox( argument_list[ 1 ] ), JuliaBox( argument_list[ 2 ] ), JuliaBox( argument_list[ 3 ] ) );
+        return __JuliaCallFunc3Arg( julia_func, JuliaBox( argument_list[ 1 ] ), JuliaBox( argument_list[ 2 ] ), JuliaBox( argument_list[ 3 ] ) );
 
     fi;
 
-    return JuliaCallFuncXArg( julia_func, List( argument_list, JuliaBox ) );
+    return __JuliaCallFuncXArg( julia_func, List( argument_list, JuliaBox ) );
 
 end );
 

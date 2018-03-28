@@ -36,7 +36,7 @@ ShortestVectors_ViaJulia:= function( mat, bound )
 # need a tuple not a list on the outer level
 
     # Call the julia function.
-    result:= JuliaCallFunc2Arg( GetJuliaFunc( "shortestvectors" ),
+    result:= GetJuliaFunc( "shortestvectors" )(
                  llg,
                  JuliaBox( bound ) );
 

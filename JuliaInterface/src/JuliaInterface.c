@@ -160,14 +160,14 @@ Obj __JuliaFunctionByModule( Obj self, Obj function_name, Obj module_name )
     return NewJuliaFunc( function );
 }
 
-Obj JuliaCallFunc0Arg( Obj self, Obj func )
+Obj __JuliaCallFunc0Arg( Obj self, Obj func )
 {
     jl_value_t* return_value = jl_call0( GET_JULIA_FUNC( func ) );
     JULIAINTERFACE_EXCEPTION_HANDLER
     return NewJuliaObj( return_value );
 }
 
-Obj JuliaCallFunc1Arg( Obj self, Obj func, Obj arg )
+Obj __JuliaCallFunc1Arg( Obj self, Obj func, Obj arg )
 {
     jl_value_t* return_value = jl_call1( GET_JULIA_FUNC( func ), GET_JULIA_OBJ( arg ) );
     JULIAINTERFACE_EXCEPTION_HANDLER
@@ -175,14 +175,14 @@ Obj JuliaCallFunc1Arg( Obj self, Obj func, Obj arg )
 
 }
 
-Obj JuliaCallFunc2Arg( Obj self, Obj func, Obj arg1, Obj arg2 )
+Obj __JuliaCallFunc2Arg( Obj self, Obj func, Obj arg1, Obj arg2 )
 {
     jl_value_t* return_value = jl_call2( GET_JULIA_FUNC( func ), GET_JULIA_OBJ( arg1 ), GET_JULIA_OBJ( arg2 ) );
     JULIAINTERFACE_EXCEPTION_HANDLER
     return NewJuliaObj( return_value );
 }
 
-Obj JuliaCallFunc3Arg( Obj self, Obj func, Obj arg1, Obj arg2, Obj arg3 )
+Obj __JuliaCallFunc3Arg( Obj self, Obj func, Obj arg1, Obj arg2, Obj arg3 )
 {
     jl_value_t* return_value = jl_call3( GET_JULIA_FUNC( func ), GET_JULIA_OBJ( arg1 ),
                                                                  GET_JULIA_OBJ( arg2 ),
@@ -191,7 +191,7 @@ Obj JuliaCallFunc3Arg( Obj self, Obj func, Obj arg1, Obj arg2, Obj arg3 )
     return NewJuliaObj( return_value );
 }
 
-Obj JuliaCallFuncXArg( Obj self, Obj func, Obj args )
+Obj __JuliaCallFuncXArg( Obj self, Obj func, Obj args )
 {
     int32_t len = LEN_PLIST( args );
     Obj current_element;
@@ -603,11 +603,11 @@ Obj JuliaObjGAPRat( Obj self, Obj gap_rat )
 static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", __JuliaFunction, 1, "string" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", __JuliaFunctionByModule, 2, "function_name,module_name" ),
-    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaCallFunc0Arg, 1, "func" ),
-    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaCallFunc1Arg, 2, "func,obj" ),
-    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaCallFunc2Arg, 3, "func,obj1,obj2" ),
-    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaCallFunc3Arg, 4, "func,obj1,obj2,obj3" ),
-    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaCallFuncXArg, 2, "func,arg_list" ),
+    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", __JuliaCallFunc0Arg, 1, "func" ),
+    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", __JuliaCallFunc1Arg, 2, "func,obj" ),
+    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", __JuliaCallFunc2Arg, 3, "func,obj1,obj2" ),
+    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", __JuliaCallFunc3Arg, 4, "func,obj1,obj2,obj3" ),
+    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", __JuliaCallFuncXArg, 2, "func,arg_list" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaEvalString, 1, "string" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaUnbox, 1, "obj" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaBox, 1, "obj" ),
