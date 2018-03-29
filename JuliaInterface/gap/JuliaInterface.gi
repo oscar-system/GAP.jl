@@ -20,6 +20,22 @@ InstallGlobalFunction( JuliaFunction,
     Error( "arguments must be strings function_name[,module_name]" );
 end );
 
+InstallMethod( JuliaUnbox,
+               [ IsJuliaObject ],
+    __JuliaUnbox );
+
+InstallMethod( JuliaBox,
+                [ IsObject ],
+  function( obj )
+    local result;
+    
+    result := __JuliaBox( obj );
+    if result = fail then
+        TryNextMethod;
+    fi;
+    return result;
+end );
+
 InstallMethod( CallFuncList,
                [ IsJuliaFunction, IsList ],
 

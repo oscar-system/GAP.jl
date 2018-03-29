@@ -8,6 +8,9 @@ BindGlobal( "__JuliaFunctions", rec( ) );
 
 DeclareGlobalFunction( "JuliaFunction" );
 
+DeclareOperation( "JuliaBox", [ IsObject ] );
+DeclareOperation( "JuliaUnbox", [ IsJuliaObject ] );
+
 DeclareGlobalFunction( "BindJuliaFunc" );
 InstallGlobalFunction( BindJuliaFunc,
   function( julia_name )

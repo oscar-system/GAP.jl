@@ -217,7 +217,7 @@ Obj JuliaEvalString( Obj self, Obj string )
     return 0;
 }
 
-Obj JuliaUnbox_internal( jl_value_t* julia_obj )
+Obj __JuliaUnbox_internal( jl_value_t* julia_obj )
 {
     size_t i;
 
@@ -301,7 +301,7 @@ Obj JuliaUnbox_internal( jl_value_t* julia_obj )
     return Fail;
 }
 
-Obj JuliaUnbox( Obj self, Obj obj )
+Obj __JuliaUnbox( Obj self, Obj obj )
 {
     if(!IS_JULIA_OBJ(obj))
     {
@@ -309,10 +309,10 @@ Obj JuliaUnbox( Obj self, Obj obj )
         return NULL;
     }
     jl_value_t* julia_obj = GET_JULIA_OBJ( obj );
-    return JuliaUnbox_internal( julia_obj );
+    return __JuliaUnbox_internal( julia_obj );
 }
 
-jl_value_t* JuliaBox_internal( Obj obj )
+jl_value_t* __JuliaBox_internal( Obj obj )
 {
     size_t i;
     Obj current;
@@ -372,7 +372,7 @@ jl_value_t* JuliaBox_internal( Obj obj )
             if(current == NULL){
                 continue;
             }
-            jl_arrayset(new_array,JuliaBox_internal(ELM_PLIST(obj,i+1)),i);
+            jl_arrayset(new_array,__JuliaBox_internal(ELM_PLIST(obj,i+1)),i);
         }
         return (jl_value_t*)(new_array);
     }
@@ -380,12 +380,12 @@ jl_value_t* JuliaBox_internal( Obj obj )
     return 0;
 }
 
-Obj JuliaBox( Obj self, Obj obj )
+Obj __JuliaBox( Obj self, Obj obj )
 {
     if(IS_JULIA_OBJ(obj)){
         return obj;
     }
-    jl_value_t* julia_ptr = JuliaBox_internal( obj );
+    jl_value_t* julia_ptr = __JuliaBox_internal( obj );
     if( julia_ptr == 0)
         return Fail;
     return NewJuliaObj( julia_ptr );
@@ -464,7 +464,7 @@ Obj JuliaTuple( Obj self, Obj list )
     params = jl_alloc_svec(len);
     param_types = jl_alloc_svec(len);
     for(int i=0;i<len;i++){
-        jl_value_t* current_obj = JuliaBox_internal(ELM_PLIST(list,i+1));
+        jl_value_t* current_obj = __JuliaBox_internal(ELM_PLIST(list,i+1));
         jl_svecset( params, i, current_obj );
         jl_svecset( param_types, i, jl_typeof(current_obj) );
     }
@@ -609,8 +609,8 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", __JuliaCallFunc3Arg, 4, "func,obj1,obj2,obj3" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", __JuliaCallFuncXArg, 2, "func,arg_list" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaEvalString, 1, "string" ),
-    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaUnbox, 1, "obj" ),
-    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaBox, 1, "obj" ),
+    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", __JuliaUnbox, 1, "obj" ),
+    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", __JuliaBox, 1, "obj" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaSetVal, 2, "name,val" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaGetGlobalVariable, 1, "name" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaGetGlobalVariableByModule, 2, "name,module" ),
