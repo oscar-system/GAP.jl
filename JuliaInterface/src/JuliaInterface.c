@@ -395,7 +395,7 @@ Obj __JuliaBox( Obj self, Obj obj )
 // returns: A list, consisting of two lists:
 //   1. A list containing the keys
 //   2. A list containing the values
-Obj JuliaUnbox_record_dict( Obj self, Obj dict )
+Obj __JuliaUnbox_record_dict( Obj self, Obj dict )
 {
     if(!IS_JULIA_OBJ(dict)){
         ErrorQuit( "input must be a boxed julia object", 0, 0 );
@@ -622,7 +622,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaModule, 1, "name"),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaGAPRatInt, 1, "number"),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaObjGAPRat, 1, "obj"),
-    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaUnbox_record_dict, 1, "dict"),
+    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", __JuliaUnbox_record_dict, 1, "dict"),
 
 	{ 0 } /* Finish with an empty entry */
 
