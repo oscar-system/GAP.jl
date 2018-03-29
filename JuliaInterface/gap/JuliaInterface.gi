@@ -146,7 +146,7 @@ InstallGlobalFunction( ImportJuliaModuleIntoGAP,
     julia_list_func := JuliaFunction( "get_variable_symbols_in_module", "GAPUtils" );
     variable_list := JuliaStructuralUnbox( julia_list_func( JuliaModule( name ) ) );
     for i in variable_list do
-        current_module_rec.(i) := JuliaGetGlobalVariableByModule( i, name );
+        current_module_rec.(i) := JuliaGetGlobalVariable( i, name );
     od;
 end );
 
