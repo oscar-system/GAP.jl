@@ -533,7 +533,7 @@ Obj JuliaGetFieldOfObject( Obj self, Obj super_obj, Obj field_name )
     return NewJuliaObj( field_value );
 }
 
-Obj JuliaSetGAPFuncAsJuliaObjFunc_internal( Obj self, Obj func, Obj name, Obj number_args )
+Obj __JuliaSetGAPFuncAsJuliaObjFunc( Obj self, Obj func, Obj name, Obj number_args )
 {
     jl_value_t* module_value = jl_eval_string( "GAP" );
     JULIAINTERFACE_EXCEPTION_HANDLER
@@ -562,7 +562,7 @@ typedef Obj (* GVarFunc)(/*arguments*/);
 // FIXME: Provide better name
 
 
-Obj JuliaBindCFunction_internal( Obj self, Obj string_name, Obj cfunction_string,
+Obj __JuliaBindCFunction( Obj self, Obj string_name, Obj cfunction_string,
                                            Obj number_args_gap, Obj arg_names_gap )
 {
     void* ccall_pointer = jl_unbox_voidpointer( jl_eval_string( CSTR_STRING( cfunction_string ) ) );
@@ -615,8 +615,8 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaGetGlobalVariable, 1, "name" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaGetGlobalVariableByModule, 2, "name,module" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaGetFieldOfObject, 2, "obj,name" ),
-    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaBindCFunction_internal, 4, "string_name,cfunction_string,number_args_gap,arg_names_gap" ),
-    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaSetGAPFuncAsJuliaObjFunc_internal, 2, "func,name"),
+    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", __JuliaBindCFunction, 4, "string_name,cfunction_string,number_args_gap,arg_names_gap" ),
+    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", __JuliaSetGAPFuncAsJuliaObjFunc, 2, "func,name"),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaTuple, 1, "list"),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaSymbol, 1, "name"),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaModule, 1, "name"),

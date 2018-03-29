@@ -31,7 +31,7 @@ InstallMethod( JuliaBox,
     
     result := __JuliaBox( obj );
     if result = fail then
-        TryNextMethod;
+        TryNextMethod();
     fi;
     return result;
 end );
