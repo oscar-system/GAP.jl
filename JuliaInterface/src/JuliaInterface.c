@@ -500,7 +500,7 @@ Obj JuliaSetVal( Obj self, Obj name, Obj julia_val )
     return 0;
 }
 
-Obj JuliaGetGlobalVariable( Obj self, Obj name )
+Obj __JuliaGetGlobalVariable( Obj self, Obj name )
 {
     jl_sym_t* symbol = jl_symbol( CSTR_STRING( name ) );
     if(!jl_boundp(jl_main_module,symbol)){
@@ -512,7 +512,7 @@ Obj JuliaGetGlobalVariable( Obj self, Obj name )
     return NewJuliaObj( value );
 }
 
-Obj JuliaGetGlobalVariableByModule( Obj self, Obj name, Obj module_name )
+Obj __JuliaGetGlobalVariableByModule( Obj self, Obj name, Obj module_name )
 {
     jl_sym_t* symbol = jl_symbol( CSTR_STRING( name ) );
     jl_module_t* module_t = get_module_from_string( CSTR_STRING( module_name ) );
@@ -612,8 +612,8 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", __JuliaUnbox, 1, "obj" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", __JuliaBox, 1, "obj" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaSetVal, 2, "name,val" ),
-    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaGetGlobalVariable, 1, "name" ),
-    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaGetGlobalVariableByModule, 2, "name,module" ),
+    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", __JuliaGetGlobalVariable, 1, "name" ),
+    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", __JuliaGetGlobalVariableByModule, 2, "name,module" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaGetFieldOfObject, 2, "obj,name" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", __JuliaBindCFunction, 4, "string_name,cfunction_string,number_args_gap,arg_names_gap" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", __JuliaSetGAPFuncAsJuliaObjFunc, 2, "func,name"),

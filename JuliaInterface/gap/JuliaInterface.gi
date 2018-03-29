@@ -20,6 +20,16 @@ InstallGlobalFunction( JuliaFunction,
     Error( "arguments must be strings function_name[,module_name]" );
 end );
 
+InstallGlobalFunction( JuliaGetGlobalVariable,
+  function( arglist... )
+    if Length( arglist ) = 1 and IsString( arglist[ 1 ] ) then
+        return __JuliaGetGlobalVariable( arglist[ 1 ] );
+    elif Length( arglist ) = 2 and ForAll( arglist, IsString ) then
+        return CallFuncList( __JuliaGetGlobalVariableByModule, arglist );
+    fi;
+    Error( "arguments must be strings function_name[,module_name]" );
+end );
+
 InstallMethod( JuliaUnbox,
                [ IsJuliaObject ],
     __JuliaUnbox );

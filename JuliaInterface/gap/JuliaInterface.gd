@@ -7,6 +7,7 @@
 BindGlobal( "__JuliaFunctions", rec( ) );
 
 DeclareGlobalFunction( "JuliaFunction" );
+DeclareGlobalFunction( "JuliaGetGlobalVariable" );
 
 DeclareOperation( "JuliaBox", [ IsObject ] );
 DeclareOperation( "JuliaUnbox", [ IsJuliaObject ] );
