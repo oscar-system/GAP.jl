@@ -4,6 +4,8 @@
 
 #include "JuliaInterface.h"          /* JuliaInterface header (includes all the gappy stuff) */
 
+#include "gap_macros.c"
+
 
 Obj JuliaGAPRatInt( Obj self, Obj integer )
 {
@@ -45,6 +47,7 @@ static Int InitKernel( StructInitInfo *module )
 {
     /* init filters and functions                                          */
     InitHdlrFuncsFromTable( GVarFuncs );
+    JuliaExperimentalInitializeGAPFunctionPointers();
 
     /* return success                                                      */
     return 0;
