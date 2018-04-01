@@ -159,17 +159,8 @@ void unpin_gap_obj( int pos )
     PushPlist( gap_obj_gc_list_positions, INTOBJ_INT( pos ) );
 }
 
-#define INITIALIZE_JULIA_CPOINTER(name)\
-gap_ptr = jl_box_voidpointer( name );\
-gap_symbol = jl_symbol( "gap_" #name );\
-JULIAINTERFACE_EXCEPTION_HANDLER \
-jl_set_const( jl_main_module, gap_symbol, gap_ptr );\
-JULIAINTERFACE_EXCEPTION_HANDLER
-
 void JuliaInitializeGAPFunctionPointers( )
 {
-    jl_value_t* gap_ptr;
-    jl_sym_t * gap_symbol;
 
     INITIALIZE_JULIA_CPOINTER(MakeGapArgList);
     INITIALIZE_JULIA_CPOINTER(pin_gap_obj);

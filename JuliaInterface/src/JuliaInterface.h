@@ -15,6 +15,17 @@
 #define JULIAINTERFACE_EXCEPTION_HANDLER if (jl_exception_occurred()) \
     ErrorMayQuit( jl_typeof_str(jl_exception_occurred()), 0, 0 );
 
+#define INITIALIZE_JULIA_CPOINTER(name)\
+{\
+jl_value_t* gap_ptr;\
+jl_sym_t * gap_symbol;\
+gap_ptr = jl_box_voidpointer( name );\
+gap_symbol = jl_symbol( "gap_" #name );\
+JULIAINTERFACE_EXCEPTION_HANDLER \
+jl_set_const( jl_main_module, gap_symbol, gap_ptr );\
+JULIAINTERFACE_EXCEPTION_HANDLER\
+}
+
 UInt gap_obj_gc_list_master;
 UInt gap_obj_gc_list_positions_master;
 
