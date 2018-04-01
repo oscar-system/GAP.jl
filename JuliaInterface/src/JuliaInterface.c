@@ -556,22 +556,6 @@ Obj __JuliaBindCFunction( Obj self, Obj string_name, Obj cfunction_string,
     return NewFunction(string_name, number_args, arg_names_gap, ccall_pointer );
 }
 
-Obj JuliaGAPRatInt( Obj self, Obj integer )
-{
-    jl_module_t* module_t = get_module_from_string( "GAPRatModule" );
-    jl_function_t* func = jl_get_function( module_t, "GAPRat" );
-    jl_value_t* rat_obj = jl_call1( func, jl_box_voidpointer( (void*)integer ) );
-    return NewJuliaObj( rat_obj );
-}
-
-Obj JuliaObjGAPRat( Obj self, Obj gap_rat )
-{
-    jl_module_t* module_t = get_module_from_string( "GAPRatModule" );
-    jl_function_t* func = jl_get_function( module_t, "get_gaprat_ptr" );
-    void* rat_obj = jl_unbox_voidpointer( jl_call1( func, GET_JULIA_OBJ( gap_rat ) ) );
-    return (Obj)rat_obj;
-}
-
 #define GVAR_FUNC_TABLE_ENTRY(srcfile, name, nparam, params) \
   {#name, nparam, \
    params, \
@@ -599,8 +583,6 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaTuple, 1, "list"),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaSymbol, 1, "name"),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaModule, 1, "name"),
-    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaGAPRatInt, 1, "number"),
-    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaObjGAPRat, 1, "obj"),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", __JuliaUnbox_record_dict, 1, "dict"),
 
 	{ 0 } /* Finish with an empty entry */

@@ -88,4 +88,8 @@ Obj __JuliaSetGAPFuncAsJuliaObjFunc( Obj self, Obj func, Obj name, Obj number_ar
 Obj __JuliaBindCFunction( Obj self, Obj string_name, Obj cfunction_string,
                                            Obj number_args_gap, Obj arg_names_gap );
 
+// From julia_macros.c
+
+jl_module_t* get_module_from_string( char* name );
+
 #endif

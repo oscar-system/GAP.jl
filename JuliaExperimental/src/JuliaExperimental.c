@@ -2,20 +2,24 @@
  * JuliaExperimental: Experimental code for the GAP Julia integration
  */
 
-#include "src/compiled.h"          /* GAP headers */
+#include "JuliaInterface.h"          /* JuliaInterface header (includes all the gappy stuff) */
 
 
-Obj TestCommand(Obj self)
+Obj JuliaGAPRatInt( Obj self, Obj integer )
 {
-    return INTOBJ_INT(42);
+    jl_module_t* module_t = get_module_from_string( "GAPRatModule" );
+    jl_function_t* func = jl_get_function( module_t, "GAPRat" );
+    jl_value_t* rat_obj = jl_call1( func, jl_box_voidpointer( (void*)integer ) );
+    return NewJuliaObj( rat_obj );
 }
 
-Obj TestCommandWithParams(Obj self, Obj param, Obj param2)
+Obj JuliaObjGAPRat( Obj self, Obj gap_rat )
 {
-    /* simply return the first parameter */
-    return param;
+    jl_module_t* module_t = get_module_from_string( "GAPRatModule" );
+    jl_function_t* func = jl_get_function( module_t, "get_gaprat_ptr" );
+    void* rat_obj = jl_unbox_voidpointer( jl_call1( func, GET_JULIA_OBJ( gap_rat ) ) );
+    return (Obj)rat_obj;
 }
-
 
 typedef Obj (* GVarFunc)(/*arguments*/);
 
@@ -27,8 +31,8 @@ typedef Obj (* GVarFunc)(/*arguments*/);
 
 // Table of functions to export
 static StructGVarFunc GVarFuncs [] = {
-    GVAR_FUNC_TABLE_ENTRY("JuliaExperimental.c", TestCommand, 0, ""),
-    GVAR_FUNC_TABLE_ENTRY("JuliaExperimental.c", TestCommandWithParams, 2, "param, param2"),
+    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaGAPRatInt, 1, "number"),
+    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaObjGAPRat, 1, "obj"),
 
 	{ 0 } /* Finish with an empty entry */
 
