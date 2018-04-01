@@ -2,22 +2,7 @@
  * JuliaInterface: Test interface to julia
  */
 
-#include "src/compiled.h"          /* GAP headers */
-#include <julia.h>
-
-#undef PACKAGE_BUGREPORT
-#undef PACKAGE_NAME
-#undef PACKAGE_STRING
-#undef PACKAGE_TARNAME
-#undef PACKAGE_URL
-#undef PACKAGE_VERSION
-#include "pkgconfig.h"
-
-#define JULIAINTERFACE_EXCEPTION_HANDLER if (jl_exception_occurred()) \
-    ErrorMayQuit( jl_typeof_str(jl_exception_occurred()), 0, 0 );
-
-UInt gap_obj_gc_list_master;
-UInt gap_obj_gc_list_positions_master;
+#include "JuliaInterface.h"
 
 #include "gap_macros.c"
 
@@ -101,12 +86,6 @@ Obj JuliaObjectTypeFunc(Obj o)
 {
     return TheTypeJuliaObject;
 }
-
-#define IS_JULIA_FUNC(o) (TNUM_OBJ(o) == T_JULIA_FUNC)
-#define IS_JULIA_OBJ(o) (TNUM_OBJ(o) == T_JULIA_OBJ)
-
-UInt T_JULIA_FUNC = 0;
-UInt T_JULIA_OBJ = 0;
 
 Obj NewJuliaFunc(jl_function_t* C)
 {
