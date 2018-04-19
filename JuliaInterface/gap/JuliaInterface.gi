@@ -6,7 +6,7 @@
 
 #! @Arguments function_name[,module_name]
 #! @Returns a Julia function
-#! @Desctiption
+#! @Description
 #!  Returns the GAP object corresponding to the Julia function
 #!  with name <A>function_name</A> in module <A>module_name</A>.
 #!  The default module is Main.
@@ -73,6 +73,24 @@ InstallMethod( CallFuncList,
 
 end );
 
+
+##
+##  We want to use &GAP's function call syntax also for certain Julia objects
+##  that are <E>not</E> functions, for example for types such as <C>fmpz</C>.
+##  Note that also Julia supports this.
+##
+InstallMethod( CallFuncList,
+    [ "IsJuliaObject", "IsList" ],
+    function( julia_obj, argument_list )
+        local apply;
+
+        # We do not get our hands on Julia's built-in function '_apply'
+        # via 'BindJuliaFunc', and we do not find it in 'Julia.Core' ...
+        apply:= JuliaFunction( "_apply", "Core" );
+        return apply( julia_obj, argument_list );
+    end );
+
+
 BindJuliaFunc( "string" );
 
 BindJuliaFunc( "include" );
@@ -95,6 +113,12 @@ InstallMethod( ViewString,
 
 end );
 
+InstallMethod( ViewString,
+    [ IsJuliaFunction ],
+    julia_func -> Concatenation( "<Julia: ",
+                      JuliaUnbox( __JuliaFunctions.string( julia_func ) ),
+                      ">" ) );
+
 InstallMethod( String,
                [ IsJuliaObject ],
 
@@ -104,32 +128,6 @@ InstallMethod( String,
 
 end );
 
-InstallMethod( CallFuncList,
-               [ IsJuliaFunction, IsList ],
-
-  function( julia_func, argument_list )
-
-    if Length( argument_list ) = 0 then
-
-        return __JuliaCallFunc0Arg( julia_func );
-
-    elif Length( argument_list ) = 1 then
-
-        return __JuliaCallFunc1Arg( julia_func, JuliaBox( argument_list[ 1 ] ) );
-
-    elif Length( argument_list ) = 2 then
-
-        return __JuliaCallFunc2Arg( julia_func, JuliaBox( argument_list[ 1 ] ), JuliaBox( argument_list[ 2 ] ) );
-
-    elif Length( argument_list ) = 3 then
-
-        return __JuliaCallFunc3Arg( julia_func, JuliaBox( argument_list[ 1 ] ), JuliaBox( argument_list[ 2 ] ), JuliaBox( argument_list[ 3 ] ) );
-
-    fi;
-
-    return __JuliaCallFuncXArg( julia_func, List( argument_list, JuliaBox ) );
-
-end );
 
 InstallGlobalFunction( ImportJuliaModuleIntoGAP,
   function( name )
