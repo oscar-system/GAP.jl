@@ -308,7 +308,7 @@ jl_value_t* __JuliaBox_internal( Obj obj )
     }
 
     //string
-    else if(IS_STRING(obj)){
+    else if(IS_STRING_REP(obj)){
         return jl_cstr_to_string( CSTR_STRING( obj ) );
     }
 

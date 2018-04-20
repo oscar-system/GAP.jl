@@ -1,3 +1,7 @@
+##
+gap> START_TEST( "box_unbox.tst" );
+
+##
 gap> int := JuliaBox( 11 );
 <Julia: 11>
 gap> JuliaUnbox( int );
@@ -15,6 +19,7 @@ gap> bool := JuliaBox( false );
 gap> JuliaUnbox( bool );
 false
 
+##
 gap> list:= JuliaBox( [ 1, JuliaBox( 2 ), 3 ] );
 <Julia: Any[1, 2, 3]>
 gap> JuliaUnbox( list );
@@ -22,6 +27,17 @@ gap> JuliaUnbox( list );
 gap> List( JuliaUnbox( list ), JuliaUnbox );
 [ 1, 2, 3 ]
 
+##  empty list vs. empty string
+gap> emptylist:= JuliaBox( [] );
+<Julia: Any[]>
+gap> emptystring:= JuliaBox( "" );
+<Julia: >
+gap> JuliaUnbox( emptylist );
+[  ]
+gap> JuliaUnbox( emptystring );
+""
+
+##  'JuliaBox' for Julia functions (inside arrays)
 gap> parse:= JuliaFunction( "parse", "Base" );;
 gap> IsIdenticalObj( parse, JuliaBox( parse ) );
 true
@@ -32,7 +48,6 @@ gap> list2:= JuliaUnbox( list );
 gap> List( list2, JuliaUnbox );
 [ 1, fail, 3 ]
 
-## The following should work but currently doesn't.
-# gap> IsJuliaFunction( list2[2] );
-# true
+##
+gap> STOP_TEST( "box_unbox.tst", 1 );
 
