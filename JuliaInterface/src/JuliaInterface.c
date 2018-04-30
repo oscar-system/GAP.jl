@@ -308,7 +308,7 @@ jl_value_t* __JuliaBox_internal( Obj obj )
     }
 
     //string
-    else if(IS_STRING(obj)){
+    else if(IS_STRING_REP(obj)){
         return jl_cstr_to_string( CSTR_STRING( obj ) );
     }
 
@@ -356,12 +356,20 @@ jl_value_t* __JuliaBox_internal( Obj obj )
         return (jl_value_t*)(new_array);
     }
 
+    // Julia object/function: relevant in recursive situations
+    else if ( IS_JULIA_OBJ(obj) ) {
+        return GET_JULIA_OBJ(obj);
+    }
+    else if ( IS_JULIA_FUNC(obj) ) {
+        return GET_JULIA_FUNC(obj);
+    }
+
     return 0;
 }
 
 Obj __JuliaBox( Obj self, Obj obj )
 {
-    if(IS_JULIA_OBJ(obj)){
+    if( IS_JULIA_OBJ(obj) || IS_JULIA_FUNC(obj) ){
         return obj;
     }
     jl_value_t* julia_ptr = __JuliaBox_internal( obj );
