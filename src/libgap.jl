@@ -51,11 +51,11 @@ end
 function EvalString( cmd :: String )
     out = Array(UInt8, 32768)
     err = Array(UInt8, 32768)
-    res = GapObj( ccall( (:GAP_eval_string, "libgap")
+    res = GapObj( ccall( (:GAP_EvalString, "libgap")
                           , Ptr{Void}
-                          , (Ptr{UInt8},Ptr{UInt8},Csize_t,Ptr{UInt8},Csize_t)
-                          , cmd, out, sizeof(out), err, sizeof(err) ) );
-    return (res, unsafe_string(pointer(out)), unsafe_string(pointer(err)))
+                          , (Ptr{UInt8},)
+                          , cmd ) );
+    return res
 end
 
 function IntObj_Int(val :: Int64)
