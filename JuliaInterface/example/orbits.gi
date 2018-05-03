@@ -20,4 +20,11 @@ end;
 example_dirs := DirectoriesPackageLibrary( "JuliaInterface", "example" );
 JuliaIncludeFile( Filename( example_dirs, "orbits.jl" ) );
 
-JuliaBindCFunction( "bahn", "bahn_jl", 3, "elem,gens,oper" );
+bahn_jl := JuliaBindCFunction( "bahn", "bahn_jl", 3, [ "elem","gens","oper" ] );
+
+grp := GeneratorsOfGroup( SymmetricGroup( 10000 ) );
+elem := 1;
+action := function( elem, grp_elem ) return elem^grp_elem; end;
+
+bahn(elem,grp,action);;time;
+bahn_jl(elem,grp,action);;time;
