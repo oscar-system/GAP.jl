@@ -10,6 +10,8 @@ end
 
 error_handler_func = cfunction(error_handler,Void,(Ptr{Char},))
 
+const pkgdir = realpath(dirname(@__FILE__))
+
 function initialize( argv::Array{String,1}, env::Array{String,1} )
     ccall( (:GAP_set_error_handler, "libgap")
             , Void
@@ -25,7 +27,7 @@ function initialize( argv::Array{String,1}, env::Array{String,1} )
            , Ptr{Void}
            , (Ptr{UInt8},)
            , "LoadPackage(\"JuliaInterface\");" )
-    include("libgap.jl")
+    include( pkgdir * "/libgap.jl")
 end
 
 function finalize( )
