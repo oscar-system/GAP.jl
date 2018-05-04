@@ -5,11 +5,11 @@
 # the higher level API can be found in gap.jl
 #
 
-module LIBGAP
+module LibGAP
+
+import GAP
 
 import Base: length, convert
-
-using GAP
 
 export EvalString, IntObj_Int, Int_IntObj,
        CallFuncList, ValGVar, String_StringObj, StringObj_String,
@@ -75,7 +75,7 @@ end
 
 function NewPList(length :: UInt64)
     o = GAP.GapObj( ccall( (:GAP_NewPList, "libgap")
-                          , Ptr{UInt8}
+                          , Ptr{Void}
                           , (UInt64,)
                           , length ) )
     return o
@@ -124,11 +124,14 @@ function GC_pin(obj :: GAP.GapObj)
            , obj.ptr )
 end
 
-function GC_unpin(obj :: GAP.GapObj)
+function GC_unpin(obj :: GAP.GAP.GapObj)
     ccall( (:libgap_GC_unpin, "libgap")
            , Void
            , ( Ptr{Void}, )
            , obj.ptr )
 end
+
+include( "gap.jl" )
+include( "conversion.jl" )
 
 end

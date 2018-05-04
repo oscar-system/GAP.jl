@@ -1,25 +1,22 @@
-include( "gap.jl" )
-gc_enable(false)
-
-function from_gap_int16(obj :: GapObj) :: Int16
-    x = libgap.Int_IntObj( obj )
+function from_gap_int16(obj :: GAP.GapObj) :: Int16
+    x = Int_IntObj( obj )
     return Int16(x)
 end
 
-function from_gap_int32(obj :: GapObj) :: Int32
-    x = libgap.Int_IntObj( obj )
+function from_gap_int32(obj :: GAP.GapObj) :: Int32
+    x = Int_IntObj( obj )
     return Int32(x)
 end
 
-from_gap_int64(obj :: GapObj) = libgap.Int_IntObj(obj)
+from_gap_int64(obj :: GAP.GapObj) = Int_IntObj(obj)
 
-from_gap_string(obj :: GapObj) = libgap.String_StringObj(obj)
+from_gap_string(obj :: GAP.GapObj) = String_StringObj(obj)
 
-function from_gap_list( obj :: GapObj) :: Array{GapObj}
-    len = libgap.LenPList( obj )
-    array = Array{GapObj}(len)
+function from_gap_list( obj :: GAP.GapObj) :: Array{GAP.GapObj}
+    len = LenPList( obj )
+    array = Array{GAP.GapObj}(len)
     for i in 1:len
-        array[i] = libgap.ElmPList(obj,i)
+        array[i] = ElmPList(obj,i)
     end
     return array
 end
@@ -29,7 +26,7 @@ from_gap(x,::Type{Int32}) = from_gap_int32( x )
 from_gap(x,::Type{Int64}) = from_gap_int64( x )
 from_gap(x,::Type{String}) = from_gap_string( x )
 
-function from_gap_list_type( obj :: GapObj, element_type :: DataType ) :: Array{Int64}
+function from_gap_list_type( obj :: GAP.GapObj, element_type :: DataType ) :: Array{Int64}
     converted_list = from_gap_list( obj )
     len_list = length(converted_list)
     new_array = Array{element_type}(len_list)
