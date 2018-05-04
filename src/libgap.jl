@@ -61,7 +61,7 @@ end
 
 function String_StringObj( str :: GAP.GapObj )
     return unsafe_string( ccall( (:GAP_CSTR_STRING, "libgap")
-                                 , Ptr{Char}
+                                 , Ptr{UInt8}
                                  , (Ptr{Void}, )
                                  , str.ptr ) )
 end
