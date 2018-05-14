@@ -539,6 +539,28 @@ Obj __JuliaSetGAPFuncAsJuliaObjFunc( Obj self, Obj func, Obj name, Obj number_ar
     return NULL;
 }
 
+Obj JuliaSetAsJuliaPointer( Obj self, Obj obj )
+{
+    jl_value_t* module_value = jl_eval_string( "GAP" );
+    JULIAINTERFACE_EXCEPTION_HANDLER
+    if(!jl_is_module(module_value))
+          ErrorMayQuit("GAP module not yet defined",0,0);
+    jl_module_t* module_t = (jl_module_t*)module_value;
+    jl_function_t* set_gap_obj = jl_get_function( module_t, "GapObj" );
+    JULIAINTERFACE_EXCEPTION_HANDLER
+    jl_value_t* gap_obj_ptr = jl_call1( set_gap_obj, jl_box_voidpointer(obj) );
+    JULIAINTERFACE_EXCEPTION_HANDLER
+    return NewJuliaObj( gap_obj_ptr );
+}
+
+Obj JuliaGetFromJuliaPointer( Obj self, Obj obj )
+{
+    jl_value_t* julia_ptr = GET_JULIA_OBJ( obj );
+    jl_value_t* gap_ptr = jl_get_field( julia_ptr, "ptr" );
+    JULIAINTERFACE_EXCEPTION_HANDLER
+    return (Obj)(jl_unbox_voidpointer(gap_ptr));
+}
+
 typedef Obj (* GVarFunc)(/*arguments*/);
 
 #define GVAR_FUNC_TABLE_ENTRY_WITH_NAME(srcfile, name, nparam, params, string_name) \
@@ -592,6 +614,8 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaSymbol, 1, "name"),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaModule, 1, "name"),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", __JuliaUnbox_record_dict, 1, "dict"),
+    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaSetAsJuliaPointer, 1, "obj"),
+    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaGetFromJuliaPointer, 1, "obj"),
 
 	{ 0 } /* Finish with an empty entry */
 
