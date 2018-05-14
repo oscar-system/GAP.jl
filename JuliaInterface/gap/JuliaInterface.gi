@@ -91,9 +91,9 @@ InstallMethod( CallFuncList,
     end );
 
 
-BindJuliaFunc( "string" );
+__JuliaFunctions.string := JuliaFunction( "string", "Base" );
 
-BindJuliaFunc( "include" );
+__JuliaFunctions.include := JuliaFunction( "include", "Base" );
 
 BindGlobal( "JuliaKnownFiles", [] );
 
