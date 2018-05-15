@@ -1,4 +1,6 @@
-
+#############################################################################
+##
+#W  gaprat.tst         GAP 4 package JuliaExperimental          Thomas Breuer
 ##
 gap> START_TEST( "gaprat.tst" );
 

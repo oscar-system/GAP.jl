@@ -5,6 +5,7 @@
 # metadata in PackageInfo.g.
 #
 LoadPackage( "JuliaExperimental" );
+
 dirs := DirectoriesPackageLibrary( "JuliaExperimental", "tst" );
 
 HasSuffix := function(list, suffix)
@@ -31,3 +32,4 @@ for test in tests do
         Print("Test '",test,"' failed\n");
     fi;
 od;
+
