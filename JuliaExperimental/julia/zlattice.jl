@@ -5,8 +5,6 @@
 ##  functions that have been translated from GAP library code
 ##
 
-#T need translation of Dict objects from/to GAP for being able to use them!
-
 module GAPZLattice
 
 import Core: Int, isa
@@ -17,15 +15,16 @@ import Base: abs, convert, copy, deepcopy, diag, haskey, inv, lcm, length,
 export LLLReducedGramMat, ShortestVectors, OrthogonalEmbeddings
 
 
-# LLLReducedGramMat( A[, y] )
-#
-# returns a dictionary with the components
-#   remainder::Array{Rational{Int},2},      # the Gram matrix
-#   relations::Array{Rational{Int},2},         # basechange matrix $H$
-#   transformation::Array{Rational{Int},2},         # basechange matrix $H$
-#   mue::Array{Rational{Int},2},       # matrix $\mue$ of scalar products
-#   B::Array{Rational{Int},1},         # list $B$ of norms of $b^{\ast}$
-# 
+doc"""
+    LLLReducedGramMat( grammatrix::Array{Int,2}, y::Rational{Int} = 3//4 )
+> Return a dictionary with the following components.
+>   remainder`
+>   `remainder`:      the reduced Gram matrix (`Array{Rational{Int},2}`)
+>   `relations`:      basechange matrix `H` (`Array{Rational{Int},2}`)
+>   `transformation`: basechange matrix `H` (`Array{Rational{Int},2}`)
+>   `mue`:            matrix of scalar products (`Array{Rational{Int},2}`)
+>   `B`:              list of norms of $b^{\ast}$ (`Array{Rational{Int},1}`)
+"""
 function LLLReducedGramMat( grammatrix::Array{Int,2}, y::Rational{Int} = 3//4 )
 
     local gram::Array{Rational{Int},2},      # the Gram matrix
@@ -337,24 +336,20 @@ function LLLReducedGramMat( grammatrix::Array{Int,2}, y::Rational{Int} = 3//4 )
 end
 
 
-################################################################
-# 
-#  ShortestVectors( grammat, bound[, "positive"] )
-#
-#  returns a dictionary with the components
-#    vectors::Array{Array{Int,1},1}
-#    norms::Array{Rational{Int},1},
-#
-#  (in GAP: see lib/zlattice.gi)
-#
-#  example:
-#  julia> A = [ 2 -1 -1 -1 ; -1 2 0 0 ; -1 0 2 0 ; -1 0 0 2 ];
-#  julia> sv = ShortestVectors( A, 2 )
-#  julia> size( sv[ "norms" ], 1 )
-#  12
-#  
-function ShortestVectors( grammat::Array{Int,2}, bound::Int,
-                          positive::String = "" )
+doc"""
+    ShortestVectors( grammat::Array{Int,2}, bound::Int, positive::String = "" )
+> Return a dictionary with the following components.
+>   `vectors`:        shortest vectors (`Array{Array{Int,1},1}`),
+>   `norms`:          norms of vectors (`Array{Rational{Int},1}`).
+> (The code corresponds to the GAP code in `lib/zlattice.gi`.)
+> 
+> Example:
+>   julia> A = [ 2 -1 -1 -1 ; -1 2 0 0 ; -1 0 2 0 ; -1 0 0 2 ];
+>   julia> sv = ShortestVectors( A, 2 );
+>   julia> size( sv[ "norms" ], 1 )
+>   12
+"""
+function ShortestVectors( grammat::Array{Int,2}, bound::Int, positive::String = "" )
     local n::Int,
           c_vectors::Array{Array{Int,1},1},
           c_norms::Array{Rational{Int},1},
