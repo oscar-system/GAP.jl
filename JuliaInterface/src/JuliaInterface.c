@@ -98,12 +98,18 @@ Obj NewJuliaFunc(jl_function_t* C)
 Obj NewJuliaObj(jl_value_t* C)
 {
     Obj o;
+#ifndef USE_JULIA_GC
     o = NewBag(T_JULIA_OBJ, 2 * sizeof(Obj));
+#else
+     o = NewBag(T_JULIA_OBJ, 1 * sizeof(Obj));
+#endif
     SET_JULIA_OBJ(o, C);
+#ifndef USE_JULIA_GC
     jl_value_t* input_position_jl = get_next_julia_position();
     ADDR_OBJ(o)[1] = (Obj)jl_unbox_int64( input_position_jl );
     jl_call3( julia_array_setindex, GAP_MEMORY_STORAGE, C, input_position_jl );
     JULIAINTERFACE_EXCEPTION_HANDLER
+#endif
     return o;
 }
 
@@ -629,17 +635,25 @@ static Int InitKernel( StructInitInfo *module )
     T_JULIA_OBJ = RegisterPackageTNUM("JuliaObject", JuliaObjectTypeFunc );
 
     InitMarkFuncBags(T_JULIA_FUNC, &MarkNoSubBags);
+#ifndef USE_JULIA_GC
     InitMarkFuncBags(T_JULIA_OBJ, &MarkNoSubBags);
+#else
+    InitMarkFuncBags(T_JULIA_OBJ, &MarkOneSubBags);
+#endif
 
     CopyObjFuncs[T_JULIA_FUNC] = &JuliaFuncCopyFunc;
     CleanObjFuncs[T_JULIA_FUNC] = &JuliaFuncCleanFunc;
     IsMutableObjFuncs[T_JULIA_FUNC] = &JuliaFuncIsMutableFunc;
     CopyObjFuncs[T_JULIA_OBJ] = &JuliaObjCopyFunc;
+#ifndef USE_JULIA_GC
     CleanObjFuncs[T_JULIA_OBJ] = &JuliaObjCleanFunc;
+#endif
     IsMutableObjFuncs[T_JULIA_OBJ] = &JuliaObjIsMutableFunc;
 
+#ifndef USE_JULIA_GC
     InitFreeFuncBag(T_JULIA_OBJ, &JuliaObjFreeFunc );
     /* no free func for julia function objects ??? */
+#endif
 
     // Initialize libjulia
     jl_init();
