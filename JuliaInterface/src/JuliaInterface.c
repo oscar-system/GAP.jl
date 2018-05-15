@@ -571,19 +571,12 @@ typedef Obj (* GVarFunc)(/*arguments*/);
 // FIXME: Provide better name
 
 
-Obj __JuliaBindCFunction( Obj self, Obj string_name, Obj cfunction_string,
+Obj __JuliaBindCFunction( Obj self, Obj cfunction_string,
                                            Obj number_args_gap, Obj arg_names_gap )
 {
     void* ccall_pointer = jl_unbox_voidpointer( jl_eval_string( CSTR_STRING( cfunction_string ) ) );
     size_t number_args = INT_INTOBJ( number_args_gap );
-    // char* arg_names = CSTR_STRING( arg_names_gap );
-    // StructGVarFunc current_function[] = {
-    //     GVAR_FUNC_TABLE_ENTRY_WITH_NAME( "JuliaInterface.c", ccall_pointer,
-    //                                      number_args, arg_names, CSTR_STRING( string_name ) ),
-    //     { 0 } };
-    // InitHdlrFuncsFromTable( current_function );
-    // InitGVarFuncsFromTable( current_function );
-    return NewFunction(string_name, number_args, arg_names_gap, ccall_pointer );
+    return NewFunction(0, number_args, arg_names_gap, ccall_pointer );
 }
 
 #define GVAR_FUNC_TABLE_ENTRY(srcfile, name, nparam, params) \
@@ -608,7 +601,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", __JuliaGetGlobalVariable, 1, "name" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", __JuliaGetGlobalVariableByModule, 2, "name,module" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaGetFieldOfObject, 2, "obj,name" ),
-    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", __JuliaBindCFunction, 4, "string_name,cfunction_string,number_args_gap,arg_names_gap" ),
+    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", __JuliaBindCFunction, 3, "cfunction_string,number_args_gap,arg_names_gap" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", __JuliaSetGAPFuncAsJuliaObjFunc, 2, "func,name"),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaTuple, 1, "list"),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaSymbol, 1, "name"),

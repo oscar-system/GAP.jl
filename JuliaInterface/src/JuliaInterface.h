@@ -96,7 +96,7 @@ Obj JuliaGetFieldOfObject( Obj self, Obj super_obj, Obj field_name );
 
 Obj __JuliaSetGAPFuncAsJuliaObjFunc( Obj self, Obj func, Obj name, Obj number_args );
 
-Obj __JuliaBindCFunction( Obj self, Obj string_name, Obj cfunction_string,
+Obj __JuliaBindCFunction( Obj self, Obj cfunction_string,
                                            Obj number_args_gap, Obj arg_names_gap );
 
 // From julia_macros.c
