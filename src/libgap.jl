@@ -11,6 +11,8 @@ import GAP
 
 import Base: length, convert
 
+import Main: gap_GET_JULIA_OBJ, gap_NewJuliaObj
+
 export EvalString, IntObj_Int, Int_IntObj,
        CallFuncList, ValGVar, String_StringObj, StringObj_String,
        NewPList, SetElmPList, SetLenPList, ElmPList, LenPList
@@ -76,7 +78,7 @@ end
 function NewPList(length :: UInt64)
     o = GAP.GapObj( ccall( (:GAP_NewPList, "libgap")
                           , Ptr{Void}
-                          , (UInt64,)
+                        , (UInt64,)
                           , length ) )
     return o
 end
@@ -101,7 +103,7 @@ end
 
 function ElmPList(list :: GAP.GapObj, pos :: UInt64)
     return GAP.GapObj( ccall( (:GAP_ElmPList, "libgap")
-                          , Ptr{UInt8}
+                          , Ptr{Void}
                           , (Ptr{UInt8}, UInt64)
                           , list.ptr, pos ) ) 
 end
@@ -109,13 +111,22 @@ end
 libgap_ElmPList(list::GAP.GapObj,pos::Int64) = libgap_ElmPList(list,UInt64(pos))
 
 function LenPList( list :: GAP.GapObj ) :: Int64
-    return ccall( (:GAP_LenPlist, "libgap")
+    return ccall( (:GAP_LenPList, "libgap")
                           , Int64
                           , (Ptr{UInt8},)
                           , list.ptr, ) 
 end
 
+function AsGAPPtr( obj ) :: GAP.GapObj
+    ptr = pointer_from_objref( obj )
+    gap_ptr = ccall( gap_NewJuliaObj, Ptr{Void}, (Ptr{Void},), ptr )
+    return GAP.GapObj( gap_ptr )
+end
 
+function FromGAPPtr( obj :: GAP.GapObj )
+    ptr = ccall( gap_GET_JULIA_OBJ, Ptr{Void},(Ptr{Void},), obj.ptr )
+    return unsafe_pointer_to_objref( ptr )
+end
 
 function GC_pin(obj :: GAP.GapObj)
     ccall( (:libgap_GC_pin, "libgap")

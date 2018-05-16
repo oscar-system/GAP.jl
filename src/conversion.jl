@@ -16,7 +16,7 @@ function from_gap_list( obj :: GAP.GapObj) :: Array{GAP.GapObj}
     len = LenPList( obj )
     array = Array{GAP.GapObj}(len)
     for i in 1:len
-        array[i] = ElmPList(obj,i)
+        array[i] = ElmPList(obj,UInt(i))
     end
     return array
 end
