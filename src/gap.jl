@@ -27,5 +27,5 @@ end
 function Base.show( io::IO, obj::GAP.GapObj )
     str = GAP.String( obj )
     stri = LibGAP.from_gap_string( str )
-    print(io,stri)
+    print(io,"GAP: $stri")
 end

@@ -8,7 +8,7 @@ function from_gap_int32(obj :: GAP.GapObj) :: Int32
     return Int32(x)
 end
 
-from_gap_int64(obj :: GAP.GapObj) = Int_IntObj(obj)
+from_gap_int64(obj :: GAP.GapObj) = Int64(Int_IntObj(obj))
 
 from_gap_string(obj :: GAP.GapObj) = String_StringObj(obj)
 

@@ -42,7 +42,7 @@ end
 
 function Int_IntObj(obj :: GAP.GapObj)
      return ccall( (:GAP_Int_IntObj, "libgap")
-                    , Cint
+                    , Int64
                     , (Ptr{Void}, )
                     , obj.ptr )
 end
