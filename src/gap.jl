@@ -1,9 +1,20 @@
 import Base: convert
 
+const True = GAP.ReturnTrue()
+const False = GAP.ReturnFalse()
+
 to_gap(str :: String)         = StringObj_String(str)
 to_gap(v :: Int32)            = IntObj_Int(v)
 to_gap(v :: Int64)            = IntObj_Int(v)
 to_gap(v :: GAP.GapObj)       = v
+
+function to_gap( v :: Bool ) :: GAP.GapObj
+    if v
+        return True
+    else
+        return False
+    end
+end
 
 function to_gap(v :: Array{GAP.GapObj, 1}) :: GAP.GapObj
     l = NewPList(length(v))

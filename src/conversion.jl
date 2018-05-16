@@ -1,3 +1,5 @@
+
+
 function from_gap_int16(obj :: GAP.GapObj) :: Int16
     x = Int_IntObj( obj )
     return Int16(x)
@@ -21,10 +23,20 @@ function from_gap_list( obj :: GAP.GapObj) :: Array{GAP.GapObj}
     return array
 end
 
+function from_gap_bool( obj :: GAP.GapObj ) :: Bool
+    if obj.ptr == True.ptr
+        return true
+    elseif obj.ptr == False.ptr
+        return false
+    end
+    ## Fail does not convert well
+end
+
 from_gap(x,::Type{Int16}) = from_gap_int16( x )
 from_gap(x,::Type{Int32}) = from_gap_int32( x )
 from_gap(x,::Type{Int64}) = from_gap_int64( x )
 from_gap(x,::Type{String}) = from_gap_string( x )
+from_gap(x,::Type{Bool}) = from_gap_bool( x )
 
 function from_gap_list_type( obj :: GAP.GapObj, element_type :: DataType ) :: Array{Int64}
     converted_list = from_gap_list( obj )
