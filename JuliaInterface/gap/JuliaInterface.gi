@@ -133,6 +133,11 @@ InstallGlobalFunction( ImportJuliaModuleIntoGAP,
   function( name )
     local julia_list_func, function_list, variable_list, i, current_module_rec;
 
+    # Do nothing if the module has already been imported.
+    if IsBound( Julia.( name ) ) then
+      return;
+    fi;
+
     JuliaEvalString( Concatenation( "using ", name ) );
     Julia.(name) := rec();
     current_module_rec := Julia.(name);
