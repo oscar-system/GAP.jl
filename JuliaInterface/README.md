@@ -1,5 +1,4 @@
 # The GAP 4 package `JuliaInterface'
-==================================
 
 JuliaInterface provides an interface to the Julia interpreter.
 
