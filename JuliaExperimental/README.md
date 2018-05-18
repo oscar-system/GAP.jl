@@ -1,6 +1,6 @@
-# The GAP 4 package `JuliaInterface'
+# The GAP 4 package `JuliaExperimental'
 
-JuliaInterface provides an interface to the Julia interpreter.
+JuliaExperimental provides experimental code to test and explore the capabilities of the JuliaInterface package, and the general combination of GAP and Julia.
 
 ## General Disclaimer
 
@@ -18,30 +18,30 @@ This software is licensed under the LGPL, version 3, or any later version.
 
 - Julia 0.6.2 or higher, compiled in `<path_to_julia>`
 - GAP 4.9.1 or higher, compiled in `<path_to_gaproot>`
-- Standard building tools, such as gcc, autotools, libtools, automake, and make.
-  If you were able to build GAP and Julia from their git repositories, JuliaInterface
-  can be built.
+- JuliaInterface, compiled in `<path_to_juliainterface>`
+- The Julia packages Nemo.jl and Singular.jl
 
 ### Installation
 
 #### General instructions
 
-- Clone or download this repository into the GAP package folder `<gap_package_folder>`, which
-  is usually `<path_to_gaproot>/pkg`. You can download the package via
+- Compile the JuliaInterface package as described it its README.md
+- Start Julia and make sure Nemo.jl and Singular.jl are compiled, by typing
   ```
-  git clone https://github.com/oscar-system/GAPJulia <path_to_gaproot>/pkg/GAPJulia
+  using Singular
+  using Nemo
   ```
-- Configure and compile JuliaInterface via
+- Configure and compile JuliaExperimental via
   ```
-  cd <path_to_gaproot>/pkg/GAPJulia/JuliaInterface
+  cd <path_to_juliainterface>/../JuliaExperimental
   ./autogen.sh
-  ./configure --with-gaproot=<path_to_gaproot> --with-julia=<path_to_julia>/usr
+  ./configure --with-gaproot=<path_to_gaproot> --with-julia=<path_to_julia>/usr --with-juliainterface=<path_to_juliainterface>
   make
   ```
 
 #### Notes for Mac OS X
 
-It is possible to link JuliaInterface against the official Julia binary
+It is possible to link JuliaExperimental against the official Julia binary
 which one can download from <https://julialang.org/downloads/>.
 To do so, run configure as follows:
 
@@ -49,9 +49,9 @@ To do so, run configure as follows:
 
 ## Usage
 
-Load the JuliaInterface package via
+Load the JuliaExperimental package via
 ```
-LoadPackage( "JuliaInterface" );
+LoadPackage( "JuliaExperimental" );
 ```
 
 
