@@ -7,21 +7,21 @@ module GAPHNFModule
 
 using Nemo
 
-export unpackedNemoMatrix
+export unpackedNemoMatrixFmpz
 
 function fitsGAPSmallIntRep( x::fmpz )
     return -2^60 <= x && x < 2^60
 end
 
 doc"""
-    unpackedNemoMatrix( nemomat::Nemo.fmpz_mat[, tryint::Bool = true] )
+    unpackedNemoMatrixFmpz( nemomat::Nemo.fmpz_mat[, tryint::Bool = true] )
 > Return a tuple `(<kind>, <arr>)` where <arr> is a 1-dim. array
 > of 1-dim. arrays (corresponding to the rows of `nemomat`),
 > and <kind> is either `"int"` (the entries are small integers)
 > or `"string"` (the entries are hex strings).
 > This format is suitable for calling `JuliaUnbox` from GAP.
 """
-function unpackedNemoMatrix( nemomat::Nemo.fmpz_mat, tryint::Bool = true )
+function unpackedNemoMatrixFmpz( nemomat::Nemo.fmpz_mat, tryint::Bool = true )
     m, n = size( nemomat )
 
     if tryint == true
