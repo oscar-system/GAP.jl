@@ -16,11 +16,10 @@ JuliaIncludeFile(
     "singular.jl" ) );
 
 ImportJuliaModuleIntoGAP( "Core" );
-#ImportJuliaModuleIntoGAP( "Base" );  # julia TypeError if called here ...
+ImportJuliaModuleIntoGAP( "Base" );
 ImportJuliaModuleIntoGAP( "Nemo" );
 ImportJuliaModuleIntoGAP( "Singular" );
 ImportJuliaModuleIntoGAP( "GAPSingularModule" );
-ImportJuliaModuleIntoGAP( "Base" );   # here no error ...
 
 
 #############################################################################
@@ -42,23 +41,29 @@ DeclareCategory( "IsSingularIdeal", IsSingularObject );
 ##
 BindGlobal( "Singular_ZZ", Objectify(
     NewType( CollectionsFamily( NewFamily( "Singular_ZZ_ElementsFamily" ) ),
-             IsAttributeStoringRep and IsRing ),
+             IsAttributeStoringRep and IsSingularObject and IsRing ),
     rec() ) );
 
 SetName( Singular_ZZ, "Singular_ZZ" );
 SetLeftActingDomain( Singular_ZZ, Singular_ZZ );
 SetSize( Singular_ZZ, infinity );
 SetJuliaPointer( Singular_ZZ, Julia.Singular.ZZ );
+ElementsFamily( FamilyObj( Singular_ZZ ) )!.matrixType:= NewType(
+    CollectionsFamily( FamilyObj( Singular_ZZ ) ),
+    IsMatrixObj and IsSingularObject and IsAttributeStoringRep );
 
 BindGlobal( "Singular_QQ", Objectify(
     NewType( CollectionsFamily( NewFamily( "Singular_QQ_ElementsFamily" ) ),
-             IsAttributeStoringRep and IsField and IsPrimeField ),
+             IsAttributeStoringRep and IsSingularObject and IsField and IsPrimeField ),
     rec() ) );
 
 SetName( Singular_QQ, "Singular_QQ" );
 SetLeftActingDomain( Singular_QQ, Singular_QQ );
 SetSize( Singular_QQ, infinity );
 SetJuliaPointer( Singular_QQ, Julia.Singular.QQ );
+ElementsFamily( FamilyObj( Singular_QQ ) )!.matrixType:= NewType(
+    CollectionsFamily( FamilyObj( Singular_QQ ) ),
+    IsMatrixObj and IsSingularObject and IsAttributeStoringRep );
 
 
 #############################################################################
