@@ -122,7 +122,7 @@ BindGlobal( "HermiteNormalFormIntegerMatUsingNemo", function( juliamat )
     juliahnf:= Julia.Nemo.hnf( juliamat );
 
     # Reformat in Julia s. t. the result can be translated back to GAP.
-    result:= Julia.GAPHNFModule.unpackedNemoMatrix( juliahnf );
+    result:= Julia.GAPHNFModule.unpackedNemoMatrixFmpz( juliahnf );
 
     # Translate the Julia object to GAP.
     getindex:= Julia.Base.getindex;
