@@ -91,15 +91,15 @@ InstallMethod( CallFuncList,
     end );
 
 
-__JuliaFunctions.string := JuliaFunction( "string", "Base" );
+BindJuliaFunc( "string", "Base" );
 
-__JuliaFunctions.include := JuliaFunction( "include", "Base" );
+BindJuliaFunc( "include", "Base" );
 
 BindGlobal( "JuliaKnownFiles", [] );
 
 BindGlobal( "JuliaIncludeFile", function( filename )
     if not filename in JuliaKnownFiles then
-      __JuliaFunctions.include( filename );
+      Julia.Base.include( filename );
       AddSet( JuliaKnownFiles, filename );
     fi;
 end );
@@ -116,7 +116,7 @@ end );
 InstallMethod( ViewString,
     [ IsJuliaFunction ],
     julia_func -> Concatenation( "<Julia: ",
-                      JuliaUnbox( __JuliaFunctions.string( julia_func ) ),
+                      JuliaUnbox( Julia.Base.string( julia_func ) ),
                       ">" ) );
 
 InstallMethod( String,
@@ -124,7 +124,7 @@ InstallMethod( String,
 
   function( julia_obj )
 
-    return JuliaUnbox( __JuliaFunctions.string( julia_obj ) );
+    return JuliaUnbox( Julia.Base.string( julia_obj ) );
 
 end );
 
@@ -134,13 +134,17 @@ InstallGlobalFunction( ImportJuliaModuleIntoGAP,
     local julia_list_func, function_list, variable_list, i, current_module_rec;
 
     # Do nothing if the module has already been imported.
-    if IsBound( Julia.( name ) ) then
+    if IsBound( Julia.( name ) ) and not IsBound( Julia.( name ).__JULIAINTERFACE_NOT_IMPORTED_YET ) then
       return;
     fi;
 
-    JuliaEvalString( Concatenation( "using ", name ) );
-    Julia.(name) := rec();
+    if name = "Main" then
+        Print( "WARNING: Do not import Main module into GAP\n" );
+    fi;
+    JuliaEvalString( Concatenation( "import ", name ) );
+    __JULIAINTERFACE_PREPARE_RECORD( name );
     current_module_rec := Julia.(name);
+    Unbind( current_module_rec.__JULIAINTERFACE_NOT_IMPORTED_YET );
     julia_list_func := JuliaFunction( "get_function_symbols_in_module", "GAPUtils" );
     function_list := JuliaStructuralUnbox( julia_list_func( JuliaModule( name ) ) );
     for i in function_list do
