@@ -42,7 +42,7 @@ BindGlobal( "ShortestVectorsUsingJulia", function( juliagrammat, bound )
     r:= JuliaUnboxRecordFromDictionary( juliaresult );
     r.vectors:= JuliaStructuralUnbox( r.vectors );
 #   r.norms:= ...
-#T hier!
+#T the entries can be Julia rationals; what to do?
 
     return r;
 end );
@@ -99,7 +99,7 @@ BindGlobal( "OrthogonalEmbeddingsUsingJulia", function( juliagrammat, arec... )
     r.vectors:= JuliaStructuralUnbox( r.vectors );
     r.solutions:= JuliaStructuralUnbox( r.solutions );
 #   r.norms:= ...
-#T hier!
+#T the entries can be Julia rationals; what to do?
 
     return r;
 end );
