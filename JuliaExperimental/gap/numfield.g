@@ -29,8 +29,8 @@ ImportJuliaModuleIntoGAP( "GAPNumberFields" );
 ##
 DeclareCategory( "IsNemoObject", IsObject );
 
-DeclareSynonym( "IsNemoPolynomialRing",
-    IsNemoObject and IsUnivariatePolynomialRing );
+DeclareSynonym( "IsNemoPolynomial", IsNemoObject and IsPolynomial );
+DeclareSynonym( "IsNemoPolynomialRing", IsNemoObject and IsPolynomialRing );
 DeclareSynonym( "IsNemoField", IsNemoObject and IsField );
 DeclareSynonym( "IsNemoNumberField", IsNemoField and IsNumberField );
 DeclareSynonym( "IsNemoFieldElement", IsNemoObject and IsScalar );
@@ -76,11 +76,13 @@ ElementsFamily( FamilyObj( Nemo_QQ ) )!.matrixType:= NewType(
 #############################################################################
 ##
 #F  Nemo_PolynomialRing( <R>, <name> )
+#F  Nemo_PolynomialRing( <R>, <names> )
 ##
-##  univariate only
+##  <name> must be a string (then a univariate polynomial ring is created);
+##  <names> must be a list of strings (then a multivariate ring is created).
 ##
-BindGlobal( "Nemo_PolynomialRing", function( R, name )
-    local type, juliaobj, efam, result, getindex, indet;
+BindGlobal( "Nemo_PolynomialRing", function( R, names )
+    local type, juliaobj, efam, result, getindex, indets;
 
     type:= IsNemoPolynomialRing and IsAttributeStoringRep and IsFreeLeftModule
            and IsFLMLORWithOne;
@@ -100,33 +102,52 @@ BindGlobal( "Nemo_PolynomialRing", function( R, name )
 #T admit GAP's abelian number fields (-> IsAbelianNumberFieldPolynomialRing)
       Error( "usage: ..." );
     fi;
-    if not IsString( name ) then
-      Error( "<name> must be a string" );
-    fi;
 
     # Create the julia objects.
-    juliaobj:= Julia.Nemo.PolynomialRing( JuliaPointer( R ), name );
+    if IsString( names ) then
+      juliaobj:= Julia.Nemo.PolynomialRing( JuliaPointer( R ), names );
+    elif IsList( names ) and ForAll( names, IsString ) then
+      # Convert the names list from "Array{Any,1}" to "Array{String,1}".
+      names:= Julia.Base.convert( JuliaEvalString( "Array{String,1}" ),
+                                  JuliaBox( names ) );
+      juliaobj:= Julia.Nemo.PolynomialRing( JuliaPointer( R ), names );
+    else
+      Error( "<names> must be a string or a list of strings" );
+    fi;
 
     # Create the GAP wrapper.
     # Note that elements from two Nemo polynomial rings cannot be compared,
     # so we create always a new family.
     efam:= NewFamily( "NEMO_PolynomialsFamily" );
     efam!.defaultPolynomialType:= NewType( efam,
-        IsPolynomial and IsNemoObject and IsAttributeStoringRep );
+        IsNemoPolynomial and IsAttributeStoringRep );
 
     result:= Objectify( NewType( CollectionsFamily( efam ), type ), rec() );
+    result!.isUnivariatePolynomialRing:= IsString( names );
+
+    # Store the GAP list of wrapped Julia indeterminates.
+    getindex:= Julia.Base.getindex;
+    if IsString( names ) then
+      # univariate case
+      indets:= [ getindex( juliaobj, 2 ) ];
+    else
+      # multivariate case
+      indets:= JuliaUnbox( getindex( juliaobj, 2 ) );
+    fi;
+    indets:= List( indets,
+                   x -> ObjectifyWithAttributes( rec(),
+                            efam!.defaultPolynomialType,
+                            JuliaPointer, x ) );
 
     # Set attributes.
-    getindex:= Julia.Base.getindex;
     SetJuliaPointer( result, getindex( juliaobj, 1 ) );
-    indet:= getindex( juliaobj, 2 );
     SetLeftActingDomain( result, R );
-    SetIndeterminatesOfPolynomialRing( result, [ indet ] );
+    SetIndeterminatesOfPolynomialRing( result, indets );
+    SetGeneratorsOfLeftOperatorRingWithOne( result, indets );
     SetIsFinite( result, false );
     SetIsFiniteDimensional( result, false );
     SetSize( result, infinity );
     SetCoefficientsRing( result, R );
-    SetGeneratorsOfLeftOperatorRingWithOne( result, [ indet ] );
 #T set one and zero?
 
     return result;
@@ -137,32 +158,47 @@ end );
 ##
 #F  Nemo_Polynomial( <R>, <descr> )
 ##
-##  <R> is the Nemo polynomial ring over QQ or ZZ,
-##  <descr> is a GAP list of coefficients (integers or rationals).
+##  <R> is a Nemo polynomial ring over QQ or ZZ.
+##  In the univariate case, <descr> must be a GAP list of the coefficients
+##  (integers or rationals).
+##  In the multivariate case with <m> indeterminates,
+##  <descr> must be a GAP list of length two,
+##  the first entry being the list of <n>, say, coefficients of monomials
+##  and the second being an <m> by <n> matrix of nonnegative integers
+##  whose columns are the exponent vectors of the monomials.
 ##
 BindGlobal( "Nemo_Polynomial", function( R, descr )
-    local fmpq, div, aux, pol;
+    local fmpq, div, aux, pol, coeffs, monoms;
 
     if not IsNemoPolynomialRing( R ) then
       Error( "<R> must be a Nemo polynomial ring" );
     elif Length( descr ) = 0 then
       return Zero( R );
-    elif ForAll( descr, IsInt ) then
-      # Nothing is to do.
-    elif ForAll( descr, IsRat ) then
-      # 'JuliaBox' does not allow us to transfer rationals.
-      fmpq:= Julia.Nemo.fmpq;
-      div:= Julia.Base.("//");
-      descr:= List( descr,
-                    x -> div( fmpq( NumeratorRat( x ) ),
-                              fmpq( DenominatorRat( x ) ) ) );
+    elif R!.isUnivariatePolynomialRing = true then
+      if ForAll( descr, IsInt ) then
+        # Nothing is to do.
+      elif ForAll( descr, IsRat ) then
+        # 'JuliaBox' does not allow us to transfer rationals.
+        fmpq:= Julia.Nemo.fmpq;
+        div:= Julia.Base.("//");
+        descr:= JuliaArrayOfFmpq( descr );
+      else
+        Error( "<descr> must be a list of rationals (or integers)" );
+      fi;
+      aux:= Julia.GAPUtilsExperimental.MatrixFromNestedArray( descr );
+      aux:= Julia.Base.vec( aux );
+      pol:= JuliaPointer( R )( aux );
     else
-      Error( "<descr> must be a list of rationals (or integers)" );
+      if IsList( descr ) and Length( descr ) = 2 then
+        coeffs:= JuliaArrayOfFmpq( descr[1] );
+        monoms:= Julia.GAPUtilsExperimental.MatrixFromNestedArray( descr[2] );
+        monoms:= Julia.Base.convert( JuliaEvalString( "Array{UInt,2}" ),
+                                     monoms );
+      else
+        Error( "<descr> must be a list of length two" );
+      fi;
+      pol:= JuliaPointer( R )( coeffs, monoms );
     fi;
-
-    aux:= Julia.GAPUtilsExperimental.MatrixFromNestedArray( descr );
-    aux:= Julia.Base.vec( aux );
-    pol:= JuliaPointer( R )( aux );
 
     return ObjectifyWithAttributes( rec(),
         ElementsFamily( FamilyObj( R ) )!.defaultPolynomialType,
@@ -230,7 +266,7 @@ BindGlobal( "Nemo_Field", function( F, descr... )
     collfam:= CollectionsFamily( efam );
     efam!.matrixType:= NewType( CollectionsFamily( collfam ),
         IsMatrixObj and IsNemoObject and IsAttributeStoringRep );
-    filt:= IsField and IsAttributeStoringRep;
+    filt:= IsNemoField and IsAttributeStoringRep;
 #T set also 'IsNumberField' etc., depending on the situation
     result:= Objectify( NewType( collfam, filt ), rec() );
 
@@ -277,6 +313,21 @@ BindGlobal( "NemoElement", function( template, jpointer )
 
     return result;
 end );
+
+
+#############################################################################
+##
+##  methods for Nemo's polynomials
+##
+InstallMethod( String,
+    [ "IsNemoObject and HasJuliaPointer" ], 100,
+    nemo_obj -> String( JuliaPointer( nemo_obj ) ) );
+
+InstallMethod( PrintObj,
+    [ "IsNemoObject and HasJuliaPointer" ], 100,
+    function( nemo_obj )
+    Print( PrintString( nemo_obj ) );
+    end );
 
 
 #############################################################################
@@ -406,45 +457,54 @@ end );
 ##
 #F  GAPMatrix( <gap_field>, <mat_of_Nemo_objects> )
 ##
+
+#T different data format in Nemo for fmpz_mat and generic matrix over number fields!
+
 BindGlobal( "GAPMatrix", function( gapF, nemomat )
-    local ptr, m, n, d, efam, result, getindex, coeff, numerator, int,
-          denom, i, ji, j, elm, coeffs, k, c;
+    local ptr, m, n, d, efam, list, getindex, nums, dens, result, k, i, j;
 
     ptr:= JuliaPointer( nemomat );
     m:= JuliaUnbox( Julia.Nemo.rows( ptr ) );
     n:= JuliaUnbox( Julia.Nemo.cols( ptr ) );
     d:= Dimension( gapF );
     efam:= ElementsFamily( FamilyObj( gapF ) );
-    result:= [];
 
-    getindex:= Julia.Base.getindex;
-    coeff:= Julia.Nemo.coeff;
-    numerator:= Julia.Base.numerator;
-#T need numer/denom because we cannot box/unbox rationals (yet)
-    int:= JuliaFunction( "Int", "Base" );
-#T note: Int is not in Julia.Base
-#    int:= Julia.Base.Int;
-    denom:= Julia.Base.denominator;
+    if d = 1 then
+      # matrix of fmpq (or fmpz)
+Error( "sorry, not yet implemented for matrices of rationals ..." );
+    else
+      # matrix over a Nemo number field:
+      # Fetch the coefficient vectors of all matrix elements.
+      # Split into numerators and denominators
+      # because we cannot transfer rationals (yet).
+      list:= Julia.GAPNumberFields.MatricesOfCoefficientVectorsNumDen(
+                 JuliaPointer( nemomat ), d );
 
-    for i in [ 1 .. m ] do
-      result[i]:= [];
-      ji:= JuliaBox( i );
-      for j in [ 1 .. n ] do
-        elm:= getindex( ptr, ji, j );
-        coeffs:= [];
-        for k in [ 1 .. d ] do
-          c:= coeff( elm, k-1 );
-          coeffs[k]:= JuliaUnbox( int( numerator( c ) ) ) /
-                      JuliaUnbox( int( denom( c ) ) );
+      # Carry the coefficient vectors to GAP.
+      getindex:= Julia.Base.getindex;
+      nums:= GAPMatrix_fmpz_mat( getindex( list, 1 ) );
+      dens:= GAPMatrix_fmpz_mat( getindex( list, 2 ) );
+
+      # Create the GAP matrix from the coefficient vectors.
+      result:= [];
+      k:= 0;
+      for i in [ 1 .. m ] do
+        result[i]:= [];
+        for j in [ 1 .. n ] do
+          k:= k + 1;
+          result[i][j]:= AlgExtElm( efam,
+                             List( [ 1 .. d ],
+                                   l -> nums[k][l] / dens[k][l] ) );
         od;
-        result[i][j]:= AlgExtElm( efam, coeffs );
       od;
-    od;
+
+    fi;
 
     return result;
 end );
 
-#T better use a Nemo function to extract the coefficient vectors?
+#T Is there no (cheap) Nemo function to extract the coefficient vector
+#T from a number field element?
 
 
 ##############################################################################

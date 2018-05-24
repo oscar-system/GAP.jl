@@ -4,13 +4,21 @@
 ##
 gap> START_TEST( "numfield.tst" );
 
-# Nemo polynomials
+# Nemo polynomials, univariate
 gap> R:= Nemo_PolynomialRing( Nemo_QQ, "x" );
 Nemo_QQ[x]
 gap> Nemo_Polynomial( R, [ 1, 0, 1 ] );
 <<Julia: x^2+1>>
 gap> Nemo_Polynomial( R, [ 1, 0, 1/2 ] );
 <<Julia: 1//2*x^2+1>>
+
+# Nemo polynomials, multivariate
+gap> R:= Nemo_PolynomialRing( Nemo_QQ, [ "x", "y" ] );
+Nemo_QQ[x,y]
+gap> Nemo_Polynomial( R, [ [ 1, 2, 3 ], [ [ 4, 5, 6 ], [ 7, 8, 9 ] ] ] );
+<<Julia: x^4*y^7+2*x^5*y^8+3*x^6*y^9>>
+gap> Nemo_Polynomial( R, [ [ 1, 2, 3/2 ], [ [ 4, 5, 6 ], [ 7, 8, 9 ] ] ] );
+<<Julia: x^4*y^7+2*x^5*y^8+3//2*x^6*y^9>>
 
 # matrix over Z
 gap> mat:= NemoMatrix( Nemo_ZZ, IdentityMat( 2 ) );
