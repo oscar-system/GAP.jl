@@ -79,7 +79,6 @@ BindGlobal( "NemoMatrix_fmpq", function( mat )
 end );
 
 
-
 ##
 ##  <mat> is assumed to be a list of lists of integers.
 ##
@@ -112,17 +111,12 @@ BindGlobal( "NemoMatrix_fmpz", function( mat )
 end );
 
 
-##
-##  The argument can be created with different methods ...
-##
-BindGlobal( "HermiteNormalFormIntegerMatUsingNemo", function( juliamat )
-    local juliahnf, result, getindex;
+##  ...
+BindGlobal( "GAPMatrix_fmpz_mat", function( nemomat )
+    local result, getindex;
 
-    # Compute the HNF in Julia.
-    juliahnf:= Julia.Nemo.hnf( juliamat );
-
-    # Reformat in Julia s. t. the result can be translated back to GAP.
-    result:= Julia.GAPHNFModule.unpackedNemoMatrixFmpz( juliahnf );
+     # Reformat in Julia s. t. the result can be translated back to GAP.
+    result:= Julia.GAPHNFModule.unpackedNemoMatrixFmpz( nemomat );
 
     # Translate the Julia object to GAP.
     getindex:= Julia.Base.getindex;
@@ -135,6 +129,20 @@ BindGlobal( "HermiteNormalFormIntegerMatUsingNemo", function( juliamat )
                    row -> List( JuliaUnbox( row ),
                                 x -> IntHexString( JuliaUnbox( x ) ) ) );
     fi;
+end );
+
+
+##
+##  The argument can be created with different methods.
+##
+BindGlobal( "HermiteNormalFormIntegerMatUsingNemo", function( juliamat )
+    local juliahnf, result, getindex;
+
+    # Compute the HNF in Julia.
+    juliahnf:= Julia.Nemo.hnf( juliamat );
+
+    # Translate the Julia object to GAP.
+    return GAPMatrix_fmpz_mat( juliahnf );
 end );
 
 
