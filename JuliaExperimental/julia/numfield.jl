@@ -12,7 +12,10 @@ import Base: length, similar, zeros, ==, isless, *, one, inv, ^, /
 using Nemo
 # using Hecke
 
-export MatrixFromNestedArray, Nemo_Matrix_over_NumberField
+export MatrixFromNestedArray, Nemo_Matrix_over_NumberField,
+       CoefficientVectorsNumDenOfNumberFieldElement,
+       MatricesOfCoefficientVectorsNumDen
+
 # export JuliaBox_Cyclotomics
 
 
@@ -42,6 +45,61 @@ function Nemo_Matrix_over_NumberField( f, m, n, lst, denom )
 
     return matrix( f, mat )
 #   return matrix( f, m, n, mat )  # in older Nemo versions ...
+end
+
+
+##  Create the coefficient vector of the element `elm`,
+##  as an array of length `d` and consisting of `fmpq` objects.
+
+function CoefficientVectorOfNumberFieldElement( elm, d )
+    local arr, i
+
+    arr = Array{Nemo.fmpq,1}( d )
+    for i = 1:d
+      arr[i] = Nemo.coeff( elm, i-1 )
+    end
+
+    return arr
+end
+
+
+##  Create the vectors for numerator and denominator
+##  of the coefficient vector of the element `elm`,
+##  as arrays of length `d` and consisting of `fmpz` objects.
+
+function CoefficientVectorsNumDenOfNumberFieldElement( elm, d )
+    local num, den, i
+
+    num = Array{Nemo.fmpz,1}( d )
+    den = Array{Nemo.fmpz,1}( d )
+    for i = 1:d
+      num[i] = numerator( Nemo.coeff( elm, i-1 ) )
+      den[i] = denominator( Nemo.coeff( elm, i-1 ) )
+    end
+
+    return num, den
+end
+
+
+##  2-dim. (m n) times d arrays of Nemo.fmpz elements
+
+function MatricesOfCoefficientVectorsNumDen( nemomat, d )
+    local m, n, num, den, i, j, resnum, resden
+
+    m, n = size( nemomat )
+    num = Array{Any,1}( 0 )
+    den = Array{Any,1}( 0 )
+    for i = 1:m
+      for j = 1:n
+        resnum, resden = CoefficientVectorsNumDenOfNumberFieldElement(
+                             getindex( nemomat, i, j ), d )
+        push!( num, resnum )
+        push!( den, resden )
+      end
+    end
+
+    return Nemo.matrix( Nemo.ZZ, hcat( num... )' ),
+           Nemo.matrix( Nemo.ZZ, hcat( den... )' )
 end
 
 

@@ -1,22 +1,32 @@
 #
 # JuliaExperimental: Experimental code for the GAP Julia integration
 #
-# Reading the implementation part of the package.
+# Read the implementation part of the package.
 #
-ReadPackage( "JuliaExperimental", "gap/JuliaExperimental.gi");
+
+# ...
+ReadPackage( "JuliaExperimental", "gap/utils.gi");
+ReadPackage( "JuliaExperimental", "gap/arith.gi");
+
 
 # ReadPackage( "JuliaExperimental", "gap/convertcyc.g");
 # JuliaIncludeFile( Filename( dirs, "convertcyc.jl" ) );
 # BindJuliaFunc( "juliabox_cycs" );
 # 
-# ReadPackage( "JuliaExperimental", "gap/shortestvectors.g");
-# JuliaIncludeFile( Filename( dirs, "shortestvectors.jl" ) );
-# BindJuliaFunc( "shortestvectors" );
 
+
+# Translate GAP records to Julia dictionaries and vice versa.
+ReadPackage( "JuliaExperimental", "gap/record.g");
+
+
+# shortest vectors, LLL, orthogonal embeddings
+ReadPackage( "JuliaExperimental", "gap/zlattice.g");
 
 
 # Use Julia to compute the HNF of an integer matrix.
-ReadPackage( "JuliaExperimental", "gap/hnf.g");
+if JuliaUsingPackage( "Nemo" ) then
+  ReadPackage( "JuliaExperimental", "gap/hnf.g");
+fi;
 
 
 # GAP integers and rationals in Julia.
@@ -28,4 +38,20 @@ ReadPackage( "JuliaExperimental", "gap/gapperm.g");
 
 
 # Nemo's number fields.
-ReadPackage( "JuliaExperimental", "gap/numfield.g");
+if JuliaUsingPackage( "Nemo" ) then
+  ReadPackage( "JuliaExperimental", "gap/numfield.g");
+fi;
+
+
+# Arb
+if JuliaUsingPackage( "Nemo" ) then
+  ReadPackage( "JuliaExperimental", "gap/realcyc.g");
+fi;
+
+
+# Singular
+if JuliaUsingPackage( "Singular" ) then
+  ReadPackage( "JuliaExperimental", "gap/singular.g");
+fi;
+
+
