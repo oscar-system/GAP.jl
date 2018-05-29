@@ -198,12 +198,12 @@ BindGlobal( "SingularPolynomialRing", function( R, names )
 
     # Convert the names list from "Array{Any,1}" to "Array{String,1}".
     names:= Julia.Base.convert( JuliaEvalString( "Array{String,1}" ),
-                                JuliaBox( names ) );
+                                ConvertedToJulia( names ) );
 
     # Create the julia objects.
     # If we would be able to deal with keyword arguments
     # then wrapping would not be needed here.
-    dict:= JuliaBox( rec( ring:= JuliaPointer( R ),
+    dict:= ConvertedToJulia( rec( ring:= JuliaPointer( R ),
                           indeterminates:= names,
                           cached:= true,
                           ordering:= JuliaSymbol( ordering ),
@@ -237,7 +237,7 @@ BindGlobal( "SingularPolynomialRing", function( R, names )
         IsPolynomial and IsSingularObject and IsAttributeStoringRep, R );
 
     # Store the GAP list of wrapped Julia indeterminates.
-    indets:= List( JuliaUnbox( getindex( juliaobj, 2 ) ),
+    indets:= List( ConvertedFromJulia( getindex( juliaobj, 2 ) ),
                    x -> SingularElement( R, x ) );
     SetIndeterminatesOfPolynomialRing( R, indets );
     SetGeneratorsOfLeftOperatorRingWithOne( R, indets );
@@ -377,7 +377,7 @@ InstallOtherMethod( ViewString,
 InstallOtherMethod( \=,
     [ "IsSingularObject", "IsSingularObject" ], 100,
     function( x, y )
-      return JuliaUnbox(
+      return ConvertedFromJulia(
                  Julia.Base.("==")( JuliaPointer( x ), JuliaPointer( y ) ) );
     end );
 
@@ -385,7 +385,7 @@ InstallOtherMethod( \=,
 # InstallOtherMethod( \<,
 #     [ "IsSingularObject", "IsSingularObject" ],
 #     function( x, y )
-#       return JuliaUnbox(
+#       return ConvertedFromJulia(
 #                  Julia.Base.isless( JuliaPointer( x ), JuliaPointer( y ) ) );
 #     end );
 

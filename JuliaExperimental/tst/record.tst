@@ -6,29 +6,29 @@
 gap> START_TEST( "record.tst" );
 
 ##  empty record
-gap> dict:= JuliaBox( rec() );
+gap> dict:= ConvertedToJulia( rec() );
 <Julia: Dict{Any,Any}()>
-gap> JuliaUnbox( dict );
+gap> ConvertedFromJulia( dict );
 fail
-gap> JuliaUnboxRecordFromDictionary( dict );
+gap> ConvertedFromJuliaRecordFromDictionary( dict );
 rec(  )
-gap> JuliaStructuralUnbox_AlsoRecord( dict );
+gap> StructuralConvertedFromJulia_AlsoRecord( dict );
 rec(  )
 
 ##  something which cannot be boxed
-gap> JuliaBox( rec( GAPfunc:= ( x -> 1 ) ) );
+gap> ConvertedToJulia( rec( GAPfunc:= ( x -> 1 ) ) );
 fail
 
 ##  something which is recursive
-gap> dict:= JuliaBox( rec( bool:= true,
+gap> dict:= ConvertedToJulia( rec( bool:= true,
 >                          string:= "abc",
 >                          list:= [ 1, 2, 3 ],
 >                          Juliafunc:= Julia.Base.map,
 >                        ) );;
-gap> JuliaUnboxRecordFromDictionary( dict );
+gap> ConvertedFromJuliaRecordFromDictionary( dict );
 rec( Juliafunc := <Julia: map>, bool := <Julia: true>, 
   list := <Julia: Any[1, 2, 3]>, string := <Julia: abc> )
-gap> JuliaStructuralUnbox_AlsoRecord( dict );
+gap> StructuralConvertedFromJulia_AlsoRecord( dict );
 rec( Juliafunc := fail, bool := true, list := [ 1, 2, 3 ], string := "abc" )
 
 ##

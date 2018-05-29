@@ -25,15 +25,15 @@ gap> JuliaObjGAPRat( Julia.Base.one( x ) );
 1
 gap> JuliaObjGAPRat( Julia.Base.inv( x ) );
 1/3
-gap> JuliaUnbox( Julia.Base.( "==" )( x, x ) );
+gap> ConvertedFromJulia( Julia.Base.( "==" )( x, x ) );
 true
-gap> JuliaUnbox( Julia.Base.( "==" )( x, y ) );
+gap> ConvertedFromJulia( Julia.Base.( "==" )( x, y ) );
 false
-gap> JuliaUnbox( Julia.Base.isless( x, y ) );
+gap> ConvertedFromJulia( Julia.Base.isless( x, y ) );
 true
-gap> JuliaUnbox( Julia.Base.isless( y, x ) );
+gap> ConvertedFromJulia( Julia.Base.isless( y, x ) );
 false
-gap> JuliaUnbox( Julia.Base.isless( x, x ) );
+gap> ConvertedFromJulia( Julia.Base.isless( x, x ) );
 false
 gap> JuliaObjGAPRat( Julia.Base.( "+" )( x, y ) );
 7
@@ -49,23 +49,23 @@ gap> JuliaObjGAPRat( Julia.Base.( "^" )( x, 2 ) );
 9
 gap> JuliaObjGAPRat( Julia.Base.( "mod" )( x, y ) );
 3
-gap> JuliaUnbox( Julia.Base.iszero( x ) );
+gap> ConvertedFromJulia( Julia.Base.iszero( x ) );
 false
-gap> JuliaUnbox( Julia.Base.iszero( zero ) );
+gap> ConvertedFromJulia( Julia.Base.iszero( zero ) );
 true
-gap> JuliaUnbox( Julia.Base.( "==" )( x, x ) );
+gap> ConvertedFromJulia( Julia.Base.( "==" )( x, x ) );
 true
-gap> JuliaUnbox( Julia.Base.( "==" )( x, y ) );
+gap> ConvertedFromJulia( Julia.Base.( "==" )( x, y ) );
 false
-gap> JuliaUnbox( Julia.Base.isless( x, y ) );
+gap> ConvertedFromJulia( Julia.Base.isless( x, y ) );
 true
-gap> JuliaUnbox( Julia.Base.isless( y, x ) );
+gap> ConvertedFromJulia( Julia.Base.isless( y, x ) );
 false
-gap> JuliaUnbox( Julia.Base.isless( x, x ) );
+gap> ConvertedFromJulia( Julia.Base.isless( x, x ) );
 false
 
 ##  test binary arithmetic operations with GAPRats and Julia integers
-gap> j:= JuliaBox( 20 );;
+gap> j:= ConvertedToJulia( 20 );;
 gap> JuliaObjGAPRat( Julia.Base.( "+" )( x, j ) );
 23
 gap> JuliaObjGAPRat( Julia.Base.( "+" )( j, x ) );

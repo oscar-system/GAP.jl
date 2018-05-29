@@ -109,7 +109,7 @@ BindGlobal( "Nemo_PolynomialRing", function( R, names )
     elif IsList( names ) and ForAll( names, IsString ) then
       # Convert the names list from "Array{Any,1}" to "Array{String,1}".
       names:= Julia.Base.convert( JuliaEvalString( "Array{String,1}" ),
-                                  JuliaBox( names ) );
+                                  ConvertedToJulia( names ) );
       juliaobj:= Julia.Nemo.PolynomialRing( JuliaPointer( R ), names );
     else
       Error( "<names> must be a string or a list of strings" );
@@ -132,7 +132,7 @@ BindGlobal( "Nemo_PolynomialRing", function( R, names )
       indets:= [ getindex( juliaobj, 2 ) ];
     else
       # multivariate case
-      indets:= JuliaUnbox( getindex( juliaobj, 2 ) );
+      indets:= ConvertedFromJulia( getindex( juliaobj, 2 ) );
     fi;
     indets:= List( indets,
                    x -> ObjectifyWithAttributes( rec(),
@@ -178,7 +178,7 @@ BindGlobal( "Nemo_Polynomial", function( R, descr )
       if ForAll( descr, IsInt ) then
         # Nothing is to do.
       elif ForAll( descr, IsRat ) then
-        # 'JuliaBox' does not allow us to transfer rationals.
+        # 'ConvertedToJulia' does not allow us to transfer rationals.
         fmpq:= Julia.Nemo.fmpq;
         div:= Julia.Base.("//");
         descr:= JuliaArrayOfFmpq( descr );
@@ -353,7 +353,7 @@ InstallOtherMethod( ViewString, [ IsNemoObject ],
 
 InstallOtherMethod( \=, [ IsNemoObject, IsNemoObject ],
     function( x, y )
-      return JuliaUnbox(
+      return ConvertedFromJulia(
                  Julia.Base.("==")( JuliaPointer( x ), JuliaPointer( y ) ) );
     end );
 
@@ -464,8 +464,8 @@ BindGlobal( "GAPMatrix", function( gapF, nemomat )
     local ptr, m, n, d, efam, list, getindex, nums, dens, result, k, i, j;
 
     ptr:= JuliaPointer( nemomat );
-    m:= JuliaUnbox( Julia.Nemo.rows( ptr ) );
-    n:= JuliaUnbox( Julia.Nemo.cols( ptr ) );
+    m:= ConvertedFromJulia( Julia.Nemo.rows( ptr ) );
+    n:= ConvertedFromJulia( Julia.Nemo.cols( ptr ) );
     d:= Dimension( gapF );
     efam:= ElementsFamily( FamilyObj( gapF ) );
 
@@ -515,19 +515,19 @@ end );
 
 InstallMethod( NumberRows,
     [ "IsNemoMatrixObj" ],
-    nemomat -> JuliaUnbox( Julia.Nemo.rows( JuliaPointer( nemomat ) ) ) );
+    nemomat -> ConvertedFromJulia( Julia.Nemo.rows( JuliaPointer( nemomat ) ) ) );
 #T really unbox?
 
 InstallMethod( NumberColumns,
     [ "IsNemoMatrixObj" ],
-    nemomat -> JuliaUnbox( Julia.Nemo.cols( JuliaPointer( nemomat ) ) ) );
+    nemomat -> ConvertedFromJulia( Julia.Nemo.cols( JuliaPointer( nemomat ) ) ) );
 
 #T hier!!
 
 
 InstallMethod( RankMat,
     [ "IsNemoMatrixObj" ],
-    nemomat -> JuliaUnbox( Julia.Base.rank( JuliaPointer( nemomat ) ) ) );
+    nemomat -> ConvertedFromJulia( Julia.Base.rank( JuliaPointer( nemomat ) ) ) );
 #T RankMatDestructive?
 
 #T [] ? (absurd for mutable matrices)

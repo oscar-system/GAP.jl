@@ -18,6 +18,6 @@ AddGapJuliaFuncs();
 PackageInfo( "JuliaInterface" )[1].BannerString:= ReplacedString(
     PackageInfo( "JuliaInterface" )[1].BannerString,
     "Homepage", Concatenation( "(julia version is ",
-                    JuliaUnbox( JuliaEvalString( "string( VERSION )" ) ), 
+                    ConvertedFromJulia( JuliaEvalString( "string( VERSION )" ) ), 
                     ")\nHomepage" ) );
 

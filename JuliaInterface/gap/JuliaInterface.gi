@@ -24,16 +24,16 @@ InstallGlobalFunction( JuliaGetGlobalVariable,
     Error( "arguments must be strings function_name[,module_name]" );
 end );
 
-InstallMethod( JuliaUnbox,
+InstallMethod( ConvertedFromJulia,
                [ IsJuliaObject ],
-    __JuliaUnbox );
+    __ConvertedFromJulia );
 
-InstallMethod( JuliaBox,
+InstallMethod( ConvertedToJulia,
                 [ IsObject ],
   function( obj )
     local result;
     
-    result := __JuliaBox( obj );
+    result := __ConvertedToJulia( obj );
     if result = fail then
         TryNextMethod();
     fi;
@@ -51,19 +51,19 @@ InstallMethod( CallFuncList,
 
     elif Length( argument_list ) = 1 then
 
-        return __JuliaCallFunc1Arg( julia_func, JuliaBox( argument_list[ 1 ] ) );
+        return __JuliaCallFunc1Arg( julia_func, ConvertedToJulia( argument_list[ 1 ] ) );
 
     elif Length( argument_list ) = 2 then
 
-        return __JuliaCallFunc2Arg( julia_func, JuliaBox( argument_list[ 1 ] ), JuliaBox( argument_list[ 2 ] ) );
+        return __JuliaCallFunc2Arg( julia_func, ConvertedToJulia( argument_list[ 1 ] ), ConvertedToJulia( argument_list[ 2 ] ) );
 
     elif Length( argument_list ) = 3 then
 
-        return __JuliaCallFunc3Arg( julia_func, JuliaBox( argument_list[ 1 ] ), JuliaBox( argument_list[ 2 ] ), JuliaBox( argument_list[ 3 ] ) );
+        return __JuliaCallFunc3Arg( julia_func, ConvertedToJulia( argument_list[ 1 ] ), ConvertedToJulia( argument_list[ 2 ] ), ConvertedToJulia( argument_list[ 3 ] ) );
 
     fi;
 
-    return __JuliaCallFuncXArg( julia_func, List( argument_list, JuliaBox ) );
+    return __JuliaCallFuncXArg( julia_func, List( argument_list, ConvertedToJulia ) );
 
 end );
 
@@ -110,7 +110,7 @@ end );
 InstallMethod( ViewString,
     [ IsJuliaFunction ],
     julia_func -> Concatenation( "<Julia: ",
-                      JuliaUnbox( Julia.Base.string( julia_func ) ),
+                      ConvertedFromJulia( Julia.Base.string( julia_func ) ),
                       ">" ) );
 
 InstallMethod( String,
@@ -118,7 +118,7 @@ InstallMethod( String,
 
   function( julia_obj )
 
-    return JuliaUnbox( Julia.Base.string( julia_obj ) );
+    return ConvertedFromJulia( Julia.Base.string( julia_obj ) );
 
 end );
 
@@ -140,23 +140,23 @@ InstallGlobalFunction( ImportJuliaModuleIntoGAP,
     current_module_rec := Julia.(name);
     Unbind( current_module_rec.__JULIAINTERFACE_NOT_IMPORTED_YET );
     julia_list_func := JuliaFunction( "get_function_symbols_in_module", "GAPUtils" );
-    function_list := JuliaStructuralUnbox( julia_list_func( JuliaModule( name ) ) );
+    function_list := StructuralConvertedFromJulia( julia_list_func( JuliaModule( name ) ) );
     for i in function_list do
         current_module_rec.(i) := JuliaFunction( i, name );
     od;
     julia_list_func := JuliaFunction( "get_variable_symbols_in_module", "GAPUtils" );
-    variable_list := JuliaStructuralUnbox( julia_list_func( JuliaModule( name ) ) );
+    variable_list := StructuralConvertedFromJulia( julia_list_func( JuliaModule( name ) ) );
     for i in variable_list do
         current_module_rec.(i) := JuliaGetGlobalVariable( i, name );
     od;
 end );
 
-InstallGlobalFunction( JuliaStructuralUnbox,
+InstallGlobalFunction( StructuralConvertedFromJulia,
   function( object ) 
     local unboxed_obj;
-    unboxed_obj := JuliaUnbox( object );
+    unboxed_obj := ConvertedFromJulia( object );
     if IsList( unboxed_obj ) and not IsString( unboxed_obj ) then
-        return List( unboxed_obj, JuliaStructuralUnbox );
+        return List( unboxed_obj, StructuralConvertedFromJulia );
     fi;
     return unboxed_obj;
 end );

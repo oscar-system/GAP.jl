@@ -32,7 +32,7 @@ DeclareAttribute( "JuliaPointer", IsObject );
 #! @Description
 #!  For an object <A>obj</A> with attribute <Ref Attr="JuliaPointer"/>,
 #!  this function returns the value of this attribute.
-InstallMethod( JuliaBox,
+InstallMethod( ConvertedToJulia,
     [ "HasJuliaPointer" ],
     obj -> JuliaPointer( obj ) );
 
@@ -60,7 +60,7 @@ InstallMethod( JuliaBox,
 BindGlobal( "JuliaUsingPackage", function( pkgname )
     if not IsString( pkgname ) then
       Error( "<pkgname> must be a string, the name of a Julia package" );
-    elif JuliaUnbox( JuliaEvalString( Concatenation(
+    elif ConvertedFromJulia( JuliaEvalString( Concatenation(
              "try\nusing ", pkgname,
              "\nreturn true\ncatch e\nreturn e\nend" ) ) ) = true then
       return true;
@@ -80,7 +80,7 @@ BindGlobal( "JuliaUsingPackage", function( pkgname )
 #!  Returns the string that describes the julia type of the Julia object
 #!  <A>juliaobj</A>.
 BindGlobal( "JuliaTypeInfo",
-    juliaobj -> JuliaUnbox( Julia.Base.string(
+    juliaobj -> ConvertedFromJulia( Julia.Base.string(
                                     Julia.Core.typeof( juliaobj ) ) ) );
 
 
@@ -113,11 +113,11 @@ BindGlobal( "CallFuncListWithTimings", function( func, args )
     if Length( result ) = 1 then
       return rec( result:= result,
                   GAP_time:= stop - start,
-                  Julia_time:= Int( 1000 * JuliaUnbox( diff ) ) );
+                  Julia_time:= Int( 1000 * ConvertedFromJulia( diff ) ) );
     else
       return rec( result:= result,
                   GAP_time:= stop - start,
-                  Julia_time:= Int( 1000 * JuliaUnbox( diff ) ) );
+                  Julia_time:= Int( 1000 * ConvertedFromJulia( diff ) ) );
     fi;
     end );
 
@@ -137,7 +137,7 @@ BindGlobal( "JuliaArrayOfFmpz", function( coeffs )
     i:= 1;
     fmpz:= JuliaFunction( "fmpz", "Nemo" );
     parse:= JuliaFunction( "parse", "Base" );
-    alp:= JuliaBox( 16 );
+    alp:= ConvertedToJulia( 16 );
     for entry in coeffs do
       if IsSmallIntRep( entry ) then
         arr[i]:= entry;
@@ -147,7 +147,7 @@ BindGlobal( "JuliaArrayOfFmpz", function( coeffs )
       i:= i + 1;
     od;
     map:= JuliaFunction( "map", "Base" );
-    arr:= map( fmpz, JuliaBox( arr ) );
+    arr:= map( fmpz, ConvertedToJulia( arr ) );
 
     return arr;
     end );
@@ -170,7 +170,7 @@ BindGlobal( "JuliaArrayOfFmpq", function( coeffs )
     fmpq:= JuliaFunction( "fmpq", "Nemo" );
     div:= Julia.Base.("//");
     parse:= JuliaFunction( "parse", "Base" );  # why???
-    alp:= JuliaBox( 16 );
+    alp:= ConvertedToJulia( 16 );
     for entry in coeffs do
       if IsSmallIntRep( entry ) then
         arr[i]:= entry;
@@ -190,7 +190,7 @@ BindGlobal( "JuliaArrayOfFmpq", function( coeffs )
       i:= i + 1;
     od;
     map:= JuliaFunction( "map", "Base" );
-    arr:= map( fmpq, JuliaBox( arr ) );
+    arr:= map( fmpq, ConvertedToJulia( arr ) );
 
     return arr;
     end );
@@ -205,7 +205,7 @@ BindGlobal( "JuliaArrayOfFmpq", function( coeffs )
 BindGlobal( "JuliaMatrixFromGapMatrix", function( gapmatrix )
     local juliamatrix;
 
-    juliamatrix:= JuliaBox( gapmatrix );  # nested array
+    juliamatrix:= ConvertedToJulia( gapmatrix );  # nested array
     return Julia.GAPUtilsExperimental.MatrixFromNestedArray( juliamatrix );
     end );
 

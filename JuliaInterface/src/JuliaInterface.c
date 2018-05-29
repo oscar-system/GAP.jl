@@ -196,7 +196,7 @@ Obj JuliaEvalString( Obj self, Obj string )
     return 0;
 }
 
-Obj __JuliaUnbox_internal( jl_value_t* julia_obj )
+Obj __ConvertedFromJulia_internal( jl_value_t* julia_obj )
 {
     size_t i;
 
@@ -280,7 +280,7 @@ Obj __JuliaUnbox_internal( jl_value_t* julia_obj )
     return Fail;
 }
 
-Obj __JuliaUnbox( Obj self, Obj obj )
+Obj __ConvertedFromJulia( Obj self, Obj obj )
 {
     if(!IS_JULIA_OBJ(obj))
     {
@@ -288,10 +288,10 @@ Obj __JuliaUnbox( Obj self, Obj obj )
         return NULL;
     }
     jl_value_t* julia_obj = GET_JULIA_OBJ( obj );
-    return __JuliaUnbox_internal( julia_obj );
+    return __ConvertedFromJulia_internal( julia_obj );
 }
 
-jl_value_t* __JuliaBox_internal( Obj obj )
+jl_value_t* __ConvertedToJulia_internal( Obj obj )
 {
     size_t i;
     Obj current;
@@ -351,7 +351,7 @@ jl_value_t* __JuliaBox_internal( Obj obj )
             if(current == NULL){
                 continue;
             }
-            jl_arrayset(new_array,__JuliaBox_internal(ELM_PLIST(obj,i+1)),i);
+            jl_arrayset(new_array,__ConvertedToJulia_internal(ELM_PLIST(obj,i+1)),i);
         }
         return (jl_value_t*)(new_array);
     }
@@ -367,12 +367,12 @@ jl_value_t* __JuliaBox_internal( Obj obj )
     return 0;
 }
 
-Obj __JuliaBox( Obj self, Obj obj )
+Obj __ConvertedToJulia( Obj self, Obj obj )
 {
     if( IS_JULIA_OBJ(obj) || IS_JULIA_FUNC(obj) ){
         return obj;
     }
-    jl_value_t* julia_ptr = __JuliaBox_internal( obj );
+    jl_value_t* julia_ptr = __ConvertedToJulia_internal( obj );
     if( julia_ptr == 0)
         return Fail;
     return NewJuliaObj( julia_ptr );
@@ -382,7 +382,7 @@ Obj __JuliaBox( Obj self, Obj obj )
 // returns: A list, consisting of two lists:
 //   1. A list containing the keys
 //   2. A list containing the values
-Obj __JuliaUnbox_record_dict( Obj self, Obj dict )
+Obj __ConvertedFromJulia_record_dict( Obj self, Obj dict )
 {
     if(!IS_JULIA_OBJ(dict)){
         ErrorQuit( "input must be a boxed julia object", 0, 0 );
@@ -451,7 +451,7 @@ Obj JuliaTuple( Obj self, Obj list )
     params = jl_alloc_svec(len);
     param_types = jl_alloc_svec(len);
     for(int i=0;i<len;i++){
-        jl_value_t* current_obj = __JuliaBox_internal(ELM_PLIST(list,i+1));
+        jl_value_t* current_obj = __ConvertedToJulia_internal(ELM_PLIST(list,i+1));
         jl_svecset( params, i, current_obj );
         jl_svecset( param_types, i, jl_typeof(current_obj) );
     }
@@ -595,8 +595,8 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", __JuliaCallFunc3Arg, 4, "func,obj1,obj2,obj3" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", __JuliaCallFuncXArg, 2, "func,arg_list" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaEvalString, 1, "string" ),
-    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", __JuliaUnbox, 1, "obj" ),
-    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", __JuliaBox, 1, "obj" ),
+    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", __ConvertedFromJulia, 1, "obj" ),
+    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", __ConvertedToJulia, 1, "obj" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaSetVal, 2, "name,val" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", __JuliaGetGlobalVariable, 1, "name" ),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", __JuliaGetGlobalVariableByModule, 2, "name,module" ),
@@ -606,7 +606,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaTuple, 1, "list"),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaSymbol, 1, "name"),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaModule, 1, "name"),
-    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", __JuliaUnbox_record_dict, 1, "dict"),
+    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", __ConvertedFromJulia_record_dict, 1, "dict"),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaSetAsJuliaPointer, 1, "obj"),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaGetFromJuliaPointer, 1, "obj"),
 

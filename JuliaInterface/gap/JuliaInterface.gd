@@ -37,20 +37,20 @@ DeclareGlobalFunction( "JuliaGetGlobalVariable" );
 #! @Description
 #!  Retuns a Julia object that is a sensible conversion to Julia of the object <A>object</A>.
 #!  If no conversion exists, <C>fail</C> is returned.
-DeclareOperation( "JuliaBox", [ IsObject ] );
+DeclareOperation( "ConvertedToJulia", [ IsObject ] );
 
 #! @Arguments julia_object
 #! @Returns object
 #! @Description
 #!  Retuns an object that is a sensible conversion from the Julia object <A>julia_object</A>.
 #!  If no conversion exists, <C>fail</C> is returned.
-DeclareOperation( "JuliaUnbox", [ IsJuliaObject ] );
+DeclareOperation( "ConvertedFromJulia", [ IsJuliaObject ] );
 
 #! @Arguments julia_object
 #! @Returns an object
 #! @Description
 #!  Like structural copy, also converts the contents of a Julia list recursively to GAP objects.
-DeclareGlobalFunction( "JuliaStructuralUnbox" );
+DeclareGlobalFunction( "StructuralConvertedFromJulia" );
 
 ## Internal
 BindGlobal( "__JULIAINTERFACE_MODULE_NAME",

@@ -39,8 +39,8 @@ BindGlobal( "ShortestVectorsUsingJulia", function( juliagrammat, bound )
     # Convert the result to GAP.
     # We cannot simply unbox the rationals from the 'norms' component,
     # so we proceed in two steps.
-    r:= JuliaUnboxRecordFromDictionary( juliaresult );
-    r.vectors:= JuliaStructuralUnbox( r.vectors );
+    r:= ConvertedFromJuliaRecordFromDictionary( juliaresult );
+    r.vectors:= StructuralConvertedFromJulia( r.vectors );
 #   r.norms:= ...
 #T the entries can be Julia rationals; what to do?
 
@@ -89,15 +89,15 @@ BindGlobal( "OrthogonalEmbeddingsUsingJulia", function( juliagrammat, arec... )
     fi;
 
     # Compute the shortest vectors in Julia.
-    dict:= JuliaBox( dict );
+    dict:= ConvertedToJulia( dict );
     juliaresult:= Julia.GAPZLattice.OrthogonalEmbeddings( juliagrammat, dict );
 
     # Convert the result to GAP.
     # We cannot simply unbox the rationals from the 'norms' component,
     # so we proceed in two steps.
-    r:= JuliaUnboxRecordFromDictionary( juliaresult );
-    r.vectors:= JuliaStructuralUnbox( r.vectors );
-    r.solutions:= JuliaStructuralUnbox( r.solutions );
+    r:= ConvertedFromJuliaRecordFromDictionary( juliaresult );
+    r.vectors:= StructuralConvertedFromJulia( r.vectors );
+    r.solutions:= StructuralConvertedFromJulia( r.solutions );
 #   r.norms:= ...
 #T the entries can be Julia rationals; what to do?
 
