@@ -40,7 +40,7 @@ BindGlobal( "ShortestVectorsUsingJulia", function( juliagrammat, bound )
     # We cannot simply unbox the rationals from the 'norms' component,
     # so we proceed in two steps.
     r:= ConvertedFromJuliaRecordFromDictionary( juliaresult );
-    r.vectors:= JuliaStructuralUnbox( r.vectors );
+    r.vectors:= StructuralConvertedFromJulia( r.vectors );
 #   r.norms:= ...
 #T the entries can be Julia rationals; what to do?
 
@@ -96,8 +96,8 @@ BindGlobal( "OrthogonalEmbeddingsUsingJulia", function( juliagrammat, arec... )
     # We cannot simply unbox the rationals from the 'norms' component,
     # so we proceed in two steps.
     r:= ConvertedFromJuliaRecordFromDictionary( juliaresult );
-    r.vectors:= JuliaStructuralUnbox( r.vectors );
-    r.solutions:= JuliaStructuralUnbox( r.solutions );
+    r.vectors:= StructuralConvertedFromJulia( r.vectors );
+    r.solutions:= StructuralConvertedFromJulia( r.solutions );
 #   r.norms:= ...
 #T the entries can be Julia rationals; what to do?
 

@@ -122,7 +122,7 @@ BindGlobal( "GAPMatrix_fmpz_mat", function( nemomat )
     getindex:= Julia.Base.getindex;
     if ConvertedFromJulia( getindex( result, 1 ) ) = "int" then
       # The entries are small integers.
-      return JuliaStructuralUnbox( getindex( result, 2 ) );
+      return StructuralConvertedFromJulia( getindex( result, 2 ) );
     else
       # The entries are hex strings encoding integers.
       return List( ConvertedFromJulia( getindex( result, 2 ) ),

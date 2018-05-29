@@ -140,23 +140,23 @@ InstallGlobalFunction( ImportJuliaModuleIntoGAP,
     current_module_rec := Julia.(name);
     Unbind( current_module_rec.__JULIAINTERFACE_NOT_IMPORTED_YET );
     julia_list_func := JuliaFunction( "get_function_symbols_in_module", "GAPUtils" );
-    function_list := JuliaStructuralUnbox( julia_list_func( JuliaModule( name ) ) );
+    function_list := StructuralConvertedFromJulia( julia_list_func( JuliaModule( name ) ) );
     for i in function_list do
         current_module_rec.(i) := JuliaFunction( i, name );
     od;
     julia_list_func := JuliaFunction( "get_variable_symbols_in_module", "GAPUtils" );
-    variable_list := JuliaStructuralUnbox( julia_list_func( JuliaModule( name ) ) );
+    variable_list := StructuralConvertedFromJulia( julia_list_func( JuliaModule( name ) ) );
     for i in variable_list do
         current_module_rec.(i) := JuliaGetGlobalVariable( i, name );
     od;
 end );
 
-InstallGlobalFunction( JuliaStructuralUnbox,
+InstallGlobalFunction( StructuralConvertedFromJulia,
   function( object ) 
     local unboxed_obj;
     unboxed_obj := ConvertedFromJulia( object );
     if IsList( unboxed_obj ) and not IsString( unboxed_obj ) then
-        return List( unboxed_obj, JuliaStructuralUnbox );
+        return List( unboxed_obj, StructuralConvertedFromJulia );
     fi;
     return unboxed_obj;
 end );

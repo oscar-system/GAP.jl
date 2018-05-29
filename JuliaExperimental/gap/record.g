@@ -65,9 +65,9 @@ DeclareGlobalFunction( "ConvertedFromJuliaRecordFromDictionary" );
 #! @Returns a &GAP; object
 #! @Description
 #!  For a pointer <A>obj</A> to a &Julia; object,
-#!  this function does the same as <Ref Func="JuliaStructuralUnbox"/>,
+#!  this function does the same as <Ref Func="StructuralConvertedFromJulia"/>,
 #!  except that also &Julia; dictionaries 
-DeclareGlobalFunction( "JuliaStructuralUnbox_AlsoRecord" );
+DeclareGlobalFunction( "StructuralConvertedFromJulia_AlsoRecord" );
 
 
 InstallGlobalFunction( "ConvertedFromJuliaRecordFromDictionary", function( dict )
@@ -83,7 +83,7 @@ InstallGlobalFunction( "ConvertedFromJuliaRecordFromDictionary", function( dict 
         return fail;
       fi;
       if recursive then
-        result.( comp ):= JuliaStructuralUnbox_AlsoRecord( info[2][i] );
+        result.( comp ):= StructuralConvertedFromJulia_AlsoRecord( info[2][i] );
       else
         result.( comp ):= info[2][i];
       fi;
@@ -93,12 +93,12 @@ InstallGlobalFunction( "ConvertedFromJuliaRecordFromDictionary", function( dict 
 end );
 
 
-InstallGlobalFunction( JuliaStructuralUnbox_AlsoRecord, function( object )
+InstallGlobalFunction( StructuralConvertedFromJulia_AlsoRecord, function( object )
     local unboxed_obj;
 
     unboxed_obj:= __ConvertedFromJulia( object );
     if IsList( unboxed_obj ) and not IsString( unboxed_obj ) then
-      return List( unboxed_obj, JuliaStructuralUnbox_AlsoRecord );
+      return List( unboxed_obj, StructuralConvertedFromJulia_AlsoRecord );
     elif unboxed_obj = fail and
          StartsWith( JuliaTypeInfo( object ), "Dict{" ) then
       # The Julia object is a dictionary.

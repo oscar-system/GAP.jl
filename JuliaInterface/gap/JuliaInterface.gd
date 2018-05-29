@@ -50,7 +50,7 @@ DeclareOperation( "ConvertedFromJulia", [ IsJuliaObject ] );
 #! @Returns an object
 #! @Description
 #!  Like structural copy, also converts the contents of a Julia list recursively to GAP objects.
-DeclareGlobalFunction( "JuliaStructuralUnbox" );
+DeclareGlobalFunction( "StructuralConvertedFromJulia" );
 
 ## Internal
 BindGlobal( "__JULIAINTERFACE_MODULE_NAME",
