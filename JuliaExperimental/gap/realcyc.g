@@ -32,7 +32,7 @@ BindGlobal( "IsPositiveRealPartCyclotomic", function( cyc )
       coeffs:= JuliaArrayOfFmpz( coeffs );
     fi;
     
-    return JuliaUnbox(
+    return ConvertedFromJulia(
                Julia.GAPRealCycModule.isPositiveRealPartCyc( coeffs ) );
 end );
 

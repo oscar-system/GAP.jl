@@ -24,9 +24,9 @@ InstallGlobalFunction( JuliaGetGlobalVariable,
     Error( "arguments must be strings function_name[,module_name]" );
 end );
 
-InstallMethod( JuliaUnbox,
+InstallMethod( ConvertedFromJulia,
                [ IsJuliaObject ],
-    __JuliaUnbox );
+    __ConvertedFromJulia );
 
 InstallMethod( ConvertedToJulia,
                 [ IsObject ],
@@ -110,7 +110,7 @@ end );
 InstallMethod( ViewString,
     [ IsJuliaFunction ],
     julia_func -> Concatenation( "<Julia: ",
-                      JuliaUnbox( Julia.Base.string( julia_func ) ),
+                      ConvertedFromJulia( Julia.Base.string( julia_func ) ),
                       ">" ) );
 
 InstallMethod( String,
@@ -118,7 +118,7 @@ InstallMethod( String,
 
   function( julia_obj )
 
-    return JuliaUnbox( Julia.Base.string( julia_obj ) );
+    return ConvertedFromJulia( Julia.Base.string( julia_obj ) );
 
 end );
 
@@ -154,7 +154,7 @@ end );
 InstallGlobalFunction( JuliaStructuralUnbox,
   function( object ) 
     local unboxed_obj;
-    unboxed_obj := JuliaUnbox( object );
+    unboxed_obj := ConvertedFromJulia( object );
     if IsList( unboxed_obj ) and not IsString( unboxed_obj ) then
         return List( unboxed_obj, JuliaStructuralUnbox );
     fi;

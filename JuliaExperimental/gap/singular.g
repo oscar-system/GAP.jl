@@ -237,7 +237,7 @@ BindGlobal( "SingularPolynomialRing", function( R, names )
         IsPolynomial and IsSingularObject and IsAttributeStoringRep, R );
 
     # Store the GAP list of wrapped Julia indeterminates.
-    indets:= List( JuliaUnbox( getindex( juliaobj, 2 ) ),
+    indets:= List( ConvertedFromJulia( getindex( juliaobj, 2 ) ),
                    x -> SingularElement( R, x ) );
     SetIndeterminatesOfPolynomialRing( R, indets );
     SetGeneratorsOfLeftOperatorRingWithOne( R, indets );
@@ -377,7 +377,7 @@ InstallOtherMethod( ViewString,
 InstallOtherMethod( \=,
     [ "IsSingularObject", "IsSingularObject" ], 100,
     function( x, y )
-      return JuliaUnbox(
+      return ConvertedFromJulia(
                  Julia.Base.("==")( JuliaPointer( x ), JuliaPointer( y ) ) );
     end );
 
@@ -385,7 +385,7 @@ InstallOtherMethod( \=,
 # InstallOtherMethod( \<,
 #     [ "IsSingularObject", "IsSingularObject" ],
 #     function( x, y )
-#       return JuliaUnbox(
+#       return ConvertedFromJulia(
 #                  Julia.Base.isless( JuliaPointer( x ), JuliaPointer( y ) ) );
 #     end );
 

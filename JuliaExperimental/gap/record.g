@@ -56,7 +56,7 @@ end );
 #!  keys of <A>dict</A>, and the values are the corresponding values.
 #!  If the global option <C>"recursive"</C> is <K>true</K> then
 #!  the lists and records that occur as values are unboxed recursively.
-DeclareGlobalFunction( "JuliaUnboxRecordFromDictionary" );
+DeclareGlobalFunction( "ConvertedFromJuliaRecordFromDictionary" );
 
 
 ##############################################################################
@@ -70,14 +70,14 @@ DeclareGlobalFunction( "JuliaUnboxRecordFromDictionary" );
 DeclareGlobalFunction( "JuliaStructuralUnbox_AlsoRecord" );
 
 
-InstallGlobalFunction( "JuliaUnboxRecordFromDictionary", function( dict )
+InstallGlobalFunction( "ConvertedFromJuliaRecordFromDictionary", function( dict )
     local info, result, recursive, i, comp;
 
-    info:= __JuliaUnbox_record_dict( dict );
+    info:= __ConvertedFromJulia_record_dict( dict );
     result:= rec();
     recursive:= ( ValueOption( "recursive" ) = true );
     for i in [ 1 .. Length( info[1] ) ] do
-      comp:= __JuliaUnbox( info[1][i] );
+      comp:= __ConvertedFromJulia( info[1][i] );
       if not IsString( comp ) then
         # This dictionary cannot be converted to a GAP record.
         return fail;
@@ -96,13 +96,13 @@ end );
 InstallGlobalFunction( JuliaStructuralUnbox_AlsoRecord, function( object )
     local unboxed_obj;
 
-    unboxed_obj:= __JuliaUnbox( object );
+    unboxed_obj:= __ConvertedFromJulia( object );
     if IsList( unboxed_obj ) and not IsString( unboxed_obj ) then
       return List( unboxed_obj, JuliaStructuralUnbox_AlsoRecord );
     elif unboxed_obj = fail and
          StartsWith( JuliaTypeInfo( object ), "Dict{" ) then
       # The Julia object is a dictionary.
-      unboxed_obj:= JuliaUnboxRecordFromDictionary( object : recursive );
+      unboxed_obj:= ConvertedFromJuliaRecordFromDictionary( object : recursive );
     fi;
     return unboxed_obj;
 end );

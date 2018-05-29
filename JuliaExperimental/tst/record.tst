@@ -8,9 +8,9 @@ gap> START_TEST( "record.tst" );
 ##  empty record
 gap> dict:= ConvertedToJulia( rec() );
 <Julia: Dict{Any,Any}()>
-gap> JuliaUnbox( dict );
+gap> ConvertedFromJulia( dict );
 fail
-gap> JuliaUnboxRecordFromDictionary( dict );
+gap> ConvertedFromJuliaRecordFromDictionary( dict );
 rec(  )
 gap> JuliaStructuralUnbox_AlsoRecord( dict );
 rec(  )
@@ -25,7 +25,7 @@ gap> dict:= ConvertedToJulia( rec( bool:= true,
 >                          list:= [ 1, 2, 3 ],
 >                          Juliafunc:= Julia.Base.map,
 >                        ) );;
-gap> JuliaUnboxRecordFromDictionary( dict );
+gap> ConvertedFromJuliaRecordFromDictionary( dict );
 rec( Juliafunc := <Julia: map>, bool := <Julia: true>, 
   list := <Julia: Any[1, 2, 3]>, string := <Julia: abc> )
 gap> JuliaStructuralUnbox_AlsoRecord( dict );

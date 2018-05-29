@@ -68,11 +68,11 @@ InstallMethod( ViewObj, [ IsExtPerm ], function( p )
     end );
 
 InstallMethod( \=, [ IsExtPerm, IsExtPerm ], function( p1, p2 )
-    return JuliaUnbox( Julia.Base.("==")( p1![1], p2![1] ) );
+    return ConvertedFromJulia( Julia.Base.("==")( p1![1], p2![1] ) );
     end );
 
 InstallMethod( \<, [ IsExtPerm, IsExtPerm ], function( p1, p2 )
-    return JuliaUnbox( Julia.Base.isless( p1![1], p2![1] ) );
+    return ConvertedFromJulia( Julia.Base.isless( p1![1], p2![1] ) );
     end );
 
 InstallMethod( \*, [ IsExtPerm, IsExtPerm ], function( p1, p2 )
@@ -86,19 +86,19 @@ InstallMethod( \^, [ IsExtPerm, IsInt ], function( p1, n )
     end );
 
 InstallMethod( \^, [ IsInt, IsExtPerm ], function( i, p )
-    return JuliaUnbox( Julia.Base.("^")( ConvertedToJulia( i ), p![1] ) );
+    return ConvertedFromJulia( Julia.Base.("^")( ConvertedToJulia( i ), p![1] ) );
     end );
 
 InstallMethod( \/, [ IsInt, IsExtPerm ], function( i, p )
-    return JuliaUnbox( Julia.Base.("/")( ConvertedToJulia( i ), p![1] ) );
+    return ConvertedFromJulia( Julia.Base.("/")( ConvertedToJulia( i ), p![1] ) );
     end );
 
 InstallMethod( LargestMovedPoint, [ IsExtPerm ], function( p )
-    return JuliaUnbox( Julia.GAPPermutations.LargestMovedPointPerm( p![1] ) );
+    return ConvertedFromJulia( Julia.GAPPermutations.LargestMovedPointPerm( p![1] ) );
     end );
 
 InstallMethod( Order, [ IsExtPerm ], function( p )
-    return JuliaUnbox( Julia.GAPPermutations.OrderPerm( p![1] ) );
+    return ConvertedFromJulia( Julia.GAPPermutations.OrderPerm( p![1] ) );
     end );
 
 InstallMethod( One, [ IsExtPerm ], p -> JuliaIdentityPerm );

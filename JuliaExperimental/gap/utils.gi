@@ -60,7 +60,7 @@ InstallMethod( ConvertedToJulia,
 BindGlobal( "JuliaUsingPackage", function( pkgname )
     if not IsString( pkgname ) then
       Error( "<pkgname> must be a string, the name of a Julia package" );
-    elif JuliaUnbox( JuliaEvalString( Concatenation(
+    elif ConvertedFromJulia( JuliaEvalString( Concatenation(
              "try\nusing ", pkgname,
              "\nreturn true\ncatch e\nreturn e\nend" ) ) ) = true then
       return true;
@@ -80,7 +80,7 @@ BindGlobal( "JuliaUsingPackage", function( pkgname )
 #!  Returns the string that describes the julia type of the Julia object
 #!  <A>juliaobj</A>.
 BindGlobal( "JuliaTypeInfo",
-    juliaobj -> JuliaUnbox( Julia.Base.string(
+    juliaobj -> ConvertedFromJulia( Julia.Base.string(
                                     Julia.Core.typeof( juliaobj ) ) ) );
 
 
@@ -113,11 +113,11 @@ BindGlobal( "CallFuncListWithTimings", function( func, args )
     if Length( result ) = 1 then
       return rec( result:= result,
                   GAP_time:= stop - start,
-                  Julia_time:= Int( 1000 * JuliaUnbox( diff ) ) );
+                  Julia_time:= Int( 1000 * ConvertedFromJulia( diff ) ) );
     else
       return rec( result:= result,
                   GAP_time:= stop - start,
-                  Julia_time:= Int( 1000 * JuliaUnbox( diff ) ) );
+                  Julia_time:= Int( 1000 * ConvertedFromJulia( diff ) ) );
     fi;
     end );
 

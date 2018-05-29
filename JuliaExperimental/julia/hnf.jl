@@ -19,7 +19,7 @@ doc"""
 > of 1-dim. arrays (corresponding to the rows of `nemomat`),
 > and <kind> is either `"int"` (the entries are small integers)
 > or `"string"` (the entries are hex strings).
-> This format is suitable for calling `JuliaUnbox` from GAP.
+> This format is suitable for calling `ConvertedFromJulia` from GAP.
 """
 function unpackedNemoMatrixFmpz( nemomat::Nemo.fmpz_mat, tryint::Bool = true )
     m, n = size( nemomat )
@@ -33,7 +33,7 @@ function unpackedNemoMatrixFmpz( nemomat::Nemo.fmpz_mat, tryint::Bool = true )
         mat = Matrix{Int}( nemomat )
 
         # Turn the 2-dim. array into a 1-dim. array of 1-dim. arrays
-        # of small integers (which can then be unboxed with 'JuliaUnbox').
+        # of small integers (which can then be unboxed with 'ConvertedFromJulia').
         return ( "int", map( i -> mat[i,:], 1:size(mat,1) ) )
       end
     end
@@ -41,7 +41,7 @@ function unpackedNemoMatrixFmpz( nemomat::Nemo.fmpz_mat, tryint::Bool = true )
     # Either we *want* to create a nested array of strings,
     # or some entry is too large.
     # Turn the 2-dim. array into a 1-dim. array of 1-dim. arrays
-    # (which can then be unboxed with 'JuliaUnbox').
+    # (which can then be unboxed with 'ConvertedFromJulia').
     return ( "string", [ [ hex( nemomat[i,j] ) for j in 1:n ] for i in 1:n ] )
 end
 

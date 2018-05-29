@@ -133,26 +133,26 @@ Obj __JuliaCallFuncXArg( Obj self, Obj func, Obj args );
 // Executes the string <string> in the current julia session.
 Obj JuliaEvalString( Obj self, Obj string );
 
-// __JuliaUnbox_internal( julia_obj )
+// __ConvertedFromJulia_internal( julia_obj )
 //
 // Converts the julia value pointer <julia_obj> into a GAP object
 // if possible.
-Obj __JuliaUnbox_internal( jl_value_t* julia_obj );
+Obj __ConvertedFromJulia_internal( jl_value_t* julia_obj );
 
-// __JuliaUnbox( NULL, obj )
+// __ConvertedFromJulia( NULL, obj )
 //
 // Converts the julia object GAP object <obj> into a GAP object
 // if possible.
-Obj __JuliaUnbox( Obj self, Obj obj );
+Obj __ConvertedFromJulia( Obj self, Obj obj );
 
-// __JuliaUnbox_record_dict( NULL, dict )
+// __ConvertedFromJulia_record_dict( NULL, dict )
 //
 // <dict> must be a julia value GAP object,
 // holding a pointer to a julia dict.
 // The function returns a GAP list, consisting of two lists:
 //  1. A list containing the keys
 //  2. A list containing the values
-Obj __JuliaUnbox_record_dict( Obj self, Obj dict );
+Obj __ConvertedFromJulia_record_dict( Obj self, Obj dict );
 
 // __ConvertedToJulia( NULL, obj )
 //

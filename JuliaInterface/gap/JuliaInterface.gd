@@ -44,7 +44,7 @@ DeclareOperation( "ConvertedToJulia", [ IsObject ] );
 #! @Description
 #!  Retuns an object that is a sensible conversion from the Julia object <A>julia_object</A>.
 #!  If no conversion exists, <C>fail</C> is returned.
-DeclareOperation( "JuliaUnbox", [ IsJuliaObject ] );
+DeclareOperation( "ConvertedFromJulia", [ IsJuliaObject ] );
 
 #! @Arguments julia_object
 #! @Returns an object
