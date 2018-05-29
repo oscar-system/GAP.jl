@@ -154,12 +154,12 @@ Obj __JuliaUnbox( Obj self, Obj obj );
 //  2. A list containing the values
 Obj __JuliaUnbox_record_dict( Obj self, Obj dict );
 
-// __JuliaBox( NULL, obj )
+// __ConvertedToJulia( NULL, obj )
 //
 // Converts the GAP object <obj> into a suitable
 // julia object GAP object, if possible, and returns that
 // object. If the conversion is not possible, the function returns fail.
-Obj __JuliaBox( Obj self, Obj obj );
+Obj __ConvertedToJulia( Obj self, Obj obj );
 
 // JuliaTuple( NULL, list )
 //

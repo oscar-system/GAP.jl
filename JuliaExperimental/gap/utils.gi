@@ -32,7 +32,7 @@ DeclareAttribute( "JuliaPointer", IsObject );
 #! @Description
 #!  For an object <A>obj</A> with attribute <Ref Attr="JuliaPointer"/>,
 #!  this function returns the value of this attribute.
-InstallMethod( JuliaBox,
+InstallMethod( ConvertedToJulia,
     [ "HasJuliaPointer" ],
     obj -> JuliaPointer( obj ) );
 
@@ -137,7 +137,7 @@ BindGlobal( "JuliaArrayOfFmpz", function( coeffs )
     i:= 1;
     fmpz:= JuliaFunction( "fmpz", "Nemo" );
     parse:= JuliaFunction( "parse", "Base" );
-    alp:= JuliaBox( 16 );
+    alp:= ConvertedToJulia( 16 );
     for entry in coeffs do
       if IsSmallIntRep( entry ) then
         arr[i]:= entry;
@@ -147,7 +147,7 @@ BindGlobal( "JuliaArrayOfFmpz", function( coeffs )
       i:= i + 1;
     od;
     map:= JuliaFunction( "map", "Base" );
-    arr:= map( fmpz, JuliaBox( arr ) );
+    arr:= map( fmpz, ConvertedToJulia( arr ) );
 
     return arr;
     end );
@@ -170,7 +170,7 @@ BindGlobal( "JuliaArrayOfFmpq", function( coeffs )
     fmpq:= JuliaFunction( "fmpq", "Nemo" );
     div:= Julia.Base.("//");
     parse:= JuliaFunction( "parse", "Base" );  # why???
-    alp:= JuliaBox( 16 );
+    alp:= ConvertedToJulia( 16 );
     for entry in coeffs do
       if IsSmallIntRep( entry ) then
         arr[i]:= entry;
@@ -190,7 +190,7 @@ BindGlobal( "JuliaArrayOfFmpq", function( coeffs )
       i:= i + 1;
     od;
     map:= JuliaFunction( "map", "Base" );
-    arr:= map( fmpq, JuliaBox( arr ) );
+    arr:= map( fmpq, ConvertedToJulia( arr ) );
 
     return arr;
     end );
@@ -205,7 +205,7 @@ BindGlobal( "JuliaArrayOfFmpq", function( coeffs )
 BindGlobal( "JuliaMatrixFromGapMatrix", function( gapmatrix )
     local juliamatrix;
 
-    juliamatrix:= JuliaBox( gapmatrix );  # nested array
+    juliamatrix:= ConvertedToJulia( gapmatrix );  # nested array
     return Julia.GAPUtilsExperimental.MatrixFromNestedArray( juliamatrix );
     end );
 

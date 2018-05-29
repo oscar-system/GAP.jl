@@ -198,12 +198,12 @@ BindGlobal( "SingularPolynomialRing", function( R, names )
 
     # Convert the names list from "Array{Any,1}" to "Array{String,1}".
     names:= Julia.Base.convert( JuliaEvalString( "Array{String,1}" ),
-                                JuliaBox( names ) );
+                                ConvertedToJulia( names ) );
 
     # Create the julia objects.
     # If we would be able to deal with keyword arguments
     # then wrapping would not be needed here.
-    dict:= JuliaBox( rec( ring:= JuliaPointer( R ),
+    dict:= ConvertedToJulia( rec( ring:= JuliaPointer( R ),
                           indeterminates:= names,
                           cached:= true,
                           ordering:= JuliaSymbol( ordering ),

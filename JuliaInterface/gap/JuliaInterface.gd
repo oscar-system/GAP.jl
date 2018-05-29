@@ -37,7 +37,7 @@ DeclareGlobalFunction( "JuliaGetGlobalVariable" );
 #! @Description
 #!  Retuns a Julia object that is a sensible conversion to Julia of the object <A>object</A>.
 #!  If no conversion exists, <C>fail</C> is returned.
-DeclareOperation( "JuliaBox", [ IsObject ] );
+DeclareOperation( "ConvertedToJulia", [ IsObject ] );
 
 #! @Arguments julia_object
 #! @Returns object

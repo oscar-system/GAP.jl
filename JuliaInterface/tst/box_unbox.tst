@@ -2,25 +2,25 @@
 gap> START_TEST( "box_unbox.tst" );
 
 ##
-gap> int := JuliaBox( 11 );
+gap> int := ConvertedToJulia( 11 );
 <Julia: 11>
 gap> JuliaUnbox( int );
 11
-gap> string := JuliaBox( "bla" );
+gap> string := ConvertedToJulia( "bla" );
 <Julia: bla>
 gap> JuliaUnbox( string );
 "bla"
-gap> bool := JuliaBox( true );
+gap> bool := ConvertedToJulia( true );
 <Julia: true>
 gap> JuliaUnbox( bool );
 true
-gap> bool := JuliaBox( false );
+gap> bool := ConvertedToJulia( false );
 <Julia: false>
 gap> JuliaUnbox( bool );
 false
 
 ##
-gap> list:= JuliaBox( [ 1, JuliaBox( 2 ), 3 ] );
+gap> list:= ConvertedToJulia( [ 1, ConvertedToJulia( 2 ), 3 ] );
 <Julia: Any[1, 2, 3]>
 gap> JuliaUnbox( list );
 [ <Julia: 1>, <Julia: 2>, <Julia: 3> ]
@@ -28,20 +28,20 @@ gap> List( JuliaUnbox( list ), JuliaUnbox );
 [ 1, 2, 3 ]
 
 ##  empty list vs. empty string
-gap> emptylist:= JuliaBox( [] );
+gap> emptylist:= ConvertedToJulia( [] );
 <Julia: Any[]>
-gap> emptystring:= JuliaBox( "" );
+gap> emptystring:= ConvertedToJulia( "" );
 <Julia: >
 gap> JuliaUnbox( emptylist );
 [  ]
 gap> JuliaUnbox( emptystring );
 ""
 
-##  'JuliaBox' for Julia functions (inside arrays)
+##  'ConvertedToJulia' for Julia functions (inside arrays)
 gap> parse:= JuliaFunction( "parse", "Base" );;
-gap> IsIdenticalObj( parse, JuliaBox( parse ) );
+gap> IsIdenticalObj( parse, ConvertedToJulia( parse ) );
 true
-gap> list:= JuliaBox( [ 1, parse, 3 ] );
+gap> list:= ConvertedToJulia( [ 1, parse, 3 ] );
 <Julia: Any[1, parse, 3]>
 gap> list2:= JuliaUnbox( list );
 [ <Julia: 1>, <Julia: parse>, <Julia: 3> ]

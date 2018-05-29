@@ -46,7 +46,7 @@ BindGlobal( "ExtPermType",
 
 BindGlobal( "PermutationInJulia",
     gapperm -> Objectify( ExtPermType,
-       [ Julia.GAPPermutations.Permutation( JuliaBox( ListPerm( gapperm ) ) ) ] ) );
+       [ Julia.GAPPermutations.Permutation( ConvertedToJulia( ListPerm( gapperm ) ) ) ] ) );
 
 BindGlobal( "WrappedPermutationInJulia",
     jperm -> Objectify( ExtPermType, [ jperm ] ) );
@@ -82,15 +82,15 @@ InstallMethod( \*, [ IsExtPerm, IsExtPerm ], function( p1, p2 )
 
 InstallMethod( \^, [ IsExtPerm, IsInt ], function( p1, n )
     return WrappedPermutationInJulia( Julia.Base.("^")(
-               p1![1], JuliaBox( n ) ) );
+               p1![1], ConvertedToJulia( n ) ) );
     end );
 
 InstallMethod( \^, [ IsInt, IsExtPerm ], function( i, p )
-    return JuliaUnbox( Julia.Base.("^")( JuliaBox( i ), p![1] ) );
+    return JuliaUnbox( Julia.Base.("^")( ConvertedToJulia( i ), p![1] ) );
     end );
 
 InstallMethod( \/, [ IsInt, IsExtPerm ], function( i, p )
-    return JuliaUnbox( Julia.Base.("/")( JuliaBox( i ), p![1] ) );
+    return JuliaUnbox( Julia.Base.("/")( ConvertedToJulia( i ), p![1] ) );
     end );
 
 InstallMethod( LargestMovedPoint, [ IsExtPerm ], function( p )

@@ -27,7 +27,7 @@ BindGlobal( "IsPositiveRealPartCyclotomic", function( cyc )
     fi;
 
     if ForAll( coeffs, IsSmallIntRep ) then
-      coeffs:= JuliaBox( coeffs );
+      coeffs:= ConvertedToJulia( coeffs );
     else
       coeffs:= JuliaArrayOfFmpz( coeffs );
     fi;

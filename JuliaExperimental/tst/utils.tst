@@ -14,7 +14,7 @@ false
 ##
 gap> JuliaTypeInfo( 0 );
 "Int64"
-gap> JuliaTypeInfo( JuliaBox( 1 ) );
+gap> JuliaTypeInfo( ConvertedToJulia( 1 ) );
 "Int64"
 gap> JuliaTypeInfo( Julia.Base.parse );
 "Base.#parse"

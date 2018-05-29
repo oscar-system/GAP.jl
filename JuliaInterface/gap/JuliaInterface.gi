@@ -28,12 +28,12 @@ InstallMethod( JuliaUnbox,
                [ IsJuliaObject ],
     __JuliaUnbox );
 
-InstallMethod( JuliaBox,
+InstallMethod( ConvertedToJulia,
                 [ IsObject ],
   function( obj )
     local result;
     
-    result := __JuliaBox( obj );
+    result := __ConvertedToJulia( obj );
     if result = fail then
         TryNextMethod();
     fi;
@@ -51,19 +51,19 @@ InstallMethod( CallFuncList,
 
     elif Length( argument_list ) = 1 then
 
-        return __JuliaCallFunc1Arg( julia_func, JuliaBox( argument_list[ 1 ] ) );
+        return __JuliaCallFunc1Arg( julia_func, ConvertedToJulia( argument_list[ 1 ] ) );
 
     elif Length( argument_list ) = 2 then
 
-        return __JuliaCallFunc2Arg( julia_func, JuliaBox( argument_list[ 1 ] ), JuliaBox( argument_list[ 2 ] ) );
+        return __JuliaCallFunc2Arg( julia_func, ConvertedToJulia( argument_list[ 1 ] ), ConvertedToJulia( argument_list[ 2 ] ) );
 
     elif Length( argument_list ) = 3 then
 
-        return __JuliaCallFunc3Arg( julia_func, JuliaBox( argument_list[ 1 ] ), JuliaBox( argument_list[ 2 ] ), JuliaBox( argument_list[ 3 ] ) );
+        return __JuliaCallFunc3Arg( julia_func, ConvertedToJulia( argument_list[ 1 ] ), ConvertedToJulia( argument_list[ 2 ] ), ConvertedToJulia( argument_list[ 3 ] ) );
 
     fi;
 
-    return __JuliaCallFuncXArg( julia_func, List( argument_list, JuliaBox ) );
+    return __JuliaCallFuncXArg( julia_func, List( argument_list, ConvertedToJulia ) );
 
 end );
 

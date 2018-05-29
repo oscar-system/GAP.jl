@@ -56,7 +56,7 @@ BindGlobal( "NemoMatrix_fmpq", function( mat )
     div:= Julia.Base.( "//" );
     parse:= Julia.Base.parse;
     map:= Julia.Base.map;
-    alp:= JuliaBox( 16 );
+    alp:= ConvertedToJulia( 16 );
     for row in mat do
       for entry in row do
         if IsSmallIntRep( entry ) then
@@ -71,7 +71,7 @@ BindGlobal( "NemoMatrix_fmpq", function( mat )
         i:= i + 1;
       od;
     od;
-    arr:= map( fmpq, JuliaBox( arr ) );
+    arr:= map( fmpq, ConvertedToJulia( arr ) );
     s:= JuliaFunction( "MatrixSpace", "Nemo" );
     s:= s( Julia.Nemo.QQ, NumberRows( mat ), NumberColumns( mat ) );
 
@@ -91,7 +91,7 @@ BindGlobal( "NemoMatrix_fmpz", function( mat )
     i:= 1;
     fmpz:= JuliaFunction( "fmpz", "Nemo" );
     parse:= JuliaFunction( "parse", "Base" );
-    alp:= JuliaBox( 16 );
+    alp:= ConvertedToJulia( 16 );
     for row in mat do
       for entry in row do
         if IsSmallIntRep( entry ) then
@@ -103,7 +103,7 @@ BindGlobal( "NemoMatrix_fmpz", function( mat )
       od;
     od;
     map:= JuliaFunction( "map", "Base" );
-    arr:= map( fmpz, JuliaBox( arr ) );
+    arr:= map( fmpz, ConvertedToJulia( arr ) );
     s:= JuliaFunction( "MatrixSpace", "Nemo" );
     s:= s( Julia.Nemo.ZZ, NumberRows( mat ), NumberColumns( mat ) );
 

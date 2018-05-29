@@ -109,7 +109,7 @@ BindGlobal( "Nemo_PolynomialRing", function( R, names )
     elif IsList( names ) and ForAll( names, IsString ) then
       # Convert the names list from "Array{Any,1}" to "Array{String,1}".
       names:= Julia.Base.convert( JuliaEvalString( "Array{String,1}" ),
-                                  JuliaBox( names ) );
+                                  ConvertedToJulia( names ) );
       juliaobj:= Julia.Nemo.PolynomialRing( JuliaPointer( R ), names );
     else
       Error( "<names> must be a string or a list of strings" );
@@ -178,7 +178,7 @@ BindGlobal( "Nemo_Polynomial", function( R, descr )
       if ForAll( descr, IsInt ) then
         # Nothing is to do.
       elif ForAll( descr, IsRat ) then
-        # 'JuliaBox' does not allow us to transfer rationals.
+        # 'ConvertedToJulia' does not allow us to transfer rationals.
         fmpq:= Julia.Nemo.fmpq;
         div:= Julia.Base.("//");
         descr:= JuliaArrayOfFmpq( descr );

@@ -16,10 +16,10 @@ export MatrixFromNestedArray, Nemo_Matrix_over_NumberField,
        CoefficientVectorsNumDenOfNumberFieldElement,
        MatricesOfCoefficientVectorsNumDen
 
-# export JuliaBox_Cyclotomics
+# export ConvertedToJulia_Cyclotomics
 
 
-##  Turn a nested 1-dim. array (as created by 'JuliaBox'
+##  Turn a nested 1-dim. array (as created by 'ConvertedToJulia'
 ##  into a 2-dim. array
 
 function MatrixFromNestedArray( lst ) return hcat( lst... )' end
@@ -111,7 +111,7 @@ end
 # ##
 # ##  The result is an array of field elements.
 # 
-# JuliaBox_Cyclotomics = function( N, lst, denom )
+# ConvertedToJulia_Cyclotomics = function( N, lst, denom )
 #     local f, x, n, m, mat, d, res
 # 
 #     f, x = Nemo.CyclotomicField( N, "x" )

@@ -17,7 +17,7 @@
 #!  this function creates a dictionary in Julia
 #!  whose components are the record components of <A>arec</A>,
 #!  and the corresponding 
-InstallMethod( JuliaBox,
+InstallMethod( ConvertedToJulia,
     [ "IsRecord" ],
     function( arec )
     local dict, setindex, comp, val;
@@ -32,8 +32,8 @@ InstallMethod( JuliaBox,
     # Add the components.
     setindex:= Julia.Base.( "setindex!" );
     for comp in RecNames( arec ) do
-      # Do not call 'JuliaBox', catch the 'fail' results.
-      val:= __JuliaBox( arec.( comp ) );
+      # Do not call 'ConvertedToJulia', catch the 'fail' results.
+      val:= __ConvertedToJulia( arec.( comp ) );
 #T correct for IsJuliaFunction objects?
       if val = fail then
         # We cannot convert all components.

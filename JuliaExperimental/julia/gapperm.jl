@@ -62,7 +62,7 @@ function Permutation( imgsarray::Array{Int,1} )
         end
     end
 
-# Note that 'JuliaBox' creates Array{Any,1}.
+# Note that 'ConvertedToJulia' creates Array{Any,1}.
 function Permutation( imgsarray::Array{Any,1} )
         local conv16, conv32
 

@@ -9,7 +9,7 @@ module GAPUtilsExperimental
 
 export MatrixFromNestedArray
 
-##  Turn a nested 1-dim. array (as created by 'JuliaBox'
+##  Turn a nested 1-dim. array (as created by 'ConvertedToJulia'
 ##  into a 2-dim. array
 
 doc"""

@@ -65,7 +65,7 @@ gap> JuliaUnbox( Julia.Base.isless( x, x ) );
 false
 
 ##  test binary arithmetic operations with GAPRats and Julia integers
-gap> j:= JuliaBox( 20 );;
+gap> j:= ConvertedToJulia( 20 );;
 gap> JuliaObjGAPRat( Julia.Base.( "+" )( x, j ) );
 23
 gap> JuliaObjGAPRat( Julia.Base.( "+" )( j, x ) );
