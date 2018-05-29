@@ -4,12 +4,6 @@
 # Implementations
 #
 
-#! @Arguments function_name[,module_name]
-#! @Returns a Julia function
-#! @Description
-#!  Returns the GAP object corresponding to the Julia function
-#!  with name <A>function_name</A> in module <A>module_name</A>.
-#!  The default module is Main.
 InstallGlobalFunction( JuliaFunction,
   function( arglist... )
     if Length( arglist ) = 1 and IsString( arglist[ 1 ] ) then
