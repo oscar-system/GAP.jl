@@ -63,11 +63,6 @@ AC_SUBST(JULIA_CPPFLAGS)
 AC_DEFINE_UNQUOTED(JULIA_LDPATH, ["$JULIA_LDPATH"], [path to Julia installation])
 
 dnl ##
-dnl ## Detect pointer size to distinguish 32 and 64 bit builds
-dnl ##
-AC_CHECK_SIZEOF([void **])
-
-dnl ##
 dnl ## Detect Windows resp. Cygwin
 dnl ##
 case $host_os in

@@ -12,8 +12,8 @@ GAPINSTALLLIB = $(abs_top_srcdir)/$(BINARCHDIR)/JuliaInterface.so
 lib_LTLIBRARIES = JuliaInterface.la
 
 JuliaInterface_la_SOURCES = src/JuliaInterface.c
-JuliaInterface_la_CPPFLAGS = $(GAP_CPPFLAGS) $(JULIA_CPPFLAGS) -DCONFIG_H -DJULIA_ENABLE_THREADING=1
-# Note that the latter is only for GAP 4.4.12
+JuliaInterface_la_CPPFLAGS = $(GAP_CPPFLAGS) $(JULIA_CPPFLAGS) -DJULIA_ENABLE_THREADING=1
+JuliaInterface_la_CFLAGS = $(GAP_CFLAGS)
 JuliaInterface_la_LDFLAGS = $(JULIA_LDFLAGS) -ljulia -R$(JULIA_LDPATH) -module -avoid-version $(JULIA_LDPATH)/libstdc++.so.6
 if SYS_IS_DARWIN
 # HACK to support linking against prebuilt Julia binaries from
