@@ -9,12 +9,10 @@ module GAPUtilsExperimental
 
 export MatrixFromNestedArray
 
-##  Turn a nested 1-dim. array (as created by 'ConvertedToJulia'
-##  into a 2-dim. array
-
 doc"""
     MatrixFromNestedArray( lst )
-> Return a 2-dim array from the 1-dim array of 1-dim arrays `lst`
+> Return a 2-dim array created from the 1-dim array of 1-dim arrays `lst`.
+> (Note that GAP's `ConvertedToJulia` creates nested arrays.)
 """
 function MatrixFromNestedArray( lst ) return hcat( lst... )' end
 

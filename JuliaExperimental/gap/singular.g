@@ -17,6 +17,7 @@ JuliaIncludeFile(
 
 ImportJuliaModuleIntoGAP( "Core" );
 ImportJuliaModuleIntoGAP( "Base" );
+ImportJuliaModuleIntoGAP( "AbstractAlgebra" );
 ImportJuliaModuleIntoGAP( "Nemo" );
 ImportJuliaModuleIntoGAP( "Singular" );
 ImportJuliaModuleIntoGAP( "GAPSingularModule" );
@@ -334,13 +335,56 @@ InstallOtherMethod( IdealByGenerators,
             IsFinite, false,
             IsFiniteDimensional, false,
             Size, infinity,
-            CoefficientsRing, R,
+            CoefficientsRing, CoefficientsRing( R ),
             GeneratorsOfTwoSidedIdeal, gens );
 
     # Transfer known associativity, commutativity etc. from 'R' to 'I'.
     UseSubsetRelation( R, I );
 
     return I;
+    end );
+
+
+#############################################################################
+##
+#F  GroebnerBasisIdeal( <I> )
+##
+##  For the ideal <I>, return an ideal that is equal to <I> and such that
+##  the generators form a Groebner basis.
+##
+##  Note that Singular's <C>std</C> function returns an ideal not a list of
+##  polynomials.
+##
+BindGlobal( "GroebnerBasisIdeal", function( I )
+    local filter, R, juliaobj, gens, G;
+
+    filter:= IsSingularIdeal and IsAttributeStoringRep
+             and IsFreeLeftModule and IsFLMLOR
+             and IsSingularObject;
+
+    # Create the Singular ideal.
+    R:= LeftActingRingOfIdeal( I );
+    juliaobj:= Julia.Base.std( JuliaPointer( I ) );
+    gens:= List( [ 1 .. ConvertedFromJulia( Julia.Singular.ngens( juliaobj ) ) ],
+                 i -> SingularElement( R, juliaobj[i] ) );
+
+    # Create the GAP domain.
+    G:= ObjectifyWithAttributes( rec(),
+            NewType( FamilyObj( I ), filter ),
+            JuliaPointer, juliaobj,
+            LeftActingDomain, LeftActingDomain( I ),
+            LeftActingRingOfIdeal, LeftActingRingOfIdeal( I ),
+            RightActingRingOfIdeal, RightActingRingOfIdeal( I ),
+            IsFinite, false,
+            IsFiniteDimensional, false,
+            Size, infinity,
+            CoefficientsRing, CoefficientsRing( I ),
+            GeneratorsOfTwoSidedIdeal, gens );
+
+    # Transfer known associativity, commutativity etc. from 'I' to 'G'.
+    UseSubsetRelation( I, G );
+
+    return G;
     end );
 
 

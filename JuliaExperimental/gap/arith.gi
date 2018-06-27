@@ -28,6 +28,13 @@ InstallOtherMethod( \[\],
       return Julia.Base.getindex( obj, i );
     end );
 
+InstallOtherMethod( \[\],
+    [ "IsJuliaObject", "IsPosInt and IsSmallIntRep",
+                       "IsPosInt and IsSmallIntRep" ],
+    function( obj, i, j )
+      return Julia.Base.getindex( obj, i, j );
+    end );
+
 InstallOtherMethod( \+,
     [ "IsJuliaObject", "IsJuliaObject" ],
     function( obj1, obj2 )
@@ -35,13 +42,13 @@ InstallOtherMethod( \+,
     end );
 
 InstallOtherMethod( \+,
-    [ "IsJuliaObject", "IsPosInt and IsSmallIntRep" ],
+    [ "IsJuliaObject", "IsInt and IsSmallIntRep" ],
     function( obj, i )
       return Julia.Base.("+")( obj, i );
     end );
 
 InstallOtherMethod( \+,
-    [ "IsPosInt and IsSmallIntRep", "IsJuliaObject" ],
+    [ "IsInt and IsSmallIntRep", "IsJuliaObject" ],
     function( i, obj )
       return Julia.Base.("+")( i, obj );
     end );
@@ -53,13 +60,13 @@ InstallOtherMethod( \-,
     end );
 
 InstallOtherMethod( \-,
-    [ "IsJuliaObject", "IsPosInt and IsSmallIntRep" ],
+    [ "IsJuliaObject", "IsInt and IsSmallIntRep" ],
     function( obj, i )
       return Julia.Base.("-")( obj, i );
     end );
 
 InstallOtherMethod( \-,
-    [ "IsPosInt and IsSmallIntRep", "IsJuliaObject" ],
+    [ "IsInt and IsSmallIntRep", "IsJuliaObject" ],
     function( i, obj )
       return Julia.Base.("-")( i, obj );
     end );
@@ -71,13 +78,13 @@ InstallOtherMethod( \*,
     end );
 
 InstallOtherMethod( \*,
-    [ "IsJuliaObject", "IsPosInt and IsSmallIntRep" ],
+    [ "IsJuliaObject", "IsInt and IsSmallIntRep" ],
     function( obj, i )
       return Julia.Base.("*")( obj, i );
     end );
 
 InstallOtherMethod( \*,
-    [ "IsPosInt and IsSmallIntRep", "IsJuliaObject" ],
+    [ "IsInt and IsSmallIntRep", "IsJuliaObject" ],
     function( i, obj )
       return Julia.Base.("*")( i, obj );
     end );
