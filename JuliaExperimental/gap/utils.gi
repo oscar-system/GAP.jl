@@ -58,9 +58,23 @@ InstallMethod( ConvertedToJulia,
 #!  into the relevant <F>.jl</F> files,
 #!  and then load these files with <Ref Func="JuliaIncludeFile"/>.
 BindGlobal( "JuliaUsingPackage", function( pkgname )
+    local was_successful, julia_path;
     if not IsString( pkgname ) then
-      Error( "<pkgname> must be a string, the name of a Julia package" );
-    elif ConvertedFromJulia( JuliaEvalString( Concatenation(
+        Error( "<pkgname> must be a string, the name of a Julia package" );
+    fi;
+    was_successful := ConvertedFromJulia( JuliaEvalString( Concatenation(
+             "try\nusing ", pkgname,
+             "\nreturn true\ncatch e\nreturn e\nend" ) ) );
+    if was_successful = true then
+        return true;
+    else
+        #Try to compile package by loading it into external Julia
+        #Get Julia path
+        julia_path := ConvertedFromJulia( JuliaEvalString( "JULIA_HOME" ) );
+        Exec( Concatenation( julia_path, "/../bin/julia -e \"using ", pkgname, "\"" ) );
+    fi;
+    # Try the same again. If it fails this time, we are out
+    if ConvertedFromJulia( JuliaEvalString( Concatenation(
              "try\nusing ", pkgname,
              "\nreturn true\ncatch e\nreturn e\nend" ) ) ) = true then
       return true;
