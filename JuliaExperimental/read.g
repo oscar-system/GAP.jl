@@ -24,7 +24,7 @@ ReadPackage( "JuliaExperimental", "gap/zlattice.g");
 
 
 # Use Julia to compute the HNF of an integer matrix.
-if JuliaUsingPackage( "Nemo" ) then
+if JuliaImportPackage( "Nemo" ) then
   ReadPackage( "JuliaExperimental", "gap/hnf.g");
 fi;
 
@@ -38,19 +38,19 @@ ReadPackage( "JuliaExperimental", "gap/gapperm.g");
 
 
 # Nemo's number fields.
-if JuliaUsingPackage( "Nemo" ) then
+if JuliaImportPackage( "Nemo" ) then
   ReadPackage( "JuliaExperimental", "gap/numfield.g");
 fi;
 
 
 # Arb
-if JuliaUsingPackage( "Nemo" ) then
+if JuliaImportPackage( "Nemo" ) then
   ReadPackage( "JuliaExperimental", "gap/realcyc.g");
 fi;
 
 
 # Singular
-if JuliaUsingPackage( "Singular" ) then
+if JuliaImportPackage( "Singular" ) then
   ReadPackage( "JuliaExperimental", "gap/singular.g");
 fi;
 

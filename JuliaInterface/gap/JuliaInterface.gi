@@ -125,7 +125,8 @@ end );
 
 InstallGlobalFunction( ImportJuliaModuleIntoGAP,
   function( name )
-    local julia_list_func, function_list, variable_list, i, current_module_rec;
+    local callstring, julia_list_func, function_list, variable_list, i,
+          current_module_rec;
 
     # Do nothing if the module has already been imported.
     if IsBound( Julia.( name ) ) and not IsBound( Julia.( name ).__JULIAINTERFACE_NOT_IMPORTED_YET ) then
@@ -135,7 +136,14 @@ InstallGlobalFunction( ImportJuliaModuleIntoGAP,
     if name = "Main" then
         Print( "WARNING: Do not import Main module into GAP\n" );
     fi;
-    JuliaEvalString( Concatenation( "import ", name ) );
+    callstring:= Concatenation( "try import ", name,
+                     "; return true; catch e; return e; end" );
+    if ConvertedFromJulia( JuliaEvalString( callstring ) ) <> true then
+      Info( InfoWarning, 1,
+            "The Julia module '", name, "' cannot be imported." );
+      return;
+    fi;
+
     __JULIAINTERFACE_PREPARE_RECORD( name );
     current_module_rec := Julia.(name);
     Unbind( current_module_rec.__JULIAINTERFACE_NOT_IMPORTED_YET );
@@ -150,6 +158,34 @@ InstallGlobalFunction( ImportJuliaModuleIntoGAP,
         current_module_rec.(i) := JuliaGetGlobalVariable( i, name );
     od;
 end );
+
+
+InstallGlobalFunction( JuliaImportPackage, function( pkgname )
+    local callstring, julia_path;
+    if not IsString( pkgname ) then
+        Error( "<pkgname> must be a string, the name of a Julia package" );
+    fi;
+    callstring:= Concatenation( "try import ", pkgname,
+                     "; return true; catch e; return e; end" );
+    if ConvertedFromJulia( JuliaEvalString( callstring ) ) = true then
+        return true;
+    else
+        #Try to compile package by loading it into external Julia
+        #Get Julia path
+        julia_path := ConvertedFromJulia( JuliaEvalString( "JULIA_HOME" ) );
+        Exec( Concatenation( julia_path, "/../bin/julia -e \"", callstring,
+                  "\"" ) );
+    fi;
+    # Try the same again. If it fails this time, we are out
+    if ConvertedFromJulia( JuliaEvalString( callstring ) ) = true then
+      return true;
+    else
+      Info( InfoWarning, 1,
+            "The Julia package '", pkgname, "' cannot be loaded." );
+      return false;
+    fi;
+end );
+
 
 InstallGlobalFunction( StructuralConvertedFromJulia,
   function( object ) 

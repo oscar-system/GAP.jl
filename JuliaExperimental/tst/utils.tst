@@ -5,13 +5,6 @@
 gap> START_TEST( "utils.tst" );
 
 ##
-gap> JuliaUsingPackage( "Core" );
-true
-gap> JuliaUsingPackage( "No_Julia_Package_With_This_Name" );
-#I  The Julia package 'No_Julia_Package_With_This_Name' cannot be loaded
-false
-
-##
 gap> JuliaTypeInfo( 0 );
 "Int64"
 gap> JuliaTypeInfo( ConvertedToJulia( 1 ) );
