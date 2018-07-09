@@ -1,5 +1,5 @@
 ##
-gap> START_TEST( "box_unbox.tst" );
+gap> START_TEST( "convert.tst" );
 
 ##
 gap> int := ConvertedToJulia( 11 );
@@ -49,5 +49,5 @@ gap> List( list2, ConvertedFromJulia );
 [ 1, fail, 3 ]
 
 ##
-gap> STOP_TEST( "box_unbox.tst", 1 );
+gap> STOP_TEST( "convert.tst", 1 );
 

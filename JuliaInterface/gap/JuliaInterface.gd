@@ -155,4 +155,44 @@ InstallGlobalFunction( GetJuliaObj,
     return Julia.(module_name).(julia_name);
 end );
 
+
+#! @Arguments pkgname
+#! @Returns <K>true</K> or <K>false</K>.
+#! @Description
+#!  This function triggers the execution of an <C>import</C> statement
+#!  for the &Julia; package with name <A>pkgname</A>.
+#!  It returns <K>true</K> if the call was successful,
+#!  and <K>false</K> otherwise.
+#!  <P/>
+#!  Note that we just want to load the package into &Julia;,
+#!  we do <E>not</E> want to import variable names from the package
+#!  into &Julia;'s <C>Main</C> module, because the &Julia; variables must be
+#!  referenced relative to their modules if we want to be sure to access
+#!  the correct values.
+#!  <P/>
+#!  Why is this function needed?
+#!  <P/>
+#!  Apparently <C>libjulia</C> throws an error
+#!  when trying to compile the package, which happens when some files from
+#!  the package have been modified since compilation.
+#!  <P/>
+#!  Thus &GAP; has to check whether the &Julia; package has been loaded
+#!  successfully, and can then safely load and execute code
+#!  that relies on this &Julia; package.
+#!  In particular, we cannot just put the necessary <C>import</C> statements
+#!  into the relevant <F>.jl</F> files,
+#!  and then load these files with <Ref Func="JuliaIncludeFile"/>.
+DeclareGlobalFunction( "JuliaImportPackage" );
+
+
+#! @Arguments name
+#! @Returns nothing.
+#! @Description
+#!  The aim of this function is to make those global variables
+#!  that are exported by the &Julia; module with name <A>name</A>
+#!  available in the global record <C>Julia</C>.
+#!  After the call, the <A>name</A> component of this record will be bound
+#!  to a record that contains the variables from the &Julia; module.
 DeclareGlobalFunction( "ImportJuliaModuleIntoGAP" );
+
+

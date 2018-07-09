@@ -39,59 +39,10 @@ InstallMethod( ConvertedToJulia,
 
 #############################################################################
 ##
-#! @Arguments pkgname
-#! @Returns <K>true</K> or <K>false</K>.
-#! @Description
-#!  This function triggers the execution of a <C>using</C> statement
-#!  for the Julia package with name <A>pkgname</A>.
-#!  It returns <K>true</K> if the call was successful,
-#!  and <K>false</K> otherwise.
-#!  <P/>
-#!  Apparently <C>libjulia</C> throws an error
-#!  when trying to compile the package, which happens when some files from
-#!  the package have been modified since compilation.
-#!  <P/>
-#!  Thus &GAP; has to check whether the Julia package has been loaded
-#!  successfully, and can then load and execute code that relies on this
-#!  Julia package.
-#!  In particular, we cannot just put the necessary <C>using</C> statements
-#!  into the relevant <F>.jl</F> files,
-#!  and then load these files with <Ref Func="JuliaIncludeFile"/>.
-BindGlobal( "JuliaUsingPackage", function( pkgname )
-    local was_successful, julia_path;
-    if not IsString( pkgname ) then
-        Error( "<pkgname> must be a string, the name of a Julia package" );
-    fi;
-    was_successful := ConvertedFromJulia( JuliaEvalString( Concatenation(
-             "try\nusing ", pkgname,
-             "\nreturn true\ncatch e\nreturn e\nend" ) ) );
-    if was_successful = true then
-        return true;
-    else
-        #Try to compile package by loading it into external Julia
-        #Get Julia path
-        julia_path := ConvertedFromJulia( JuliaEvalString( "JULIA_HOME" ) );
-        Exec( Concatenation( julia_path, "/../bin/julia -e \"using ", pkgname, "\"" ) );
-    fi;
-    # Try the same again. If it fails this time, we are out
-    if ConvertedFromJulia( JuliaEvalString( Concatenation(
-             "try\nusing ", pkgname,
-             "\nreturn true\ncatch e\nreturn e\nend" ) ) ) = true then
-      return true;
-    else
-      Info( InfoWarning, 1,
-            "The Julia package '", pkgname, "' cannot be loaded" );
-      return false;
-    fi;
-    end );
-
-
-#############################################################################
-##
 #! @Arguments juliaobj
 #! @Returns a string.
 #! @Description
-#!  Returns the string that describes the julia type of the Julia object
+#!  Returns the string that describes the julia type of the &Julia; object
 #!  <A>juliaobj</A>.
 BindGlobal( "JuliaTypeInfo",
     juliaobj -> ConvertedFromJulia( Julia.Base.string(
@@ -105,11 +56,11 @@ BindGlobal( "JuliaTypeInfo",
 ##
 ##  'Julia_time' measures the wall clock time between the start and the end
 ##  of the computations;
-##  this includes both the &GAP; and the Julia computations.
+##  this includes both the &GAP; and the &Julia; computations.
 ##
 ##  'GAP_time' measures the &GAP; runtime of the computations;
 ##  this does apparently include most of the time needed by computations
-##  in Julia, but for example *not* times spent in <C>sleep</C> calls.
+##  in &Julia;, but for example *not* times spent in <C>sleep</C> calls.
 ##
 ##  Try to understand better how this works!
 ##
@@ -141,7 +92,7 @@ BindGlobal( "CallFuncListWithTimings", function( func, args )
 #F  JuliaArrayOfFmpz( <coeffs> )
 ##
 ##  For a list <A>coeffs</A> of integers, this function creates
-##  a Julia array that contains the corresponding Julia objects of type
+##  a &Julia; array that contains the corresponding &Julia; objects of type
 ##  <C>fmpz</C>.
 ##
 BindGlobal( "JuliaArrayOfFmpz", function( coeffs )
@@ -172,7 +123,7 @@ BindGlobal( "JuliaArrayOfFmpz", function( coeffs )
 #F  JuliaArrayOfFmpq( <coeffs> )
 ##
 ##  For a list <A>coeffs</A> of rationals, this function creates
-##  a Julia array that contains the corresponding Julia objects of type
+##  a &Julia; array that contains the corresponding &Julia; objects of type
 ##  <C>fmpq</C>.
 ##
 BindGlobal( "JuliaArrayOfFmpq", function( coeffs )
