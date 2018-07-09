@@ -14,10 +14,12 @@ doc"""
     get_function_symbols_in_module(module_t::Module) :: Array{Symbol,1}
 
 > Returns all function symbols in the module `module_t`.
-> Be aware that so-called built-in fuctions are not returned.
 """
 function get_function_symbols_in_module(module_t)
-    list = filter(i->isdefined(module_t,i) && isa(eval((:($module_t.$i))),Function),names(module_t))
+    module_name = string(Main.module_name(module_t))
+    string_list = Base.REPLCompletions.completions( module_name * ".", length( module_name ) + 1 )[1]
+    list = [ Symbol(x) for x in string_list ]
+    list = filter(i->isdefined(module_t,i) && isa(eval((:($module_t.$i))),Function),list)
     return list
 end
 
@@ -25,10 +27,13 @@ doc"""
     get_variable_symbols_in_module(module_t::Module) :: Array{Symbol,1}
 
 > Returns all variable symbols in the module `module_t`, i.e.,
-> all symbols that do not point to modules.
+> all symbols that do not point to functions.
 """
 function get_variable_symbols_in_module(module_t)
-    list = filter(i->isdefined(module_t,i) && ! isa(eval((:($module_t.$i))),Function),names(module_t))
+    module_name = string(Main.module_name(module_t))
+    string_list = Base.REPLCompletions.completions( module_name * ".", length( module_name ) + 1 )[1]
+    list = [ Symbol(x) for x in string_list ]
+    list = filter(i->isdefined(module_t,i) && ! isa(eval((:($module_t.$i))),Function),list)
     return list
 end
 
