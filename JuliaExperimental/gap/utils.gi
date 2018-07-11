@@ -39,18 +39,6 @@ InstallMethod( ConvertedToJulia,
 
 #############################################################################
 ##
-#! @Arguments juliaobj
-#! @Returns a string.
-#! @Description
-#!  Returns the string that describes the julia type of the &Julia; object
-#!  <A>juliaobj</A>.
-BindGlobal( "JuliaTypeInfo",
-    juliaobj -> ConvertedFromJulia( Julia.Base.string(
-                                    Julia.Core.typeof( juliaobj ) ) ) );
-
-
-#############################################################################
-##
 ##
 ##  'result' is bound only if <A>func</A> returned a value.
 ##
