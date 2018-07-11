@@ -7,80 +7,74 @@ module GAPRealCycModule
 
 using Nemo
 
-export arbCyc, isPositiveRealPartCyc, testRunCyc
+export arbCyc, isPositiveRealPartCyc, test_this_module
 
 doc"""
-    arbCyc( coeffs::Array{Any,1}, R::Nemo.ArbField )
+    arbCyc( coeffs::Vector, R::Nemo.ArbField )
 > Return the element in the Arb field that is defined by the real part
 > of the cyclotomic integer with conductor `N = length( coeffs )`
 > for which the integer `coeffs[k]` defines the coefficient
 > of the root of unity `exp( 2*pi*I*(k-1) // N )`.
 """
-function arbCyc( coeffs::Array{Any,1}, R::Nemo.ArbField )
+function arbCyc( coeffs::Vector, R::Nemo.ArbField )
     val::Nemo.arb = zero( R )
     N::Int = length( coeffs )
-
     for k = 1:N
       if coeffs[k] != 0
         val = val + coeffs[k] * cospi( fmpq( 2 * (k-1) // N ), R )
       end
     end
-
     return val
 end
 
 doc"""
-    isPositiveRealPartCyc( coeffs::Array{Any,1} )
-> Return `true` if the cyclotomic integer defined by the coefficients
-> `coeffs` (see `arbCyc`) has positive real part, and `false` otherwise.
+    isPositiveRealPartCyc( coeffs::Vector )
+> Return a tuple `( bool, prec )`
+> where `bool` is `true` if the cyclotomic integer defined by the coefficients
+> vector `coeffs` (see `arbCyc`) has positive real part,
+> and `false` otherwise,
+> and `prec` is the precision (in bits) that was needed to decide the question.
+> Note that this question can be answered whenever `coeffs` is not the
+> zero vector and the precision is high enough.
 """
-function isPositiveRealPartCyc( coeffs::Array{Any,1} )
-    prec::Int = 64
+function isPositiveRealPartCyc( coeffs::Vector )
+    prec::Int = 16
     while true
       R::Nemo.ArbField = Nemo.ArbField( prec )
       x::Nemo.arb = arbCyc( coeffs, R )
       if Nemo.ispositive( x )
-        return true
+        return ( true, prec )
       elseif Nemo.isnegative( x )
-        return false
+        return ( false, prec )
       end
       prec = 2 * prec
     end
 end
 
-function testRunCyc( coeffs::Array{Any,1}, num::Int )
-    res = true
-    for i = 1:num
-      res = isPositiveRealPartCyc( coeffs )
-    end
-    return res
-end
+function test_this_module()
+    ok::Bool = true
 
-function arbCyc( coeffs::Array{Nemo.fmpz,1}, R::Nemo.ArbField )
-    val::Nemo.arb = zero( R )
-    N::Int = length( coeffs )
-
-    for k = 1:N
-      if coeffs[k] != 0
-        val = val + coeffs[k] * cospi( fmpq( 2 * (k-1) // N ), R )
-      end
+    function shiftby( array, int )
+      sum = array + int
+      sum[1] = 0
+      return sum
     end
 
-    return val
-end
-
-function isPositiveRealPartCyc( coeffs::Array{Nemo.fmpz,1} )
-    prec::Int = 64
-    while true
-      R::Nemo.ArbField = Nemo.ArbField( prec )
-      x::Nemo.arb = arbCyc( coeffs, R )
-      if Nemo.ispositive( x )
-        return true
-      elseif Nemo.isnegative( x )
-        return false
-      end
-      prec = 2 * prec
+    sqrt5 = [ 0, 1, -1, -1, 1 ]
+    if ! isPositiveRealPartCyc( shiftby( 100 * sqrt5, 223 ) )[1]
+      ok = false
     end
+    if isPositiveRealPartCyc( shiftby( 100 * sqrt5, 224 ) )[1]
+      ok = false
+    end
+    if ! isPositiveRealPartCyc( shiftby( 1000 * sqrt5, 2236 ) )[1]
+      ok = false
+    end
+    if isPositiveRealPartCyc( shiftby( 1000 * sqrt5, 2237 ) )[1]
+      ok = false
+    end
+
+    return ok
 end
 
 end

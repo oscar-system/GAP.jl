@@ -18,7 +18,17 @@ ImportJuliaModuleIntoGAP( "GAPRealCycModule" );
 
 
 BindGlobal( "IsPositiveRealPartCyclotomic", function( cyc )
-    local denom, coeffs;
+    local coeffs, denom, res;
+
+    if not IsCyc( cyc ) then
+      Error( "<cyc> must be a cyclotomic number" );
+    elif cyc = 0 then
+      # Arb would not return 'true' for a positivity or negativity test.
+      return false;
+    elif IsRat( cyc ) then
+      # GAP can answer the question.
+      return IsPosRat( cyc );
+    fi;
 
     coeffs:= COEFFS_CYC( cyc );
     denom:= DenominatorCyc( cyc );
@@ -32,8 +42,11 @@ BindGlobal( "IsPositiveRealPartCyclotomic", function( cyc )
       coeffs:= JuliaArrayOfFmpz( coeffs );
     fi;
     
-    return ConvertedFromJulia(
-               Julia.GAPRealCycModule.isPositiveRealPartCyc( coeffs ) );
+    res:= Julia.GAPRealCycModule.isPositiveRealPartCyc( coeffs );
+    if ValueOption( "ShowPrecision" ) = true then
+      Print( "#I  precision needed: ", ConvertedFromJulia( res[2] ), "\n" );
+    fi;
+    return ConvertedFromJulia( res[1] );
 end );
 
 
