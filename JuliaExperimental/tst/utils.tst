@@ -4,14 +4,6 @@
 ##
 gap> START_TEST( "utils.tst" );
 
-##
-gap> JuliaTypeInfo( 0 );
-"Int64"
-gap> JuliaTypeInfo( ConvertedToJulia( 1 ) );
-"Int64"
-gap> JuliaTypeInfo( Julia.Base.parse );
-"Base.#parse"
-
 ##  small or large integers
 gap> l:= JuliaArrayOfFmpz( [ -2, -1, 0, 1, 2, 3 ] );
 <Julia: Nemo.fmpz[-2, -1, 0, 1, 2, 3]>

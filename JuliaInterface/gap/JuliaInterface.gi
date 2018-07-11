@@ -85,6 +85,26 @@ InstallMethod( CallFuncList,
     end );
 
 
+##
+##  We support '<juliaobj>[<i>]' and '<juliaobj>[<i>, <j>]' in general.
+##  This is useful for example if <juliaobj> is a tuple.
+##
+BindJuliaFunc( "getindex", "Base" );
+
+InstallOtherMethod( \[\],
+    [ "IsJuliaObject", "IsPosInt and IsSmallIntRep" ],
+    function( obj, i )
+      return Julia.Base.getindex( obj, i );
+    end );
+
+InstallOtherMethod( \[\],
+    [ "IsJuliaObject", "IsPosInt and IsSmallIntRep",
+                       "IsPosInt and IsSmallIntRep" ],
+    function( obj, i, j )
+      return Julia.Base.getindex( obj, i, j );
+    end );
+
+
 BindJuliaFunc( "string", "Base" );
 
 BindJuliaFunc( "include", "Base" );
@@ -183,6 +203,26 @@ InstallGlobalFunction( JuliaImportPackage, function( pkgname )
       Info( InfoWarning, 1,
             "The Julia package '", pkgname, "' cannot be loaded." );
       return false;
+    fi;
+end );
+
+
+BindJuliaFunc( "typeof", "Core" );
+
+InstallGlobalFunction( JuliaTypeInfo,
+    juliaobj -> ConvertedFromJulia(
+                    Julia.Base.string( Julia.Core.typeof( juliaobj ) ) ) );
+
+
+InstallGlobalFunction( CallJuliaFunctionWithCatch,
+    function( juliafunc, arguments )
+    local res;
+
+    res:= Julia.GAPUtils.call_with_catch( juliafunc, arguments );
+    if ConvertedFromJulia( res[1] ) = true then
+      return rec( ok:= true, value:= res[2] );
+    else
+      return rec( ok:= false, value:= ConvertedFromJulia( res[2] ) );
     fi;
 end );
 

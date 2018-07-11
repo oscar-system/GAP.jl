@@ -37,7 +37,26 @@ function get_variable_symbols_in_module(module_t)
     return list
 end
 
-export get_function_symbols_in_module, get_variable_symbols_in_module
+doc"""
+    call_with_catch( juliafunc, arguments )
+
+> Returns a tuple `( ok, val )`
+> where `ok` is either `true`, meaning that calling the function `juliafunc`
+> with `arguments` returns the value `val`,
+> or `false`, meaning that the function call runs into an error;
+> in the latter case, `val` is set to the string of the error message.
+"""
+function call_with_catch( juliafunc, arguments )
+    try
+      res = Core._apply( juliafunc, arguments )
+      return ( true, res )
+    catch e
+      return ( false, string( e ) )
+    end
+end
+
+export get_function_symbols_in_module, get_variable_symbols_in_module,
+       call_with_catch
 
 end
 

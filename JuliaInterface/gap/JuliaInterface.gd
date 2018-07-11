@@ -196,3 +196,24 @@ DeclareGlobalFunction( "JuliaImportPackage" );
 DeclareGlobalFunction( "ImportJuliaModuleIntoGAP" );
 
 
+#! @Arguments juliaobj
+#! @Returns a string.
+#! @Description
+#!  Returns the string that describes the julia type of the &Julia; object
+#!  <A>juliaobj</A>.
+DeclareGlobalFunction( "JuliaTypeInfo" );
+
+
+#! @Arguments juliafunc, arguments
+#! @Returns a record.
+#! @Description
+#!  The function calls the &Julia; function <A>juliafunc</A>
+#!  with arguments in the list <A>arguments</A>,
+#!  and returns a record with the components <C>ok</C> and <C>value</C>.
+#!  If no error occured then <C>ok</C> has the value <K>true</K>,
+#!  and <C>value</C> is the value returned by <A>juliafunc</A>.
+#!  If an error occured then <C>ok</C> has the value <K>false</K>,
+#!  and <C>value</C> is the error message as a &GAP; string.
+DeclareGlobalFunction( "CallJuliaFunctionWithCatch" );
+
+
