@@ -9,7 +9,7 @@ using Nemo
 
 export unpackedNemoMatrixFmpz
 
-function fitsGAPSmallIntRep( x::fmpz )
+function fitsGAPSmallIntRep( x::Nemo.fmpz )
     return -2^60 <= x && x < 2^60
 end
 

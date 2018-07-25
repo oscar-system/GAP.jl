@@ -202,7 +202,56 @@ BindGlobal( "Nemo_Polynomial", function( R, descr )
 
     return ObjectifyWithAttributes( rec(),
         ElementsFamily( FamilyObj( R ) )!.defaultPolynomialType,
-        JuliaPointer, pol );
+        JuliaPointer, pol,
+        ParentAttr, R );
+end );
+
+
+#############################################################################
+##
+#F  GAPCoefficientsOfNemo_Polynomial( <pol> )
+##
+BindGlobal( "GAPCoefficientsOfNemo_Polynomial", function( pol )
+    local R, info, num, den, monomials;
+
+    R:= Parent( pol );
+    if HasJuliaPointer( pol ) then
+      pol:= JuliaPointer( pol );
+    fi;
+
+    if R!.isUnivariatePolynomialRing = true then
+      info:= Julia.GAPUtilsExperimental.CoefficientsOfUnivarateNemoPolynomialFmpq(
+                 pol );
+      info:= Julia.GAPUtilsExperimental.CoefficientsNumDenOfFmpqArray( info );
+      num:= StructuralConvertedFromJulia( info[2] );
+      den:= StructuralConvertedFromJulia( info[3] );
+      if ConvertedFromJulia( info[1] ) = "int" then
+        # Just convert the integers to GAP.
+        return List( [ 1 .. Length( num ) ], i -> num[i] / den[i] );
+      else
+        # The entries are hex strings encoding integers.
+        return List( [ 1 .. Length( num ) ],
+                     i -> IntHexString( num[i] ) / IntHexString( den[i] ) );
+      fi;
+    else
+      info:= JuliaGetFieldOfObject( pol, "coeffs" );
+      info:= Julia.GAPUtilsExperimental.CoefficientsNumDenOfFmpqArray( info );
+      num:= StructuralConvertedFromJulia( info[2] );
+      den:= StructuralConvertedFromJulia( info[3] );
+      if ConvertedFromJulia( info[1] ) = "int" then
+        # Just convert the integers to GAP.
+        info:= List( [ 1 .. Length( num ) ], i -> num[i] / den[i] );
+      else
+        # The entries are hex strings encoding integers.
+        info:= List( [ 1 .. Length( num ) ],
+                     i -> IntHexString( num[i] ) / IntHexString( den[i] ) );
+      fi;
+      monomials:= Julia.GAPUtilsExperimental.NestedArrayFromMatrix(
+                      JuliaGetFieldOfObject( pol, "exps" ) );
+
+      return [ info,
+               StructuralConvertedFromJulia( monomials ) ];
+    fi;
 end );
 
 
@@ -289,9 +338,130 @@ BindGlobal( "Nemo_Field", function( F, descr... )
 end );
 
 
+#############################################################################
+##
+InstallMethod( \in,
+    IsElmsColls,
+    [ "IsNemoFieldElement", "IsNemoField" ],
+    ReturnTrue );
+
+
+#############################################################################
+##
+BindGlobal( "ElementOfNemoNumberField", function( nemoF, coeffs )
+    local d, res;
+
+    # Compute the common denominator.
+    coeffs:= ExtRepOfObj( coeffs );
+    d:= Lcm( List( coeffs, DenominatorRat ) );
+    coeffs:= coeffs * d;
+
+    # Convert the list of integral coefficient vectors
+    # to a suitable matrix in Julia (Nemo.fmpz_mat).
+    res:= Julia.GAPUtilsExperimental.MatrixFromNestedArray( [ coeffs ] );
+    res:= Julia.Nemo.matrix( Julia.Nemo.ZZ, res );
+
+    # Call the Julia function.
+    res:= Julia.GAPNumberFields.NemoElementOfNumberField(
+                JuliaPointer( nemoF ), res, d );
+
+    return ObjectifyWithAttributes( rec(),
+               ElementsFamily( FamilyObj( nemoF ) )!.defaultType,
+               JuliaPointer, res );
+end );
+
+
 #T  Random for this field:
 #T  method for alg. ext.; method for v. sp. -> then need basis ...
 #T  -> and need arithm. between GAP coeffs. and NEMO field elements
+
+
+#############################################################################
+##
+#R  IsIsomorphismToNemoFieldRep( <obj> )
+##
+DeclareRepresentation( "IsIsomorphismToNemoFieldRep",
+    IsAttributeStoringRep, [] );
+
+
+#############################################################################
+##
+#P  IsIsomorphismToNemoField( <obj> )
+##
+DeclareSynonym( "IsIsomorphismToNemoField",
+    IsIsomorphismToNemoFieldRep
+    and IsFieldHomomorphism
+    and IsMapping
+    and IsBijective );
+
+
+##############################################################################
+##
+#F  IsomorphismToNemoField( <F> )
+##
+##  For a field that consists of 'IsAlgebraicElement' elements,
+##  this function returns a field isomorphism
+##  to a field consisting of elements in '...'.
+##
+IsomorphismToNemoField:= function( F )
+    local NemoF;
+
+    # Check the argument.
+    if not ( IsAlgebraicElementCollection( F ) and IsField( F ) ) then
+      Error( "<F> must be an algebraic extension" );
+    fi;
+
+    NemoF:= Nemo_Field( F );
+
+    return Objectify( TypeOfDefaultGeneralMapping( F, NemoF,
+                              IsSPGeneralMapping
+                          and IsIsomorphismToNemoField ),
+                      rec() );
+end;
+
+
+#############################################################################
+##
+#M  ImageElm( <iso>, <cyc> )
+##
+InstallMethod( ImageElm,
+    FamSourceEqFamElm,
+    [ "IsIsomorphismToNemoField", "IsAlgebraicElement" ],
+    function( iso, algelm )
+    return ElementOfNemoNumberField( Range( iso ), algelm );
+    end );
+
+
+#############################################################################
+##
+#M  PreImageElm( <iso>, <elm> )
+##
+InstallMethod( PreImageElm,
+    FamRangeEqFamElm,
+    [ "IsIsomorphismToNemoField", "IsNemoFieldElement" ],
+    function( iso, elm )
+    local numden, getindex, convert, num, den, coeffs, i;
+
+    numden:= Julia.GAPNumberFields.CoefficientVectorsNumDenOfNumberFieldElement(                 JuliaPointer( elm ), Dimension( Source( iso ) ) );
+
+    getindex:= Julia.Base.getindex;
+    convert:= Julia.Base.convert;
+    num:= StructuralConvertedFromJulia(
+              convert( JuliaEvalString( "Array{Int,1}" ),
+                       getindex( numden, 1 ) ) );
+    den:= StructuralConvertedFromJulia(
+              convert( JuliaEvalString( "Array{Int,1}" ),
+                       getindex( numden, 2 ) ) );
+    coeffs:= [];
+    for i in [ 1 .. Length( num ) ] do
+      coeffs[i]:= num[i] / den[i];
+    od;
+
+    return AlgExtElm( ElementsFamily( FamilyObj( Source( iso ) ) ), coeffs );
+    end );
+
+
+#T hier!
 
 
 #############################################################################
@@ -305,14 +475,23 @@ BindGlobal( "NemoElement", function( template, jpointer )
 
     if IsDomain( template ) then
       type:= ElementsFamily( FamilyObj( template ) )!.defaultType;
+    elif IsPolynomial( template ) then
+      type:= FamilyObj( template )!.defaultPolynomialType;
     else
       type:= FamilyObj( template )!.defaultType;
     fi;
 
     result:= ObjectifyWithAttributes( rec(), type, JuliaPointer, jpointer );
+    if HasParent( template ) then
+      SetParent( result, Parent( template ) );
+    fi;
 
     return result;
 end );
+
+
+#T beat GAP's 'IsPolynomial' methods
+NEMO_RANK_SHIFT:= 100;
 
 
 #############################################################################
@@ -348,49 +527,49 @@ InstallMethod( RootOfDefiningPolynomial, [ IsNemoField ],
 ##
 ##  methods for field elements
 ##
-InstallOtherMethod( ViewString, [ IsNemoObject ],
+InstallOtherMethod( ViewString, [ "IsNemoObject" ],
     x -> Concatenation( "<", ViewString( JuliaPointer( x ) ), ">" ) );
 
-InstallOtherMethod( \=, [ IsNemoObject, IsNemoObject ],
+InstallOtherMethod( \=, [ "IsNemoObject", "IsNemoObject" ], NEMO_RANK_SHIFT,
     function( x, y )
       return ConvertedFromJulia(
                  Julia.Base.("==")( JuliaPointer( x ), JuliaPointer( y ) ) );
     end );
 
-InstallOtherMethod( \+, [ IsNemoObject, IsNemoObject ],
+InstallOtherMethod( \+, [ "IsNemoObject", "IsNemoObject" ], NEMO_RANK_SHIFT,
     function( x, y )
       return NemoElement( x,
                  Julia.Base.("+")( JuliaPointer( x ), JuliaPointer( y ) ) );
     end );
 
-InstallOtherMethod( \+, [ IsNemoObject, IsInt ],
+InstallOtherMethod( \+, [ "IsNemoObject", "IsInt and IsSmallIntRep" ], NEMO_RANK_SHIFT,
     function( x, y )
       return NemoElement( x,
                  Julia.Base.("+")( JuliaPointer( x ), y ) );
     end );
 
-InstallOtherMethod( AdditiveInverse, [ IsNemoObject ],
+InstallOtherMethod( AdditiveInverse, [ "IsNemoObject" ], NEMO_RANK_SHIFT,
     x -> NemoElement( x, Julia.Base.("-")( JuliaPointer( x ) ) ) );
 
-InstallOtherMethod( \-, [ IsNemoObject, IsNemoObject ],
+InstallOtherMethod( \-, [ "IsNemoObject", "IsNemoObject" ], NEMO_RANK_SHIFT,
     function( x, y )
       return NemoElement( x,
                  Julia.Base.("-")( JuliaPointer( x ), JuliaPointer( y ) ) );
     end );
 
-InstallOtherMethod( \*, [ IsNemoObject, IsNemoObject ],
+InstallOtherMethod( \*, [ "IsNemoObject", "IsNemoObject" ], NEMO_RANK_SHIFT,
     function( x, y )
       return NemoElement( x,
                  Julia.Base.("*")( JuliaPointer( x ), JuliaPointer( y ) ) );
     end );
 
-InstallOtherMethod( \/, [ IsNemoObject, IsNemoObject ],
+InstallOtherMethod( \/, [ "IsNemoObject", "IsNemoObject" ], NEMO_RANK_SHIFT,
     function( x, y )
       return NemoElement( x, Julia.Nemo.divexact(
                      JuliaPointer( x ), JuliaPointer( y ) ) );
     end );
 
-InstallOtherMethod( \^, [ IsNemoObject, IsPosInt ],
+InstallOtherMethod( \^, [ "IsNemoObject", "IsPosInt" ], NEMO_RANK_SHIFT,
     function( x, n )
       return NemoElement( x, Julia.Base.("^")( JuliaPointer( x ), n ) );
     end );
@@ -516,7 +695,6 @@ end );
 InstallMethod( NumberRows,
     [ "IsNemoMatrixObj" ],
     nemomat -> ConvertedFromJulia( Julia.Nemo.rows( JuliaPointer( nemomat ) ) ) );
-#T really unbox?
 
 InstallMethod( NumberColumns,
     [ "IsNemoMatrixObj" ],
@@ -582,22 +760,6 @@ InstallMethod( \[\],
 #T four argument []:= needed?
 
 
-# DeclareOperation( "ViewObj", [IsMatrixObj] );
-
-InstallMethod( PrintObj,
-    [ "IsNemoMatrixObj" ],
-    function( nemomat )
-Print( "???" );
-    end );
-# This must produce GAP-readable input reproducing the representation.
-#T how?
-
-# DeclareAttribute( "String", IsMatrixObj );
-# DeclareOperation( "String", [IsMatrixObj,IsInt] );
-
-# DeclareOperation( "Display", [IsMatrixObj] );
-
-
 ############################################################################
 # Arithmetical operations:
 ############################################################################
@@ -612,7 +774,8 @@ Print( "???" );
 #        in that representation cannot be lists!
 
 InstallMethod( \^,
-    [ "IsNemoMatrixObj", "IsPosInt" ],
+    [ "IsNemoMatrixObj", "IsPosInt and IsSmallIntRep" ], NEMO_RANK_SHIFT,
+                                                   # beat the generic method
     function( nemomat, n )
     local power, type;
 
@@ -624,8 +787,6 @@ InstallMethod( \^,
                NumberRows, NumberRows( nemomat ),
                NumberColumns, NumberColumns( nemomat ) );
     end );
-#T check square?
-#T what about 0x0 matrices?
 
 
 # The following unary arithmetical operations are possible for matrices:
