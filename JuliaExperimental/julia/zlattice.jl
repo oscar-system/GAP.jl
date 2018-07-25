@@ -18,7 +18,6 @@ export LLLReducedGramMat, ShortestVectors, OrthogonalEmbeddings
 doc"""
     LLLReducedGramMat( grammatrix::Array{Int,2}, y::Rational{Int} = 3//4 )
 > Return a dictionary with the following components.
->   remainder`
 >   `remainder`:      the reduced Gram matrix (`Array{Rational{Int},2}`)
 >   `relations`:      basechange matrix `H` (`Array{Rational{Int},2}`)
 >   `transformation`: basechange matrix `H` (`Array{Rational{Int},2}`)
@@ -470,6 +469,10 @@ end
 
 # A = [ 2 -1 -1 -1 ; -1 2 0 0 ; -1 0 2 0 ; -1 0 0 2 ];
 
+doc"""
+    OrthogonalEmbeddings( A::Array{Int,2}, arec::Dict )
+> ...
+"""
 function OrthogonalEmbeddings( A::Array{Int,2}, arec::Dict )
 
     local ExtendAtPosition,

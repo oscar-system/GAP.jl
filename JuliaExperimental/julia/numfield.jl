@@ -12,25 +12,33 @@ import Base: length, similar, zeros, ==, isless, *, one, inv, ^, /
 using Nemo
 # using Hecke
 
-export MatrixFromNestedArray, Nemo_Matrix_over_NumberField,
+export NemoElementOfNumberField,
+       Nemo_Matrix_over_NumberField,
        CoefficientVectorsNumDenOfNumberFieldElement,
        MatricesOfCoefficientVectorsNumDen
 
 # export ConvertedToJulia_Cyclotomics
 
 
-##  Turn a nested 1-dim. array (as created by 'ConvertedToJulia'
-##  into a 2-dim. array
+doc"""
+    NemoElementOfNumberField( f, lst, denom )
+> Return the element in the number field `f` for which `lst` is the array
+> of numerators of the coefficients w.r.t. the defining polynomial of `f`,
+> and `denom` is the common denominator.
+"""
+function NemoElementOfNumberField( f, lst, denom::Int )
+    return Nemo.elem_from_mat_row( f, lst, 1, Nemo.fmpz( denom ) )
+end
 
-function MatrixFromNestedArray( lst ) return hcat( lst... )' end
 
-
-##  Create an 'm' by 'n' matrix of elements in the field 'f'
-##  from a list 'lst' (of length 'm' times 'n')
-##  of integer coefficient vectors,
-##  for which 'denom' is the common denominator.
-
-function Nemo_Matrix_over_NumberField( f, m, n, lst, denom )
+doc"""
+    Nemo_Matrix_over_NumberField( f, m, n, lst, denom )
+> Return an `m` by `n` matrix of elements in the Nemo number field `f`
+> from the list `lst` (which has length `m` times `n`)
+> of integer coefficient vectors,
+> for which `denom` is the common denominator.
+"""
+function Nemo_Matrix_over_NumberField( f, m::Int, n::Int, lst, denom::Int )
     local pos, mat, d, i, j
 
     pos = 1
@@ -48,10 +56,12 @@ function Nemo_Matrix_over_NumberField( f, m, n, lst, denom )
 end
 
 
-##  Create the coefficient vector of the element `elm`,
-##  as an array of length `d` and consisting of `fmpq` objects.
-
-function CoefficientVectorOfNumberFieldElement( elm, d )
+doc"""
+    CoefficientVectorOfNumberFieldElement( elm::Nemo.nf_elem, d::Int )
+> Return the coefficient vector of the number field element `elm`,
+> as an array of length `d` and consisting of `Nemo.fmpq` objects.
+"""
+function CoefficientVectorOfNumberFieldElement( elm::Nemo.nf_elem, d::Int )
     local arr, i
 
     arr = Array{Nemo.fmpq,1}( d )
@@ -63,26 +73,34 @@ function CoefficientVectorOfNumberFieldElement( elm, d )
 end
 
 
-##  Create the vectors for numerator and denominator
-##  of the coefficient vector of the element `elm`,
-##  as arrays of length `d` and consisting of `fmpz` objects.
-
+doc"""
+    CoefficientVectorsNumDenOfNumberFieldElement( elm::Nemo.nf_elem, d::Int )
+> Return the tuple that consists of the coefficient vectors
+> of the numerators and the denominators of the coefficient vector
+> of the number field element `elm`,
+> as arrays of length `d` and consisting of `Nemo.fmpz` objects.
+"""
 function CoefficientVectorsNumDenOfNumberFieldElement( elm, d )
-    local num, den, i
+    local num, den, i, onecoeff
 
     num = Array{Nemo.fmpz,1}( d )
     den = Array{Nemo.fmpz,1}( d )
     for i = 1:d
-      num[i] = numerator( Nemo.coeff( elm, i-1 ) )
-      den[i] = denominator( Nemo.coeff( elm, i-1 ) )
+      onecoeff = Nemo.coeff( elm, i-1 )
+      num[i] = numerator( onecoeff )
+      den[i] = denominator( onecoeff )
     end
 
     return num, den
 end
 
 
-##  2-dim. (m n) times d arrays of Nemo.fmpz elements
-
+doc"""
+    MatricesOfCoefficientVectorsNumDen( nemomat, d )
+> Return the tuple that consists of two 2-dim. (m n) times `d` arrays
+> of `Nemo.fmpz` objects that describe the numerators and the denominators
+> of the number field elements in the matrix `nemomat`.
+"""
 function MatricesOfCoefficientVectorsNumDen( nemomat, d )
     local m, n, num, den, i, j, resnum, resden
 
@@ -104,19 +122,20 @@ end
 
 
 #T as soon as 'Qab.jl' is officially available in Hecke:
-# ##  Translate between GAP's cyclotomics and Hecke's QabElem objects.
-# ##  'lst' is a list of integral coefficient vectors w.r.t.
-# ##  the 'N'-th cyclotomic field,
-# ##  'denom' is the common denominator.
-# ##
-# ##  The result is an array of field elements.
-# 
+# doc"""
+#     ConvertedToJulia_Cyclotomics( N, lst, denom )
+# > Return an array of n `QabElem` objects,
+# > which correspond to the n entries of the array `lst`.
+# > Each entry is the vector of numerators of the coefficient vector
+# > of an element in the `N`-th cyclotomic field,
+# > and `denom` is the common denominator.
+# """
 # ConvertedToJulia_Cyclotomics = function( N, lst, denom )
 #     local f, x, n, m, mat, d, res
 # 
 #     f, x = Nemo.CyclotomicField( N, "x" )
 #     n = length( lst )
-#     m = MatrixSpace( ZZ, n, length( lst[1] ) )
+#     m = MatrixSpace( Nemo.ZZ, n, length( lst[1] ) )
 #     mat = m( hcat( lst... )' )
 #     d = Nemo.fmpz( denom )
 #     res = Array{Any}( n )

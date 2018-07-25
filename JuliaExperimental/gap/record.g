@@ -14,7 +14,7 @@
 #! @Returns a &Julia; object
 #! @Description
 #!  For a record <A>arec</A>,
-#!  this function creates a dictionary in Julia
+#!  this function creates a dictionary in &Julia;
 #!  whose components are the record components of <A>arec</A>,
 #!  and the corresponding 
 InstallMethod( ConvertedToJulia,

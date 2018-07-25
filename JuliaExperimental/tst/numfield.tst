@@ -20,6 +20,27 @@ gap> Nemo_Polynomial( R, [ [ 1, 2, 3 ], [ [ 4, 5, 6 ], [ 7, 8, 9 ] ] ] );
 gap> Nemo_Polynomial( R, [ [ 1, 2, 3/2 ], [ [ 4, 5, 6 ], [ 7, 8, 9 ] ] ] );
 <<Julia: x^4*y^7+2*x^5*y^8+3//2*x^6*y^9>>
 
+# polynomial arithmetics?
+
+# Nemo number fields
+gap> x:= X( Rationals );;
+gap> f:= AlgebraicExtension( Rationals, x^2+1 );;
+gap> iso:= IsomorphismToNemoField( f );;
+gap> ff:= Range( iso );
+<field in characteristic 0>
+gap> one:= Image( iso, One( f ) );
+<<Julia: 1>>
+gap> PreImage( iso, one );
+!1
+gap> a:= RootOfDefiningPolynomial( f );
+a
+gap> gen:= Image( iso, a );
+<<Julia: a>>
+gap> PreImage( iso, gen );
+a
+
+# Arithmetic operations in number fields? (which methods get called?)
+
 # matrix over Z
 gap> mat:= NemoMatrix( Nemo_ZZ, IdentityMat( 2 ) );
 <<Julia: [1 0]
@@ -40,6 +61,11 @@ gap> mat:= [ [ o, a/2 ], [ z, o ] ];
 gap> nmat:= NemoMatrix( ff, mat );
 <<Julia: [1 1//2*a]
 [0 1]>>
+gap> PrintObj( nmat );
+[1 1//2*a]
+[0 1]
+gap> TraceMat( nmat );
+<<Julia: 2>>
 gap> GAPMatrix( f, nmat );
 [ [ !1, 1/2*a ], [ !0, !1 ] ]
 gap> no:= One( ff );
