@@ -191,9 +191,9 @@ BindGlobal( "Nemo_Polynomial", function( R, descr )
     else
       if IsList( descr ) and Length( descr ) = 2 then
         coeffs:= JuliaArrayOfFmpq( descr[1] );
-        monoms:= Julia.GAPUtilsExperimental.MatrixFromNestedArray( descr[2] );
-        monoms:= Julia.Base.convert( JuliaEvalString( "Array{UInt,2}" ),
-                                     monoms );
+        monoms:= Julia.Base.convert(
+                     JuliaEvalString( "Array{Array{UInt,1},1}" ),
+                     TransposedMat( descr[2] ) );
       else
         Error( "<descr> must be a list of length two" );
       fi;
