@@ -3,15 +3,15 @@
 #
 # Reading the implementation part of the package.
 #
-# ReadPackage( "JuliaInterface", "gap/JuliaInterface.gi");
+ReadPackage( "JuliaInterface", "gap/JuliaInterface.gi");
 
-# ReadPackage( "JuliaInterface", "gap/BindCFunction.gi" );
+ReadPackage( "JuliaInterface", "gap/BindCFunction.gi" );
 
-# dirs:= DirectoriesPackageLibrary( "JuliaInterface", "julia" );
+dirs:= DirectoriesPackageLibrary( "JuliaInterface", "julia" );
 
-# JuliaIncludeFile( Filename( dirs, "gaptypes.jl" ) );
+JuliaIncludeFile( Filename( dirs, "gaptypes.jl" ) );
 
-# AddGapJuliaFuncs();
+AddGapJuliaFuncs();
 
 
 # Reintroduce the version number as soon as the GAP master branch allows this!

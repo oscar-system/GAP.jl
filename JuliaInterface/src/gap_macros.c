@@ -81,7 +81,7 @@ Obj create_rational( int numerator, int denominator )
     return rational_obj;
 }
 
-
+#ifndef USE_JULIA_GC
 int pin_gap_obj( Obj obj )
 {
     Obj pos;
@@ -106,13 +106,16 @@ void unpin_gap_obj( int pos )
     Obj gap_obj_gc_list_positions = ValGVar( GVarName( "gap_obj_gc_list_positions" ) );
     PushPlist( gap_obj_gc_list_positions, INTOBJ_INT( pos ) );
 }
+#endif
 
 void JuliaInitializeGAPFunctionPointers( )
 {
 
     INITIALIZE_JULIA_CPOINTER(MakeGapArgList);
+#ifndef USE_JULIA_GC
     INITIALIZE_JULIA_CPOINTER(pin_gap_obj);
     INITIALIZE_JULIA_CPOINTER(unpin_gap_obj);
+#endif
     INITIALIZE_JULIA_CPOINTER(CallFuncList);
     INITIALIZE_JULIA_CPOINTER(RNamName);
     INITIALIZE_JULIA_CPOINTER(ElmPRec);

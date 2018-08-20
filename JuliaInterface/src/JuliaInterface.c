@@ -543,7 +543,7 @@ Obj __JuliaSetGAPFuncAsJuliaObjFunc( Obj self, Obj func, Obj name, Obj number_ar
     JULIAINTERFACE_EXCEPTION_HANDLER
     jl_sym_t* function_name = jl_symbol( CSTR_STRING( name ) );
     JULIAINTERFACE_EXCEPTION_HANDLER
-    jl_set_global( module_t, function_name, gap_func_obj );
+    jl_set_const( module_t, function_name, gap_func_obj );
     JULIAINTERFACE_EXCEPTION_HANDLER
     return NULL;
 }
@@ -569,6 +569,24 @@ Obj JuliaGetFromJuliaPointer( Obj self, Obj obj )
     JULIAINTERFACE_EXCEPTION_HANDLER
     return (Obj)(jl_unbox_voidpointer(gap_ptr));
 }
+
+#ifdef USE_JULIA_GC
+Obj JuliaSetAsMPtr( Obj self, Obj obj )
+{
+    if(IS_INTOBJ(obj) && IS_FFE(obj)){
+        ErrorQuit( "Currently not supported", 0, 0 );
+        return NULL;
+    }
+    return NewJuliaObj((jl_value_t*)obj);
+}
+
+Obj JuliaGetFromMPtr( Obj self, Obj obj )
+{
+    // TODO: Check julia type
+    return (Obj)GET_JULIA_OBJ(obj);
+}
+#endif
+
 
 typedef Obj (* GVarFunc)(/*arguments*/);
 
@@ -633,7 +651,10 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", __ConvertedFromJulia_record_dict, 1, "dict"),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaSetAsJuliaPointer, 1, "obj"),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaGetFromJuliaPointer, 1, "obj"),
-
+#ifdef USE_JULIA_GC
+    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaSetAsMPtr, 1, "obj"),
+    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaGetFromMPtr, 1, "obj"),
+#endif
 	{ 0 } /* Finish with an empty entry */
 
 };
