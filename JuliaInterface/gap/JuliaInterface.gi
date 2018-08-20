@@ -104,16 +104,13 @@ InstallOtherMethod( \[\],
       return Julia.Base.getindex( obj, i, j );
     end );
 
-
 BindJuliaFunc( "string", "Base" );
-
-BindJuliaFunc( "include", "Base" );
 
 BindGlobal( "JuliaKnownFiles", [] );
 
 BindGlobal( "JuliaIncludeFile", function( filename )
     if not filename in JuliaKnownFiles then
-      Julia.Base.include( filename );
+      JuliaEvalString( Concatenation( "Core.include(\"", filename, "\")" ) );
       AddSet( JuliaKnownFiles, filename );
     fi;
 end );

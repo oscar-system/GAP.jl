@@ -12,8 +12,12 @@
 #undef PACKAGE_VERSION
 #include "pkgconfig.h"
 
-#define JULIAINTERFACE_EXCEPTION_HANDLER if (jl_exception_occurred()) \
-    ErrorMayQuit( jl_typeof_str(jl_exception_occurred()), 0, 0 );
+#define JULIAINTERFACE_EXCEPTION_HANDLER \
+    if (jl_exception_occurred()) { \
+        jl_call2(jl_get_function(jl_base_module, "showerror"),jl_stderr_obj(),jl_exception_occurred());\
+        jl_printf(jl_stderr_stream(), "\n");\
+        ErrorMayQuit( "JuliaError", 0, 0 ); \
+    }
 
 #define INITIALIZE_JULIA_CPOINTER(name)\
 {\

@@ -194,7 +194,10 @@ Obj __JuliaCallFuncXArg( Obj self, Obj func, Obj args )
 
 Obj JuliaEvalString( Obj self, Obj string )
 {
-    jl_value_t* result = jl_eval_string( CSTR_STRING( string ) );
+    char* current = CSTR_STRING( string );
+    char copy[strlen(current) + 1];
+    strcpy(copy,current);
+    jl_value_t* result = jl_eval_string( copy );
     JULIAINTERFACE_EXCEPTION_HANDLER
     if(!jl_is_nothing(result)){
       return NewJuliaObj( result );
@@ -583,6 +586,21 @@ Obj __JuliaBindCFunction( Obj self, Obj cfunction_string,
     void* ccall_pointer = jl_unbox_voidpointer( jl_eval_string( CSTR_STRING( cfunction_string ) ) );
     size_t number_args = INT_INTOBJ( number_args_gap );
     return NewFunction(0, number_args, arg_names_gap, ccall_pointer );
+}
+
+Obj JuliaAsJuliaObj( Obj self, Obj obj )
+{
+    jl_value_t* obj_jl = (jl_value_t*)(obj);
+    return NewJuliaObj( obj_jl );
+}
+
+Obj JuliaFromJuliaObj( Obj self, Obj obj )
+{
+    // if(IsGapObj(obj))
+    // {
+    //     return (Obj)(GET_JULIA_OBJ(obj));
+    // }
+    return Fail;
 }
 
 #define GVAR_FUNC_TABLE_ENTRY(srcfile, name, nparam, params) \
