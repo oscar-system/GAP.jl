@@ -61,7 +61,7 @@ BindGlobal( "AddGapJuliaFuncs",
 
     for current_name in all_necessary_funcs do
         current_func := ValueGlobal( current_name );
-        __JuliaSetGAPFuncAsJuliaObjFunc( current_func, Concatenation( "GAP_", current_name ) );
+        __JuliaSetGAPFuncAsJuliaObjFunc( current_func, current_name );
     od;
 
 end );

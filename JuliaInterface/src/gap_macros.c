@@ -176,4 +176,6 @@ void JuliaInitializeGAPFunctionPointers( )
     INITIALIZE_JULIA_CPOINTER(GET_JULIA_OBJ);
 
     INITIALIZE_JULIA_CPOINTER(call_gap_func);
+    INITIALIZE_JULIA_CPOINTER(julia_gap);
+    INITIALIZE_JULIA_CPOINTER(gap_julia);
 }

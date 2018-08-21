@@ -544,6 +544,10 @@ Obj __JuliaSetGAPFuncAsJuliaObjFunc( Obj self, Obj func, Obj name, Obj number_ar
     JULIAINTERFACE_EXCEPTION_HANDLER
     jl_sym_t* function_name = jl_symbol( CSTR_STRING( name ) );
     JULIAINTERFACE_EXCEPTION_HANDLER
+    module_value = jl_eval_string( "GAP.GAPFuncs" );
+    if(!jl_is_module(module_value))
+      ErrorMayQuit("GAP module not yet defined",0,0);
+    module_t = (jl_module_t*)module_value;
     jl_set_const( module_t, function_name, gap_func_obj );
     JULIAINTERFACE_EXCEPTION_HANDLER
     return NULL;
@@ -584,7 +588,11 @@ Obj JuliaSetAsMPtr( Obj self, Obj obj )
 Obj JuliaGetFromMPtr( Obj self, Obj obj )
 {
     // TODO: Check julia type
-    return (Obj)GET_JULIA_OBJ(obj);
+    jl_value_t* julia_ptr = GET_JULIA_OBJ(obj);
+    if(!IsGapObj(julia_ptr)){
+        ErrorQuit("<obj> is not an MPtr", 0, 0 );
+    }
+    return (Obj)julia_ptr;
 }
 #endif
 
@@ -605,21 +613,6 @@ Obj __JuliaBindCFunction( Obj self, Obj cfunction_string,
     void* ccall_pointer = jl_unbox_voidpointer( jl_eval_string( CSTR_STRING( cfunction_string ) ) );
     size_t number_args = INT_INTOBJ( number_args_gap );
     return NewFunction(0, number_args, arg_names_gap, ccall_pointer );
-}
-
-Obj JuliaAsJuliaObj( Obj self, Obj obj )
-{
-    jl_value_t* obj_jl = (jl_value_t*)(obj);
-    return NewJuliaObj( obj_jl );
-}
-
-Obj JuliaFromJuliaObj( Obj self, Obj obj )
-{
-    // if(IsGapObj(obj))
-    // {
-    //     return (Obj)(GET_JULIA_OBJ(obj));
-    // }
-    return Fail;
 }
 
 Obj __JuliaIsNothing( Obj self, Obj obj )

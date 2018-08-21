@@ -74,6 +74,9 @@ import Main.ForeignGAP: MPtr
 
 export gap_funcs, prepare_func_for_gap, GapObj, GapFunc, gap_object_finalizer
 
+gap_funcs = []
+
+
 """
     GapObj
 
@@ -131,12 +134,16 @@ end
 ## purpose to be called from Julia directly.
 function prepare_func_for_gap(gap_func)
     return_func = function(self,args...)
-        new_args = map(GapObj,args)
+        new_args = map(i->ccall(Main.gap_julia_gap,Any,(Ptr{Cvoid},),i),args)
         return_value = gap_func(new_args...)
-        return return_value.ptr
+        return ccall(Main.gap_gap_julia,Ptr{Cvoid},(Any,),return_value)
     end
     push!(gap_funcs,return_func)
     return return_func
 end
+
+baremodule GAPFuncs
+end
+
 
 end
