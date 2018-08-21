@@ -70,8 +70,8 @@ Obj MakeGapArgList( int length, Obj* array )
 
 Obj create_rational( int numerator, int denominator )
 {
-    Obj numerator_obj = INTOBJ_INT( numerator );
-    Obj denominator_obj = INTOBJ_INT( denominator );
+    Obj numerator_obj = ObjInt_Int( numerator );
+    Obj denominator_obj = ObjInt_Int( denominator );
 
     Obj rational_obj = NewBag( T_RAT, 2 * sizeof(Obj) );
 
@@ -122,8 +122,9 @@ jl_value_t* julia_gap(Obj obj)
 
 Obj gap_julia(jl_value_t* julia_obj)
 {
-    if(jl_typeis(julia_obj,jl_int64_type))
-        return INTOBJ_INT(jl_unbox_int64(julia_obj));
+    if(jl_typeis(julia_obj,jl_int64_type)) {
+        return ObjInt_Int8(jl_unbox_int64(julia_obj));
+    }
     return (Obj)(julia_obj);
 }
 
