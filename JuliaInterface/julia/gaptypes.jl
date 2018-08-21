@@ -118,12 +118,9 @@ end
 > (except that they are GapObj) is done by GAP itself.
 """
 function(func::GapFunc)(args...)
-    arg_array = sanitize_call_array(collect(args))
-    length_array = length(arg_array)
-    gap_arg_list = ccall(Main.gap_MakeGapArgList,MPtr,
-                            (Cint,Ptr{Cvoid}),length_array,arg_array)
-    result = ccall(Main.gap_CallFuncList,MPtr,
-                        (Ptr{Cvoid},MPtr),func.ptr, gap_arg_list )
+    arg_array = collect(args)
+    result = ccall(Main.gap_call_gap_func,Any,
+                        (Ptr{Cvoid},Ptr{Any}),func.ptr, arg_array )
     return result
 end
 
