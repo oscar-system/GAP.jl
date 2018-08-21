@@ -199,10 +199,10 @@ Obj JuliaEvalString( Obj self, Obj string )
     strcpy(copy,current);
     jl_value_t* result = jl_eval_string( copy );
     JULIAINTERFACE_EXCEPTION_HANDLER
-    if(!jl_is_nothing(result)){
-      return NewJuliaObj( result );
-    }
-    return 0;
+    // if(!jl_is_nothing(result)){
+    //   return NewJuliaObj( result );
+    // }
+    return NewJuliaObj( result );
 }
 
 Obj __ConvertedFromJulia_internal( jl_value_t* julia_obj )
@@ -284,6 +284,10 @@ Obj __ConvertedFromJulia_internal( jl_value_t* julia_obj )
       char* symbol_name = jl_symbol_name((jl_sym_t*)julia_obj);
       C_NEW_STRING( return_string, strlen( symbol_name ), symbol_name );
       return return_string;
+    }
+
+    else if(IsGapObj(julia_obj)){
+        return (Obj)(julia_obj);
     }
 
     return Fail;
@@ -621,6 +625,14 @@ Obj JuliaFromJuliaObj( Obj self, Obj obj )
     return Fail;
 }
 
+Obj __JuliaIsNothing( Obj self, Obj obj )
+{
+    if(jl_is_nothing(GET_JULIA_OBJ(obj))){
+        return True;
+    }
+    return False;
+}
+
 #define GVAR_FUNC_TABLE_ENTRY(srcfile, name, nparam, params) \
   {#name, nparam, \
    params, \
@@ -655,6 +667,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaSetAsMPtr, 1, "obj"),
     GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c", JuliaGetFromMPtr, 1, "obj"),
 #endif
+    GVAR_FUNC_TABLE_ENTRY("JuliaInterface.c",__JuliaIsNothing,1,"obj"),
 	{ 0 } /* Finish with an empty entry */
 
 };

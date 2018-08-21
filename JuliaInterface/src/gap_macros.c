@@ -137,6 +137,9 @@ jl_value_t* call_gap_func(void* func, jl_value_t* arg_array){
         CHANGED_BAG( arg_list );
     }
     Obj return_val = CallFuncList((Obj)(func),arg_list);
+    if(return_val == NULL){
+        return jl_nothing;
+    }
     return julia_gap(return_val);
 }
 
