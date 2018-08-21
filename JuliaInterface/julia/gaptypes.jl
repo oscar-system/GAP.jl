@@ -91,7 +91,7 @@ end
 > Such functions can be called on GapObj's.
 """
 struct GapFunc
-    ptr::Ptr{Cvoid}
+    ptr::MPtr
 end
 
 function sanitize_call_array(array)
@@ -120,7 +120,7 @@ end
 function(func::GapFunc)(args...)
     arg_array = collect(args)
     result = ccall(Main.gap_call_gap_func,Any,
-                        (Ptr{Cvoid},Ptr{Any}),func.ptr, arg_array )
+                        (MPtr,Any),func.ptr, arg_array )
     return result
 end
 

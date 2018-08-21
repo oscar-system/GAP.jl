@@ -539,7 +539,7 @@ Obj __JuliaSetGAPFuncAsJuliaObjFunc( Obj self, Obj func, Obj name, Obj number_ar
     jl_function_t* set_gap_func_obj = jl_get_function( module_t, "GapFunc" );
     JULIAINTERFACE_EXCEPTION_HANDLER
     jl_value_t* gap_func_obj = jl_call1(set_gap_func_obj,
-                                        jl_box_voidpointer(func));
+                                        (jl_value_t*)(func));
     JULIAINTERFACE_EXCEPTION_HANDLER
     jl_sym_t* function_name = jl_symbol( CSTR_STRING( name ) );
     JULIAINTERFACE_EXCEPTION_HANDLER
