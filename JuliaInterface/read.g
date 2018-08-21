@@ -13,6 +13,8 @@ JuliaIncludeFile( Filename( dirs, "gaptypes.jl" ) );
 
 AddGapJuliaFuncs();
 
+ImportJuliaModuleIntoGAP( "GAP" );
+
 
 # Reintroduce the version number as soon as the GAP master branch allows this!
 # # Add the julia version number to the banner string.

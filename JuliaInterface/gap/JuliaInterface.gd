@@ -69,6 +69,11 @@ BindGlobal( "__JULIAINTERFACE_PREPARE_RECORD",
     if module_name = "Main" and IsBound( Julia.Main ) then
         return module_name;
     fi;
+
+    if module_name = "GAP" then
+        Julia.GAP := rec( __JULIAINTERFACE_NOT_IMPORTED_YET := true );
+        return module_name;
+    fi;
     
     if IsBound( Julia.(module_name) ) and ( not IsBound( Julia.(module_name).__JULIAINTERFACE_NOT_IMPORTED_YET ) ) then
         return fail;

@@ -373,7 +373,7 @@ jl_value_t* __ConvertedToJulia_internal( Obj obj )
         return GET_JULIA_FUNC(obj);
     }
 
-    return 0;
+    return (jl_value_t*)(obj);
 }
 
 Obj __ConvertedToJulia( Obj self, Obj obj )
