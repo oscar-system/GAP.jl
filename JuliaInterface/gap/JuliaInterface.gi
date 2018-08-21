@@ -120,9 +120,6 @@ InstallMethod( ViewString,
                [ IsJuliaObject ],
 
   function( julia_obj )
-    if __JuliaIsNothing( julia_obj ) then
-        return "";
-    fi;
     return Concatenation( "<Julia: ", String( julia_obj ), ">" );
 
 end );
@@ -137,9 +134,6 @@ InstallMethod( String,
                [ IsJuliaObject ],
 
   function( julia_obj )
-    if __JuliaIsNothing( julia_obj ) then
-        return "";
-    fi;
     return ConvertedFromJulia( Julia.Base.repr( julia_obj ) );
 
 end );

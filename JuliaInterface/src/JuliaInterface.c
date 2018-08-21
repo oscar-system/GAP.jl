@@ -199,9 +199,6 @@ Obj JuliaEvalString( Obj self, Obj string )
     strcpy(copy,current);
     jl_value_t* result = jl_eval_string( copy );
     JULIAINTERFACE_EXCEPTION_HANDLER
-    // if(!jl_is_nothing(result)){
-    //   return NewJuliaObj( result );
-    // }
     return NewJuliaObj( result );
 }
 
