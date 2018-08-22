@@ -208,10 +208,10 @@ Obj Func_ConvertedFromJulia_internal( jl_value_t* julia_obj )
 
     // small int
     if(jl_typeis(julia_obj, jl_int64_type)){
-        return INTOBJ_INT( jl_unbox_int64( julia_obj ) );
+        return ObjInt_Int8( jl_unbox_int64( julia_obj ) );
     }
     if(jl_typeis(julia_obj, jl_int32_type)){
-        return INTOBJ_INT( jl_unbox_int32( julia_obj ) );
+        return ObjInt_Int( jl_unbox_int32( julia_obj ) );
     }
     if(jl_typeis(julia_obj, jl_int16_type)){
         return INTOBJ_INT( jl_unbox_int16( julia_obj ) );
@@ -220,10 +220,10 @@ Obj Func_ConvertedFromJulia_internal( jl_value_t* julia_obj )
         return INTOBJ_INT( jl_unbox_int8( julia_obj ) );
     }
     if(jl_typeis(julia_obj, jl_uint64_type)){
-        return INTOBJ_INT( jl_unbox_uint64( julia_obj ) );
+        return ObjInt_UInt8( jl_unbox_uint64( julia_obj ) );
     }
     if(jl_typeis(julia_obj, jl_uint32_type)){
-        return INTOBJ_INT( jl_unbox_uint32( julia_obj ) );
+        return ObjInt_UInt( jl_unbox_uint32( julia_obj ) );
     }
     if(jl_typeis(julia_obj, jl_uint16_type)){
         return INTOBJ_INT( jl_unbox_uint16( julia_obj ) );
