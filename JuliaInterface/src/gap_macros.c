@@ -125,7 +125,10 @@ Obj gap_julia(jl_value_t* julia_obj)
     if(jl_typeis(julia_obj,jl_int64_type)) {
         return ObjInt_Int8(jl_unbox_int64(julia_obj));
     }
-    return (Obj)(julia_obj);
+    if(IsGapObj(julia_obj)){
+        return (Obj)(julia_obj);
+    }
+    return NewJuliaObj(julia_obj);
 }
 
 jl_value_t* call_gap_func(void* func, jl_value_t* arg_array){
