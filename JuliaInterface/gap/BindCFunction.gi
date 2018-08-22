@@ -27,10 +27,10 @@ InstallGlobalFunction( JuliaBindCFunction,
         return;
     fi;
 
-    cfunction_call_string := Concatenation( "cfunction(GAP.prepare_func_for_gap(", julia_name,")" );
-    cfunction_call_string := Concatenation( cfunction_call_string, ",Ptr{Void},(" );
+    cfunction_call_string := Concatenation( "@cfunction(GAP.prepare_func_for_gap(", julia_name,")" );
+    cfunction_call_string := Concatenation( cfunction_call_string, ",Ptr{Cvoid},(" );
     for i in [ 0 .. nr_args ] do
-        cfunction_call_string := Concatenation( cfunction_call_string, "Ptr{Void}," );
+        cfunction_call_string := Concatenation( cfunction_call_string, "Ptr{Cvoid}," );
     od;
     Remove( cfunction_call_string );
     cfunction_call_string := Concatenation( cfunction_call_string, "))" );
