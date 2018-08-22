@@ -91,134 +91,134 @@ Obj NewJuliaFunc(jl_function_t*);
 // from the julia value pointer v.
 Obj NewJuliaObj(jl_value_t*);
 
-// __JuliaFunction( NULL, string )
+// Func_JuliaFunction( NULL, string )
 //
 // Returns the function with name <string> from the Julia `Main` module.
-Obj __JuliaFunction( Obj self, Obj string );
+Obj Func_JuliaFunction( Obj self, Obj string );
 
-// __JuliaFunctionByModule( NULL, function_name, module_name )
+// Func_JuliaFunctionByModule( NULL, function_name, module_name )
 //
 // Returns the function with name <function_name> from
 // the Julia module with name <module_name>.
-Obj __JuliaFunctionByModule( Obj self, Obj function_name, Obj module_name );
+Obj Func_JuliaFunctionByModule( Obj self, Obj function_name, Obj module_name );
 
-// __JuliaCallFunc0Arg( NULL, func )
+// Func_JuliaCallFunc0Arg( NULL, func )
 //
 // Calls the function in the julia function GAP object <func>
 // without arguments.
-Obj __JuliaCallFunc0Arg( Obj self, Obj func );
+Obj Func_JuliaCallFunc0Arg( Obj self, Obj func );
 
-// __JuliaCallFunc1Arg( NULL, func, arg )
+// Func_JuliaCallFunc1Arg( NULL, func, arg )
 //
 // Calls the function in the julia function GAP object <func>
 // on the julia object GAP object <arg>.
-Obj __JuliaCallFunc1Arg( Obj self, Obj func, Obj arg );
+Obj Func_JuliaCallFunc1Arg( Obj self, Obj func, Obj arg );
 
-// __JuliaCallFunc2Arg( NULL, func, arg1, arg2 )
+// Func_JuliaCallFunc2Arg( NULL, func, arg1, arg2 )
 //
 // Calls the function in the julia function GAP object <func>
 // on the julia object GAP objecta <arg1> and <arg2>.
-Obj __JuliaCallFunc2Arg( Obj self, Obj func, Obj arg1, Obj arg2 );
+Obj Func_JuliaCallFunc2Arg( Obj self, Obj func, Obj arg1, Obj arg2 );
 
-// __JuliaCallFunc3Arg( NULL, func, arg1, arg2, arg3 )
+// Func_JuliaCallFunc3Arg( NULL, func, arg1, arg2, arg3 )
 //
 // Calls the function in the julia function GAP object <func>
 // on the julia object GAP object <arg1>, <arg2>, and <arg3>.
-Obj __JuliaCallFunc3Arg( Obj self, Obj func, Obj arg1, Obj arg2, Obj arg3 );
+Obj Func_JuliaCallFunc3Arg( Obj self, Obj func, Obj arg1, Obj arg2, Obj arg3 );
 
-// __JuliaCallFuncXArg( NULL, func, args )
+// Func_JuliaCallFuncXArg( NULL, func, args )
 //
 // Calls the function in the julia function GAP object <func>
 // on the julia object GAP objects in the GAP plain list <args>.
-Obj __JuliaCallFuncXArg( Obj self, Obj func, Obj args );
+Obj Func_JuliaCallFuncXArg( Obj self, Obj func, Obj args );
 
-// JuliaEvalString( NULL, string )
+// FuncJuliaEvalString( NULL, string )
 //
 // Executes the string <string> in the current julia session.
-Obj JuliaEvalString( Obj self, Obj string );
+Obj FuncJuliaEvalString( Obj self, Obj string );
 
-// __ConvertedFromJulia_internal( julia_obj )
+// Func_ConvertedFromJulia_internal( julia_obj )
 //
 // Converts the julia value pointer <julia_obj> into a GAP object
 // if possible.
-Obj __ConvertedFromJulia_internal( jl_value_t* julia_obj );
+Obj Func_ConvertedFromJulia_internal( jl_value_t* julia_obj );
 
-// __ConvertedFromJulia( NULL, obj )
+// Func_ConvertedFromJulia( NULL, obj )
 //
 // Converts the julia object GAP object <obj> into a GAP object
 // if possible.
-Obj __ConvertedFromJulia( Obj self, Obj obj );
+Obj Func_ConvertedFromJulia( Obj self, Obj obj );
 
-// __ConvertedFromJulia_record_dict( NULL, dict )
+// Func_ConvertedFromJulia_record_dict( NULL, dict )
 //
 // <dict> must be a julia value GAP object,
 // holding a pointer to a julia dict.
 // The function returns a GAP list, consisting of two lists:
 //  1. A list containing the keys
 //  2. A list containing the values
-Obj __ConvertedFromJulia_record_dict( Obj self, Obj dict );
+Obj Func_ConvertedFromJulia_record_dict( Obj self, Obj dict );
 
-// __ConvertedToJulia( NULL, obj )
+// Func_ConvertedToJulia( NULL, obj )
 //
 // Converts the GAP object <obj> into a suitable
 // julia object GAP object, if possible, and returns that
 // object. If the conversion is not possible, the function returns fail.
-Obj __ConvertedToJulia( Obj self, Obj obj );
+Obj Func_ConvertedToJulia( Obj self, Obj obj );
 
-// JuliaTuple( NULL, list )
+// FuncJuliaTuple( NULL, list )
 //
 // Converts the GAP list <list> into a julia tuple
 // and returns the julia object GAP object which holds
 // the pointer to that tuple.
-Obj JuliaTuple( Obj self, Obj list );
+Obj FuncJuliaTuple( Obj self, Obj list );
 
-// JuliaSymbol( NULL, name )
+// FuncJuliaSymbol( NULL, name )
 //
 // Returns a julia object GAP object that holds
 // the pointer to a julia symbol :<name>.
-Obj JuliaSymbol( Obj self, Obj name );
+Obj FuncJuliaSymbol( Obj self, Obj name );
 
-// JuliaModule( NULL, name )
+// FuncJuliaModule( NULL, name )
 //
 // Returns a julia object GAP object that holds
 // the pointer to the julia module <name>.
-Obj JuliaModule( Obj self, Obj name );
+Obj FuncJuliaModule( Obj self, Obj name );
 
-// JuliaSetVal( NULL, name, julia_val )
+// FuncJuliaSetVal( NULL, name, julia_val )
 //
 // Sets the value of the julia identifier <name>
 // to the julia value the julia object GAP object <julia_val>
 // points to.
-Obj JuliaSetVal( Obj self, Obj name, Obj julia_val );
+Obj FuncJuliaSetVal( Obj self, Obj name, Obj julia_val );
 
-// __JuliaGetGlobalVariable( NULL, name )
+// Func_JuliaGetGlobalVariable( NULL, name )
 //
 // Returns the julia object GAP object that holds a pointer
 // to the value currently bound to the julia identifier <name>.
-Obj __JuliaGetGlobalVariable( Obj self, Obj name );
+Obj Func_JuliaGetGlobalVariable( Obj self, Obj name );
 
-// __JuliaGetGlobalVariableByModule( NULL, name, module_name )
+// Func_JuliaGetGlobalVariableByModule( NULL, name, module_name )
 //
 // Returns the julia object GAP object that holds a pointer
 // to the value currently bound to the julia identifier <module_name>.<name>.
-Obj __JuliaGetGlobalVariableByModule( Obj self, Obj name, Obj module_name );
+Obj Func_JuliaGetGlobalVariableByModule( Obj self, Obj name, Obj module_name );
 
-// JuliaGetFieldOfObject( NULL, super_object, field_name )
+// FuncJuliaGetFieldOfObject( NULL, super_object, field_name )
 //
 // Returns the julia object GAP object that holds a pointer
 // to the value currently bound to <super_object>.<name>.
 // <super_object> must be a julia object GAP object, and <name> a string.
-Obj JuliaGetFieldOfObject( Obj self, Obj super_obj, Obj field_name );
+Obj FuncJuliaGetFieldOfObject( Obj self, Obj super_obj, Obj field_name );
 
-// __JuliaSetGAPFuncAsJuliaObjFunc( NULL, func, name, number_args )
+// Func_JuliaSetGAPFuncAsJuliaObjFunc( NULL, func, name, number_args )
 //
 // Sets the GAP function <func> as a GAP.GapFunc object to GAP.<name>.
 // <number_args> must be the number of arguments of <func>. Is is then callable
 // on GAP.GapObj's from julia.
-Obj __JuliaSetGAPFuncAsJuliaObjFunc( Obj self, Obj func, Obj name, Obj number_args );
+Obj Func_JuliaSetGAPFuncAsJuliaObjFunc( Obj self, Obj func, Obj name, Obj number_args );
 
 // INTERNAL
-Obj __JuliaBindCFunction( Obj self, Obj cfunction_string,
+Obj Func_JuliaBindCFunction( Obj self, Obj cfunction_string,
                                            Obj number_args_gap, Obj arg_names_gap );
 
 // From julia_macros.c

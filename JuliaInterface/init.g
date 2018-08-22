@@ -57,7 +57,7 @@ CallFuncList( function()
       res:= JuliaEvalString(
                 Concatenation( "try include( \"", filename, "\" ); ",
                     "; return true; catch e; return e; end" ) );
-      if __ConvertedFromJulia( res ) = true then
+      if _ConvertedFromJulia( res ) = true then
         return;
       fi;
     fi;
