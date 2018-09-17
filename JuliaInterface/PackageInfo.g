@@ -19,7 +19,7 @@ Persons := [
     IsMaintainer := true,
     FirstNames := "Sebastian",
     LastName := "Gutsche",
-    WWWHome := "TODO",
+    WWWHome := "http://TODO",
     Email := "gutsche@mathematik.uni-siegen.de",
     PostalAddress := "TODO",
     Place := "Siegen",
@@ -57,7 +57,7 @@ PackageDoc := [ rec(
 ) ],
 
 Dependencies := rec(
-  GAP := ">= 4.6",
+  GAP := ">= 4.10",    # need support for the component 'BannerFunction'
   NeededOtherPackages := [ [ "GAPDoc", ">= 1.5" ] ],
   SuggestedOtherPackages := [ ],
   ExternalConditions := [ ],
@@ -73,8 +73,25 @@ AvailabilityTest := function()
   return true;
 end,
 
-# the string must be bound, will be modified in read.g
-BannerString := DefaultPackageBannerString( ~ ),
+# Show the julia version number in the banner string.
+# (We assume that this function gets called *after* the package has been
+# loaded, in particular after Julia has been started.)
+BannerFunction := function( info )
+  local str, version;
+
+  str:= DefaultPackageBannerString( info );
+  if not IsBoundGlobal( "JuliaEvalString" ) then
+    return str;
+  fi;
+  version:= ValueGlobal( "JuliaEvalString" )( "string( VERSION )" );
+  if not IsBoundGlobal( "ConvertedFromJulia" ) then
+    return str;
+  fi;
+  version:= ValueGlobal( "ConvertedFromJulia" )( version );
+
+  return ReplacedString( str, "Homepage",
+             Concatenation( "(julia version is ", version, ")\nHomepage" ) );
+end,
 
 TestFile := "tst/testall.g",
 
