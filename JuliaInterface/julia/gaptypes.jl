@@ -10,34 +10,38 @@
 
 module GAPUtils
 
-doc"""
+import REPL.REPLCompletions: completions
+
+"""
     get_function_symbols_in_module(module_t::Module) :: Array{Symbol,1}
 
 > Returns all function symbols in the module `module_t`.
 """
 function get_function_symbols_in_module(module_t)
-    module_name = string(Main.module_name(module_t))
-    string_list = Base.REPLCompletions.completions( module_name * ".", length( module_name ) + 1 )[1]
+    module_name = string(nameof(module_t))
+    string_list = completions( module_name * ".", length( module_name ) + 1 )[1]
+    string_list = [ x.mod for x in string_list ]
     list = [ Symbol(x) for x in string_list ]
     list = filter(i->isdefined(module_t,i) && isa(eval((:($module_t.$i))),Function),list)
     return list
 end
 
-doc"""
+"""
     get_variable_symbols_in_module(module_t::Module) :: Array{Symbol,1}
 
 > Returns all variable symbols in the module `module_t`, i.e.,
 > all symbols that do not point to functions.
 """
 function get_variable_symbols_in_module(module_t)
-    module_name = string(Main.module_name(module_t))
-    string_list = Base.REPLCompletions.completions( module_name * ".", length( module_name ) + 1 )[1]
+    module_name = string(nameof(module_t))
+    string_list = completions( module_name * ".", length( module_name ) + 1 )[1]
+    string_list = [ x.mod for x in string_list ]
     list = [ Symbol(x) for x in string_list ]
     list = filter(i->isdefined(module_t,i) && ! isa(eval((:($module_t.$i))),Function),list)
     return list
 end
 
-doc"""
+"""
     call_with_catch( juliafunc, arguments )
 
 > Returns a tuple `( ok, val )`
@@ -60,49 +64,54 @@ export get_function_symbols_in_module, get_variable_symbols_in_module,
 
 end
 
-##########################################################################
+#########################################################################
 
 module GAP
 
 #import Base: +
 
+import Main.ForeignGAP: MPtr
+
 export gap_funcs, prepare_func_for_gap, GapObj, GapFunc, gap_object_finalizer
 
-gap_funcs = Array{Any,1}();
+gap_funcs = []
 
-## currently unused
-gap_object_finalizer = function(obj)
-    ccall(Main.gap_unpin_gap_obj,Void,(Cint,),obj.index)
-end
 
-doc"""
+"""
     GapObj
 
 > Holds a pointer to an object in the GAP CAS, and additionally some internal information for
 > GAP's garbage collection. It can be used as arguments for GapFunc's.
 """
 mutable struct GapObj
-    ptr::Ptr{Void}
-    index
-    function GapObj(ptr::Ptr{Void})
-        index = ccall(Main.gap_pin_gap_obj,Cint,(Ptr{Void},),ptr)
-        new_obj = new(ptr,index)
-        finalizer(new_obj,gap_object_finalizer)
-        return new_obj
-    end
+    ptr::Ptr{Cvoid}
 end
 
-doc"""
+"""
     GapFunc
 
 > Holds a pointer to a function in the GAP CAS.
 > Such functions can be called on GapObj's.
 """
 struct GapFunc
-    ptr::Ptr{Void}
+    ptr::MPtr
 end
 
-doc"""
+function sanitize_call_array(array)
+    new_array = Array{Ptr{Cvoid},1}(undef,length(array))
+    for i in 1:length(array)
+        if typeof(array[i]) == MPtr
+            new_array[i] = reinterpret(Ptr{Cvoid},array[i])
+        elseif typeof(array[i]) == GapObj
+            new_array[i] = array[i].ptr
+        else
+            new_array[i] = array[i]
+        end
+    end
+    return new_array
+end
+
+"""
     (func::GapFunc)(args...)
 
 > This function makes it possible to call GapFunc objects on
@@ -113,12 +122,9 @@ doc"""
 """
 function(func::GapFunc)(args...)
     arg_array = collect(args)
-    arg_array = map(i->i.ptr,arg_array)
-    length_array = length(arg_array)
-    gap_arg_list = GapObj(ccall(Main.gap_MakeGapArgList,Ptr{Void},
-                                (Cint,Ptr{Ptr{Void}}),length_array,arg_array))
-    return GapObj(ccall(Main.gap_CallFuncList,Ptr{Void},
-                        (Ptr{Void},Ptr{Void}),func.ptr,gap_arg_list.ptr))
+    result = ccall(Main.gap_call_gap_func,Any,
+                        (MPtr,Any),func.ptr, arg_array )
+    return result
 end
 
 ## Internal function, not to be used.
@@ -128,12 +134,16 @@ end
 ## purpose to be called from Julia directly.
 function prepare_func_for_gap(gap_func)
     return_func = function(self,args...)
-        new_args = map(GapObj,args)
+        new_args = map(i->ccall(Main.gap_julia_gap,Any,(Ptr{Cvoid},),i),args)
         return_value = gap_func(new_args...)
-        return return_value.ptr
+        return ccall(Main.gap_gap_julia,Ptr{Cvoid},(Any,),return_value)
     end
     push!(gap_funcs,return_func)
     return return_func
 end
+
+baremodule GAPFuncs
+end
+
 
 end
