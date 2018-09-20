@@ -15,4 +15,3 @@ gap> ImportJuliaModuleIntoGAP( "No_Julia_Module_With_This_Name" );
 
 ##
 gap> STOP_TEST( "import.tst", 1 );
-
