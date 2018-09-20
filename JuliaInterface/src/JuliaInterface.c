@@ -6,80 +6,168 @@
 
 #include "gap_macros.c"
 
-Obj TheTypeJuliaFunction;
 Obj TheTypeJuliaObject;
 
 #include "julia_macros.c"
 
-jl_function_t* julia_array_pop;
-jl_function_t* julia_array_push;
-jl_function_t* julia_array_setindex;
-jl_value_t* GAP_MEMORY_STORAGE_INTS;
-jl_value_t* GAP_MEMORY_STORAGE;
+jl_value_t* Func_ConvertedToJulia_internal( Obj obj );
+
+
+static Obj DoJuliaCallFunc0Arg( Obj func );
+
+// FIXME: get rid of IS_JULIA_FUNC??
+static inline Int IS_JULIA_FUNC(Obj obj)
+{
+    return IS_FUNC(obj) && HDLR_FUNC(obj, 0) == DoJuliaCallFunc0Arg;
+}
+
+static inline jl_function_t* GET_JULIA_FUNC(Obj obj)
+{
+    GAP_ASSERT(IS_JULIA_FUNC(obj));
+    // TODO
+    return (jl_function_t *)FEXS_FUNC(obj);
+}
+
+static ALWAYS_INLINE Obj DoCallJuliaFunc(Obj func, const int narg, Obj *a, const int autoConvert)
+{
+    jl_value_t* result;
+
+    if (autoConvert) {
+        for (int i = 0; i < narg; i++) {
+            a[i] = (Obj)Func_ConvertedToJulia_internal(a[i]);
+        }
+    }
+    jl_function_t* f = GET_JULIA_FUNC(func);
+    switch (narg) {
+    case 0:
+        result = jl_call0( f );
+        break;
+    case 1:
+        result = jl_call1( f, (jl_value_t*)a[0] );
+        break;
+    case 2:
+        result = jl_call2( f, (jl_value_t*)a[0], (jl_value_t*)a[1] );
+        break;
+    case 3:
+        result = jl_call3( f, (jl_value_t*)a[0], (jl_value_t*)a[1], (jl_value_t*)a[2] );
+        break;
+    default:
+        result = jl_call( f, (jl_value_t**)a, narg );
+    }
+    JULIAINTERFACE_EXCEPTION_HANDLER
+    if (IsGapObj(result))
+        return (Obj)result;
+    return NewJuliaObj( result );
+}
+
+static Obj DoJuliaCallFunc0Arg( Obj func )
+{
+    return DoCallJuliaFunc(func, 0, 0, 1);
+}
+
+static Obj DoJuliaCallFunc1Arg( Obj func, Obj arg1 )
+{
+    Obj a[] = { arg1 };
+    return DoCallJuliaFunc(func, 1, a, 1);
+}
+
+static Obj DoJuliaCallFunc2Arg( Obj func, Obj arg1, Obj arg2 )
+{
+    Obj a[] = { arg1, arg2 };
+    return DoCallJuliaFunc(func, 2, a, 1);
+}
+
+static Obj DoJuliaCallFunc3Arg( Obj func, Obj arg1, Obj arg2, Obj arg3 )
+{
+    Obj a[] = { arg1, arg2, arg3 };
+    return DoCallJuliaFunc(func, 3, a, 1);
+}
+
+static Obj DoJuliaCallFunc4Arg( Obj func, Obj arg1, Obj arg2, Obj arg3, Obj arg4 )
+{
+    Obj a[] = { arg1, arg2, arg3, arg4 };
+    return DoCallJuliaFunc(func, 4, a, 1);
+}
+
+static Obj DoJuliaCallFunc5Arg( Obj func, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5 )
+{
+    Obj a[] = { arg1, arg2, arg3, arg4, arg5 };
+    return DoCallJuliaFunc(func, 5, a, 1);
+}
+
+static Obj DoJuliaCallFunc6Arg( Obj func, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6 )
+{
+    Obj a[] = { arg1, arg2, arg3, arg4, arg5, arg6 };
+    return DoCallJuliaFunc(func, 6, a, 1);
+}
+
+static Obj DoJuliaCallFuncXArg( Obj func, Obj args )
+{
+    const int len = LEN_PLIST( args );
+    Obj a[len];
+    for(int i = 0; i < len; i++){
+        a[i] = ELM_PLIST( args, i + 1 );
+    }
+    return DoCallJuliaFunc(func, len, a, 1);
+}
+
+
+Obj NewJuliaFunc(jl_function_t* function)
+{
+    // TODO: set a sensible name?
+//     jl_datatype_t * dt = ...
+//     jl_typename_t * tname = dt->name;
+//     //    struct _jl_methtable_t *mt;
+//     jl_sym_t *name = tname->mt->name;
+
+    Obj func = NewFunction(0, 0, 0, 0);
+
+    SET_HDLR_FUNC(func, 0, DoJuliaCallFunc0Arg);
+    SET_HDLR_FUNC(func, 1, DoJuliaCallFunc1Arg);
+    SET_HDLR_FUNC(func, 2, DoJuliaCallFunc2Arg);
+    SET_HDLR_FUNC(func, 3, DoJuliaCallFunc3Arg);
+    SET_HDLR_FUNC(func, 4, DoJuliaCallFunc4Arg);
+    SET_HDLR_FUNC(func, 5, DoJuliaCallFunc5Arg);
+    SET_HDLR_FUNC(func, 6, DoJuliaCallFunc6Arg);
+    SET_HDLR_FUNC(func, 7, DoJuliaCallFuncXArg);
+
+    // trick: fexs is unused for kernel functions, so we can store
+    // the Julia function point in here
+    SET_FEXS_FUNC(func, (Obj)function);
+
+    return func;
+}
 
 /*
  * utilities for wrapped Julia objects and functions
  */
-Obj JuliaFuncCopyFunc(Obj obj, Int mut)
-{
-    /* always immutable, so nothing to do */
-    return obj;
-}
 Obj JuliaObjCopyFunc(Obj obj, Int mut)
 {
     /* always immutable in GAP, so nothing to do */
     return obj;
 }
-void JuliaFuncCleanFunc(Obj obj)
-{
-}
+
 void JuliaObjCleanFunc(Obj obj)
 {
 }
-Int JuliaFuncIsMutableFunc(Obj obj)
-{
-    /* always immutable */
-    return 0L;
-}
+
 Int JuliaObjIsMutableFunc(Obj obj)
 {
     /* always immutable as GAP object */
     return 0L;
 }
 
-void SET_JULIA_FUNC(Obj o, jl_function_t* f) {
-    ADDR_OBJ(o)[0] = (Obj)f;
-}
-
 void SET_JULIA_OBJ(Obj o, jl_value_t* p) {
     ADDR_OBJ(o)[0] = (Obj)p;
 }
-
-jl_function_t* GET_JULIA_FUNC(Obj o) {
-    return (jl_function_t*)(ADDR_OBJ(o)[0]);
-}
-
 
 jl_value_t* GET_JULIA_OBJ(Obj o) {
     return (jl_value_t*)(ADDR_OBJ(o)[0]);
 }
 
-Obj JuliaFunctionTypeFunc(Obj o)
-{
-    return TheTypeJuliaFunction;
-}
-
 Obj JuliaObjectTypeFunc(Obj o)
 {
     return TheTypeJuliaObject;
-}
-
-Obj NewJuliaFunc(jl_function_t* C)
-{
-    Obj o;
-    o = NewBag(T_JULIA_FUNC, 1 * sizeof(Obj));
-    SET_JULIA_FUNC(o, C);
-    return o;
 }
 
 Obj NewJuliaObj(jl_value_t* C)
@@ -111,53 +199,6 @@ Obj Func_JuliaFunctionByModule( Obj self, Obj function_name, Obj module_name )
     if(function==0)
         ErrorMayQuit( "Function is not defined in julia", 0, 0 );
     return NewJuliaFunc( function );
-}
-
-Obj Func_JuliaCallFunc0Arg( Obj self, Obj func )
-{
-    jl_value_t* return_value = jl_call0( GET_JULIA_FUNC( func ) );
-    JULIAINTERFACE_EXCEPTION_HANDLER
-    return NewJuliaObj( return_value );
-}
-
-Obj Func_JuliaCallFunc1Arg( Obj self, Obj func, Obj arg )
-{
-    jl_value_t* return_value = jl_call1( GET_JULIA_FUNC( func ), GET_JULIA_OBJ( arg ) );
-    JULIAINTERFACE_EXCEPTION_HANDLER
-    return NewJuliaObj( return_value );
-
-}
-
-Obj Func_JuliaCallFunc2Arg( Obj self, Obj func, Obj arg1, Obj arg2 )
-{
-    jl_value_t* return_value = jl_call2( GET_JULIA_FUNC( func ), GET_JULIA_OBJ( arg1 ), GET_JULIA_OBJ( arg2 ) );
-    JULIAINTERFACE_EXCEPTION_HANDLER
-    return NewJuliaObj( return_value );
-}
-
-Obj Func_JuliaCallFunc3Arg( Obj self, Obj func, Obj arg1, Obj arg2, Obj arg3 )
-{
-    jl_value_t* return_value = jl_call3( GET_JULIA_FUNC( func ), GET_JULIA_OBJ( arg1 ),
-                                                                 GET_JULIA_OBJ( arg2 ),
-                                                                 GET_JULIA_OBJ( arg3 ) );
-    JULIAINTERFACE_EXCEPTION_HANDLER
-    return NewJuliaObj( return_value );
-}
-
-Obj Func_JuliaCallFuncXArg( Obj self, Obj func, Obj args )
-{
-    int32_t len = LEN_PLIST( args );
-    Obj current_element;
-    int32_t i;
-    jl_value_t* arg_pointer[len];
-    for(i=0;i<len;i++){
-        current_element = ELM_PLIST( args, i + 1 );
-        arg_pointer[ i ] = GET_JULIA_OBJ(current_element);
-    }
-    jl_value_t * return_val = jl_call( GET_JULIA_FUNC( func ), arg_pointer, len );
-    JULIAINTERFACE_EXCEPTION_HANDLER
-    current_element = NewJuliaObj( return_val );
-    return current_element;
 }
 
 Obj FuncJuliaEvalString( Obj self, Obj string )
@@ -339,6 +380,7 @@ jl_value_t* Func_ConvertedToJulia_internal( Obj obj )
         return GET_JULIA_OBJ(obj);
     }
     else if ( IS_JULIA_FUNC(obj) ) {
+        // TODO: do we really want this???
         return GET_JULIA_FUNC(obj);
     }
 
@@ -565,11 +607,6 @@ Obj Func_JuliaIsNothing( Obj self, Obj obj )
 static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(_JuliaFunction, 1, "string" ),
     GVAR_FUNC(_JuliaFunctionByModule, 2, "function_name,module_name" ),
-    GVAR_FUNC(_JuliaCallFunc0Arg, 1, "func" ),
-    GVAR_FUNC(_JuliaCallFunc1Arg, 2, "func,obj" ),
-    GVAR_FUNC(_JuliaCallFunc2Arg, 3, "func,obj1,obj2" ),
-    GVAR_FUNC(_JuliaCallFunc3Arg, 4, "func,obj1,obj2,obj3" ),
-    GVAR_FUNC(_JuliaCallFuncXArg, 2, "func,arg_list" ),
     GVAR_FUNC(JuliaEvalString, 1, "string" ),
     GVAR_FUNC(_ConvertedFromJulia, 1, "obj" ),
     GVAR_FUNC(_ConvertedToJulia, 1, "obj" ),
@@ -598,18 +635,12 @@ static Int InitKernel( StructInitInfo *module )
     /* init filters and functions                                          */
     InitHdlrFuncsFromTable( GVarFuncs );
 
-    InitCopyGVar( "TheTypeJuliaFunction", &TheTypeJuliaFunction );
     InitCopyGVar( "TheTypeJuliaObject", &TheTypeJuliaObject );
 
-    T_JULIA_FUNC = RegisterPackageTNUM("JuliaFunction", JuliaFunctionTypeFunc );
     T_JULIA_OBJ = RegisterPackageTNUM("JuliaObject", JuliaObjectTypeFunc );
 
-    InitMarkFuncBags(T_JULIA_FUNC, &MarkNoSubBags);
     InitMarkFuncBags(T_JULIA_OBJ, &MarkOneSubBags);
 
-    CopyObjFuncs[T_JULIA_FUNC] = &JuliaFuncCopyFunc;
-    CleanObjFuncs[T_JULIA_FUNC] = &JuliaFuncCleanFunc;
-    IsMutableObjFuncs[T_JULIA_FUNC] = &JuliaFuncIsMutableFunc;
     CopyObjFuncs[T_JULIA_OBJ] = &JuliaObjCopyFunc;
     CleanObjFuncs[T_JULIA_OBJ] = &JuliaObjCleanFunc;
     IsMutableObjFuncs[T_JULIA_OBJ] = &JuliaObjIsMutableFunc;
