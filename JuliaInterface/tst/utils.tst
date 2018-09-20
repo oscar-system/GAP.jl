@@ -13,7 +13,7 @@ gap> JuliaTypeInfo( 0 );
 gap> JuliaTypeInfo( ConvertedToJulia( [ 1, 2, 3 ] ) );
 "Array{Any,1}"
 gap> JuliaTypeInfo( Julia.Base.parse );
-"Base.#parse"
+"typeof(parse)"
 
 ##
 gap> CallJuliaFunctionWithCatch( Julia.Base.sqrt, [ 4 ] );
