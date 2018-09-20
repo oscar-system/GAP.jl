@@ -192,7 +192,7 @@ InstallGlobalFunction( JuliaImportPackage, function( pkgname )
     else
         #Try to compile package by loading it into external Julia
         #Get Julia path
-        julia_path := ConvertedFromJulia( JuliaEvalString( "JULIA_HOME" ) );
+        julia_path := ConvertedFromJulia( JuliaEvalString( "Sys.BINDIR" ) );
         Exec( Concatenation( julia_path, "/../bin/julia -e \"", callstring,
                   "\"" ) );
     fi;
