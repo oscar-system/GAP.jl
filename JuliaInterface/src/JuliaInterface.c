@@ -612,9 +612,6 @@ static Int InitKernel( StructInitInfo *module )
     CleanObjFuncs[T_JULIA_OBJ] = &JuliaObjCleanFunc;
     IsMutableObjFuncs[T_JULIA_OBJ] = &JuliaObjIsMutableFunc;
 
-    // Initialize libjulia
-    jl_init();
-
     // Initialize GAP function pointers in Julia
     JuliaInitializeGAPFunctionPointers( );
 
