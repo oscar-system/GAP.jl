@@ -7,7 +7,7 @@ gap> int := ConvertedToJulia( 11 );
 gap> ConvertedFromJulia( int );
 11
 gap> string := ConvertedToJulia( "bla" );
-<Julia: bla>
+<Julia: "bla">
 gap> ConvertedFromJulia( string );
 "bla"
 gap> bool := ConvertedToJulia( true );
@@ -31,7 +31,7 @@ gap> List( ConvertedFromJulia( list ), ConvertedFromJulia );
 gap> emptylist:= ConvertedToJulia( [] );
 <Julia: Any[]>
 gap> emptystring:= ConvertedToJulia( "" );
-<Julia: >
+<Julia: "">
 gap> ConvertedFromJulia( emptylist );
 [  ]
 gap> ConvertedFromJulia( emptystring );
@@ -50,4 +50,3 @@ gap> List( list2, ConvertedFromJulia );
 
 ##
 gap> STOP_TEST( "convert.tst", 1 );
-
