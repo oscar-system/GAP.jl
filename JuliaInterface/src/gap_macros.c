@@ -81,33 +81,6 @@ Obj create_rational( int numerator, int denominator )
     return rational_obj;
 }
 
-#ifndef USE_JULIA_GC
-int pin_gap_obj( Obj obj )
-{
-    Obj pos;
-    Obj gap_obj_gc_list_positions = ValGVar( GVarName( "gap_obj_gc_list_positions" ) );
-    pos = PopPlist( gap_obj_gc_list_positions );
-    Obj gap_obj_gc_list = ValGVar( GVarName( "gap_obj_gc_list" ) );
-    AssPlist( gap_obj_gc_list, INT_INTOBJ( pos ), obj );
-    gap_obj_gc_list = ValGVar( GVarName( "gap_obj_gc_list" ) );
-    CHANGED_BAG(gap_obj_gc_list);
-    gap_obj_gc_list_positions = ValGVar( GVarName( "gap_obj_gc_list_positions" ) );
-    if(LEN_PLIST(gap_obj_gc_list_positions) == 0)
-    {
-        PushPlist( gap_obj_gc_list_positions, INTOBJ_INT( LEN_PLIST( gap_obj_gc_list ) + 1 ) );
-    }
-    return INT_INTOBJ( pos );
-}
-
-void unpin_gap_obj( int pos )
-{
-    Obj gap_obj_gc_list = ValGVar( GVarName( "gap_obj_gc_list" ) );
-    AssPlist( gap_obj_gc_list, pos, True );
-    Obj gap_obj_gc_list_positions = ValGVar( GVarName( "gap_obj_gc_list_positions" ) );
-    PushPlist( gap_obj_gc_list_positions, INTOBJ_INT( pos ) );
-}
-#endif
-
 jl_value_t* julia_gap(Obj obj)
 {
     if(IS_INT(obj)){
@@ -151,10 +124,6 @@ void JuliaInitializeGAPFunctionPointers( )
 {
 
     INITIALIZE_JULIA_CPOINTER(MakeGapArgList);
-#ifndef USE_JULIA_GC
-    INITIALIZE_JULIA_CPOINTER(pin_gap_obj);
-    INITIALIZE_JULIA_CPOINTER(unpin_gap_obj);
-#endif
     INITIALIZE_JULIA_CPOINTER(CallFuncList);
     INITIALIZE_JULIA_CPOINTER(RNamName);
     INITIALIZE_JULIA_CPOINTER(ElmPRec);

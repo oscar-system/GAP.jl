@@ -47,19 +47,6 @@ Int JuliaObjIsMutableFunc(Obj obj)
     return 0L;
 }
 
-jl_value_t* get_next_julia_position(){
-    jl_value_t* position_jl = jl_call1( julia_array_pop, GAP_MEMORY_STORAGE_INTS );
-    int position = jl_unbox_int64( position_jl );
-    if(jl_unbox_int64(jl_eval_string("length(GAP_MEMORY_STORAGE_INTS)"))==0){
-        jl_call2( julia_array_push, GAP_MEMORY_STORAGE, jl_box_int64( 0 ) );
-        JULIAINTERFACE_EXCEPTION_HANDLER
-        jl_value_t* new_position_jl = jl_box_int64( jl_unbox_int64(jl_eval_string("length(GAP_MEMORY_STORAGE)")) + 1 );
-        jl_call2( julia_array_push, GAP_MEMORY_STORAGE_INTS, new_position_jl );
-        JULIAINTERFACE_EXCEPTION_HANDLER
-    }
-    return position_jl;
-}
-
 void SET_JULIA_FUNC(Obj o, jl_function_t* f) {
     ADDR_OBJ(o)[0] = (Obj)f;
 }
@@ -98,28 +85,9 @@ Obj NewJuliaFunc(jl_function_t* C)
 Obj NewJuliaObj(jl_value_t* C)
 {
     Obj o;
-#ifndef USE_JULIA_GC
-    o = NewBag(T_JULIA_OBJ, 2 * sizeof(Obj));
-#else
-     o = NewBag(T_JULIA_OBJ, 1 * sizeof(Obj));
-#endif
+    o = NewBag(T_JULIA_OBJ, 1 * sizeof(Obj));
     SET_JULIA_OBJ(o, C);
-#ifndef USE_JULIA_GC
-    jl_value_t* input_position_jl = get_next_julia_position();
-    ADDR_OBJ(o)[1] = (Obj)jl_unbox_int64( input_position_jl );
-    jl_call3( julia_array_setindex, GAP_MEMORY_STORAGE, C, input_position_jl );
-    JULIAINTERFACE_EXCEPTION_HANDLER
-#endif
     return o;
-}
-
-void JuliaObjFreeFunc( Obj val )
-{
-    jl_value_t* list_number = jl_box_int64((long)(ADDR_OBJ(val)[1]));
-    jl_call3( julia_array_setindex, GAP_MEMORY_STORAGE, jl_true, list_number );
-    JULIAINTERFACE_EXCEPTION_HANDLER
-    jl_call2( julia_array_push, GAP_MEMORY_STORAGE_INTS, list_number );
-    JULIAINTERFACE_EXCEPTION_HANDLER
 }
 
 /*
@@ -578,7 +546,7 @@ Obj FuncJuliaGetFromJuliaPointer( Obj self, Obj obj )
 #ifdef USE_JULIA_GC
 Obj FuncJuliaSetAsMPtr( Obj self, Obj obj )
 {
-    if(IS_INTOBJ(obj) && IS_FFE(obj)){
+    if(!IS_BAG_REF(obj)){
         ErrorQuit( "Currently not supported", 0, 0 );
         return NULL;
     }
@@ -661,19 +629,13 @@ static Int InitKernel( StructInitInfo *module )
     T_JULIA_OBJ = RegisterPackageTNUM("JuliaObject", JuliaObjectTypeFunc );
 
     InitMarkFuncBags(T_JULIA_FUNC, &MarkNoSubBags);
-#ifndef USE_JULIA_GC
-    InitMarkFuncBags(T_JULIA_OBJ, &MarkNoSubBags);
-#else
     InitMarkFuncBags(T_JULIA_OBJ, &MarkOneSubBags);
-#endif
 
     CopyObjFuncs[T_JULIA_FUNC] = &JuliaFuncCopyFunc;
     CleanObjFuncs[T_JULIA_FUNC] = &JuliaFuncCleanFunc;
     IsMutableObjFuncs[T_JULIA_FUNC] = &JuliaFuncIsMutableFunc;
     CopyObjFuncs[T_JULIA_OBJ] = &JuliaObjCopyFunc;
-#ifndef USE_JULIA_GC
     CleanObjFuncs[T_JULIA_OBJ] = &JuliaObjCleanFunc;
-#endif
     IsMutableObjFuncs[T_JULIA_OBJ] = &JuliaObjIsMutableFunc;
 
 #ifndef USE_JULIA_GC
@@ -686,12 +648,6 @@ static Int InitKernel( StructInitInfo *module )
 
     // Initialize GAP function pointers in Julia
     JuliaInitializeGAPFunctionPointers( );
-
-    julia_array_pop = jl_get_function( jl_base_module, "pop!" );
-    julia_array_push = jl_get_function( jl_base_module, "push!" );
-    julia_array_setindex = jl_get_function( jl_base_module, "setindex!" );
-    GAP_MEMORY_STORAGE = jl_eval_string( "GAP_MEMORY_STORAGE = [ ]" );
-    GAP_MEMORY_STORAGE_INTS = jl_eval_string( "GAP_MEMORY_STORAGE_INTS = [ 1 ]" );
 
     /* return success                                                      */
     return 0;

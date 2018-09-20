@@ -30,9 +30,6 @@ jl_set_const( jl_main_module, gap_symbol, gap_ptr );\
 JULIAINTERFACE_EXCEPTION_HANDLER\
 }
 
-UInt gap_obj_gc_list_master;
-UInt gap_obj_gc_list_positions_master;
-
 // Internal Julia access functions
 
 // SET_JULIA_FUNC(o,f)
