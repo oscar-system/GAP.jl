@@ -543,28 +543,6 @@ Obj FuncJuliaGetFromJuliaPointer( Obj self, Obj obj )
     return (Obj)(jl_unbox_voidpointer(gap_ptr));
 }
 
-#ifdef USE_JULIA_GC
-Obj FuncJuliaSetAsMPtr( Obj self, Obj obj )
-{
-    if(!IS_BAG_REF(obj)){
-        ErrorQuit( "Currently not supported", 0, 0 );
-        return NULL;
-    }
-    return NewJuliaObj((jl_value_t*)obj);
-}
-
-Obj FuncJuliaGetFromMPtr( Obj self, Obj obj )
-{
-    // TODO: Check julia type
-    jl_value_t* julia_ptr = GET_JULIA_OBJ(obj);
-    if(!IsGapObj(julia_ptr)){
-        ErrorQuit("<obj> is not an MPtr", 0, 0 );
-    }
-    return (Obj)julia_ptr;
-}
-#endif
-
-
 Obj Func_JuliaBindCFunction( Obj self, Obj cfunction_string,
                                            Obj number_args_gap, Obj arg_names_gap )
 {
@@ -605,10 +583,6 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(_ConvertedFromJulia_record_dict, 1, "dict"),
     GVAR_FUNC(JuliaSetAsJuliaPointer, 1, "obj"),
     GVAR_FUNC(JuliaGetFromJuliaPointer, 1, "obj"),
-#ifdef USE_JULIA_GC
-    GVAR_FUNC(JuliaSetAsMPtr, 1, "obj"),
-    GVAR_FUNC(JuliaGetFromMPtr, 1, "obj"),
-#endif
     GVAR_FUNC(_JuliaIsNothing,1,"obj"),
 	{ 0 } /* Finish with an empty entry */
 
@@ -637,11 +611,6 @@ static Int InitKernel( StructInitInfo *module )
     CopyObjFuncs[T_JULIA_OBJ] = &JuliaObjCopyFunc;
     CleanObjFuncs[T_JULIA_OBJ] = &JuliaObjCleanFunc;
     IsMutableObjFuncs[T_JULIA_OBJ] = &JuliaObjIsMutableFunc;
-
-#ifndef USE_JULIA_GC
-    InitFreeFuncBag(T_JULIA_OBJ, &JuliaObjFreeFunc );
-    /* no free func for julia function objects ??? */
-#endif
 
     // Initialize libjulia
     jl_init();
