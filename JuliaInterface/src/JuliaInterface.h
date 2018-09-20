@@ -58,11 +58,11 @@ Obj JuliaObjectTypeFunc(Obj);
 // Internal
 UInt T_JULIA_OBJ = 0;
 
-// NewJuliaFunc(f)
+// NewJuliaFunc(f,autoConvert)
 //
 // Creates a new julia function GAP object
 // from the julia function pointer f.
-Obj NewJuliaFunc(jl_function_t*);
+Obj NewJuliaFunc(jl_function_t* f, int autoConvert);
 
 // NewJuliaObj(v)
 //
