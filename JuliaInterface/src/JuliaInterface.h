@@ -32,23 +32,11 @@ JULIAINTERFACE_EXCEPTION_HANDLER\
 
 // Internal Julia access functions
 
-// SET_JULIA_FUNC(o,f)
-//
-// Sets the value of the julia function GAP object
-// to the julia function pointer f.
-void SET_JULIA_FUNC(Obj, jl_function_t*);
-
 // SET_JULIA_OBJ(o,v)
 //
 // Sets the value of the julia object GAP object
 // to the julia value pointer v.
 void SET_JULIA_OBJ(Obj, jl_value_t*);
-
-// GET_JULIA_FUNC(o)
-//
-// Returns the julia function pointer
-// from the julia function GAP object o.
-jl_function_t* GET_JULIA_FUNC(Obj);
 
 // GET_JULIA_OBJ(o)
 //
@@ -62,25 +50,19 @@ Obj JuliaFunctionTypeFunc(Obj);
 // Internal
 Obj JuliaObjectTypeFunc(Obj);
 
-// IS_JULIA_FUNC(o)
-//
-// Checks if o is a julia function GAP object.
-#define IS_JULIA_FUNC(o) (TNUM_OBJ(o) == T_JULIA_FUNC)
-
 // IS_JULIA_OBJ(o)
 //
 // Checks if o is a julia object GAP object.
 #define IS_JULIA_OBJ(o) (TNUM_OBJ(o) == T_JULIA_OBJ)
 
 // Internal
-UInt T_JULIA_FUNC = 0;
 UInt T_JULIA_OBJ = 0;
 
-// NewJuliaFunc(f)
+// NewJuliaFunc(f,autoConvert)
 //
 // Creates a new julia function GAP object
 // from the julia function pointer f.
-Obj NewJuliaFunc(jl_function_t*);
+Obj NewJuliaFunc(jl_function_t* f, int autoConvert);
 
 // NewJuliaObj(v)
 //
@@ -98,36 +80,6 @@ Obj Func_JuliaFunction( Obj self, Obj string );
 // Returns the function with name <function_name> from
 // the Julia module with name <module_name>.
 Obj Func_JuliaFunctionByModule( Obj self, Obj function_name, Obj module_name );
-
-// Func_JuliaCallFunc0Arg( NULL, func )
-//
-// Calls the function in the julia function GAP object <func>
-// without arguments.
-Obj Func_JuliaCallFunc0Arg( Obj self, Obj func );
-
-// Func_JuliaCallFunc1Arg( NULL, func, arg )
-//
-// Calls the function in the julia function GAP object <func>
-// on the julia object GAP object <arg>.
-Obj Func_JuliaCallFunc1Arg( Obj self, Obj func, Obj arg );
-
-// Func_JuliaCallFunc2Arg( NULL, func, arg1, arg2 )
-//
-// Calls the function in the julia function GAP object <func>
-// on the julia object GAP objecta <arg1> and <arg2>.
-Obj Func_JuliaCallFunc2Arg( Obj self, Obj func, Obj arg1, Obj arg2 );
-
-// Func_JuliaCallFunc3Arg( NULL, func, arg1, arg2, arg3 )
-//
-// Calls the function in the julia function GAP object <func>
-// on the julia object GAP object <arg1>, <arg2>, and <arg3>.
-Obj Func_JuliaCallFunc3Arg( Obj self, Obj func, Obj arg1, Obj arg2, Obj arg3 );
-
-// Func_JuliaCallFuncXArg( NULL, func, args )
-//
-// Calls the function in the julia function GAP object <func>
-// on the julia object GAP objects in the GAP plain list <args>.
-Obj Func_JuliaCallFuncXArg( Obj self, Obj func, Obj args );
 
 // FuncJuliaEvalString( NULL, string )
 //

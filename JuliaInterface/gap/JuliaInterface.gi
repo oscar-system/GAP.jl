@@ -40,34 +40,6 @@ InstallMethod( ConvertedToJulia,
     return result;
 end );
 
-InstallMethod( CallFuncList,
-               [ IsJuliaFunction, IsList ],
-
-  function( julia_func, argument_list )
-
-    if Length( argument_list ) = 0 then
-
-        return _JuliaCallFunc0Arg( julia_func );
-
-    elif Length( argument_list ) = 1 then
-
-        return _JuliaCallFunc1Arg( julia_func, ConvertedToJulia( argument_list[ 1 ] ) );
-
-    elif Length( argument_list ) = 2 then
-
-        return _JuliaCallFunc2Arg( julia_func, ConvertedToJulia( argument_list[ 1 ] ), ConvertedToJulia( argument_list[ 2 ] ) );
-
-    elif Length( argument_list ) = 3 then
-
-        return _JuliaCallFunc3Arg( julia_func, ConvertedToJulia( argument_list[ 1 ] ), ConvertedToJulia( argument_list[ 2 ] ), ConvertedToJulia( argument_list[ 3 ] ) );
-
-    fi;
-
-    return _JuliaCallFuncXArg( julia_func, List( argument_list, ConvertedToJulia ) );
-
-end );
-
-
 ##
 ##  We want to use &GAP's function call syntax also for certain Julia objects
 ##  that are <E>not</E> functions, for example for types such as <C>fmpz</C>.
