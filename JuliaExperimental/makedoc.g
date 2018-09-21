@@ -9,6 +9,4 @@ fi;
 
 AutoDoc( "JuliaExperimental" : scaffold := true, autodoc := true );
 
-PrintTo("VERSION", PackageInfo("JuliaExperimental")[1].Version);
-
 QUIT;

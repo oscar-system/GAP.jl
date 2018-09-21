@@ -9,6 +9,4 @@ fi;
 
 AutoDoc( "JuliaInterface" : scaffold := true, autodoc := true );
 
-PrintTo("VERSION", PackageInfo("JuliaInterface")[1].Version);
-
 QUIT;

@@ -9,7 +9,7 @@ dnl ##
 dnl ## Setup autoconf
 dnl ##
 AC_PREREQ([2.68])
-AC_INIT([JuliaExperimental], m4_esyscmd([tr -d '\n' < VERSION]))
+AC_INIT([JuliaExperimental], [package], [https://github.com/oscar-packages/GAPJulia/issues])
 AC_CONFIG_SRCDIR([src/JuliaExperimental.c])
 AC_CONFIG_HEADER([src/pkgconfig.h:cnf/pkgconfig.h.in])
 AC_CONFIG_MACRO_DIR([m4])
@@ -94,11 +94,6 @@ case $host_os in
 esac
 AM_CONDITIONAL([SYS_IS_DARWIN], [test "$DARWIN" = "yes"])
 
-
-dnl ##
-dnl ## Rebuild configure if VERSION file changes
-dnl ##
-AC_SUBST([CONFIG_STATUS_DEPENDENCIES], ['$(top_srcdir)/VERSION'])
 
 dnl ##
 dnl ## Output everything
