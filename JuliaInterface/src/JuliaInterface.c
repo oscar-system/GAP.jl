@@ -546,7 +546,9 @@ Obj FuncJuliaGetFromJuliaPointer( Obj self, Obj obj )
 Obj Func_JuliaBindCFunction( Obj self, Obj cfunction_string,
                                            Obj number_args_gap, Obj arg_names_gap )
 {
-    void* ccall_pointer = jl_unbox_voidpointer( jl_eval_string( CSTR_STRING( cfunction_string ) ) );
+    jl_value_t* func = jl_eval_string( CSTR_STRING( cfunction_string ) );
+    JULIAINTERFACE_EXCEPTION_HANDLER
+    void* ccall_pointer = jl_unbox_voidpointer( func );
     size_t number_args = INT_INTOBJ( number_args_gap );
     return NewFunction(0, number_args, arg_names_gap, ccall_pointer );
 }
