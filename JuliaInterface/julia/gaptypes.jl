@@ -127,21 +127,6 @@ function(func::GapFunc)(args...)
     return result
 end
 
-## Internal function, not to be used.
-## This function prepares a function that manipulates
-## GAP pointers directly (for example by using GapFunc objects)
-## to be included as a kernel function into GAP. It has no real
-## purpose to be called from Julia directly.
-function prepare_func_for_gap(gap_func)
-    return_func = function(self,args...)
-        new_args = map(i->ccall(Main.gap_julia_gap,Any,(Ptr{Cvoid},),i),args)
-        return_value = gap_func(new_args...)
-        return ccall(Main.gap_gap_julia,Ptr{Cvoid},(Any,),return_value)
-    end
-    push!(gap_funcs,return_func)
-    return return_func
-end
-
 baremodule GAPFuncs
 end
 
