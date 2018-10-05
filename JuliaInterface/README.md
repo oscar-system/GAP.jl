@@ -16,8 +16,8 @@ This software is licensed under the LGPL, version 3, or any later version.
 
 ### Requirements
 
-- Julia 0.6.2 or higher, compiled in `<path_to_julia>`
-- GAP 4.9.1 or higher, compiled in `<path_to_gaproot>`
+- Julia 1.1 or higher, compiled in `<path_to_julia>`
+- GAP 4.10 or higher, compiled in `<path_to_gaproot>`
 - Standard building tools, such as gcc, autotools, libtools, automake, and make.
   If you were able to build GAP and Julia from their git repositories, JuliaInterface
   can be built.
@@ -50,8 +50,7 @@ To do so, run configure as follows:
 ## Usage
 
 Load the JuliaInterface package via
-```
-LoadPackage( "JuliaInterface" );
-```
 
+    LoadPackage( "JuliaInterface" );
 
+For further details, please consult the package manual.
