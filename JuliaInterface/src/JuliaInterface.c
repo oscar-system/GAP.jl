@@ -241,6 +241,8 @@ Obj JuliaObjectTypeFunc(Obj o)
 
 Obj NewJuliaObj(jl_value_t* C)
 {
+    if(IsGapObj(C))
+        return (Obj)C;
     Obj o;
     o = NewBag(T_JULIA_OBJ, 1 * sizeof(Obj));
     SET_JULIA_OBJ(o, C);
