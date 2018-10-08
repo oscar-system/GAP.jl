@@ -4,14 +4,6 @@
 #include "src/compiled.h" /* GAP headers */
 #include <julia.h>
 
-#undef PACKAGE_BUGREPORT
-#undef PACKAGE_NAME
-#undef PACKAGE_STRING
-#undef PACKAGE_TARNAME
-#undef PACKAGE_URL
-#undef PACKAGE_VERSION
-#include "pkgconfig.h"
-
 #define JULIAINTERFACE_EXCEPTION_HANDLER                                     \
     if (jl_exception_occurred()) {                                           \
         jl_call2(jl_get_function(jl_base_module, "showerror"),               \
