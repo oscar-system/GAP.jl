@@ -9,33 +9,33 @@
 #############################################################################
 
 InstallGlobalFunction( JuliaBindCFunction,
-  function( julia_name, nr_args, arg_names )
-    local cfunction_call_string, i, cfunc;
+  function( julia_name, arg_names )
+    local cfunction_call_string, i, cfunc, function_ptr, arg_string, nr_args;
 
     if not IsString( julia_name ) then
         Error( "first argument must be a string" );
         return;
     fi;
 
-    if not IsInt( nr_args ) or not nr_args >= 0 then
-        Error( "second argument must be an non-negative integer" );
-        return;
-    fi;
-
     if not IsList( arg_names ) then
-        Error( "third argument must be a list of strings" );
+        Error( "second argument must be a list of strings" );
         return;
     fi;
 
-    cfunction_call_string := Concatenation( "@cfunction(GAP.prepare_func_for_gap(", julia_name,")" );
+    nr_args := Length( arg_names );
+
+    ## Create a call to the @cfunction macro, to get a pointer to a compiled function
+    cfunction_call_string := Concatenation( "temp = @cfunction(", julia_name );
     cfunction_call_string := Concatenation( cfunction_call_string, ",Ptr{Cvoid},(" );
-    for i in [ 0 .. nr_args ] do
+    for i in [ 1 .. nr_args ] do
         cfunction_call_string := Concatenation( cfunction_call_string, "Ptr{Cvoid}," );
     od;
-    Remove( cfunction_call_string );
-    cfunction_call_string := Concatenation( cfunction_call_string, "))" );
-
-    return _JuliaBindCFunction( cfunction_call_string, nr_args, arg_names );
+    cfunction_call_string := Concatenation( cfunction_call_string, "));" );
+    ## Cast pointer to void to be able to unbox it later
+    cfunction_call_string := Concatenation( cfunction_call_string, "\nreinterpret(Ptr{Cvoid},temp)");
+    function_ptr := JuliaEvalString( cfunction_call_string );
+    arg_string := JoinStringsWithSeparator( arg_names, "," );
+    return _NewJuliaCFunc( function_ptr, nr_args, arg_string );
 
 end );
 

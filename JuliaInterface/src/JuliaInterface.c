@@ -208,6 +208,108 @@ Obj NewJuliaFunc(jl_function_t* function, int autoConvert)
 }
 
 /*
+ * C function pointer calls
+ */
+
+static inline ObjFunc get_c_function_pointer(Obj func)
+{
+    return jl_unbox_voidpointer((jl_value_t*)FEXS_FUNC(func));
+}
+
+Obj DoCallJuliaCFunc0Arg( Obj func )
+{
+    ObjFunc function = get_c_function_pointer(func);
+    return function();
+}
+
+Obj DoCallJuliaCFunc1Arg( Obj func, Obj arg1 )
+{
+    ObjFunc function = get_c_function_pointer(func);
+    return function(arg1);
+}
+
+Obj DoCallJuliaCFunc2Arg( Obj func, Obj arg1, Obj arg2 )
+{
+    ObjFunc function = get_c_function_pointer(func);
+    return function(arg1,arg2);
+}
+
+Obj DoCallJuliaCFunc3Arg( Obj func, Obj arg1, Obj arg2, Obj arg3 )
+{
+    ObjFunc function = get_c_function_pointer(func);
+    return function(arg1,arg2,arg3);
+}
+
+Obj DoCallJuliaCFunc4Arg( Obj func, Obj arg1, Obj arg2, Obj arg3, Obj arg4 )
+{
+    ObjFunc function = get_c_function_pointer(func);
+    return function(arg1,arg2,arg3,arg4);
+}
+
+Obj DoCallJuliaCFunc5Arg( Obj func, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5 )
+{
+    ObjFunc function = get_c_function_pointer(func);
+    return function(arg1,arg2,arg3,arg4,arg5);
+}
+
+Obj DoCallJuliaCFunc6Arg( Obj func, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6 )
+{
+    ObjFunc function = get_c_function_pointer(func);
+    return function(arg1,arg2,arg3,arg4,arg5,arg6);
+}
+
+Obj NewJuliaCFunc(void* function, int nr_args, char* args)
+{
+
+    ObjFunc handler;
+
+    switch(nr_args){
+        case 0:
+            handler = DoCallJuliaCFunc0Arg;
+            break;
+        case 1:
+            handler = DoCallJuliaCFunc1Arg;
+            break;
+        case 2:
+            handler = DoCallJuliaCFunc2Arg;
+            break;
+        case 3:
+            handler = DoCallJuliaCFunc3Arg;
+            break;
+        case 4:
+            handler = DoCallJuliaCFunc4Arg;
+            break;
+        case 5:
+            handler = DoCallJuliaCFunc5Arg;
+            break;
+        case 6:
+            handler = DoCallJuliaCFunc6Arg;
+            break;
+        default:
+            ErrorQuit("Only 0-6 arguments are supported", 0, 0);
+            break;
+    }
+
+    Obj func = NewFunctionC("", nr_args, args, handler);
+
+    // trick: fexs is unused for kernel functions, so we can store
+    // the function pointer here. Since fexs gets marked by the GC, we
+    // store it as a valid julia obj (i.e., void ptr).
+    SET_FEXS_FUNC(func, (Obj)jl_box_voidpointer(function));
+
+    return func;
+}
+
+Obj Func_NewJuliaCFunc( Obj self, Obj julia_function_ptr, Obj nr_args, Obj arg_names )
+{
+    jl_value_t* func_ptr = GET_JULIA_OBJ(julia_function_ptr);
+    void* ptr = jl_unbox_voidpointer(func_ptr);
+    int args = INT_INTOBJ(nr_args);
+    char* string = CSTR_STRING(arg_names);
+    return NewJuliaCFunc( ptr, args, string );
+}
+
+/*
  * utilities for wrapped Julia objects and functions
  */
 Obj JuliaObjCopyFunc(Obj obj, Int mut)
@@ -715,6 +817,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(JuliaSetAsJuliaPointer, 1, "obj"),
     GVAR_FUNC(JuliaGetFromJuliaPointer, 1, "obj"),
     GVAR_FUNC(_JuliaIsNothing,1,"obj"),
+    GVAR_FUNC(_NewJuliaCFunc,3,"ptr,nr_args,arg_names"),
 	{ 0 } /* Finish with an empty entry */
 
 };
