@@ -15,11 +15,8 @@ JuliaInterface_la_SOURCES = src/JuliaInterface.c
 JuliaInterface_la_CPPFLAGS = $(GAP_CPPFLAGS) $(JULIA_CPPFLAGS) -DJULIA_ENABLE_THREADING=1
 JuliaInterface_la_CFLAGS = $(GAP_CFLAGS)
 JuliaInterface_la_LDFLAGS = $(JULIA_LDFLAGS) -ljulia -R$(JULIA_LDPATH) -module -avoid-version $(JULIA_LDPATH)/libstdc++.so.6
-if SYS_IS_DARWIN
-# HACK to support linking against prebuilt Julia binaries from
-# the Julia website.
-JuliaInterface_la_LDFLAGS += -Wl,-rpath,$(JULIA_LDPATH)
-endif
+## Set rpath
+JuliaInterface_la_LDFLAGS += -R $(JULIA_LDPATH)
 if SYS_IS_CYGWIN
 JuliaInterface_la_LDFLAGS += -no-undefined -version-info 0:0:0 -Wl,$(GAPROOT)/bin/$(GAPARCH)/gap.dll
 endif
