@@ -1,0 +1,41 @@
+language: c
+env:
+ global:
+   - DONT_FETCH_GAP_JULIA_PKG=yes
+   - JULIAROOT=$TRAVIS_BUILD_DIR/julia
+   - GAPROOT=$TRAVIS_BUILD_DIR/gap
+   - MAKEFLAGS="-j4"
+
+addons:
+  apt_packages:
+    - libgmp-dev
+    - libreadline-dev
+    - zlib1g-dev
+
+branches:
+  only:
+    - master
+
+before_script:
+  - printenv | sort
+  - git show --pretty=fuller -s
+  - mkdir -p coverage
+  - etc/install_julia_gap.sh
+  - ln -s $TRAVIS_BUILD_DIR/JuliaInterface $GAPROOT/pkg/
+  - ln -s $TRAVIS_BUILD_DIR/JuliaExperimental $GAPROOT/pkg/
+  - etc/travis_build.sh
+
+script:
+  - cd JuliaInterface
+  - export CFLAGS=--coverage
+  - export LDFLAGS=--coverage
+  - ./configure $GAPROOT
+  - make
+  - pwd
+  - $GAPROOT/gap --quitonbreak --norepl --cover $TRAVIS_BUILD_DIR/coverage/JuliaInterface tst/testall.g
+  - gcov -o .. src/*.c*
+
+after_script:
+  - cd $TRAVIS_BUILD_DIR
+  - $GAPROOT/gap --quitonbreak --norepl etc/gather-coverage.g
+  - bash <(curl -s https://codecov.io/bash)
