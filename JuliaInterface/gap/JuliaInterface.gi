@@ -153,24 +153,14 @@ end );
 
 
 InstallGlobalFunction( JuliaImportPackage, function( pkgname )
-    local callstring, julia_path;
+    local callstring;
     if not IsString( pkgname ) then
         Error( "<pkgname> must be a string, the name of a Julia package" );
     fi;
-    callstring:= Concatenation( "try import ", pkgname,
+    callstring := Concatenation( "try import ", pkgname,
                      "; return true; catch e; return e; end" );
     if ConvertedFromJulia( JuliaEvalString( callstring ) ) = true then
         return true;
-    else
-        #Try to compile package by loading it into external Julia
-        #Get Julia path
-        julia_path := ConvertedFromJulia( JuliaEvalString( "Sys.BINDIR" ) );
-        Exec( Concatenation( julia_path, "/../bin/julia -e \"", callstring,
-                  "\"" ) );
-    fi;
-    # Try the same again. If it fails this time, we are out
-    if ConvertedFromJulia( JuliaEvalString( callstring ) ) = true then
-      return true;
     else
       Info( InfoWarning, 1,
             "The Julia package '", pkgname, "' cannot be loaded." );
