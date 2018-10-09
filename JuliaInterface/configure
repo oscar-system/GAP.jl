@@ -4,8 +4,10 @@
 
 set -e
 
+DEFAULT_GAPPATH=../../..
+
 if test -z "$1"; then
-  GAPPATH=../../..; echo "Using ../.. as default GAP path";
+  GAPPATH=${DEFAULT_GAPPATH}; echo "Using ${DEFAULT_GAPPATH} as default GAP path";
 else
   GAPPATH=$1;
 fi
@@ -16,7 +18,7 @@ if test ! -r $GAPPATH/sysinfo.gap ; then
     echo
     echo "Usage: ./configure [GAPPATH]"
     echo "       where GAPPATH is a path to your GAP installation"
-    echo "       (The default for GAPPATH is \"../../..\")"
+    echo "       (The default for GAPPATH is \"${DEFAULT_GAPPATH}\")"
     echo
     echo "Either your GAPPATH is incorrect or the GAP it is pointing to"
     echo "is not properly compiled (do \"./configure && make\" there first)."
