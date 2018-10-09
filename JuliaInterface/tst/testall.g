@@ -5,5 +5,7 @@
 # metadata in PackageInfo.g.
 #
 LoadPackage("JuliaInterface");
-TestDirectory(DirectoriesPackageLibrary("JuliaInterface", "tst"), rec(exitGAP := true));
+dir:=DirectoriesPackageLibrary("JuliaInterface", "tst");
+Assert(0, dir <> fail);
+TestDirectory(dir, rec(exitGAP := true));
 FORCE_QUIT_GAP(1);
