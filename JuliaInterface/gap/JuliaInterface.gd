@@ -52,122 +52,6 @@ DeclareOperation( "ConvertedFromJulia", [ IsJuliaObject ] );
 #!  Like structural copy, also converts the contents of a Julia list recursively to GAP objects.
 DeclareGlobalFunction( "StructuralConvertedFromJulia" );
 
-## Internal
-BindGlobal( "_JULIAINTERFACE_MODULE_NAME",
-  function( module_name )
-    if Length( module_name ) = 0 then
-        return "Main";
-    else
-        return module_name[ 1 ];
-    fi;
-end );
-
-## Internal
-BindGlobal( "_JULIAINTERFACE_PREPARE_RECORD",
-  function( module_name )
-    local no_import;
-
-    if module_name = "Main" and IsBound( Julia.Main ) then
-        return module_name;
-    fi;
-
-    if module_name = "GAP" then
-        Julia.GAP := rec( _JULIAINTERFACE_NOT_IMPORTED_YET := true );
-        return module_name;
-    fi;
-    
-    if IsBound( Julia.(module_name) ) and ( not IsBound( Julia.(module_name)._JULIAINTERFACE_NOT_IMPORTED_YET ) ) then
-        return fail;
-    fi;
-
-    if not IsBound( Julia.(module_name) ) then
-        no_import := ValueOption( "NoImport" );
-        if no_import = fail then
-            no_import := false;
-        fi;
-        if no_import = false then
-            JuliaEvalString( Concatenation( "import ", module_name ) );
-        fi;
-        Julia.(module_name) := rec( _JULIAINTERFACE_NOT_IMPORTED_YET := true );
-    fi;
-
-    return module_name;
-
-end );
-
-#! @Arguments function_name[, module_name]
-#! @Description
-#!  Stores the Julia function <A>function_name</A> from the module <A>module_name</A>
-#!  in the <C>Julia</C> record, as <C>Julia</C>.<A>module_name</A>.<A>function_name</A>,
-#!  to have quick access if the function is needed in several places. The default value for
-#!  <A>module_name</A> is <C>"Main"</C>.
-DeclareGlobalFunction( "BindJuliaFunc" );
-InstallGlobalFunction( BindJuliaFunc,
-  function( julia_name, module_name... )
-    module_name := _JULIAINTERFACE_MODULE_NAME( module_name );
-    if IsBound( Julia.(module_name) ) and IsBound( Julia.(module_name).(julia_name) ) then
-        return;
-    fi;
-    module_name := _JULIAINTERFACE_PREPARE_RECORD( module_name );
-    if module_name = fail then
-        return;
-    fi;
-    Julia.(module_name).(julia_name) := JuliaFunction( julia_name, module_name );
-end );
-
-#! @Arguments object_name[, module_name]
-#! @Description
-#!  Stores the Julia object <A>object_name</A> from the module <A>module_name</A>
-#!  in the <C>Julia</C> record, as <C>Julia</C>.<A>module_name</A>.<A>object_name</A>,
-#!  to have quick access if the object is needed in several places. The default value for
-#!  <A>module_name</A> is <C>"Main"</C>.
-DeclareGlobalFunction( "BindJuliaObj" );
-InstallGlobalFunction( BindJuliaObj,
-  function( julia_name, module_name... )
-    module_name := _JULIAINTERFACE_MODULE_NAME( module_name );
-    if IsBound( Julia.(module_name) ) and IsBound( Julia.(module_name).(julia_name) ) then
-        return;
-    fi;
-    module_name := _JULIAINTERFACE_PREPARE_RECORD( module_name );
-    if module_name = fail then
-        return;
-    fi;
-    Julia.(module_name).(julia_name) := JuliaGetGlobalVariable( julia_name, module_name );
-end );
-
-#! @Arguments function_name[, module_name]
-#! @Description
-#!  Returns the julia function <A>function_name</A> from the module <A>module_name</A>.
-#!  As a side effect, it also
-#!  stores the Julia function <A>function_name</A> from the module <A>module_name</A>
-#!  in the <C>Julia</C> record, as <C>Julia</C>.<A>module_name</A>.<A>function_name</A>,
-#!  to have quick access if the function is needed in several places. The default value for
-#!  <A>module_name</A> is <C>"Main"</C>.
-DeclareGlobalFunction( "GetJuliaFunc" );
-InstallGlobalFunction( GetJuliaFunc,
-  function( julia_name, module_name... )
-    module_name := _JULIAINTERFACE_MODULE_NAME( module_name );
-    BindJuliaFunc( julia_name, module_name );
-    return Julia.(module_name).(julia_name);
-end );
-
-#! @Arguments object_name[, module_name]
-#! @Description
-#!  Returns the julia object <A>object_name</A> from the module <A>module_name</A>.
-#!  As a side effect, it also
-#!  stores the Julia object <A>object_name</A> from the module <A>module_name</A>
-#!  in the <C>Julia</C> record, as <C>Julia</C>.<A>module_name</A>.<A>object_name</A>,
-#!  to have quick access if the object is needed in several places. The default value for
-#!  <A>module_name</A> is <C>"Main"</C>.
-DeclareGlobalFunction( "GetJuliaObj" );
-InstallGlobalFunction( GetJuliaObj,
-  function( julia_name, module_name... )
-    module_name := _JULIAINTERFACE_MODULE_NAME( module_name );
-    BindJuliaObj( julia_name, module_name );
-    return Julia.(module_name).(julia_name);
-end );
-
-
 #! @Arguments filename
 #! @Returns nothing.
 #! @Description
@@ -202,6 +86,27 @@ DeclareGlobalFunction( "JuliaIncludeFile" );
 #!  into the relevant <F>.jl</F> files,
 #!  and then load these files with <Ref Func="JuliaIncludeFile"/>.
 DeclareGlobalFunction( "JuliaImportPackage" );
+
+DeclareCategory( "IsJuliaModule", IsObject );
+BindGlobal( "TheFamilyOfJuliaModules", NewFamily( "TheFamilyOfJuliaModules" ) );
+BindGlobal( "TheTypeOfJuliaModules", NewType( TheFamilyOfJuliaModules, IsJuliaModule and IsAttributeStoringRep ) );
+
+#! @Description
+#!  TODO
+DeclareGlobalVariable( "Julia" );
+
+#! @Arguments module
+#! @Returns a list of strings
+#! @Description
+#!  Returns a list of names of components currently bound
+#!  in <A>module</A>. Please note that this does usually
+#!  not reflect all symbols bound to a module on the
+#!  &Julia; side: Even if a module has been imported
+#!  in Julia, this list of symbols does only
+#!  reflect the variables currently stored in the GAP
+#!  module object. It might be possible to access
+#!  further Julia variables or functions in this module.
+DeclareGlobalFunction( "JuliaSymbolsInModule" );
 
 
 #! @Arguments name

@@ -376,24 +376,40 @@ Obj NewJuliaObj(jl_value_t * C)
     return o;
 }
 
-/*
- * Returns the function with name <string> from the Julia main module.
- */
-Obj Func_JuliaFunction(Obj self, Obj string)
+
+jl_function_t * get_function_from_obj_or_string(Obj func)
 {
-    jl_function_t * function =
-        jl_get_function(jl_main_module, CSTR_STRING(string));
-    if (function == 0)
-        ErrorMayQuit("Function is not defined in julia", 0, 0);
+    if (IS_JULIA_OBJ(func)) {
+        return (jl_function_t *)GET_JULIA_OBJ(func);
+    }
+    if (IS_STRING_REP(func)) {
+        jl_function_t * function =
+            jl_get_function(jl_main_module, CSTR_STRING(func));
+        JULIAINTERFACE_EXCEPTION_HANDLER
+        if (function == 0) {
+            ErrorMayQuit("Function is not defined in julia", 0, 0);
+        }
+        return function;
+    }
+    ErrorMayQuit("argument is not a julia object or string", 0, 0);
+    return 0;
+}
+
+
+/*
+ * Returns the function from the Object <func>
+ * or the function with name <func> from
+ * the Julia main module.
+ */
+Obj Func_JuliaFunction(Obj self, Obj func)
+{
+    jl_function_t * function = get_function_from_obj_or_string(func);
     return NewJuliaFunc(function, 1);
 }
 
-Obj Func_JuliaFunctionNoConv(Obj self, Obj string)
+Obj Func_JuliaFunctionNoConv(Obj self, Obj func)
 {
-    jl_function_t * function =
-        jl_get_function(jl_main_module, CSTR_STRING(string));
-    if (function == 0)
-        ErrorMayQuit("Function is not defined in julia", 0, 0);
+    jl_function_t * function = get_function_from_obj_or_string(func);
     return NewJuliaFunc(function, 0);
 }
 
@@ -740,21 +756,28 @@ Obj Func_JuliaGetGlobalVariable(Obj self, Obj name)
 {
     jl_sym_t * symbol = jl_symbol(CSTR_STRING(name));
     if (!jl_boundp(jl_main_module, symbol)) {
-        ErrorMayQuit("variable is not bound in module main", 0, 0);
-        return NULL;
+        return Fail;
     }
     jl_value_t * value = jl_get_global(jl_main_module, symbol);
     JULIAINTERFACE_EXCEPTION_HANDLER
     return NewJuliaObj(value);
 }
 
-Obj Func_JuliaGetGlobalVariableByModule(Obj self, Obj name, Obj module_name)
+Obj Func_JuliaGetGlobalVariableByModule(Obj self, Obj name, Obj module)
 {
-    jl_sym_t *    symbol = jl_symbol(CSTR_STRING(name));
-    jl_module_t * module_t = get_module_from_string(CSTR_STRING(module_name));
+    jl_module_t * module_t = 0;
+    if (IS_JULIA_OBJ(module)) {
+        module_t = (jl_module_t *)GET_JULIA_OBJ(module);
+    }
+    else if (IS_STRING_REP(module)) {
+        module_t = get_module_from_string(CSTR_STRING(module));
+    }
+    if (!module_t) {
+        ErrorMayQuit("second argument is not a module", 0, 0);
+    }
+    jl_sym_t * symbol = jl_symbol(CSTR_STRING(name));
     if (!jl_boundp(module_t, symbol)) {
-        ErrorMayQuit("variable is not bound", 0, 0);
-        return NULL;
+        return Fail;
     }
     jl_value_t * value = jl_get_global(module_t, symbol);
     JULIAINTERFACE_EXCEPTION_HANDLER

@@ -13,31 +13,16 @@ module GAPUtils
 import REPL.REPLCompletions: completions
 
 """
-    get_function_symbols_in_module(module_t::Module) :: Array{Symbol,1}
+    get_symbols_in_module(module_t::Module) :: Array{Symbol,1}
 
-> Returns all function symbols in the module `module_t`.
+> Returns all symbols in the module `module_t`.
 """
-function get_function_symbols_in_module(module_t)
+function get_symbols_in_module(module_t)
     module_name = string(nameof(module_t))
     string_list = completions( module_name * ".", length( module_name ) + 1 )[1]
     string_list = [ x.mod for x in string_list ]
     list = [ Symbol(x) for x in string_list ]
-    list = filter(i->isdefined(module_t,i) && isa(eval((:($module_t.$i))),Function),list)
-    return list
-end
-
-"""
-    get_variable_symbols_in_module(module_t::Module) :: Array{Symbol,1}
-
-> Returns all variable symbols in the module `module_t`, i.e.,
-> all symbols that do not point to functions.
-"""
-function get_variable_symbols_in_module(module_t)
-    module_name = string(nameof(module_t))
-    string_list = completions( module_name * ".", length( module_name ) + 1 )[1]
-    string_list = [ x.mod for x in string_list ]
-    list = [ Symbol(x) for x in string_list ]
-    list = filter(i->isdefined(module_t,i) && ! isa(eval((:($module_t.$i))),Function),list)
+    list = filter(i->isdefined(module_t,i),list)
     return list
 end
 

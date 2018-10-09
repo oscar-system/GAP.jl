@@ -57,11 +57,81 @@ InstallMethod( CallFuncList,
     end );
 
 
-##
-##  We support '<juliaobj>[<i>]' and '<juliaobj>[<i>, <j>]' in general.
-##  This is useful for example if <juliaobj> is a tuple.
-##
-BindJuliaFunc( "getindex", "Base" );
+BindGlobal( "_JULIA_MODULE_TYPE", JuliaEvalString( "Module" ) );
+BindGlobal( "_JULIA_FUNCTION_TYPE", JuliaEvalString( "Function" ) );
+BindGlobal( "_JULIA_ISA", JuliaFunction( "isa" ) );
+
+BindGlobal( "_WrapJuliaModule",
+  function( name, julia_pointer )
+    local module;
+
+    module := rec( storage := rec( ),
+                   julia_pointer := julia_pointer );
+
+    ObjectifyWithAttributes( module, TheTypeOfJuliaModules,
+                             Name, Concatenation( "<Julia module ", name, ">" ) );
+
+    return module;
+
+end );
+
+InstallMethod( \.,
+              [ IsJuliaModule, IsPosInt ],
+  function( module, rnum )
+    local rnam, global_variable;
+
+    if IsBound\.( module!.storage, rnum ) then
+        return \.(module!.storage, rnum );
+    fi;
+
+    rnam := NameRNam( rnum );
+
+    global_variable := _JuliaGetGlobalVariableByModule( rnam, module!.julia_pointer );
+    if global_variable = fail then
+        Error( rnam, " is not bound in Julia" );
+    fi;
+
+    if ConvertedFromJulia( _JULIA_ISA( global_variable, _JULIA_FUNCTION_TYPE ) ) then
+        global_variable := _JuliaFunction( global_variable );
+    elif ConvertedFromJulia( _JULIA_ISA( global_variable, _JULIA_MODULE_TYPE ) ) then
+        global_variable := _WrapJuliaModule( rnam, global_variable );
+    fi;
+
+    \.\:\=( module!.storage, rnum, global_variable );
+    return global_variable;
+
+end );
+
+InstallMethod( \.\:\=,
+               [ IsJuliaModule, IsPosInt, IsObject ],
+  function( module, rnum, obj )
+    Error( "Manual assignment to module is not allowed" );
+end );
+
+
+InstallMethod( IsBound\.,
+               [ IsJuliaModule, IsPosInt ],
+  function( module, rnum )
+    if IsBound\.( module!.storage, rnum ) then
+        return true;
+    fi;
+    return fail <> _JuliaGetGlobalVariableByModule( NameRNam( rnum ), module!.julia_pointer );
+end );
+
+
+InstallMethod( Unbind\.,
+               [ IsJuliaModule, IsPosInt ],
+  function( module, rnum )
+    Unbind\.( module!.storage, rnum );
+end );
+
+
+InstallGlobalFunction( JuliaSymbolsInModule,
+                       [ IsJuliaModule ],
+  module -> RecNames( module!.storage ) );
+
+InstallValue( Julia, _WrapJuliaModule( "Main", JuliaEvalString( "Main" ) ) );
+
 
 InstallOtherMethod( \[\],
     [ "IsJuliaObject", "IsPosInt and IsSmallIntRep" ],
@@ -75,9 +145,6 @@ InstallOtherMethod( \[\],
     function( obj, i, j )
       return Julia.Base.getindex( obj, i, j );
     end );
-
-BindJuliaFunc( "string", "Base" );
-BindJuliaFunc( "repr", "Base" );
 
 BindGlobal( "JuliaKnownFiles", [] );
 
@@ -114,13 +181,8 @@ end );
 
 InstallGlobalFunction( ImportJuliaModuleIntoGAP,
   function( name )
-    local callstring, julia_list_func, function_list, variable_list, i,
-          current_module_rec, is_module_present, no_import;
-
-    # Do nothing if the module has already been imported.
-    if IsBound( Julia.( name ) ) and not IsBound( Julia.( name )._JULIAINTERFACE_NOT_IMPORTED_YET ) then
-      return;
-    fi;
+    local callstring, julia_list_func, list, variable_list, i,
+          current_module, is_module_present, no_import;
 
     no_import := ValueOption( "NoImport" );
     if no_import = fail then
@@ -140,18 +202,11 @@ InstallGlobalFunction( ImportJuliaModuleIntoGAP,
         fi;
     fi;
 
-    _JULIAINTERFACE_PREPARE_RECORD( name );
-    current_module_rec := Julia.(name);
-    Unbind( current_module_rec._JULIAINTERFACE_NOT_IMPORTED_YET );
-    julia_list_func := JuliaFunction( "get_function_symbols_in_module", "GAPUtils" );
-    function_list := StructuralConvertedFromJulia( julia_list_func( JuliaModule( name ) ) );
-    for i in function_list do
-        current_module_rec.(i) := JuliaFunction( i, name );
-    od;
-    julia_list_func := JuliaFunction( "get_variable_symbols_in_module", "GAPUtils" );
-    variable_list := StructuralConvertedFromJulia( julia_list_func( JuliaModule( name ) ) );
-    for i in variable_list do
-        current_module_rec.(i) := JuliaGetGlobalVariable( i, name );
+    current_module := Julia.(name);
+    julia_list_func := JuliaFunction( "get_symbols_in_module", "GAPUtils" );
+    list := StructuralConvertedFromJulia( julia_list_func( current_module!.julia_pointer ) );
+    for i in list do
+        \.( current_module, RNamObj( i ) );
     od;
 end );
 
@@ -172,8 +227,6 @@ InstallGlobalFunction( JuliaImportPackage, function( pkgname )
     fi;
 end );
 
-
-BindJuliaFunc( "typeof", "Core" );
 
 InstallGlobalFunction( JuliaTypeInfo,
     juliaobj -> ConvertedFromJulia(
