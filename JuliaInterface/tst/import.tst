@@ -11,7 +11,7 @@ false
 ##
 gap> ImportJuliaModuleIntoGAP( "Core" );
 gap> ImportJuliaModuleIntoGAP( "No_Julia_Module_With_This_Name" );
-#I  The Julia module 'No_Julia_Module_With_This_Name' cannot be imported.
+Error, JuliaError
 
 ##
 gap> STOP_TEST( "import.tst", 1 );

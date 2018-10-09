@@ -65,6 +65,7 @@ end );
 ## Internal
 BindGlobal( "_JULIAINTERFACE_PREPARE_RECORD",
   function( module_name )
+    local no_import;
 
     if module_name = "Main" and IsBound( Julia.Main ) then
         return module_name;
@@ -80,7 +81,13 @@ BindGlobal( "_JULIAINTERFACE_PREPARE_RECORD",
     fi;
 
     if not IsBound( Julia.(module_name) ) then
-        JuliaEvalString( Concatenation( "import ", module_name ) );
+        no_import := ValueOption( "NoImport" );
+        if no_import = fail then
+            no_import := false;
+        fi;
+        if no_import = false then
+            JuliaEvalString( Concatenation( "import ", module_name ) );
+        fi;
         Julia.(module_name) := rec( _JULIAINTERFACE_NOT_IMPORTED_YET := true );
     fi;
 
