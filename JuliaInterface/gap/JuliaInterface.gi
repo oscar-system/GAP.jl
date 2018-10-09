@@ -115,25 +115,28 @@ end );
 InstallGlobalFunction( ImportJuliaModuleIntoGAP,
   function( name )
     local callstring, julia_list_func, function_list, variable_list, i,
-          current_module_rec, is_module_present;
+          current_module_rec, is_module_present, no_import;
 
     # Do nothing if the module has already been imported.
     if IsBound( Julia.( name ) ) and not IsBound( Julia.( name )._JULIAINTERFACE_NOT_IMPORTED_YET ) then
       return;
     fi;
 
+    no_import := ValueOption( "NoImport" );
+    if no_import = fail then
+        no_import := false;
+    fi;
+
     if name = "Main" then
         Print( "WARNING: Do not import Main module into GAP\n" );
     fi;
     is_module_present := JuliaEvalString( Concatenation( "isdefined( Main, :", name, ")" ) );
-    if not ConvertedFromJulia( is_module_present ) then
-        ## Local modules cannot be imported
-        callstring:= Concatenation( "try import ", name,
-                        "; return true; catch e; return e; end" );
-        if ConvertedFromJulia( JuliaEvalString( callstring ) ) <> true then
-        Info( InfoWarning, 1,
-                "The Julia module '", name, "' cannot be imported." );
-        return;
+    
+    if no_import = false then
+        if not ConvertedFromJulia( is_module_present ) then
+            ## Local modules cannot be imported
+            callstring:= Concatenation( "import ", name );
+            JuliaEvalString( callstring );
         fi;
     fi;
 
