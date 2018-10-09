@@ -81,7 +81,8 @@ BindJuliaFunc( "repr", "Base" );
 
 BindGlobal( "JuliaKnownFiles", [] );
 
-BindGlobal( "JuliaIncludeFile", function( filename )
+InstallGlobalFunction( "JuliaIncludeFile",
+function( filename )
     if not filename in JuliaKnownFiles then
       JuliaEvalString( Concatenation( "Base.include(@__MODULE__,\"", filename, "\")" ) );
       AddSet( JuliaKnownFiles, filename );

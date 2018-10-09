@@ -161,6 +161,13 @@ InstallGlobalFunction( GetJuliaObj,
 end );
 
 
+#! @Arguments filename
+#! @Returns nothing.
+#! @Description
+#!  TODO.
+DeclareGlobalFunction( "JuliaIncludeFile" );
+
+
 #! @Arguments pkgname
 #! @Returns <K>true</K> or <K>false</K>.
 #! @Description
