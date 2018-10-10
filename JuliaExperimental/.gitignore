@@ -19,29 +19,17 @@
 /doc/*.toc
 /doc/manual.pdf
 
-.deps/
-.dirstamp
-.libs/
-
-/bin/
-/cnf
-/config.log
-/config.status
 /Makefile
 
-*.la
-src/*.lo
+/bin/
 
+/gen/
 
 /doc/*.xml
 
+/gh-pages/
 
 /maketest.g
-/test-suite.log
-/tst/run-tap.log
-/tst/run-tap.trs
-
-/gen/*
 
 /tmp/
 /misc
