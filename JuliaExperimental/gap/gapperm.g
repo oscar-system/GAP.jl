@@ -31,9 +31,6 @@ JuliaIncludeFile(
     Filename( DirectoriesPackageLibrary( "JuliaExperimental", "julia" ),
     "gapperm.jl" ) );
 
-ImportJuliaModuleIntoGAP( "Base" );
-ImportJuliaModuleIntoGAP( "GAPPermutations" );
-
 
 ##############################################################################
 ##

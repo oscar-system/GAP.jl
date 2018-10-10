@@ -20,7 +20,7 @@ export NemoElementOfNumberField,
 # export ConvertedToJulia_Cyclotomics
 
 
-doc"""
+"""
     NemoElementOfNumberField( f, lst, denom )
 > Return the element in the number field `f` for which `lst` is the array
 > of numerators of the coefficients w.r.t. the defining polynomial of `f`,
@@ -31,7 +31,7 @@ function NemoElementOfNumberField( f, lst, denom::Int )
 end
 
 
-doc"""
+"""
     Nemo_Matrix_over_NumberField( f, m, n, lst, denom )
 > Return an `m` by `n` matrix of elements in the Nemo number field `f`
 > from the list `lst` (which has length `m` times `n`)
@@ -56,7 +56,7 @@ function Nemo_Matrix_over_NumberField( f, m::Int, n::Int, lst, denom::Int )
 end
 
 
-doc"""
+"""
     CoefficientVectorOfNumberFieldElement( elm::Nemo.nf_elem, d::Int )
 > Return the coefficient vector of the number field element `elm`,
 > as an array of length `d` and consisting of `Nemo.fmpq` objects.
@@ -73,7 +73,7 @@ function CoefficientVectorOfNumberFieldElement( elm::Nemo.nf_elem, d::Int )
 end
 
 
-doc"""
+"""
     CoefficientVectorsNumDenOfNumberFieldElement( elm::Nemo.nf_elem, d::Int )
 > Return the tuple that consists of the coefficient vectors
 > of the numerators and the denominators of the coefficient vector
@@ -95,7 +95,7 @@ function CoefficientVectorsNumDenOfNumberFieldElement( elm, d )
 end
 
 
-doc"""
+"""
     MatricesOfCoefficientVectorsNumDen( nemomat, d )
 > Return the tuple that consists of two 2-dim. (m n) times `d` arrays
 > of `Nemo.fmpz` objects that describe the numerators and the denominators
@@ -122,7 +122,7 @@ end
 
 
 #T as soon as 'Qab.jl' is officially available in Hecke:
-# doc"""
+# """
 #     ConvertedToJulia_Cyclotomics( N, lst, denom )
 # > Return an array of n `QabElem` objects,
 # > which correspond to the n entries of the array `lst`.

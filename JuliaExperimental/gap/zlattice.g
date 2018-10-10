@@ -14,8 +14,6 @@ JuliaIncludeFile(
     Filename( DirectoriesPackageLibrary( "JuliaExperimental", "julia" ),
     "zlattice.jl" ) );
 
-ImportJuliaModuleIntoGAP( "GAPZLattice" );
-
 
 ##############################################################################
 ##

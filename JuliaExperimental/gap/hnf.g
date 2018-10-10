@@ -17,8 +17,7 @@ JuliaIncludeFile(
     Filename( DirectoriesPackageLibrary( "JuliaExperimental", "julia" ),
     "hnf.jl" ) );
 
-ImportJuliaModuleIntoGAP( "GAPHNFModule" );
-ImportJuliaModuleIntoGAP( "Nemo" );
+JuliaImportPackage( "Nemo" );
 
 
 #! @Arguments intmat

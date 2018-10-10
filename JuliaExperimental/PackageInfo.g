@@ -78,16 +78,22 @@ PackageDoc := rec(
 ),
 
 Dependencies := rec(
-  GAP := ">= 4.6",
-  NeededOtherPackages := [ [ "GAPDoc", ">= 1.5" ] ],
-  OtherPackagesLoadedInAdvance := [ [ "JuliaInterface", ">=0.1"] ], 
+  GAP := ">= 4.10",
+  NeededOtherPackages := [ ],
+  OtherPackagesLoadedInAdvance := [ [ "JuliaInterface", ">=0.1" ] ], 
   SuggestedOtherPackages := [ ],
   ExternalConditions := [ ],
 ),
 
 AvailabilityTest := function()
-        return true;
-    end,
+  if Filename( DirectoriesPackagePrograms( "JuliaExperimental" ),
+               "JuliaExperimental.so" ) = fail then
+    LogPackageLoadingMessage( PACKAGE_WARNING,
+        [ "The kernel module of JuliaExperimental is not available." ] );
+    return false;
+  fi;
+  return true;
+end,
 
 TestFile := "tst/testall.g",
 

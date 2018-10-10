@@ -9,13 +9,15 @@ module GAPZLattice
 
 import Core: Int, isa
 
-import Base: abs, convert, copy, deepcopy, diag, haskey, inv, lcm, length,
-             lexless, map, push!, sign, size, sum, trunc, zero, zeros
+import LinearAlgebra: diag
+
+import Base: abs, convert, copy, deepcopy, haskey, inv, lcm, length,
+             map, push!, sign, size, sum, trunc, zero, zeros
 
 export LLLReducedGramMat, ShortestVectors, OrthogonalEmbeddings
 
 
-doc"""
+raw"""
     LLLReducedGramMat( grammatrix::Array{Int,2}, y::Rational{Int} = 3//4 )
 > Return a dictionary with the following components.
 >   `remainder`:      the reduced Gram matrix (`Array{Rational{Int},2}`)
@@ -335,7 +337,7 @@ function LLLReducedGramMat( grammatrix::Array{Int,2}, y::Rational{Int} = 3//4 )
 end
 
 
-doc"""
+"""
     ShortestVectors( grammat::Array{Int,2}, bound::Int, positive::String = "" )
 > Return a dictionary with the following components.
 >   `vectors`:        shortest vectors (`Array{Array{Int,1},1}`),
@@ -469,7 +471,7 @@ end
 
 # A = [ 2 -1 -1 -1 ; -1 2 0 0 ; -1 0 2 0 ; -1 0 0 2 ];
 
-doc"""
+"""
     OrthogonalEmbeddings( A::Array{Int,2}, arec::Dict )
 > ...
 """
@@ -876,7 +878,7 @@ row = M[ii]
     tosort = map( i -> ( soldim[i], sol[i] ), [ 1:solcount; ] )
     sort!( tosort, lt = function( i, j )
           if i[1] == j[1]
-            return lexless( j[2], i[2] )
+            return j[2] < i[2]
           else
             return i[1] < j[1]
           end

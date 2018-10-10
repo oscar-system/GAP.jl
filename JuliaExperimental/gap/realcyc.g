@@ -14,8 +14,6 @@ JuliaIncludeFile(
     Filename( DirectoriesPackageLibrary( "JuliaExperimental", "julia" ),
     "realcyc.jl" ) );
 
-ImportJuliaModuleIntoGAP( "GAPRealCycModule" );
-
 
 BindGlobal( "IsPositiveRealPartCyclotomic", function( cyc )
     local coeffs, denom, res;

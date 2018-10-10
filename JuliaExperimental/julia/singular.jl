@@ -9,7 +9,7 @@ using Singular
 
 export SingularPolynomialRingWrapper
 
-doc""" 
+""" 
     SingularPolynomialRingWrapper( dict::Dict{Any,Any} )
 > The purpose of this function is just to handle *keyword arguments*.
 > The following works in a Julia session:

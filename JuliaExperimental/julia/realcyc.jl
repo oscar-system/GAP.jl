@@ -9,7 +9,7 @@ using Nemo
 
 export arbCyc, isPositiveRealPartCyc, test_this_module
 
-doc"""
+"""
     arbCyc( coeffs::Vector, R::Nemo.ArbField )
 > Return the element in the Arb field that is defined by the real part
 > of the cyclotomic integer with conductor `N = length( coeffs )`
@@ -27,7 +27,7 @@ function arbCyc( coeffs::Vector, R::Nemo.ArbField )
     return val
 end
 
-doc"""
+"""
     isPositiveRealPartCyc( coeffs::Vector )
 > Return a tuple `( bool, prec )`
 > where `bool` is `true` if the cyclotomic integer defined by the coefficients
