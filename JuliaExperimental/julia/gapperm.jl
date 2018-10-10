@@ -20,12 +20,12 @@ export Permutation, Permutation2or4, IdentityPerm, LargestMovedPointPerm,
 # export hash
 
 # create the julia types
-immutable Permutation2 # means permutations of positive 16 bit integers
+struct Permutation2 # means permutations of positive 16 bit integers
     degree::UInt16
     imgs::Array{UInt16,1}
 end
 
-immutable Permutation4 # means permutations of positive 32 bit integers 
+struct Permutation4 # means permutations of positive 32 bit integers 
     degree::UInt32
     imgs::Array{UInt32,1}
 end
