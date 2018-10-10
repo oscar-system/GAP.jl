@@ -10,7 +10,9 @@ module GAPRatModule
 import Base: zero, -, one, inv, ==, isless, +, *, //, ^, mod, iszero, string,
              numerator, denominator, abs, gcd
 
-import GAP: GapObj, SUM
+import Main.GAP: GapObj
+
+import Main.GAP.GAPFuncs: SUM
 
 export GAPRat, get_gaprat_ptr
 

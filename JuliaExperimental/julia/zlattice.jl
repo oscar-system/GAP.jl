@@ -9,8 +9,10 @@ module GAPZLattice
 
 import Core: Int, isa
 
-import Base: abs, convert, copy, deepcopy, diag, haskey, inv, lcm, length,
-             lexless, map, push!, sign, size, sum, trunc, zero, zeros
+import LinearAlgebra: diag
+
+import Base: abs, convert, copy, deepcopy, haskey, inv, lcm, length,
+             map, push!, sign, size, sum, trunc, zero, zeros
 
 export LLLReducedGramMat, ShortestVectors, OrthogonalEmbeddings
 
@@ -876,7 +878,7 @@ row = M[ii]
     tosort = map( i -> ( soldim[i], sol[i] ), [ 1:solcount; ] )
     sort!( tosort, lt = function( i, j )
           if i[1] == j[1]
-            return lexless( j[2], i[2] )
+            return j[2] < i[2]
           else
             return i[1] < j[1]
           end
