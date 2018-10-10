@@ -26,14 +26,14 @@ InstallMethod( ConvertedToJulia,
     # Note that 'Julia.Base.Dict' is not in 'IsJuliaFunction';
     # without a 'CallFuncList' method for 'IsJuliaObject',
     # one would have to write
-    # dict:= __JuliaCallFunc0Arg( Julia.Base.Dict );
+    # dict:= _JuliaCallFunc0Arg( Julia.Base.Dict );
     dict:= Julia.Base.Dict();
 
     # Add the components.
     setindex:= Julia.Base.( "setindex!" );
     for comp in RecNames( arec ) do
       # Do not call 'ConvertedToJulia', catch the 'fail' results.
-      val:= __ConvertedToJulia( arec.( comp ) );
+      val:= _ConvertedToJulia( arec.( comp ) );
 #T correct for IsJuliaFunction objects?
       if val = fail then
         # We cannot convert all components.
@@ -73,11 +73,11 @@ DeclareGlobalFunction( "StructuralConvertedFromJulia_AlsoRecord" );
 InstallGlobalFunction( "ConvertedFromJuliaRecordFromDictionary", function( dict )
     local info, result, recursive, i, comp;
 
-    info:= __ConvertedFromJulia_record_dict( dict );
+    info:= _ConvertedFromJulia_record_dict( dict );
     result:= rec();
     recursive:= ( ValueOption( "recursive" ) = true );
     for i in [ 1 .. Length( info[1] ) ] do
-      comp:= __ConvertedFromJulia( info[1][i] );
+      comp:= _ConvertedFromJulia( info[1][i] );
       if not IsString( comp ) then
         # This dictionary cannot be converted to a GAP record.
         return fail;
@@ -96,7 +96,7 @@ end );
 InstallGlobalFunction( StructuralConvertedFromJulia_AlsoRecord, function( object )
     local unboxed_obj;
 
-    unboxed_obj:= __ConvertedFromJulia( object );
+    unboxed_obj:= _ConvertedFromJulia( object );
     if IsList( unboxed_obj ) and not IsString( unboxed_obj ) then
       return List( unboxed_obj, StructuralConvertedFromJulia_AlsoRecord );
     elif unboxed_obj = fail and
