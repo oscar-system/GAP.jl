@@ -15,7 +15,7 @@ import Base: abs, convert, copy, deepcopy, diag, haskey, inv, lcm, length,
 export LLLReducedGramMat, ShortestVectors, OrthogonalEmbeddings
 
 
-doc"""
+raw"""
     LLLReducedGramMat( grammatrix::Array{Int,2}, y::Rational{Int} = 3//4 )
 > Return a dictionary with the following components.
 >   `remainder`:      the reduced Gram matrix (`Array{Rational{Int},2}`)
@@ -335,7 +335,7 @@ function LLLReducedGramMat( grammatrix::Array{Int,2}, y::Rational{Int} = 3//4 )
 end
 
 
-doc"""
+"""
     ShortestVectors( grammat::Array{Int,2}, bound::Int, positive::String = "" )
 > Return a dictionary with the following components.
 >   `vectors`:        shortest vectors (`Array{Array{Int,1},1}`),
@@ -469,7 +469,7 @@ end
 
 # A = [ 2 -1 -1 -1 ; -1 2 0 0 ; -1 0 2 0 ; -1 0 0 2 ];
 
-doc"""
+"""
     OrthogonalEmbeddings( A::Array{Int,2}, arec::Dict )
 > ...
 """

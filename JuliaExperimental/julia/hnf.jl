@@ -13,7 +13,7 @@ function fitsGAPSmallIntRep( x::Nemo.fmpz )
     return -2^60 <= x && x < 2^60
 end
 
-doc"""
+"""
     unpackedNemoMatrixFmpz( nemomat::Nemo.fmpz_mat[, tryint::Bool = true] )
 > Return a tuple `(<kind>, <arr>)` where <arr> is a 1-dim. array
 > of 1-dim. arrays (corresponding to the rows of `nemomat`),

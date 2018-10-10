@@ -12,7 +12,7 @@ import Nemo
 export MatrixFromNestedArray, CoefficientsNumDenOfNemoPolynomialFmpq,
        JuliaSourceFile
 
-doc"""
+"""
     MatrixFromNestedArray( lst )
 > Return a 2-dim array created from the 1-dim array of 1-dim arrays `lst`.
 > (Note that GAP's `ConvertedToJulia` creates nested arrays.)
@@ -20,7 +20,7 @@ doc"""
 function MatrixFromNestedArray( lst ) return hcat( lst... )' end
 
 
-doc"""
+"""
     fitsGAPSmallIntRep( x::Nemo.fmpz )
 > Return `true` if `x` corresponds to a GAP integer in `IsSmallIntRep`,
 > and `false`otherwise.
@@ -40,7 +40,7 @@ function NestedArrayFromMatrix( mat )
 end
 
 
-doc"""
+"""
     CoefficientsNumDenOfFmpqArray( arr::Array{Nemo.fmpq,1}[, tryint::Bool = true] )
 > Return a tuple `(<kind>, <arrnum>, <arrden>)` where <arrnum>, <arrden>
 > are 1-dim. arrays of the numerators and denominators of the values in <arr>,
@@ -71,7 +71,7 @@ function CoefficientsNumDenOfFmpqArray( arr::Array{Nemo.fmpq,1}, tryint::Bool = 
                        [ hex( coeffsden[i] ) for i in 1:n ] )
 end
 
-doc"""
+"""
     JuliaSourceFile( func, types )
 > Return the tuple `( filename, startline )`
 > such that the source code of the method `func`
