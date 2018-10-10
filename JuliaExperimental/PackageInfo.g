@@ -86,8 +86,14 @@ Dependencies := rec(
 ),
 
 AvailabilityTest := function()
-        return true;
-    end,
+  if Filename( DirectoriesPackagePrograms( "JuliaExperimental" ),
+               "JuliaExperimental.so" ) = fail then
+    LogPackageLoadingMessage( PACKAGE_WARNING,
+        [ "The kernel module of JuliaExperimental is not available." ] );
+    return false;
+  fi;
+  return true;
+end,
 
 TestFile := "tst/testall.g",
 
