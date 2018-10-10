@@ -78,9 +78,9 @@ PackageDoc := rec(
 ),
 
 Dependencies := rec(
-  GAP := ">= 4.6",
-  NeededOtherPackages := [ [ "GAPDoc", ">= 1.5" ] ],
-  OtherPackagesLoadedInAdvance := [ [ "JuliaInterface", ">=0.1"] ], 
+  GAP := ">= 4.10",
+  NeededOtherPackages := [ ],
+  OtherPackagesLoadedInAdvance := [ [ "JuliaInterface", ">=0.1" ] ], 
   SuggestedOtherPackages := [ ],
   ExternalConditions := [ ],
 ),

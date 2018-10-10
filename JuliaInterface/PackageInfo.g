@@ -58,7 +58,7 @@ PackageDoc := [ rec(
 
 Dependencies := rec(
   GAP := ">= 4.10",    # need support for the component 'BannerFunction'
-  NeededOtherPackages := [ [ "GAPDoc", ">= 1.5" ] ],
+  NeededOtherPackages := [ ],
   SuggestedOtherPackages := [ ],
   ExternalConditions := [ ],
 ),
