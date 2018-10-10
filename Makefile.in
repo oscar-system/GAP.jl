@@ -1,0 +1,6 @@
+
+@@PACKAGE@@:
+	cd @@PACKAGE@@ && make
+
+.PHONY: @@PACKAGE@@
+

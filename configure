@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+set -e
+
+packages="JuliaInterface JuliaExperimental"
+
+DEFAULT_GAPPATH=../..
+
+if test -z "$1"; then
+  GAPPATH=${DEFAULT_GAPPATH}; echo "Using ${DEFAULT_GAPPATH} as default GAP path";
+else
+  GAPPATH=$1;
+fi
+
+if test ! -r $GAPPATH/sysinfo.gap ; then
+    echo
+    echo "No file $GAPPATH/sysinfo.gap found."
+    echo
+    echo "Usage: ./configure [GAPPATH]"
+    echo "       where GAPPATH is a path to your GAP installation"
+    echo "       (The default for GAPPATH is \"${DEFAULT_GAPPATH}\")"
+    echo
+    echo "Either your GAPPATH is incorrect or the GAP it is pointing to"
+    echo "is not properly compiled (do \"./configure && make\" there first)."
+    echo
+    echo Aborting... No Makefile is generated.
+    echo
+    exit 1
+fi
+
+GAPPATH=$(cd ${GAPPATH} && pwd )
+
+
+echo "all: ${packages}" > Makefile
+
+for package in $packages; do
+    echo "Configuring ${package}"
+    cd $package
+    ./configure $GAPPATH
+    cd ..
+    sed "s/@@PACKAGE@@/${package}/g" Makefile.in >> Makefile
+done
+
+echo ".PHONY: all" >> Makefile
