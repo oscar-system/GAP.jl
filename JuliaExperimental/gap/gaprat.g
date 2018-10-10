@@ -16,8 +16,6 @@ JuliaIncludeFile(
     Filename( DirectoriesPackageLibrary( "JuliaExperimental", "julia" ), 
     "gaprat.jl" ) );
 
-ImportJuliaModuleIntoGAP( "GAPRatModule" );
-
 
 ##############################################################################
 ##

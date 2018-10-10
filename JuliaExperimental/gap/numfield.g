@@ -17,10 +17,7 @@ JuliaIncludeFile(
     Filename( DirectoriesPackageLibrary( "JuliaExperimental", "julia" ),
     "numfield.jl" ) );
 
-ImportJuliaModuleIntoGAP( "Core" );
-ImportJuliaModuleIntoGAP( "Base" );
-ImportJuliaModuleIntoGAP( "Nemo" );
-ImportJuliaModuleIntoGAP( "GAPNumberFields" );
+JuliaImportPackage( "Nemo" );
 
 
 #############################################################################

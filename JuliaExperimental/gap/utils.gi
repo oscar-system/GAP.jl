@@ -9,8 +9,6 @@ JuliaIncludeFile(
     Filename( DirectoriesPackageLibrary( "JuliaExperimental", "julia" ),
     "utils.jl" ) );
 
-ImportJuliaModuleIntoGAP( "GAPUtilsExperimental" );
-
 
 #############################################################################
 ##

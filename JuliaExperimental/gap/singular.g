@@ -15,12 +15,9 @@ JuliaIncludeFile(
     Filename( DirectoriesPackageLibrary( "JuliaExperimental", "julia" ),
     "singular.jl" ) );
 
-ImportJuliaModuleIntoGAP( "Core" );
-ImportJuliaModuleIntoGAP( "Base" );
-ImportJuliaModuleIntoGAP( "AbstractAlgebra" );
-ImportJuliaModuleIntoGAP( "Nemo" );
-ImportJuliaModuleIntoGAP( "Singular" );
-ImportJuliaModuleIntoGAP( "GAPSingularModule" );
+JuliaImportPackage( "AbstractAlgebra" );
+JuliaImportPackage( "Nemo" );
+JuliaImportPackage( "Singular" );
 
 
 #############################################################################
