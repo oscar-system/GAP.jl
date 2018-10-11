@@ -54,6 +54,19 @@ Obj MyFuncMOD(Obj a, Obj b){
     return MOD(a,b);
 }
 
+Obj create_rational(int numerator, int denominator)
+{
+    Obj numerator_obj = ObjInt_Int(numerator);
+    Obj denominator_obj = ObjInt_Int(denominator);
+
+    Obj rational_obj = NewBag(T_RAT, 2 * sizeof(Obj));
+
+    SET_NUM_RAT(rational_obj, numerator_obj);
+    SET_DEN_RAT(rational_obj, denominator_obj);
+
+    return rational_obj;
+}
+
 void JuliaExperimentalInitializeGAPFunctionPointers( )
 {
     // arithmetic operations
@@ -70,7 +83,9 @@ void JuliaExperimentalInitializeGAPFunctionPointers( )
     INITIALIZE_JULIA_CPOINTER(MyFuncPOW);
     INITIALIZE_JULIA_CPOINTER(MyFuncMOD);
     INITIALIZE_JULIA_CPOINTER(AbsInt);
+    INITIALIZE_JULIA_CPOINTER(create_rational);
     INITIALIZE_JULIA_CPOINTER(DEN_RAT);
     INITIALIZE_JULIA_CPOINTER(GcdInt);
+    INITIALIZE_JULIA_CPOINTER(INTOBJ_INT);
     INITIALIZE_JULIA_CPOINTER(NUM_RAT);
 }
