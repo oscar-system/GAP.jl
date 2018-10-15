@@ -7,8 +7,8 @@
 LoadPackage( "JuliaExperimental" );
 
 dirs := DirectoriesPackageLibrary( "JuliaExperimental", "tst" );
-Assert(0, dir <> fail);
+Assert(0, dirs <> fail);
 
-TestDirectory(dir, rec(exitGAP := true));
+TestDirectory(dirs, rec(exitGAP := true));
 
 FORCE_QUIT_GAP(1);
