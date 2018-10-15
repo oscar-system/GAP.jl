@@ -11,7 +11,11 @@ false
 ##
 gap> ImportJuliaModuleIntoGAP( "Core" );
 gap> ImportJuliaModuleIntoGAP( "No_Julia_Module_With_This_Name" );
-Error, JuliaError
+Error, ArgumentError: Package No_Julia_Module_With_This_Name not found in curr\
+ent path:
+- Run `import Pkg; Pkg.add("No_Julia_Module_With_This_Name")` to install the N\
+o_Julia_Module_With_This_Name package.
+
 
 ##
 gap> Julia;
