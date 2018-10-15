@@ -4,6 +4,11 @@
 
 #include "JuliaInterface.h"
 
+jl_value_t *    JULIA_ERROR_IOBuffer;
+jl_function_t * JULIA_FUNC_take_inplace;
+jl_function_t * JULIA_FUNC_String_constructor;
+jl_function_t * JULIA_FUNC_showerror;
+
 #include "gap_macros.c"
 
 Obj TheTypeJuliaObject;
@@ -909,6 +914,13 @@ static Int InitKernel(StructInitInfo * module)
     CopyObjFuncs[T_JULIA_OBJ] = &JuliaObjCopyFunc;
     CleanObjFuncs[T_JULIA_OBJ] = &JuliaObjCleanFunc;
     IsMutableObjFuncs[T_JULIA_OBJ] = &JuliaObjIsMutableFunc;
+
+    // Initialize necessary variables for error handling
+    JULIA_ERROR_IOBuffer =
+        jl_eval_string("GAP_JULIA_ERROR_IO_BUFFER = Base.IOBuffer()");
+    JULIA_FUNC_take_inplace = jl_get_function(jl_base_module, "take!");
+    JULIA_FUNC_String_constructor = jl_get_function(jl_base_module, "String");
+    JULIA_FUNC_showerror = jl_get_function(jl_base_module, "showerror");
 
     // Initialize GAP function pointers in Julia
     JuliaInitializeGAPFunctionPointers();
