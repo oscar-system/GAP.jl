@@ -14,7 +14,6 @@ ReadPackage( "JuliaExperimental", "gap/arith.gi");
 # BindJuliaFunc( "juliabox_cycs" );
 # 
 
-
 # Translate GAP records to Julia dictionaries and vice versa.
 ReadPackage( "JuliaExperimental", "gap/record.g");
 
@@ -39,6 +38,7 @@ ReadPackage( "JuliaExperimental", "gap/gapperm.g");
 
 # Nemo's number fields.
 if JuliaImportPackage( "Nemo" ) then
+  ReadPackage( "JuliaExperimental", "gap/gapnemo.g");
   ReadPackage( "JuliaExperimental", "gap/numfield.g");
 fi;
 

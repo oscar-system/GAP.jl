@@ -217,9 +217,9 @@ BindGlobal( "GAPCoefficientsOfNemo_Polynomial", function( pol )
     fi;
 
     if R!.isUnivariatePolynomialRing = true then
-      info:= Julia.GAPUtilsExperimental.CoefficientsOfUnivarateNemoPolynomialFmpq(
+      info:= Julia.GAPNemoExperimental.CoefficientsOfUnivarateNemoPolynomialFmpq(
                  pol );
-      info:= Julia.GAPUtilsExperimental.CoefficientsNumDenOfFmpqArray( info );
+      info:= Julia.GAPNemoExperimental.CoefficientsNumDenOfFmpqArray( info );
       num:= StructuralConvertedFromJulia( info[2] );
       den:= StructuralConvertedFromJulia( info[3] );
       if ConvertedFromJulia( info[1] ) = "int" then
@@ -232,7 +232,7 @@ BindGlobal( "GAPCoefficientsOfNemo_Polynomial", function( pol )
       fi;
     else
       info:= JuliaGetFieldOfObject( pol, "coeffs" );
-      info:= Julia.GAPUtilsExperimental.CoefficientsNumDenOfFmpqArray( info );
+      info:= Julia.GAPNemoExperimental.CoefficientsNumDenOfFmpqArray( info );
       num:= StructuralConvertedFromJulia( info[2] );
       den:= StructuralConvertedFromJulia( info[3] );
       if ConvertedFromJulia( info[1] ) = "int" then

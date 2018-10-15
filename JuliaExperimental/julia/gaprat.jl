@@ -75,10 +75,10 @@ function isless( a::GAPRat, b::GAPRat )
 end
 
 function +( a::GAPRat, b::GAPRat )
-  # ptr = ccall( Main.gap_MyFuncSUM, Ptr{Cvoid},
-  #             (Ptr{Cvoid}, Ptr{Cvoid}), a.obj.ptr, b.obj.ptr )
-  # return GAPRat( GapObj(ptr) )
-    return GAPRat( SUM( a.obj, b.obj ) )
+    ptr = ccall( Main.gap_MyFuncSUM, Ptr{Cvoid},
+                (Ptr{Cvoid}, Ptr{Cvoid}), a.obj.ptr, b.obj.ptr )
+    return GAPRat( GapObj(ptr) )
+#   return GAPRat( SUM( a.obj, b.obj ) )
 end
 
 function -( a::GAPRat, b::GAPRat )
