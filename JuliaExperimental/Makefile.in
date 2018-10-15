@@ -7,6 +7,9 @@ MODULE_NAME = JuliaExperimental
 
 SOURCES = src/JuliaExperimental.c
 
+CFLAGS += -I../JuliaInterface/src/
+LDFLAGS += -ljulia
+
 ########################################################################
 # Do not edit below unless you know what you're doing
 ########################################################################
@@ -17,13 +20,13 @@ SOURCES = src/JuliaExperimental.c
 GAPPATH = @GAPPATH@
 GAPARCH = @GAPARCH@
 
-BINARCHDIR = bin/@GAPARCH@
+BINARCHDIR = bin/$(GAPARCH)
 GAPINSTALLIB = $(BINARCHDIR)/$(MODULE_NAME).so
 
 MKDIR_P = /bin/mkdir -p
 
-GAP = @GAPPATH@/gap
-GAC = @GAPPATH@/gac
+GAP = $(GAPPATH)/gap
+GAC = $(GAPPATH)/gac
 
 all: $(GAPINSTALLIB)
 .PHONY: all
@@ -73,17 +76,17 @@ ALL_DEP_FILES = $(wildcard $(addsuffix /*.d,$(DEPDIRS)))
 DEPFLAGS = -MQ "$@" -MMD -MP -MF $(@D)/$(*F).d
 
 # build rule for C code
-gen/%.lo: %.c
-	@$(QUIET_GAC)$(GAC) -d -p "$(DEPFLAGS)" -p "$(CFLAGS)" -c $< -o $@ -p -I../JuliaInterface/src/
+gen/%.lo: %.c Makefile
+	@$(QUIET_GAC)$(GAC) -d -p "$(DEPFLAGS)" -p "$(CFLAGS)" -c $< -o $@
 
 # build rule for C++ code
-gen/%.lo: %.cc
+gen/%.lo: %.cc Makefile
 	@$(QUIET_GAC)$(GAC) -d -p "$(DEPFLAGS)" -p "$(CXXFLAGS)" -c $< -o $@
 
 # build rule for linking all object files together into a kernel extension
 $(GAPINSTALLIB): $(OBJS)
 	@$(MKDIR_P) $(BINARCHDIR)
-	@$(QUIET_GAC)$(GAC) -d -p "$(DEPFLAGS)" -P "$(LDFLAGS)" $(OBJS) -o $@ -L -ljulia
+	@$(QUIET_GAC)$(GAC) -d -p "$(DEPFLAGS)" -P "$(LDFLAGS)" $(OBJS) -o $@
 
 clean:
 	rm -rf $(BINARCHDIR)
@@ -100,7 +103,7 @@ check: default
 	$(GAP) tst/testall.g
 
 Makefile: configure Makefile.in
-	./configure "@GAPPATH@"
+	./configure "$(GAPPATH)"
 
 .PHONY: default clean distclean doc check
 
