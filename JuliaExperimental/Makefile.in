@@ -7,6 +7,9 @@ MODULE_NAME = JuliaExperimental
 
 SOURCES = src/JuliaExperimental.c
 
+CFLAGS += -I../JuliaInterface/src/
+LDFLAGS += -ljulia
+
 ########################################################################
 # Do not edit below unless you know what you're doing
 ########################################################################
@@ -74,7 +77,7 @@ DEPFLAGS = -MQ "$@" -MMD -MP -MF $(@D)/$(*F).d
 
 # build rule for C code
 gen/%.lo: %.c Makefile
-	@$(QUIET_GAC)$(GAC) -d -p "$(DEPFLAGS)" -p "$(CFLAGS)" -c $< -o $@ -p -I../JuliaInterface/src/
+	@$(QUIET_GAC)$(GAC) -d -p "$(DEPFLAGS)" -p "$(CFLAGS)" -c $< -o $@
 
 # build rule for C++ code
 gen/%.lo: %.cc Makefile
@@ -83,7 +86,7 @@ gen/%.lo: %.cc Makefile
 # build rule for linking all object files together into a kernel extension
 $(GAPINSTALLIB): $(OBJS)
 	@$(MKDIR_P) $(BINARCHDIR)
-	@$(QUIET_GAC)$(GAC) -d -p "$(DEPFLAGS)" -P "$(LDFLAGS)" $(OBJS) -o $@ -L -ljulia
+	@$(QUIET_GAC)$(GAC) -d -p "$(DEPFLAGS)" -P "$(LDFLAGS)" $(OBJS) -o $@
 
 clean:
 	rm -rf $(BINARCHDIR)
