@@ -55,7 +55,7 @@ function test_this_module()
     ok::Bool = true
 
     function shiftby( array, int )
-      sum = array + int
+      sum = map( x -> x + int, array )
       sum[1] = 0
       return sum
     end

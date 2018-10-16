@@ -15,9 +15,9 @@ rec(  )
 gap> StructuralConvertedFromJulia_AlsoRecord( dict );
 rec(  )
 
-##  something which cannot be boxed
-gap> ConvertedToJulia( rec( GAPfunc:= ( x -> 1 ) ) );
-fail
+# ##  something which cannot be boxed
+# gap> ConvertedToJulia( rec( GAPfunc:= ( x -> 1 ) ) );
+# fail
 
 ##  something which is recursive
 gap> dict:= ConvertedToJulia( rec( bool:= true,
@@ -27,7 +27,7 @@ gap> dict:= ConvertedToJulia( rec( bool:= true,
 >                        ) );;
 gap> ConvertedFromJuliaRecordFromDictionary( dict );
 rec( Juliafunc := <Julia: map>, bool := <Julia: true>, 
-  list := <Julia: Any[1, 2, 3]>, string := <Julia: abc> )
+  list := <Julia: Any[1, 2, 3]>, string := <Julia: "abc"> )
 gap> StructuralConvertedFromJulia_AlsoRecord( dict );
 rec( Juliafunc := fail, bool := true, list := [ 1, 2, 3 ], string := "abc" )
 

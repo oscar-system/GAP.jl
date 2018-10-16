@@ -1,6 +1,6 @@
 #############################################################################
 ##
-#W  hnf.tst         GAP 4 package JuliaExperimental          Thomas Breuer
+#W  hnf.tst            GAP 4 package JuliaExperimental          Thomas Breuer
 ##
 gap> START_TEST( "hnf.tst" );
 
