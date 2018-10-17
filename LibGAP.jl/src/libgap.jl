@@ -10,11 +10,8 @@ module LibGAP
 using Libdl
 
 import Main.GAP
-import Main.GAPFuncs
 
 import Base: length, convert
-
-import Main: gap_GET_JULIA_OBJ, gap_NewJuliaObj
 
 export EvalString, IntObj_Int, Int_IntObj,
        CallFuncList, ValGVar, String_StringObj, StringObj_String,
@@ -118,31 +115,6 @@ function LenPList( list :: GAP.GapObj ) :: Int64
                           , Int64
                           , (Ptr{UInt8},)
                           , list.ptr, ) 
-end
-
-function AsGAPPtr( obj ) :: GAP.GapObj
-    ptr = pointer_from_objref( obj )
-    gap_ptr = ccall( gap_NewJuliaObj, Ptr{Cvoid}, (Ptr{Cvoid},), ptr )
-    return GAP.GapObj( gap_ptr )
-end
-
-function FromGAPPtr( obj :: GAP.GapObj )
-    ptr = ccall( gap_GET_JULIA_OBJ, Ptr{Cvoid},(Ptr{Cvoid},), obj.ptr )
-    return unsafe_pointer_to_objref( ptr )
-end
-
-function GC_pin(obj :: GAP.GapObj)
-    ccall( (:libgap_GC_pin, "libgap")
-           , Cvoid
-           , ( Ptr{Cvoid}, )
-           , obj.ptr )
-end
-
-function GC_unpin(obj :: GAP.GapObj)
-    ccall( (:libgap_GC_unpin, "libgap")
-           , Cvoid
-           , ( Ptr{Cvoid}, )
-           , obj.ptr )
 end
 
 include( "gap.jl" )

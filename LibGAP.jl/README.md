@@ -2,7 +2,7 @@ OSCAR - LibGAP
 --------------
 
 This is some prototype code that uses a version of GAP as a library,
-for example as currently to be found at https://github.com/gap-system/gap/pull/1205
+as found the GAP master branch, respectively in GAP 4.11,
 to be able to call GAP functions from Julia.
 
 Please don't use for any production code just yet, but do use it for
@@ -13,27 +13,41 @@ How to use
 
 This is a very rough guide, and your program might crash or otherwise burn.
 
-First you need to get a libgap-capable gap. I will be assuming that
-you have a clone of the GAP git repository around, in `$gaprepo`
+You need the following ingredients:
 
-```
-$gaprepo > git checkout -b markuspf-gap-library master
-$gaprepo > git pull https://github.com/markuspf/gap.git gap-library
-$gaprepo > sh autogen.sh
-$gaprepo > ./configure --enable-libgap
-$gaprepo > make libgap
-```
+- GAP 4.11 or newer (possibly the master branch), in directory `$gapdir`
 
-now you checkout this repository into $oscarrepo, and start julia, telling it about
-the location of libgap.so
+- Julia 1.1 or newer (possibly the master branch), installed into directory `$juliadir`
+  (if you did not install Julia but built it in director `$juliasrc`, then set
+  `$juliadir` to `$juliasrc/usr`)
 
-```
-$oscarrepo > env LD_LIBRARY_PATH=$gaprepo/.libs:$LD_LIBRARY_PATH julia 
-julia> include("src/libgap.jl")
-julia> libgap_initialize( [ ""
-                     , "-l", "$gaprepo"
-                     , "-T", "-r", "-A", "-q"
-                     , "-m", "512m" ] )
-julia> o = libgap_eval_string("Group((1,2,3));")
-```
+- The `GAPJulia` repository, checked out under `$oscarrepo`
 
+First we compile a version of GAP using the Julia installation in `$juliadir`,
+and make sure a `libgap` shared library is compiled:
+
+    cd $oscardir
+    mkdir -p gap
+    cd gap
+    $gapdir/configure --with-gc=julia --with-julia=$juliadir
+    make
+    make libgap.la
+
+Now we can compile JuliaInterface and JuliaExperimental:
+
+    cd $oscardir
+    ./configure $oscardir/gap
+    make
+
+Finally, we are ready to start julia and load LibGAP into it
+
+    cd $oscardir/LibGAP.jl
+    $juliadir/bin/julia
+
+Then enter:
+
+    include("src/initialization.jl")
+    libgap.run_it("$oscardir/gap")
+
+You should now see the GAP banner, after which you are ready to use the
+rest of LibGAP.jl.

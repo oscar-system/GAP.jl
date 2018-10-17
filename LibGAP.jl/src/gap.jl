@@ -1,7 +1,7 @@
 import Base: convert
 
-const True = GAPFuncs.ReturnTrue()
-const False = GAPFuncs.ReturnFalse()
+const True = GAP.GAPFuncs.ReturnTrue()
+const False = GAP.GAPFuncs.ReturnFalse()
 
 to_gap(str :: String)         = StringObj_String(str)
 to_gap(v :: Int32)            = IntObj_Int(v)
