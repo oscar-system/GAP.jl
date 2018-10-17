@@ -47,6 +47,7 @@ Finally, we are ready to start julia and load LibGAP into it
 Then enter:
 
     include("src/initialization.jl")
+    oscardir = ENV["oscardir"]
     libgap.run_it("$oscardir/gap")
 
 You should now see the GAP banner, after which you are ready to use the
