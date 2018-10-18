@@ -342,12 +342,12 @@ static Obj DoCallJuliaCFunc6Arg(
     return result;
 }
 
-Obj NewJuliaCFunc(void * function, int nr_args, char * args)
-{
 
+Obj NewJuliaCFunc(void * function, Obj arg_names)
+{
     ObjFunc handler;
 
-    switch (nr_args) {
+    switch (LEN_PLIST(arg_names)) {
     case 0:
         handler = DoCallJuliaCFunc0Arg;
         break;
@@ -374,7 +374,7 @@ Obj NewJuliaCFunc(void * function, int nr_args, char * args)
         break;
     }
 
-    Obj func = NewFunctionC("", nr_args, args, handler);
+    Obj func = NewFunction(0, LEN_PLIST(arg_names), arg_names, handler);
 
     // trick: fexs is unused for kernel functions, so we can store
     // the function pointer here. Since fexs gets marked by the GC, we
@@ -386,14 +386,11 @@ Obj NewJuliaCFunc(void * function, int nr_args, char * args)
 
 Obj Func_NewJuliaCFunc(Obj self,
                        Obj julia_function_ptr,
-                       Obj nr_args,
                        Obj arg_names)
 {
     jl_value_t * func_ptr = GET_JULIA_OBJ(julia_function_ptr);
     void *       ptr = jl_unbox_voidpointer(func_ptr);
-    int          args = INT_INTOBJ(nr_args);
-    char *       string = CSTR_STRING(arg_names);
-    return NewJuliaCFunc(ptr, args, string);
+    return NewJuliaCFunc(ptr, arg_names);
 }
 
 /*
@@ -951,7 +948,7 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(JuliaSetAsJuliaPointer, 1, "obj"),
     GVAR_FUNC(JuliaGetFromJuliaPointer, 1, "obj"),
     GVAR_FUNC(_JuliaIsNothing, 1, "obj"),
-    GVAR_FUNC(_NewJuliaCFunc, 3, "ptr,nr_args,arg_names"),
+    GVAR_FUNC(_NewJuliaCFunc, 2, "ptr,arg_names"),
     { 0 } /* Finish with an empty entry */
 
 };
