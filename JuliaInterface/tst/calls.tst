@@ -246,19 +246,19 @@ gap> h6C := JuliaBindCFunction("h6", "a,b,c,d,e,f");;
 
 #
 gap> h0C();
-Error, error calling Julia C func with 0 args
+Error, TypeError: in h0, in cfunction, expected Ptr{Nothing}, got Nothing
 gap> h1C(1);
-Error, error calling Julia C func with 1 args
+Error, TypeError: in h1, in cfunction, expected Ptr{Nothing}, got Nothing
 gap> h2C(1,2);
-Error, error calling Julia C func with 2 args
+Error, TypeError: in h2, in cfunction, expected Ptr{Nothing}, got Nothing
 gap> h3C(1,2,3);
-Error, error calling Julia C func with 3 args
+Error, TypeError: in h3, in cfunction, expected Ptr{Nothing}, got Nothing
 gap> h4C(1,2,3,4);
-Error, error calling Julia C func with 4 args
+Error, TypeError: in h4, in cfunction, expected Ptr{Nothing}, got Nothing
 gap> h5C(1,2,3,4,5);
-Error, error calling Julia C func with 5 args
+Error, TypeError: in h5, in cfunction, expected Ptr{Nothing}, got Nothing
 gap> h6C(1,2,3,4,5,6);
-Error, error calling Julia C func with 6 args
+Error, TypeError: in h6, in cfunction, expected Ptr{Nothing}, got Nothing
 
 #
 gap> STOP_TEST( "calls.tst", 1 );
