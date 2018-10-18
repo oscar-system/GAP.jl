@@ -4,20 +4,11 @@
 #include "src/compiled.h" /* GAP headers */
 #include <julia.h>
 
-extern jl_value_t *    JULIA_ERROR_IOBuffer;
-extern jl_function_t * JULIA_FUNC_take_inplace;
-extern jl_function_t * JULIA_FUNC_String_constructor;
-extern jl_function_t * JULIA_FUNC_showerror;
+extern void handle_jl_exception(void);
 
 #define JULIAINTERFACE_EXCEPTION_HANDLER                                     \
     if (jl_exception_occurred()) {                                           \
-        jl_call2(JULIA_FUNC_showerror, JULIA_ERROR_IOBuffer,                 \
-                 jl_exception_occurred());                                   \
-        jl_value_t * string_object =                                         \
-            jl_call1(JULIA_FUNC_take_inplace, JULIA_ERROR_IOBuffer);         \
-        string_object =                                                      \
-            jl_call1(JULIA_FUNC_String_constructor, string_object);       \
-        ErrorMayQuit(jl_string_data(string_object), 0, 0);                   \
+        handle_jl_exception();                                               \
     }
 
 #define INITIALIZE_JULIA_CPOINTER(name)                                      \

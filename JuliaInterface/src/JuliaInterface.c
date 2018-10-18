@@ -4,10 +4,10 @@
 
 #include "JuliaInterface.h"
 
-jl_value_t *    JULIA_ERROR_IOBuffer;
-jl_function_t * JULIA_FUNC_take_inplace;
-jl_function_t * JULIA_FUNC_String_constructor;
-jl_function_t * JULIA_FUNC_showerror;
+static jl_value_t *    JULIA_ERROR_IOBuffer;
+static jl_function_t * JULIA_FUNC_take_inplace;
+static jl_function_t * JULIA_FUNC_String_constructor;
+static jl_function_t * JULIA_FUNC_showerror;
 
 #include "gap_macros.c"
 
@@ -18,6 +18,17 @@ jl_value_t * Func_ConvertedToJulia_internal(Obj obj);
 
 static Obj DoCallJuliaFunc0Arg(Obj func);
 static Obj DoCallJuliaFunc0ArgConv(Obj func);
+
+void handle_jl_exception(void)
+{
+    jl_call2(JULIA_FUNC_showerror, JULIA_ERROR_IOBuffer,
+             jl_exception_occurred());
+    jl_value_t * string_object =
+        jl_call1(JULIA_FUNC_take_inplace, JULIA_ERROR_IOBuffer);
+    string_object =
+        jl_call1(JULIA_FUNC_String_constructor, string_object);
+    ErrorMayQuit(jl_string_data(string_object), 0, 0);
+}
 
 // FIXME: get rid of IS_JULIA_FUNC??
 static inline Int IS_JULIA_FUNC(Obj obj)
