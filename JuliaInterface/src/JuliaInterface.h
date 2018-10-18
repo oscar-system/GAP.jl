@@ -71,17 +71,6 @@ Obj NewJuliaFunc(jl_function_t * f, int autoConvert);
 // from the julia value pointer v.
 Obj NewJuliaObj(jl_value_t *);
 
-// Func_JuliaFunction( NULL, string )
-//
-// Returns the function with name <string> from the Julia `Main` module.
-Obj Func_JuliaFunction(Obj self, Obj string);
-
-// Func_JuliaFunctionByModule( NULL, function_name, module_name )
-//
-// Returns the function with name <function_name> from
-// the Julia module with name <module_name>.
-Obj Func_JuliaFunctionByModule(Obj self, Obj function_name, Obj module_name);
-
 // FuncJuliaEvalString( NULL, string )
 //
 // Executes the string <string> in the current julia session.

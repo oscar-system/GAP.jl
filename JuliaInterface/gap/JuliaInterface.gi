@@ -7,9 +7,9 @@
 InstallGlobalFunction( JuliaFunction,
   function( arglist... )
     if Length( arglist ) = 1 and IsString( arglist[ 1 ] ) then
-        return _JuliaFunction( arglist[ 1 ] );
+        return _JuliaFunction( arglist[ 1 ], true );
     elif Length( arglist ) = 2 and ForAll( arglist, IsString ) then
-        return CallFuncList( _JuliaFunctionByModule, arglist );
+        return _JuliaFunctionByModule( arglist[1], arglist[2], true );
     fi;
     Error( "arguments must be strings function_name[,module_name]" );
 end );
@@ -92,7 +92,7 @@ InstallMethod( \.,
     fi;
 
     if ConvertedFromJulia( _JULIA_ISA( global_variable, _JULIA_FUNCTION_TYPE ) ) then
-        global_variable := _JuliaFunction( global_variable );
+        global_variable := _JuliaFunction( global_variable, true );
     elif ConvertedFromJulia( _JULIA_ISA( global_variable, _JULIA_MODULE_TYPE ) ) then
         global_variable := _WrapJuliaModule( rnam, global_variable );
     fi;
