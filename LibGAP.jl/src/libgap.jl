@@ -107,11 +107,11 @@ end
 #            , list.ptr, UInt64(pos), val.ptr )
 # end
 
-function ElmPList(list :: MPtr, pos :: UInt64)
+function ElmPList(list :: MPtr, pos :: Integer)
     res =  ccall( Libdl.dlsym(gap_library, :ElmPlist)
            , Ptr{Cvoid}
            , (MPtr, UInt64)
-           , list, pos )
+           , list, UInt64(pos) )
     return GET_FROM_GAP( res )
 end
 
