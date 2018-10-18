@@ -470,42 +470,24 @@ jl_module_t * get_module_from_string(char * name)
  * or the function with name <func> from
  * the Julia main module.
  */
-Obj Func_JuliaFunction(Obj self, Obj func)
+Obj Func_JuliaFunction(Obj self, Obj func, Obj autoConvert)
 {
     jl_function_t * function = get_function_from_obj_or_string(func);
-    return NewJuliaFunc(function, 1);
-}
-
-Obj Func_JuliaFunctionNoConv(Obj self, Obj func)
-{
-    jl_function_t * function = get_function_from_obj_or_string(func);
-    return NewJuliaFunc(function, 0);
+    return NewJuliaFunc(function, autoConvert == True);
 }
 
 /*
  * Returns the function with name <function_name> from the Julia module with
  * name <module_name>.
  */
-Obj Func_JuliaFunctionByModule(Obj self, Obj function_name, Obj module_name)
+Obj Func_JuliaFunctionByModule(Obj self, Obj function_name, Obj module_name, Obj autoConvert)
 {
     jl_module_t * module_t = get_module_from_string(CSTR_STRING(module_name));
     jl_function_t * function =
         jl_get_function(module_t, CSTR_STRING(function_name));
     if (function == 0)
         ErrorMayQuit("Function is not defined in julia", 0, 0);
-    return NewJuliaFunc(function, 1);
-}
-
-Obj Func_JuliaFunctionByModuleNoConv(Obj self,
-                                     Obj function_name,
-                                     Obj module_name)
-{
-    jl_module_t * module_t = get_module_from_string(CSTR_STRING(module_name));
-    jl_function_t * function =
-        jl_get_function(module_t, CSTR_STRING(function_name));
-    if (function == 0)
-        ErrorMayQuit("Function is not defined in julia", 0, 0);
-    return NewJuliaFunc(function, 0);
+    return NewJuliaFunc(function, autoConvert == True);
 }
 
 Obj FuncJuliaEvalString(Obj self, Obj string)
@@ -932,11 +914,8 @@ Obj Func_JuliaIsNothing(Obj self, Obj obj)
 
 // Table of functions to export
 static StructGVarFunc GVarFuncs[] = {
-    GVAR_FUNC(_JuliaFunction, 1, "string"),
-    GVAR_FUNC(_JuliaFunctionByModule, 2, "function_name,module_name"),
-
-    GVAR_FUNC(_JuliaFunctionNoConv, 1, "string"),
-    GVAR_FUNC(_JuliaFunctionByModuleNoConv, 2, "function_name,module_name"),
+    GVAR_FUNC(_JuliaFunction, 2, "string, autoConvert"),
+    GVAR_FUNC(_JuliaFunctionByModule, 3, "function_name, module_name, autoConvert"),
 
     GVAR_FUNC(JuliaEvalString, 1, "string"),
     GVAR_FUNC(_ConvertedFromJulia, 1, "obj"),
