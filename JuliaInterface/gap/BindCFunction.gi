@@ -13,13 +13,16 @@ InstallGlobalFunction( JuliaBindCFunction,
     local cfunction_call_string, i, cfunc, function_ptr, arg_string, nr_args;
 
     if not IsString( julia_name ) then
-        Error( "first argument must be a string" );
-        return;
+        ErrorNoReturn( "first argument must be a string" );
     fi;
 
-    if not IsList( arg_names ) then
-        Error( "second argument must be a list of strings" );
-        return;
+    if IsString( arg_names ) then
+        arg_string := arg_names;
+        arg_names := SplitString(arg_names, ",");
+    elif IsList( arg_names ) and ForAll( arg_names, IsString ) then
+        arg_string := JoinStringsWithSeparator( arg_names, "," );
+    else
+        ErrorNoReturn( "second argument must be a string or a a list of strings" );
     fi;
 
     nr_args := Length( arg_names );
@@ -34,7 +37,6 @@ InstallGlobalFunction( JuliaBindCFunction,
     ## Cast pointer to void to be able to unbox it later
     cfunction_call_string := Concatenation( cfunction_call_string, "\nreinterpret(Ptr{Cvoid},temp)");
     function_ptr := JuliaEvalString( cfunction_call_string );
-    arg_string := JoinStringsWithSeparator( arg_names, "," );
     return _NewJuliaCFunc( function_ptr, nr_args, arg_string );
 
 end );
