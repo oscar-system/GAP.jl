@@ -42,30 +42,3 @@ InstallGlobalFunction( JuliaBindCFunction,
     return _NewJuliaCFunc( function_ptr, arg_names );
 
 end );
-
-InstallGlobalFunction( JuliaSetGAPFuncAsJuliaObjFunc,
-    _JuliaSetGAPFuncAsJuliaObjFunc );
-
-BindGlobal( "AddGapJuliaFuncs",
-  function( )
-    local all_necessary_funcs, current_name, current_func;
-
-    all_necessary_funcs := Filtered( NamesGVars(),
-      function( i )
-        local glob;
-        if not IsBoundGlobal( i ) then
-            return false;
-        fi;
-        glob := ValueGlobal( i );
-        if IsFunction( glob )  then
-            return true;
-        fi;
-        return false;
-    end );
-
-    for current_name in all_necessary_funcs do
-        current_func := ValueGlobal( current_name );
-        _JuliaSetGAPFuncAsJuliaObjFunc( current_func, current_name );
-    od;
-
-end );

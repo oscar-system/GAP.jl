@@ -11,6 +11,7 @@
 module GAPUtils
 
 import REPL.REPLCompletions: completions
+import Base: show
 
 """
     get_symbols_in_module(module_t::Module) :: Array{Symbol,1}
@@ -53,7 +54,7 @@ end
 
 module GAP
 
-#import Base: +
+import Base: getproperty
 
 import Main.ForeignGAP: MPtr
 
@@ -112,7 +113,24 @@ function(func::GapFunc)(args...)
     return result
 end
 
-baremodule GAPFuncs
+struct GAPFuncsType
+    funcs::Dict{Symbol,GapFunc}
+end
+
+Base.show(io::IO,::GAPFuncsType) = Base.show(io,"GAP function object")
+
+GAPFuncs = GAPFuncsType(Dict{Symbol,GapFunc}())
+
+function getproperty(funcobj::GAPFuncsType,name::Symbol)
+    cache = getfield(funcobj,:funcs)
+    if haskey(cache,name)
+        return cache[name]
+    end
+    name_string = string(name)
+    variable = ccall(Main.gap_GAP_ValueGlobalVariable,MPtr,(Ptr{UInt8},),name_string)
+    current_func = GapFunc(variable)
+    cache[name] = current_func
+    return current_func
 end
 
 

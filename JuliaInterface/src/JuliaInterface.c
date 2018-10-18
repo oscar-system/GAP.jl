@@ -893,35 +893,6 @@ static Obj FuncJuliaGetFieldOfObject(Obj self, Obj super_obj, Obj field_name)
     return NewJuliaObj(field_value);
 }
 
-// Sets the GAP function <func> as a GAP.GapFunc object to GAP.<name>.
-// <number_args> must be the number of arguments of <func>. Is is then
-// callable on GAP.GapObj's from julia.
-static Obj Func_JuliaSetGAPFuncAsJuliaObjFunc(Obj self,
-                                       Obj func,
-                                       Obj name,
-                                       Obj number_args)
-{
-    jl_value_t * module_value = jl_eval_string("GAP");
-    JULIAINTERFACE_EXCEPTION_HANDLER
-    if (!jl_is_module(module_value))
-        ErrorMayQuit("GAP module not yet defined", 0, 0);
-    jl_module_t *   module_t = (jl_module_t *)module_value;
-    jl_function_t * set_gap_func_obj = jl_get_function(module_t, "GapFunc");
-    JULIAINTERFACE_EXCEPTION_HANDLER
-    jl_value_t * gap_func_obj =
-        jl_call1(set_gap_func_obj, (jl_value_t *)(func));
-    JULIAINTERFACE_EXCEPTION_HANDLER
-    jl_sym_t * function_name = jl_symbol(CSTR_STRING(name));
-    JULIAINTERFACE_EXCEPTION_HANDLER
-    module_value = jl_eval_string("GAP.GAPFuncs");
-    if (!jl_is_module(module_value))
-        ErrorMayQuit("GAP module not yet defined", 0, 0);
-    module_t = (jl_module_t *)module_value;
-    jl_set_const(module_t, function_name, gap_func_obj);
-    JULIAINTERFACE_EXCEPTION_HANDLER
-    return NULL;
-}
-
 
 // Table of functions to export
 static StructGVarFunc GVarFuncs[] = {
@@ -935,7 +906,6 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(_JuliaGetGlobalVariable, 1, "name"),
     GVAR_FUNC(_JuliaGetGlobalVariableByModule, 2, "name,module"),
     GVAR_FUNC(JuliaGetFieldOfObject, 2, "obj,name"),
-    GVAR_FUNC(_JuliaSetGAPFuncAsJuliaObjFunc, 2, "func,name"),
     GVAR_FUNC(JuliaTuple, 1, "list"),
     GVAR_FUNC(JuliaSymbol, 1, "name"),
     GVAR_FUNC(JuliaModule, 1, "name"),
