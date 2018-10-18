@@ -266,8 +266,8 @@ static Obj DoCallJuliaCFunc0Arg(Obj func)
         result = function();
     }
     JL_CATCH {
-        HandleJuliaCFuncException(0);
     }
+    JULIAINTERFACE_EXCEPTION_HANDLER
     return result;
 }
 
@@ -279,8 +279,8 @@ static Obj DoCallJuliaCFunc1Arg(Obj func, Obj arg1)
         result = function(arg1);
     }
     JL_CATCH {
-        HandleJuliaCFuncException(1);
     }
+    JULIAINTERFACE_EXCEPTION_HANDLER
     return result;
 }
 
@@ -292,8 +292,8 @@ static Obj DoCallJuliaCFunc2Arg(Obj func, Obj arg1, Obj arg2)
         result = function(arg1, arg2);
     }
     JL_CATCH {
-        HandleJuliaCFuncException(2);
     }
+    JULIAINTERFACE_EXCEPTION_HANDLER
     return result;
 }
 
@@ -305,8 +305,8 @@ static Obj DoCallJuliaCFunc3Arg(Obj func, Obj arg1, Obj arg2, Obj arg3)
         result = function(arg1, arg2, arg3);
     }
     JL_CATCH {
-        HandleJuliaCFuncException(3);
     }
+    JULIAINTERFACE_EXCEPTION_HANDLER
     return result;
 }
 
@@ -319,8 +319,8 @@ DoCallJuliaCFunc4Arg(Obj func, Obj arg1, Obj arg2, Obj arg3, Obj arg4)
         result = function(arg1, arg2, arg3, arg4);
     }
     JL_CATCH {
-        HandleJuliaCFuncException(4);
     }
+    JULIAINTERFACE_EXCEPTION_HANDLER
     return result;
 }
 
@@ -333,8 +333,8 @@ static Obj DoCallJuliaCFunc5Arg(
         result = function(arg1, arg2, arg3, arg4, arg5);
     }
     JL_CATCH {
-        HandleJuliaCFuncException(5);
     }
+    JULIAINTERFACE_EXCEPTION_HANDLER
     return result;
 }
 
@@ -347,8 +347,8 @@ static Obj DoCallJuliaCFunc6Arg(
         result = function(arg1, arg2, arg3, arg4, arg5, arg6);
     }
     JL_CATCH {
-        HandleJuliaCFuncException(6);
     }
+    JULIAINTERFACE_EXCEPTION_HANDLER
     return result;
 }
 
