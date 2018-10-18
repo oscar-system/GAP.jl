@@ -13,8 +13,6 @@ jl_function_t * JULIA_FUNC_showerror;
 
 Obj TheTypeJuliaObject;
 
-#include "julia_macros.c"
-
 jl_value_t * Func_ConvertedToJulia_internal(Obj obj);
 
 
@@ -398,6 +396,16 @@ jl_function_t * get_function_from_obj_or_string(Obj func)
     }
     ErrorMayQuit("argument is not a julia object or string", 0, 0);
     return 0;
+}
+
+
+jl_module_t * get_module_from_string(char * name)
+{
+    jl_value_t * module_value = jl_eval_string(name);
+    JULIAINTERFACE_EXCEPTION_HANDLER
+    if (!jl_is_module(module_value))
+        ErrorQuit("Not a module", 0, 0);
+    return (jl_module_t *)module_value;
 }
 
 
