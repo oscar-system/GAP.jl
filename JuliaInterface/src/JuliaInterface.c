@@ -502,6 +502,7 @@ Obj Func_JuliaFunctionByModule(Obj self, Obj function_name, Obj module_name, Obj
     return NewJuliaFunc(function, autoConvert == True);
 }
 
+// Executes the string <string> in the current julia session.
 Obj FuncJuliaEvalString(Obj self, Obj string)
 {
     char * current = CSTR_STRING(string);
@@ -512,6 +513,8 @@ Obj FuncJuliaEvalString(Obj self, Obj string)
     return NewJuliaObj(result);
 }
 
+// Converts the julia value pointer <julia_obj> into a GAP object
+// if possible.
 Obj _ConvertedFromJulia_internal(jl_value_t * julia_obj)
 {
     size_t i;
@@ -601,6 +604,8 @@ Obj _ConvertedFromJulia_internal(jl_value_t * julia_obj)
     return Fail;
 }
 
+// Converts the julia object GAP object <obj> into a GAP object
+// if possible.
 Obj Func_ConvertedFromJulia(Obj self, Obj obj)
 {
     if (!IS_JULIA_OBJ(obj)) {
@@ -695,6 +700,9 @@ jl_value_t * _ConvertedToJulia_internal(Obj obj)
     return (jl_value_t *)(obj);
 }
 
+// Converts the GAP object <obj> into a suitable julia object GAP object, if
+// possible, and returns that object. If the conversion is not possible, the
+// function returns fail.
 Obj Func_ConvertedToJulia(Obj self, Obj obj)
 {
     if (IS_JULIA_OBJ(obj) || IS_JULIA_FUNC(obj)) {
@@ -706,10 +714,11 @@ Obj Func_ConvertedToJulia(Obj self, Obj obj)
     return NewJuliaObj(julia_ptr);
 }
 
-// dict: A GAP object, holding a pointer to a julia dict
-// returns: A list, consisting of two lists:
-//   1. A list containing the keys
-//   2. A list containing the values
+// <dict> must be a julia value GAP object,
+// holding a pointer to a julia dict.
+// The function returns a GAP list, consisting of two lists:
+//  1. A list containing the keys
+//  2. A list containing the values
 Obj Func_ConvertedFromJulia_record_dict(Obj self, Obj dict)
 {
     if (!IS_JULIA_OBJ(dict)) {
@@ -763,6 +772,8 @@ Obj Func_ConvertedFromJulia_record_dict(Obj self, Obj dict)
     return return_list;
 }
 
+// Converts the GAP list <list> into a julia tuple and returns the julia
+// object GAP object which holds the pointer to that tuple.
 Obj FuncJuliaTuple(Obj self, Obj list)
 {
     jl_datatype_t * tuple_type = 0;
@@ -791,6 +802,8 @@ Obj FuncJuliaTuple(Obj self, Obj list)
     return NewJuliaObj(result);
 }
 
+// Returns a julia object GAP object that holds the pointer to a julia symbol
+// :<name>.
 Obj FuncJuliaSymbol(Obj self, Obj name)
 {
     jl_sym_t * julia_symbol = jl_symbol(CSTR_STRING(name));
@@ -798,6 +811,8 @@ Obj FuncJuliaSymbol(Obj self, Obj name)
     return NewJuliaObj((jl_value_t *)julia_symbol);
 }
 
+// Returns a julia object GAP object that holds the pointer to the julia
+// module <name>.
 Obj FuncJuliaModule(Obj self, Obj name)
 {
     jl_module_t * julia_module = get_module_from_string(CSTR_STRING(name));
@@ -805,6 +820,8 @@ Obj FuncJuliaModule(Obj self, Obj name)
     return NewJuliaObj((jl_value_t *)julia_module);
 }
 
+// Sets the value of the julia identifier <name> to the julia value the julia
+// object GAP object <julia_val> points to.
 Obj FuncJuliaSetVal(Obj self, Obj name, Obj julia_val)
 {
     jl_value_t * julia_obj = GET_JULIA_OBJ(julia_val);
@@ -815,6 +832,8 @@ Obj FuncJuliaSetVal(Obj self, Obj name, Obj julia_val)
     return 0;
 }
 
+// Returns the julia object GAP object that holds a pointer to the value
+// currently bound to the julia identifier <name>.
 Obj Func_JuliaGetGlobalVariable(Obj self, Obj name)
 {
     jl_sym_t * symbol = jl_symbol(CSTR_STRING(name));
@@ -826,6 +845,8 @@ Obj Func_JuliaGetGlobalVariable(Obj self, Obj name)
     return NewJuliaObj(value);
 }
 
+// Returns the julia object GAP object that holds a pointer to the value
+// currently bound to the julia identifier <module_name>.<name>.
 Obj Func_JuliaGetGlobalVariableByModule(Obj self, Obj name, Obj module)
 {
     jl_module_t * module_t = 0;
@@ -847,6 +868,9 @@ Obj Func_JuliaGetGlobalVariableByModule(Obj self, Obj name, Obj module)
     return NewJuliaObj(value);
 }
 
+// Returns the julia object GAP object that holds a pointer to the value
+// currently bound to <super_object>.<name>.
+// <super_object> must be a julia object GAP object, and <name> a string.
 Obj FuncJuliaGetFieldOfObject(Obj self, Obj super_obj, Obj field_name)
 {
     jl_value_t * extracted_superobj = GET_JULIA_OBJ(super_obj);
@@ -856,6 +880,9 @@ Obj FuncJuliaGetFieldOfObject(Obj self, Obj super_obj, Obj field_name)
     return NewJuliaObj(field_value);
 }
 
+// Sets the GAP function <func> as a GAP.GapFunc object to GAP.<name>.
+// <number_args> must be the number of arguments of <func>. Is is then
+// callable on GAP.GapObj's from julia.
 Obj Func_JuliaSetGAPFuncAsJuliaObjFunc(Obj self,
                                        Obj func,
                                        Obj name,
