@@ -13,7 +13,8 @@ static jl_function_t * JULIA_FUNC_showerror;
 
 Obj TheTypeJuliaObject;
 
-jl_value_t * Func_ConvertedToJulia_internal(Obj obj);
+
+static jl_value_t * _ConvertedToJulia_internal(Obj obj);
 
 
 static Obj DoCallJuliaFunc0Arg(Obj func);
@@ -53,7 +54,7 @@ static ALWAYS_INLINE Obj DoCallJuliaFunc(Obj       func,
 
     if (autoConvert) {
         for (int i = 0; i < narg; i++) {
-            a[i] = (Obj)Func_ConvertedToJulia_internal(a[i]);
+            a[i] = (Obj)_ConvertedToJulia_internal(a[i]);
         }
     }
     else {
@@ -610,7 +611,7 @@ Obj Func_ConvertedFromJulia(Obj self, Obj obj)
     return Func_ConvertedFromJulia_internal(julia_obj);
 }
 
-jl_value_t * Func_ConvertedToJulia_internal(Obj obj)
+jl_value_t * _ConvertedToJulia_internal(Obj obj)
 {
     size_t i;
     Obj    current;
@@ -676,7 +677,7 @@ jl_value_t * Func_ConvertedToJulia_internal(Obj obj)
                 continue;
             }
             jl_arrayset(new_array,
-                        Func_ConvertedToJulia_internal(ELM_PLIST(obj, i + 1)),
+                        _ConvertedToJulia_internal(ELM_PLIST(obj, i + 1)),
                         i);
         }
         return (jl_value_t *)(new_array);
@@ -699,7 +700,7 @@ Obj Func_ConvertedToJulia(Obj self, Obj obj)
     if (IS_JULIA_OBJ(obj) || IS_JULIA_FUNC(obj)) {
         return obj;
     }
-    jl_value_t * julia_ptr = Func_ConvertedToJulia_internal(obj);
+    jl_value_t * julia_ptr = _ConvertedToJulia_internal(obj);
     if (julia_ptr == 0)
         return Fail;
     return NewJuliaObj(julia_ptr);
@@ -778,7 +779,7 @@ Obj FuncJuliaTuple(Obj self, Obj list)
     param_types = jl_alloc_svec(len);
     for (int i = 0; i < len; i++) {
         jl_value_t * current_obj =
-            Func_ConvertedToJulia_internal(ELM_PLIST(list, i + 1));
+            _ConvertedToJulia_internal(ELM_PLIST(list, i + 1));
         jl_svecset(params, i, current_obj);
         jl_svecset(param_types, i, jl_typeof(current_obj));
     }
