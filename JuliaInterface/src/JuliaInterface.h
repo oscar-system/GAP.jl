@@ -48,7 +48,7 @@ Obj JuliaObjectTypeFunc(Obj);
 #define IS_JULIA_OBJ(o) (TNUM_OBJ(o) == T_JULIA_OBJ)
 
 // Internal
-UInt T_JULIA_OBJ = 0;
+extern UInt T_JULIA_OBJ;
 
 // NewJuliaFunc(f,autoConvert)
 //

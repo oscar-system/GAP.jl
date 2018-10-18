@@ -12,7 +12,7 @@ static jl_function_t * JULIA_FUNC_showerror;
 #include "gap_macros.c"
 
 Obj TheTypeJuliaObject;
-
+UInt T_JULIA_OBJ;
 
 static jl_value_t * _ConvertedToJulia_internal(Obj obj);
 
