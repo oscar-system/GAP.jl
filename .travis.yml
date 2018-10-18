@@ -26,14 +26,7 @@ before_script:
   - etc/travis_build.sh
 
 script:
-  - cd JuliaInterface
-  - export CFLAGS=--coverage
-  - export LDFLAGS=--coverage
-  - ./configure $GAPROOT
-  - make
-  - pwd
-  - $GAPROOT/gap --quitonbreak --norepl --cover $TRAVIS_BUILD_DIR/coverage/JuliaInterface tst/testall.g
-  - gcov -o .. src/*.c*
+  - etc/travis_test.sh
 
 after_script:
   - cd $TRAVIS_BUILD_DIR
