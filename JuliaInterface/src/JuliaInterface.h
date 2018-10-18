@@ -37,12 +37,6 @@ void SET_JULIA_OBJ(Obj, jl_value_t *);
 jl_value_t * GET_JULIA_OBJ(Obj);
 
 // Internal
-Obj JuliaFunctionTypeFunc(Obj);
-
-// Internal
-Obj JuliaObjectTypeFunc(Obj);
-
-// Internal
 extern UInt T_JULIA_OBJ;
 
 // IS_JULIA_OBJ(o)
