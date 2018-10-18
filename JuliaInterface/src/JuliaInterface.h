@@ -42,13 +42,16 @@ Obj JuliaFunctionTypeFunc(Obj);
 // Internal
 Obj JuliaObjectTypeFunc(Obj);
 
+// Internal
+extern UInt T_JULIA_OBJ;
+
 // IS_JULIA_OBJ(o)
 //
 // Checks if o is a julia object GAP object.
-#define IS_JULIA_OBJ(o) (TNUM_OBJ(o) == T_JULIA_OBJ)
-
-// Internal
-extern UInt T_JULIA_OBJ;
+static inline int IS_JULIA_OBJ(Obj o)
+{
+    return TNUM_OBJ(o) == T_JULIA_OBJ;
+}
 
 // NewJuliaFunc(f,autoConvert)
 //
