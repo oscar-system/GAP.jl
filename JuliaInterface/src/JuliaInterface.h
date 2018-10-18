@@ -176,8 +176,6 @@ Obj Func_JuliaBindCFunction(Obj self,
                             Obj number_args_gap,
                             Obj arg_names_gap);
 
-// From julia_macros.c
-
 // get_module_from_string( name )
 //
 // Returns a julia module pointer to the module <name>.
