@@ -2,10 +2,10 @@
 gap> START_TEST( "calls.tst" );
 
 #
-# regular function wrapping
+# calls without function wrapping
 #
 
-#
+# variadic function
 gap> f := JuliaEvalString("function f(x...) return x end");;
 
 #
@@ -40,7 +40,7 @@ gap> f(1,2,3,4,5,6);
 gap> f(1,2,3,4,5,6,7);
 <Julia: (1, 2, 3, 4, 5, 6, 7)>
 
-#
+# non-variadic functions
 gap> f0 := JuliaEvalString("function f0() end");;
 gap> f1 := JuliaEvalString("function f1(a) return (a,) end");;
 gap> f2 := JuliaEvalString("function f2(a,b) return (a,b) end");;
@@ -83,7 +83,88 @@ gap> f7(1,2,3,4,5,6,7);
 <Julia: (1, 2, 3, 4, 5, 6, 7)>
 
 #
-# Test wrapped C function pointers
+# calls via function wrappers
+#
+
+# variadic function
+gap> fw := JuliaFunction("f");;
+
+#
+gap> fw();
+<Julia: ()>
+
+#
+gap> fw(1);
+<Julia: (1,)>
+
+#
+gap> fw(1,2);
+<Julia: (1, 2)>
+
+#
+gap> fw(1,2,3);
+<Julia: (1, 2, 3)>
+
+#
+gap> fw(1,2,3,4);
+<Julia: (1, 2, 3, 4)>
+
+#
+gap> fw(1,2,3,4,5);
+<Julia: (1, 2, 3, 4, 5)>
+
+#
+gap> fw(1,2,3,4,5,6);
+<Julia: (1, 2, 3, 4, 5, 6)>
+
+#
+gap> fw(1,2,3,4,5,6,7);
+<Julia: (1, 2, 3, 4, 5, 6, 7)>
+
+# non-variadic functions
+gap> f0w := JuliaFunction("f0");;
+gap> f1w := JuliaFunction("f1");;
+gap> f2w := JuliaFunction("f2");;
+gap> f3w := JuliaFunction("f3");;
+gap> f4w := JuliaFunction("f4");;
+gap> f5w := JuliaFunction("f5");;
+gap> f6w := JuliaFunction("f6");;
+gap> f7w := JuliaFunction("f7");;
+
+#
+gap> f0w();
+<Julia: nothing>
+
+#
+gap> f1w(1);
+<Julia: (1,)>
+
+#
+gap> f2w(1,2);
+<Julia: (1, 2)>
+
+#
+gap> f3w(1,2,3);
+<Julia: (1, 2, 3)>
+
+#
+gap> f4w(1,2,3,4);
+<Julia: (1, 2, 3, 4)>
+
+#
+gap> f5w(1,2,3,4,5);
+<Julia: (1, 2, 3, 4, 5)>
+
+#
+gap> f6w(1,2,3,4,5,6);
+<Julia: (1, 2, 3, 4, 5, 6)>
+
+#
+gap> f7w(1,2,3,4,5,6,7);
+<Julia: (1, 2, 3, 4, 5, 6, 7)>
+
+#
+# calls via wrapped C function pointers
 #
 
 #
