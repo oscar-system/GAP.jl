@@ -239,48 +239,107 @@ static inline ObjFunc get_c_function_pointer(Obj func)
     return jl_unbox_voidpointer((jl_value_t *)FEXS_FUNC(func));
 }
 
-Obj DoCallJuliaCFunc0Arg(Obj func)
+static void HandleJuliaCFuncException(int narg)
 {
-    ObjFunc function = get_c_function_pointer(func);
-    return function();
+    jl_ptls_t ptls = jl_get_ptls_states();
+    jl_printf(JL_STDERR, "error calling Julia C func with %d args: ", narg);
+    jl_static_show(JL_STDERR, ptls->exception_in_transit);
+    jl_printf(JL_STDERR, "\n");
+    ErrorMayQuit("error calling Julia C func with %d args", (Int)narg, 0);
 }
 
-Obj DoCallJuliaCFunc1Arg(Obj func, Obj arg1)
+static Obj DoCallJuliaCFunc0Arg(Obj func)
 {
     ObjFunc function = get_c_function_pointer(func);
-    return function(arg1);
+    Obj result;
+    JL_TRY {
+        result = function();
+    }
+    JL_CATCH {
+        HandleJuliaCFuncException(0);
+    }
+    return result;
 }
 
-Obj DoCallJuliaCFunc2Arg(Obj func, Obj arg1, Obj arg2)
+static Obj DoCallJuliaCFunc1Arg(Obj func, Obj arg1)
 {
     ObjFunc function = get_c_function_pointer(func);
-    return function(arg1, arg2);
+    Obj result;
+    JL_TRY {
+        result = function(arg1);
+    }
+    JL_CATCH {
+        HandleJuliaCFuncException(1);
+    }
+    return result;
 }
 
-Obj DoCallJuliaCFunc3Arg(Obj func, Obj arg1, Obj arg2, Obj arg3)
+static Obj DoCallJuliaCFunc2Arg(Obj func, Obj arg1, Obj arg2)
 {
     ObjFunc function = get_c_function_pointer(func);
-    return function(arg1, arg2, arg3);
+    Obj result;
+    JL_TRY {
+        result = function(arg1, arg2);
+    }
+    JL_CATCH {
+        HandleJuliaCFuncException(2);
+    }
+    return result;
 }
 
-Obj DoCallJuliaCFunc4Arg(Obj func, Obj arg1, Obj arg2, Obj arg3, Obj arg4)
+static Obj DoCallJuliaCFunc3Arg(Obj func, Obj arg1, Obj arg2, Obj arg3)
 {
     ObjFunc function = get_c_function_pointer(func);
-    return function(arg1, arg2, arg3, arg4);
+    Obj result;
+    JL_TRY {
+        result = function(arg1, arg2, arg3);
+    }
+    JL_CATCH {
+        HandleJuliaCFuncException(3);
+    }
+    return result;
 }
 
-Obj DoCallJuliaCFunc5Arg(
+static Obj
+DoCallJuliaCFunc4Arg(Obj func, Obj arg1, Obj arg2, Obj arg3, Obj arg4)
+{
+    ObjFunc function = get_c_function_pointer(func);
+    Obj result;
+    JL_TRY {
+        result = function(arg1, arg2, arg3, arg4);
+    }
+    JL_CATCH {
+        HandleJuliaCFuncException(4);
+    }
+    return result;
+}
+
+static Obj DoCallJuliaCFunc5Arg(
     Obj func, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5)
 {
     ObjFunc function = get_c_function_pointer(func);
-    return function(arg1, arg2, arg3, arg4, arg5);
+    Obj result;
+    JL_TRY {
+        result = function(arg1, arg2, arg3, arg4, arg5);
+    }
+    JL_CATCH {
+        HandleJuliaCFuncException(5);
+    }
+    return result;
 }
 
-Obj DoCallJuliaCFunc6Arg(
+static Obj DoCallJuliaCFunc6Arg(
     Obj func, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6)
 {
     ObjFunc function = get_c_function_pointer(func);
-    return function(arg1, arg2, arg3, arg4, arg5, arg6);
+    Obj result;
+    JL_TRY {
+        result = function(arg1, arg2, arg3, arg4, arg5, arg6);
+    }
+    JL_CATCH {
+        HandleJuliaCFuncException(6);
+    }
+    return result;
 }
 
 Obj NewJuliaCFunc(void * function, int nr_args, char * args)
