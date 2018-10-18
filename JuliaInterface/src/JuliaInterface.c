@@ -512,7 +512,7 @@ Obj FuncJuliaEvalString(Obj self, Obj string)
     return NewJuliaObj(result);
 }
 
-Obj Func_ConvertedFromJulia_internal(jl_value_t * julia_obj)
+Obj _ConvertedFromJulia_internal(jl_value_t * julia_obj)
 {
     size_t i;
 
@@ -608,7 +608,7 @@ Obj Func_ConvertedFromJulia(Obj self, Obj obj)
         return NULL;
     }
     jl_value_t * julia_obj = GET_JULIA_OBJ(obj);
-    return Func_ConvertedFromJulia_internal(julia_obj);
+    return _ConvertedFromJulia_internal(julia_obj);
 }
 
 jl_value_t * _ConvertedToJulia_internal(Obj obj)
