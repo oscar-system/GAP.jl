@@ -16,14 +16,14 @@ Obj TheTypeJuliaObject;
 jl_value_t * Func_ConvertedToJulia_internal(Obj obj);
 
 
-static Obj DoJuliaCallFunc0Arg(Obj func);
-static Obj DoJuliaCallFunc0ArgConv(Obj func);
+static Obj DoCallJuliaFunc0Arg(Obj func);
+static Obj DoCallJuliaFunc0ArgConv(Obj func);
 
 // FIXME: get rid of IS_JULIA_FUNC??
 static inline Int IS_JULIA_FUNC(Obj obj)
 {
-    return IS_FUNC(obj) && (HDLR_FUNC(obj, 0) == DoJuliaCallFunc0Arg ||
-                            HDLR_FUNC(obj, 0) == DoJuliaCallFunc0ArgConv);
+    return IS_FUNC(obj) && (HDLR_FUNC(obj, 0) == DoCallJuliaFunc0Arg ||
+                            HDLR_FUNC(obj, 0) == DoCallJuliaFunc0ArgConv);
 }
 
 static inline jl_function_t * GET_JULIA_FUNC(Obj obj)
@@ -77,51 +77,51 @@ static ALWAYS_INLINE Obj DoCallJuliaFunc(Obj       func,
     return NewJuliaObj(result);
 }
 
-static Obj DoJuliaCallFunc0ArgConv(Obj func)
+static Obj DoCallJuliaFunc0ArgConv(Obj func)
 {
     return DoCallJuliaFunc(func, 0, 0, 1);
 }
 
-static Obj DoJuliaCallFunc1ArgConv(Obj func, Obj arg1)
+static Obj DoCallJuliaFunc1ArgConv(Obj func, Obj arg1)
 {
     Obj a[] = { arg1 };
     return DoCallJuliaFunc(func, 1, a, 1);
 }
 
-static Obj DoJuliaCallFunc2ArgConv(Obj func, Obj arg1, Obj arg2)
+static Obj DoCallJuliaFunc2ArgConv(Obj func, Obj arg1, Obj arg2)
 {
     Obj a[] = { arg1, arg2 };
     return DoCallJuliaFunc(func, 2, a, 1);
 }
 
-static Obj DoJuliaCallFunc3ArgConv(Obj func, Obj arg1, Obj arg2, Obj arg3)
+static Obj DoCallJuliaFunc3ArgConv(Obj func, Obj arg1, Obj arg2, Obj arg3)
 {
     Obj a[] = { arg1, arg2, arg3 };
     return DoCallJuliaFunc(func, 3, a, 1);
 }
 
 static Obj
-DoJuliaCallFunc4ArgConv(Obj func, Obj arg1, Obj arg2, Obj arg3, Obj arg4)
+DoCallJuliaFunc4ArgConv(Obj func, Obj arg1, Obj arg2, Obj arg3, Obj arg4)
 {
     Obj a[] = { arg1, arg2, arg3, arg4 };
     return DoCallJuliaFunc(func, 4, a, 1);
 }
 
-static Obj DoJuliaCallFunc5ArgConv(
+static Obj DoCallJuliaFunc5ArgConv(
     Obj func, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5)
 {
     Obj a[] = { arg1, arg2, arg3, arg4, arg5 };
     return DoCallJuliaFunc(func, 5, a, 1);
 }
 
-static Obj DoJuliaCallFunc6ArgConv(
+static Obj DoCallJuliaFunc6ArgConv(
     Obj func, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6)
 {
     Obj a[] = { arg1, arg2, arg3, arg4, arg5, arg6 };
     return DoCallJuliaFunc(func, 6, a, 1);
 }
 
-static Obj DoJuliaCallFuncXArgConv(Obj func, Obj args)
+static Obj DoCallJuliaFuncXArgConv(Obj func, Obj args)
 {
     const int len = LEN_PLIST(args);
     Obj       a[len];
@@ -136,51 +136,51 @@ static Obj DoJuliaCallFuncXArgConv(Obj func, Obj args)
 //
 
 
-static Obj DoJuliaCallFunc0Arg(Obj func)
+static Obj DoCallJuliaFunc0Arg(Obj func)
 {
     return DoCallJuliaFunc(func, 0, 0, 0);
 }
 
-static Obj DoJuliaCallFunc1Arg(Obj func, Obj arg1)
+static Obj DoCallJuliaFunc1Arg(Obj func, Obj arg1)
 {
     Obj a[] = { arg1 };
     return DoCallJuliaFunc(func, 1, a, 0);
 }
 
-static Obj DoJuliaCallFunc2Arg(Obj func, Obj arg1, Obj arg2)
+static Obj DoCallJuliaFunc2Arg(Obj func, Obj arg1, Obj arg2)
 {
     Obj a[] = { arg1, arg2 };
     return DoCallJuliaFunc(func, 2, a, 0);
 }
 
-static Obj DoJuliaCallFunc3Arg(Obj func, Obj arg1, Obj arg2, Obj arg3)
+static Obj DoCallJuliaFunc3Arg(Obj func, Obj arg1, Obj arg2, Obj arg3)
 {
     Obj a[] = { arg1, arg2, arg3 };
     return DoCallJuliaFunc(func, 3, a, 0);
 }
 
 static Obj
-DoJuliaCallFunc4Arg(Obj func, Obj arg1, Obj arg2, Obj arg3, Obj arg4)
+DoCallJuliaFunc4Arg(Obj func, Obj arg1, Obj arg2, Obj arg3, Obj arg4)
 {
     Obj a[] = { arg1, arg2, arg3, arg4 };
     return DoCallJuliaFunc(func, 4, a, 0);
 }
 
-static Obj DoJuliaCallFunc5Arg(
+static Obj DoCallJuliaFunc5Arg(
     Obj func, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5)
 {
     Obj a[] = { arg1, arg2, arg3, arg4, arg5 };
     return DoCallJuliaFunc(func, 5, a, 0);
 }
 
-static Obj DoJuliaCallFunc6Arg(
+static Obj DoCallJuliaFunc6Arg(
     Obj func, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6)
 {
     Obj a[] = { arg1, arg2, arg3, arg4, arg5, arg6 };
     return DoCallJuliaFunc(func, 6, a, 0);
 }
 
-static Obj DoJuliaCallFuncXArg(Obj func, Obj args)
+static Obj DoCallJuliaFuncXArg(Obj func, Obj args)
 {
     const int len = LEN_PLIST(args);
     Obj       a[len];
@@ -205,21 +205,21 @@ Obj NewJuliaFunc(jl_function_t * function, int autoConvert)
     Obj func = NewFunctionC("", -1, "arg", 0);
 
     SET_HDLR_FUNC(
-        func, 0, autoConvert ? DoJuliaCallFunc0ArgConv : DoJuliaCallFunc0Arg);
+        func, 0, autoConvert ? DoCallJuliaFunc0ArgConv : DoCallJuliaFunc0Arg);
     SET_HDLR_FUNC(
-        func, 1, autoConvert ? DoJuliaCallFunc1ArgConv : DoJuliaCallFunc1Arg);
+        func, 1, autoConvert ? DoCallJuliaFunc1ArgConv : DoCallJuliaFunc1Arg);
     SET_HDLR_FUNC(
-        func, 2, autoConvert ? DoJuliaCallFunc2ArgConv : DoJuliaCallFunc2Arg);
+        func, 2, autoConvert ? DoCallJuliaFunc2ArgConv : DoCallJuliaFunc2Arg);
     SET_HDLR_FUNC(
-        func, 3, autoConvert ? DoJuliaCallFunc3ArgConv : DoJuliaCallFunc3Arg);
+        func, 3, autoConvert ? DoCallJuliaFunc3ArgConv : DoCallJuliaFunc3Arg);
     SET_HDLR_FUNC(
-        func, 4, autoConvert ? DoJuliaCallFunc4ArgConv : DoJuliaCallFunc4Arg);
+        func, 4, autoConvert ? DoCallJuliaFunc4ArgConv : DoCallJuliaFunc4Arg);
     SET_HDLR_FUNC(
-        func, 5, autoConvert ? DoJuliaCallFunc5ArgConv : DoJuliaCallFunc5Arg);
+        func, 5, autoConvert ? DoCallJuliaFunc5ArgConv : DoCallJuliaFunc5Arg);
     SET_HDLR_FUNC(
-        func, 6, autoConvert ? DoJuliaCallFunc6ArgConv : DoJuliaCallFunc6Arg);
+        func, 6, autoConvert ? DoCallJuliaFunc6ArgConv : DoCallJuliaFunc6Arg);
     SET_HDLR_FUNC(
-        func, 7, autoConvert ? DoJuliaCallFuncXArgConv : DoJuliaCallFuncXArg);
+        func, 7, autoConvert ? DoCallJuliaFuncXArgConv : DoCallJuliaFuncXArg);
 
     // trick: fexs is unused for kernel functions, so we can store
     // the Julia function point in here
