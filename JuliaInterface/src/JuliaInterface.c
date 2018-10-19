@@ -249,15 +249,6 @@ static inline ObjFunc get_c_function_pointer(Obj func)
     return jl_unbox_voidpointer((jl_value_t *)FEXS_FUNC(func));
 }
 
-static void HandleJuliaCFuncException(int narg)
-{
-    jl_ptls_t ptls = jl_get_ptls_states();
-    jl_printf(JL_STDERR, "error calling Julia C func with %d args: ", narg);
-    jl_static_show(JL_STDERR, ptls->exception_in_transit);
-    jl_printf(JL_STDERR, "\n");
-    ErrorMayQuit("error calling Julia C func with %d args", (Int)narg, 0);
-}
-
 static Obj DoCallJuliaCFunc0Arg(Obj func)
 {
     ObjFunc function = get_c_function_pointer(func);
@@ -931,18 +922,6 @@ static Obj FuncJuliaGetFromJuliaPointer(Obj self, Obj obj)
     return (Obj)(jl_unbox_voidpointer(gap_ptr));
 }
 
-static Obj Func_JuliaBindCFunction(Obj self,
-                            Obj cfunction_string,
-                            Obj number_args_gap,
-                            Obj arg_names_gap)
-{
-    jl_value_t * func = jl_eval_string(CSTR_STRING(cfunction_string));
-    JULIAINTERFACE_EXCEPTION_HANDLER
-    void * ccall_pointer = jl_unbox_voidpointer(func);
-    size_t number_args = INT_INTOBJ(number_args_gap);
-    return NewFunction(0, number_args, arg_names_gap, ccall_pointer);
-}
-
 static Obj Func_JuliaIsNothing(Obj self, Obj obj)
 {
     if (jl_is_nothing(GET_JULIA_OBJ(obj))) {
@@ -963,9 +942,6 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(_JuliaGetGlobalVariable, 1, "name"),
     GVAR_FUNC(_JuliaGetGlobalVariableByModule, 2, "name,module"),
     GVAR_FUNC(JuliaGetFieldOfObject, 2, "obj,name"),
-    GVAR_FUNC(_JuliaBindCFunction,
-              3,
-              "cfunction_string,number_args_gap,arg_names_gap"),
     GVAR_FUNC(_JuliaSetGAPFuncAsJuliaObjFunc, 2, "func,name"),
     GVAR_FUNC(JuliaTuple, 1, "list"),
     GVAR_FUNC(JuliaSymbol, 1, "name"),
