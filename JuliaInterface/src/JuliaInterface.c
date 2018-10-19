@@ -955,12 +955,13 @@ static StructGVarFunc GVarFuncs[] = {
 
 };
 
-/******************************************************************************
- *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
- */
+/****************************************************************************
+**
+*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
+*/
 static Int InitKernel(StructInitInfo * module)
 {
-    /* init filters and functions                                          */
+    // init filters and functions
     InitHdlrFuncsFromTable(GVarFuncs);
 
     InitCopyGVar("TheTypeJuliaObject", &TheTypeJuliaObject);
@@ -983,41 +984,34 @@ static Int InitKernel(StructInitInfo * module)
     // Initialize GAP function pointers in Julia
     JuliaInitializeGAPFunctionPointers();
 
-    /* return success                                                      */
+    // return success
     return 0;
 }
 
-/******************************************************************************
- *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
- */
+/****************************************************************************
+**
+*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
+*/
 static Int InitLibrary(StructInitInfo * module)
 {
-    /* init filters and functions */
+    // init filters and functions
     InitGVarFuncsFromTable(GVarFuncs);
 
-    /* return success                                                      */
+    // return success
     return 0;
 }
 
-/******************************************************************************
- *F  InitInfopl()  . . . . . . . . . . . . . . . . . table of init functions
- */
-static StructInitInfo module = {
-    /* type        = */ MODULE_DYNAMIC,
-    /* name        = */ "JuliaInterface",
-    /* revision_c  = */ 0,
-    /* revision_h  = */ 0,
-    /* version     = */ 0,
-    /* crc         = */ 0,
-    /* initKernel  = */ InitKernel,
-    /* initLibrary = */ InitLibrary,
-    /* checkInit   = */ 0,
-    /* preSave     = */ 0,
-    /* postSave    = */ 0,
-    /* postRestore = */ 0
-};
-
+/****************************************************************************
+**
+*F  Init__Dynamic() . . . . . . . . . . . . . . . . . table of init functions
+*/
 StructInitInfo * Init__Dynamic(void)
 {
+    static StructInitInfo module = {
+        .type = MODULE_DYNAMIC,
+        .name = "JuliaInterface",
+        .initKernel = InitKernel,
+        .initLibrary = InitLibrary,
+    };
     return &module;
 }
