@@ -23,6 +23,11 @@ rec( ok := false,
   value := "DomainError(-1.0, \"sqrt will only return a complex result if call\
 ed with a complex argument. Try sqrt(Complex(x)).\")" )
 
+#
+gap> JuliaSetVal("foo", JuliaEvalString("1"));
+gap> JuliaGetGlobalVariable("foo");
+<Julia: 1>
+
 ##
 gap> STOP_TEST( "utils.tst", 1 );
 
