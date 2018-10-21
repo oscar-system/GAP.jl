@@ -1,4 +1,42 @@
+## COnversion to GAP
 
+to_gap(str :: String)         = StringObj_String(str)
+to_gap(v :: Int32)            = IntObj_Int(v)
+to_gap(v :: Int64)            = IntObj_Int(v)
+to_gap(v :: GAP.GapObj)       = v
+
+function to_gap( v :: Bool ) :: GAP.GapObj
+    if v
+        return True
+    else
+        return False
+    end
+end
+
+function to_gap(v :: Array{GAP.GapObj, 1}) :: GAP.GapObj
+    l = NewPList(length(v))
+    SetLenPList(l, length(v))
+    for i in 1:length(v)
+        SetElmPList(l, i, v[i])
+    end
+    return l
+end
+
+convert(::Type{GAP.GapObj},m::Array{GAP.GapObj,1}) = to_gap(m)
+
+function to_gap(v :: AbstractArray) :: Array{GAP.GapObj, 1}
+    return map(to_gap, v)
+end
+
+
+## Conversion FROM GAP
+
+function Int_IntObj(obj::MPtr)::Int64
+    res = ccall( Libdl.dlsym(gap_library, :Int_ObjInt),
+                 Int64, (MPtr,),
+                 obj )
+    return res
+end
 
 function from_gap_int16(obj :: GAP.GapObj) :: Int16
     x = Int_IntObj( obj )
@@ -10,7 +48,21 @@ function from_gap_int32(obj :: GAP.GapObj) :: Int32
     return Int32(x)
 end
 
-from_gap_int64(obj :: GAP.GapObj) = Int64(Int_IntObj(obj))
+from_gap_int64(obj :: GAP.GapObj) = Int_IntObj(obj)
+
+# function String_StringObj( str :: GAP.GapObj )
+#     return unsafe_string( ccall( (:GAP_CSTR_STRING, "libgap")
+#                                  , Ptr{UInt8}
+#                                  , (Ptr{Cvoid}, )
+#                                  , str.ptr ) )
+# end
+
+# function StringObj_String(str :: String)
+#     return GAP.GapObj( ccall( (:GAP_MakeString, "libgap")
+#                    , Ptr{Cvoid}
+#                    , (Ptr{UInt8}, Csize_t )
+#                    , str, length(str) ) )
+# end
 
 from_gap_string(obj :: GAP.GapObj) = String_StringObj(obj)
 
