@@ -813,6 +813,7 @@ static Obj FuncJuliaModule(Obj self, Obj name)
 
 // Sets the value of the julia identifier <name> to the julia value the julia
 // object GAP object <julia_val> points to.
+// This function is for debugging purposes
 static Obj FuncJuliaSetVal(Obj self, Obj name, Obj julia_val)
 {
     jl_value_t * julia_obj = GET_JULIA_OBJ(julia_val);
@@ -900,35 +901,6 @@ static Obj Func_JuliaSetGAPFuncAsJuliaObjFunc(Obj self,
     return NULL;
 }
 
-static Obj FuncJuliaSetAsJuliaPointer(Obj self, Obj obj)
-{
-    jl_value_t * module_value = jl_eval_string("GAP");
-    JULIAINTERFACE_EXCEPTION_HANDLER
-    if (!jl_is_module(module_value))
-        ErrorMayQuit("GAP module not yet defined", 0, 0);
-    jl_module_t *   module_t = (jl_module_t *)module_value;
-    jl_function_t * set_gap_obj = jl_get_function(module_t, "GapObj");
-    JULIAINTERFACE_EXCEPTION_HANDLER
-    jl_value_t * gap_obj_ptr = jl_call1(set_gap_obj, jl_box_voidpointer(obj));
-    JULIAINTERFACE_EXCEPTION_HANDLER
-    return NewJuliaObj(gap_obj_ptr);
-}
-
-static Obj FuncJuliaGetFromJuliaPointer(Obj self, Obj obj)
-{
-    jl_value_t * julia_ptr = GET_JULIA_OBJ(obj);
-    jl_value_t * gap_ptr = jl_get_field(julia_ptr, "ptr");
-    JULIAINTERFACE_EXCEPTION_HANDLER
-    return (Obj)(jl_unbox_voidpointer(gap_ptr));
-}
-
-static Obj Func_JuliaIsNothing(Obj self, Obj obj)
-{
-    if (jl_is_nothing(GET_JULIA_OBJ(obj))) {
-        return True;
-    }
-    return False;
-}
 
 // Table of functions to export
 static StructGVarFunc GVarFuncs[] = {
@@ -947,9 +919,6 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(JuliaSymbol, 1, "name"),
     GVAR_FUNC(JuliaModule, 1, "name"),
     GVAR_FUNC(_ConvertedFromJulia_record_dict, 1, "dict"),
-    GVAR_FUNC(JuliaSetAsJuliaPointer, 1, "obj"),
-    GVAR_FUNC(JuliaGetFromJuliaPointer, 1, "obj"),
-    GVAR_FUNC(_JuliaIsNothing, 1, "obj"),
     GVAR_FUNC(_NewJuliaCFunc, 2, "ptr,arg_names"),
     { 0 } /* Finish with an empty entry */
 
