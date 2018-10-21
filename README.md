@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.com/oscar-system/GAPJulia.svg?branch=master)](https://travis-ci.com/oscar-system/GAPJulia)
+[![Code Coverage](https://codecov.io/github/oscar-system/GAPJulia/coverage.svg?branch=master&token=)](https://codecov.io/gh/oscar-system/GAPJulia)
+
 # GAPJulia Meta-package
 
 This repository contains the GAP packages developed for the GAP-Julia integration as part of the
