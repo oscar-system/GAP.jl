@@ -42,7 +42,7 @@ function Nemo_Matrix_over_NumberField( f, m::Int, n::Int, lst, denom::Int )
     local pos, mat, d, i, j
 
     pos = 1
-    mat = Array{Any}( m, n )
+    mat = Array{Any}( undef, m, n )
     d = Nemo.fmpz( denom )
     for i = 1:m
       for j = 1:n
@@ -64,7 +64,7 @@ end
 function CoefficientVectorOfNumberFieldElement( elm::Nemo.nf_elem, d::Int )
     local arr, i
 
-    arr = Array{Nemo.fmpq,1}( d )
+    arr = Array{Nemo.fmpq,1}( undef, d )
     for i = 1:d
       arr[i] = Nemo.coeff( elm, i-1 )
     end
@@ -83,8 +83,8 @@ end
 function CoefficientVectorsNumDenOfNumberFieldElement( elm, d )
     local num, den, i, onecoeff
 
-    num = Array{Nemo.fmpz,1}( d )
-    den = Array{Nemo.fmpz,1}( d )
+    num = Array{Nemo.fmpz,1}( undef, d )
+    den = Array{Nemo.fmpz,1}( undef, d )
     for i = 1:d
       onecoeff = Nemo.coeff( elm, i-1 )
       num[i] = numerator( onecoeff )
@@ -105,8 +105,8 @@ function MatricesOfCoefficientVectorsNumDen( nemomat, d )
     local m, n, num, den, i, j, resnum, resden
 
     m, n = size( nemomat )
-    num = Array{Any,1}( 0 )
-    den = Array{Any,1}( 0 )
+    num = Array{Any,1}( undef, 0 )
+    den = Array{Any,1}( undef, 0 )
     for i = 1:m
       for j = 1:n
         resnum, resden = CoefficientVectorsNumDenOfNumberFieldElement(
@@ -116,8 +116,8 @@ function MatricesOfCoefficientVectorsNumDen( nemomat, d )
       end
     end
 
-    return Nemo.matrix( Nemo.ZZ, hcat( num... )' ),
-           Nemo.matrix( Nemo.ZZ, hcat( den... )' )
+    return Nemo.matrix( Nemo.ZZ, copy( transpose( hcat( num... ) ) ) ),
+           Nemo.matrix( Nemo.ZZ, copy( transpose( hcat( den... ) ) ) )
 end
 
 
@@ -136,9 +136,9 @@ end
 #     f, x = Nemo.CyclotomicField( N, "x" )
 #     n = length( lst )
 #     m = MatrixSpace( Nemo.ZZ, n, length( lst[1] ) )
-#     mat = m( hcat( lst... )' )
+#     mat = m( copy( transpose( hcat( lst... ) ) ) )
 #     d = Nemo.fmpz( denom )
-#     res = Array{Any}( n )
+#     res = Array{Any}( undef, n )
 #     for i = 1:n
 #       res[i] = QabElem( Nemo.elem_from_mat_row( f, mat, i, d ), N )
 #     end

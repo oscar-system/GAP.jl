@@ -165,27 +165,28 @@ end );
 ##  whose columns are the exponent vectors of the monomials.
 ##
 BindGlobal( "Nemo_Polynomial", function( R, descr )
-    local fmpq, div, aux, pol, coeffs, monoms;
+    local fmpq, aux, pol, coeffs, monoms;
 
     if not IsNemoPolynomialRing( R ) then
       Error( "<R> must be a Nemo polynomial ring" );
     elif Length( descr ) = 0 then
       return Zero( R );
     elif R!.isUnivariatePolynomialRing = true then
+      # Create a univariate polynomial
       if ForAll( descr, IsInt ) then
-        # Nothing is to do.
+        # Convert the coefficient list from "Array{Any,1}" to "Array{Int,1}".
+        descr:= Julia.Base.convert( JuliaEvalString( "Array{Int,1}" ),
+                                    ConvertedToJulia( descr ) );
       elif ForAll( descr, IsRat ) then
         # 'ConvertedToJulia' does not allow us to transfer rationals.
         fmpq:= Julia.Nemo.fmpq;
-        div:= Julia.Base.("//");
         descr:= JuliaArrayOfFmpq( descr );
       else
         Error( "<descr> must be a list of rationals (or integers)" );
       fi;
-      aux:= Julia.GAPUtilsExperimental.MatrixFromNestedArray( descr );
-      aux:= Julia.Base.vec( aux );
-      pol:= JuliaPointer( R )( aux );
+      pol:= JuliaPointer( R )( descr );
     else
+      # Create a multivariate polynomial
       if IsList( descr ) and Length( descr ) = 2 then
         coeffs:= JuliaArrayOfFmpq( descr[1] );
         monoms:= Julia.Base.convert(
@@ -820,7 +821,7 @@ InstallMethod( TraceMat,
     function( nemomat )
     local trace, type;
 
-    trace:= Julia.Base.trace( JuliaPointer( nemomat ) );
+    trace:= Julia.LinearAlgebra.tr( JuliaPointer( nemomat ) );
     type:= ElementsFamily( ElementsFamily( FamilyObj( nemomat ) ) )!.defaultType;
     return ObjectifyWithAttributes( rec(), type, JuliaPointer, trace );
     end );

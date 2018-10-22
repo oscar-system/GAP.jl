@@ -37,7 +37,11 @@ ReadPackage( "JuliaExperimental", "gap/gapperm.g");
 
 
 # Nemo's number fields.
-if JuliaImportPackage( "Nemo" ) then
+# 'Nemo' imports (some functions from) 'LinearAlgebra',
+# see its 'Nemo.jl', but we have to tell GAP about 'LinearAlgebra',
+# in order to use, e. g., 'Julia.LinearAlgebra.tr'.
+if JuliaImportPackage( "LinearAlgebra" ) and
+   JuliaImportPackage( "Nemo" ) then
   ReadPackage( "JuliaExperimental", "gap/gapnemo.g");
   ReadPackage( "JuliaExperimental", "gap/numfield.g");
 fi;

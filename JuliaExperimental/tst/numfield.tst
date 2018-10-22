@@ -26,8 +26,7 @@ gap> Nemo_Polynomial( R, [ [ 1, 2, 3/2 ], [ [ 4, 5, 6 ], [ 7, 8, 9 ] ] ] );
 gap> x:= X( Rationals );;
 gap> f:= AlgebraicExtension( Rationals, x^2+1 );;
 gap> iso:= IsomorphismToNemoField( f );;
-gap> ff:= Range( iso );
-<field in characteristic 0>
+gap> ff:= Range( iso );;  # remove one semicolon when GAP has the right method
 gap> one:= Image( iso, One( f ) );
 <<Julia: 1>>
 gap> PreImage( iso, one );
@@ -61,7 +60,7 @@ gap> mat:= [ [ o, a/2 ], [ z, o ] ];
 gap> nmat:= NemoMatrix( ff, mat );
 <<Julia: [1 1//2*a]
 [0 1]>>
-gap> PrintObj( nmat );
+gap> PrintObj( nmat );  Print( "\n" );
 [1 1//2*a]
 [0 1]
 gap> TraceMat( nmat );
