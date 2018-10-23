@@ -21,8 +21,7 @@ import Base: length, convert
 using Main.ForeignGAP: MPtr
 
 include( "ccalls.jl" )
-
-# include( "gap.jl" )
+include( "gap.jl" )
 # include( "conversion.jl" )
 
 end
