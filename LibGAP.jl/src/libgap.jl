@@ -22,6 +22,6 @@ using Main.ForeignGAP: MPtr
 
 include( "ccalls.jl" )
 include( "gap.jl" )
-# include( "conversion.jl" )
+include( "conversion.jl" )
 
 end

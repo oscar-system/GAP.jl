@@ -23,7 +23,7 @@ end
 ## List funcs
 Base.getindex(x::MPtr, i::Int64) = GAP.GAPFuncs.ELM_LIST(x, i)
 Base.setindex!(x::MPtr, i::Int64, v::GAPInputType ) = GAP.GAPFuncs.ASS_LIST( x, i, v )
-Base.length(x::MPtr) = GAP.GAPFuncs.length(x)
+Base.length(x::MPtr) = GAP.GAPFuncs.Length(x)
 
 # matrix
 Base.getindex(x::MPtr, i::Int64, j::Int64) = GAP.GAPFuncs.ELM_LIST(x, i, j)
