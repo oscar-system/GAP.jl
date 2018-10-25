@@ -13,11 +13,6 @@ import Main.GAP
 
 import Base: length, convert
 
-# export EvalString, IntObj_Int, Int_IntObj,
-#        CallFuncList, ValGVar, String_StringObj, StringObj_String,
-#        NewPList, SetElmPList, SetLenPList, ElmPList, LenPList
-
-
 using Main.ForeignGAP: MPtr
 
 include( "ccalls.jl" )

@@ -1,18 +1,10 @@
 ## Internal ccall's
 
-using ..libgap: gap_library
-
 import Main: gap_julia_gap
 
 import Main.GAP: GapFunc
 
 ### Internal stuff
-
-function gap_sym( sym::Symbol )
-    return Libdl.dlsym(gap_library, sym)
-end
-
-internal_to_gap(x::Int64) = Ptr{Cvoid}(x*8+1) ##FIXME
 
 function GET_FROM_GAP(ptr::Ptr{Cvoid})::Any
     return ccall(Main.gap_julia_gap,Any,(Ptr{Cvoid},),ptr)

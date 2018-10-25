@@ -1,4 +1,4 @@
-## COnversion to GAP
+## Conversion to GAP
 
 to_gap(str :: String)         = MakeString(str)
 to_gap(v :: Any)              = v

@@ -6,8 +6,6 @@ import Libdl
 
 sysinfo = missing
 
-gap_library = missing
-
 read_sysinfo_gap = function(dir::String)
     d = missing
     open(dir * "/sysinfo.gap") do file
@@ -35,7 +33,6 @@ error_handler_func = @cfunction(error_handler,Cvoid,(Ptr{Char},))
 const pkgdir = realpath(dirname(@__FILE__))
 
 function initialize( argv::Array{String,1}, env::Array{String,1} )
-    global gap_library
     gap_library = Libdl.dlopen("libgap", Libdl.RTLD_GLOBAL)
     ccall( Libdl.dlsym(gap_library, :GAP_Initialize)
            , Cvoid
