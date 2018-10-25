@@ -1,7 +1,4 @@
-// Functions for accessing GAP macros
-// This file should be completely obsolete
-// once LibGap is completed
-
+#include "libgap-api.h"
 
 // Provide other access functions.
 Int LengthList(Obj list)
@@ -71,4 +68,12 @@ void JuliaInitializeGAPFunctionPointers()
 
     INITIALIZE_JULIA_CPOINTER(call_gap_func);
     INITIALIZE_JULIA_CPOINTER(julia_gap);
+
+    // Used in LibGAP.jl's ccall file
+
+    INITIALIZE_JULIA_CPOINTER(GAP_EvalString);
+    INITIALIZE_JULIA_CPOINTER(GAP_ValueGlobalVariable);
+    INITIALIZE_JULIA_CPOINTER(GAP_MakeString);
+    INITIALIZE_JULIA_CPOINTER(GAP_CSTR_STRING);
+    INITIALIZE_JULIA_CPOINTER(GAP_NewPlist);
 }

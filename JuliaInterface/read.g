@@ -14,3 +14,8 @@ JuliaIncludeFile( Filename( dirs, "gaptypes.jl" ) );
 AddGapJuliaFuncs();
 
 ImportJuliaModuleIntoGAP( "GAP" );
+
+if not IsBound( JULIAINTERNAL_LOADED_FROM_JULIA ) then
+    dirs:= DirectoriesPackageLibrary( "JuliaInterface", "../LibGAP.jl/src" );
+    JuliaIncludeFile( Filename( dirs, "libgap.jl" ) );
+fi;
