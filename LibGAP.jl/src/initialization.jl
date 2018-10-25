@@ -33,8 +33,8 @@ error_handler_func = @cfunction(error_handler,Cvoid,(Ptr{Char},))
 const pkgdir = realpath(dirname(@__FILE__))
 
 function initialize( argv::Array{String,1}, env::Array{String,1} )
-    l = Libdl.dlopen("libgap", Libdl.RTLD_GLOBAL)
-    ccall( Libdl.dlsym(l, :GAP_Initialize)
+    gap_library = Libdl.dlopen("libgap", Libdl.RTLD_GLOBAL)
+    ccall( Libdl.dlsym(gap_library, :GAP_Initialize)
            , Cvoid
            , (Int32, Ptr{Ptr{UInt8}},Ptr{Ptr{UInt8}},Ptr{Cvoid},Ptr{Cvoid})
            , length(argv)
@@ -42,7 +42,7 @@ function initialize( argv::Array{String,1}, env::Array{String,1} )
            , env
            , C_NULL
            , error_handler_func)
-    ccall( Libdl.dlsym(l, :GAP_EvalString)
+    ccall( Libdl.dlsym(gap_library, :GAP_EvalString)
            , Ptr{Cvoid}
            , (Ptr{UInt8},)
            , "LoadPackage(\"JuliaInterface\");" )
@@ -56,6 +56,7 @@ function finalize( )
 end
 
 run_it = function(gapdir::String)
+    global sysinfo
     sysinfo = read_sysinfo_gap(gapdir)
     println("Adding path ", gapdir * "/.libs", " to DL_LOAD_PATH")
     push!( Libdl.DL_LOAD_PATH, gapdir * "/.libs" )

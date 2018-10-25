@@ -1,49 +1,53 @@
+## Conversion to GAP
+
+to_gap(str :: String)         = MakeString(str)
+to_gap(v :: Any)              = v
 
 
-function from_gap_int16(obj :: GAP.GapObj) :: Int16
-    x = Int_IntObj( obj )
-    return Int16(x)
+function to_gap( v :: Bool ) :: MPtr
+    if v
+        return True
+    else
+        return False
+    end
 end
 
-function from_gap_int32(obj :: GAP.GapObj) :: Int32
-    x = Int_IntObj( obj )
-    return Int32(x)
+function to_gap(v :: Array{T, 1} where T) :: MPtr
+    l = NewPlist(length(v))
+    for i in 1:length(v)
+        l[i] = v[i]
+    end
+    return l
 end
 
-from_gap_int64(obj :: GAP.GapObj) = Int64(Int_IntObj(obj))
+function to_gap(v :: AbstractArray)
+    return map(to_gap, v)
+end
 
-from_gap_string(obj :: GAP.GapObj) = String_StringObj(obj)
+from_gap_string(obj :: MPtr) = CSTR_STRING(obj)
 
-function from_gap_list( obj :: GAP.GapObj) :: Array{GAP.GapObj}
-    len = LenPList( obj )
-    array = Array{GAP.GapObj}(undef, len)
+function from_gap_list( obj :: MPtr)
+    len = length( obj )
+    array = Array{Any,1}( nothing, len)
     for i in 1:len
-        array[i] = ElmPList(obj,UInt(i))
+        array[i] = obj[i]
     end
     return array
 end
 
-function from_gap_bool( obj :: GAP.GapObj ) :: Bool
-    if obj.ptr == True.ptr
-        return true
-    elseif obj.ptr == False.ptr
-        return false
-    end
-    ## Fail does not convert well
+function from_gap_bool( obj :: MPtr ) :: Bool
+    return obj == True
 end
 
-from_gap(x,::Type{Int16}) = from_gap_int16( x )
-from_gap(x,::Type{Int32}) = from_gap_int32( x )
-from_gap(x,::Type{Int64}) = from_gap_int64( x )
+from_gap(x,::Type{Any})    = x
 from_gap(x,::Type{String}) = from_gap_string( x )
-from_gap(x,::Type{Bool}) = from_gap_bool( x )
+from_gap(x,::Type{Bool})   = from_gap_bool( x )
 
-function from_gap_list_type( obj :: GAP.GapObj, element_type :: DataType ) :: Array{Int64}
-    converted_list = from_gap_list( obj )
-    len_list = length(converted_list)
-    new_array = Array{element_type}(undef, len_list)
+function from_gap_list_type( obj :: MPtr, element_type :: DataType ) 
+    len_list = length(obj)
+    new_array = Array{element_type}(len_list)
     for i in 1:len_list
-        new_array[ i ] = from_gap(converted_list[i],element_type)
+        new_array[ i ] = from_gap(obj[i],element_type)
     end
     return new_array
 end
@@ -51,6 +55,3 @@ end
 from_gap_list_int16( x ) = from_gap_list_type( x, Int16 )
 from_gap_list_int32( x ) = from_gap_list_type( x, Int32 )
 from_gap_list_int64( x ) = from_gap_list_type( x, Int64 )
-
-
-
