@@ -11,14 +11,14 @@ function GET_FROM_GAP(ptr::Ptr{Cvoid})::Any
 end
 
 function EvalString( cmd :: String )
-    res = ccall( ( :GAP_EvalString, "libgap"), Ptr{Cvoid}, 
+    res = ccall( ( :GAP_EvalString, "libgap"), MPtr, 
                  (Ptr{UInt8},),
                  cmd );
-    return GET_FROM_GAP(res)
+    return res
 end
 
 function CallFunc( func :: MPtr, args... )
-    return GET_FROM_GAP( GapFunc( func )(args...) )
+    return GapFunc( func )(args...)
 end
 
 function ValueGlobalVariable( name :: String )
