@@ -25,6 +25,9 @@ jl_value_t * julia_gap(Obj obj)
         // TODO
         return jl_nothing;
     }
+    if (IS_JULIA_OBJ(obj)) {
+        return GET_JULIA_OBJ(obj);
+    }
     return (jl_value_t *)obj;
 }
 
