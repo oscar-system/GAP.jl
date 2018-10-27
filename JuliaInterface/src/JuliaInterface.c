@@ -947,9 +947,6 @@ static Int InitKernel(StructInitInfo * module)
     JULIA_FUNC_String_constructor = jl_get_function(jl_base_module, "String");
     JULIA_FUNC_showerror = jl_get_function(jl_base_module, "showerror");
 
-    // Initialize GAP function pointers in Julia
-    JuliaInitializeGAPFunctionPointers();
-
     // return success
     return 0;
 }

@@ -1,13 +1,13 @@
 function gap_LengthPlist(list)
-    return ccall(gap_LengthList,Int64,(Ptr{Void},),list.ptr)
+    return ccall(:LengthList,Int64,(Ptr{Void},),list.ptr)
 end
 
 function gap_ListElement(list,pos::Int)
-    return GAP.GapObj(ccall(gap_Elm0_List,Ptr{Void},(Ptr{Void},Int),list.ptr,pos))
+    return GAP.GapObj(ccall(:Elm0_List,Ptr{Void},(Ptr{Void},Int),list.ptr,pos))
 end
 
 function gap_CallFunc2Args(func,arg1,arg2)
-    return GAP.GapObj(ccall( gap_Call2Args, Ptr{Void}, (Ptr{Void},Ptr{Void},Ptr{Void}), func.ptr,arg1.ptr,arg2.ptr ))
+    return GAP.GapObj(ccall( :Call2Args, Ptr{Void}, (Ptr{Void},Ptr{Void},Ptr{Void}), func.ptr,arg1.ptr,arg2.ptr ))
 end
 
 function bahn( element, generators, action )
@@ -32,7 +32,7 @@ function bahn( element, generators, action )
             end
         end
     end
-    pointer = ccall(gap_NewJuliaObj,Ptr{Void},(Ptr{Void},),pointer_from_objref(return_set))
+    pointer = ccall(:NewJuliaObj,Ptr{Void},(Ptr{Void},),pointer_from_objref(return_set))
     return GAP.GapObj(pointer)
 end
 
@@ -56,5 +56,5 @@ function bahn_with_any( self::Ptr{Void}, element::Ptr{Void}, generators::Ptr{Voi
             end
         end
     end
-    return gap_True
+    return GAP.True
 end

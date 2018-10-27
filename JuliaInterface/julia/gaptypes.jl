@@ -45,8 +45,7 @@ function call_with_catch( juliafunc, arguments )
     end
 end
 
-export get_function_symbols_in_module, get_variable_symbols_in_module,
-       call_with_catch
+export call_with_catch
 
 end
 
@@ -83,20 +82,6 @@ struct GapFunc
     ptr::MPtr
 end
 
-function sanitize_call_array(array)
-    new_array = Array{Ptr{Cvoid},1}(undef,length(array))
-    for i in 1:length(array)
-        if typeof(array[i]) == MPtr
-            new_array[i] = reinterpret(Ptr{Cvoid},array[i])
-        elseif typeof(array[i]) == GapObj
-            new_array[i] = array[i].ptr
-        else
-            new_array[i] = array[i]
-        end
-    end
-    return new_array
-end
-
 """
     (func::GapFunc)(args...)
 
@@ -108,7 +93,7 @@ end
 """
 function(func::GapFunc)(args...)
     arg_array = collect(args)
-    result = ccall(Main.gap_call_gap_func,Any,
+    result = ccall(:call_gap_func,Any,
                         (MPtr,Any),func.ptr, arg_array )
     return result
 end
@@ -127,7 +112,7 @@ function getproperty(funcobj::GAPFuncsType,name::Symbol)
         return cache[name]
     end
     name_string = string(name)
-    variable = ccall(Main.gap_GAP_ValueGlobalVariable,MPtr,(Ptr{UInt8},),name_string)
+    variable = ccall(:GAP_ValueGlobalVariable,MPtr,(Ptr{UInt8},),name_string)
     current_func = GapFunc(variable)
     cache[name] = current_func
     return current_func

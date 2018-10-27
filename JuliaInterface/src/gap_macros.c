@@ -58,25 +58,3 @@ jl_value_t * call_gap_func(void * func, jl_value_t * arg_array)
     }
     return julia_gap(return_val);
 }
-
-void JuliaInitializeGAPFunctionPointers()
-{
-    // the following are used by orbits.jl
-    INITIALIZE_JULIA_CPOINTER(LengthList);
-    INITIALIZE_JULIA_CPOINTER(Elm0_List);
-    INITIALIZE_JULIA_CPOINTER(True);
-    INITIALIZE_JULIA_CPOINTER(False);
-    INITIALIZE_JULIA_CPOINTER(Call2Args);
-    INITIALIZE_JULIA_CPOINTER(NewJuliaObj);
-
-    INITIALIZE_JULIA_CPOINTER(call_gap_func);
-    INITIALIZE_JULIA_CPOINTER(julia_gap);
-
-    // Used in LibGAP.jl's ccall file
-
-    INITIALIZE_JULIA_CPOINTER(GAP_EvalString);
-    INITIALIZE_JULIA_CPOINTER(GAP_ValueGlobalVariable);
-    INITIALIZE_JULIA_CPOINTER(GAP_MakeString);
-    INITIALIZE_JULIA_CPOINTER(GAP_CSTR_STRING);
-    INITIALIZE_JULIA_CPOINTER(GAP_NewPlist);
-}
