@@ -12,8 +12,6 @@ import Base: zero, -, one, inv, ==, isless, +, *, //, ^, mod, iszero, string,
 
 import Main.GAP: GapObj
 
-import Main.GAP.GAPFuncs: SUM
-
 export GAPRat, get_gaprat_ptr
 
 struct GAPRat
