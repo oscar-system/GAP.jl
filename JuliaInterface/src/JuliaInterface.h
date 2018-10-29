@@ -11,17 +11,6 @@ extern void handle_jl_exception(void);
         handle_jl_exception();                                               \
     }
 
-#define INITIALIZE_JULIA_CPOINTER(name)                                      \
-    {                                                                        \
-        jl_value_t * gap_ptr;                                                \
-        jl_sym_t *   gap_symbol;                                             \
-        gap_ptr = jl_box_voidpointer(name);                                  \
-        gap_symbol = jl_symbol("gap_" #name);                                \
-        JULIAINTERFACE_EXCEPTION_HANDLER                                     \
-        jl_set_const(jl_main_module, gap_symbol, gap_ptr);                   \
-        JULIAINTERFACE_EXCEPTION_HANDLER                                     \
-    }
-
 // Internal Julia access functions
 
 // SET_JULIA_OBJ(o,v)

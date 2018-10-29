@@ -1,7 +1,5 @@
 ## Internal ccall's
 
-import Main: gap_julia_gap
-
 import Main.GAP: GapFunc
 
 ### Internal stuff
