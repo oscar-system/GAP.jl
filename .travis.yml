@@ -7,6 +7,10 @@ env:
    - MAKEFLAGS="-j4"
    - JULIA_TRACK_COVERAGE=yes
 
+cache:
+    directories:
+     - /home/travis/.julia/
+
 addons:
   apt_packages:
     - libgmp-dev
@@ -28,7 +32,10 @@ before_script:
   - etc/travis_build.sh
 
 script:
+  - ${JULIAROOT}/bin/julia -e 'import Pkg ; Pkg.add("Nemo")'
   - etc/travis_test.sh
+    # delete coverage files for packages, so that they do not get cached
+  - find $HOME/.julia/packages/ -name "*.jl.*.cov" -exec rm -f {} \;
 
 after_script:
   - cd $TRAVIS_BUILD_DIR
