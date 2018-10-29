@@ -24,6 +24,7 @@ before_script:
   - etc/install_julia_gap.sh
   - ln -s $TRAVIS_BUILD_DIR/JuliaInterface $GAPROOT/pkg/
   - ln -s $TRAVIS_BUILD_DIR/JuliaExperimental $GAPROOT/pkg/
+  - ln -s $TRAVIS_BUILD_DIR/LibGAP.jl $GAPROOT/pkg/
   - etc/travis_build.sh
 
 script:
