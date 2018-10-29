@@ -5,6 +5,7 @@ env:
    - JULIAROOT=$TRAVIS_BUILD_DIR/julia
    - GAPROOT=$TRAVIS_BUILD_DIR/gap
    - MAKEFLAGS="-j4"
+   - JULIA_TRACK_COVERAGE=yes
 
 addons:
   apt_packages:
@@ -30,5 +31,6 @@ script:
 
 after_script:
   - cd $TRAVIS_BUILD_DIR
-  - $GAPROOT/gap --quitonbreak --norepl etc/gather-coverage.g
+  - $GAPROOT/gap --quitonbreak --norepl etc/gather_coverage.g
+  - ${JULIAROOT}/bin/julia etc/gather_coverage.jl
   - bash <(curl -s https://codecov.io/bash)
