@@ -255,8 +255,11 @@ static Obj DoCallJuliaCFunc0Arg(Obj func)
     Obj result;
     JL_TRY {
         result = function();
+        jl_exception_clear();
     }
     JL_CATCH {
+        jl_get_ptls_states()->previous_exception = jl_current_exception();
+        result = 0;
     }
     JULIAINTERFACE_EXCEPTION_HANDLER
     return result;
@@ -268,8 +271,11 @@ static Obj DoCallJuliaCFunc1Arg(Obj func, Obj arg1)
     Obj result;
     JL_TRY {
         result = function(arg1);
+        jl_exception_clear();
     }
     JL_CATCH {
+        jl_get_ptls_states()->previous_exception = jl_current_exception();
+        result = 0;
     }
     JULIAINTERFACE_EXCEPTION_HANDLER
     return result;
@@ -281,8 +287,11 @@ static Obj DoCallJuliaCFunc2Arg(Obj func, Obj arg1, Obj arg2)
     Obj result;
     JL_TRY {
         result = function(arg1, arg2);
+        jl_exception_clear();
     }
     JL_CATCH {
+        jl_get_ptls_states()->previous_exception = jl_current_exception();
+        result = 0;
     }
     JULIAINTERFACE_EXCEPTION_HANDLER
     return result;
@@ -294,8 +303,11 @@ static Obj DoCallJuliaCFunc3Arg(Obj func, Obj arg1, Obj arg2, Obj arg3)
     Obj result;
     JL_TRY {
         result = function(arg1, arg2, arg3);
+        jl_exception_clear();
     }
     JL_CATCH {
+        jl_get_ptls_states()->previous_exception = jl_current_exception();
+        result = 0;
     }
     JULIAINTERFACE_EXCEPTION_HANDLER
     return result;
@@ -308,8 +320,11 @@ DoCallJuliaCFunc4Arg(Obj func, Obj arg1, Obj arg2, Obj arg3, Obj arg4)
     Obj result;
     JL_TRY {
         result = function(arg1, arg2, arg3, arg4);
+        jl_exception_clear();
     }
     JL_CATCH {
+        jl_get_ptls_states()->previous_exception = jl_current_exception();
+        result = 0;
     }
     JULIAINTERFACE_EXCEPTION_HANDLER
     return result;
@@ -322,8 +337,11 @@ static Obj DoCallJuliaCFunc5Arg(
     Obj result;
     JL_TRY {
         result = function(arg1, arg2, arg3, arg4, arg5);
+        jl_exception_clear();
     }
     JL_CATCH {
+        jl_get_ptls_states()->previous_exception = jl_current_exception();
+        result = 0;
     }
     JULIAINTERFACE_EXCEPTION_HANDLER
     return result;
@@ -336,8 +354,11 @@ static Obj DoCallJuliaCFunc6Arg(
     Obj result;
     JL_TRY {
         result = function(arg1, arg2, arg3, arg4, arg5, arg6);
+        jl_exception_clear();
     }
     JL_CATCH {
+        jl_get_ptls_states()->previous_exception = jl_current_exception();
+        result = 0;
     }
     JULIAINTERFACE_EXCEPTION_HANDLER
     return result;
