@@ -12,8 +12,6 @@ import Base: zero, -, one, inv, ==, isless, +, *, //, ^, mod, iszero, string,
 
 import Main.GAP: GapObj
 
-import Main.GAP.GAPFuncs: SUM
-
 export GAPRat, get_gaprat_ptr
 
 struct GAPRat
@@ -25,7 +23,7 @@ function GAPRat(ptr::Ptr{Cvoid})
 end
 
 function GAPRat(numerator::Int,denominator::Int)
-    x = ccall(Main.gap_create_rational,Ptr{Cvoid},(Cint,Cint),numerator,denominator)
+    x = ccall(:create_rational,Ptr{Cvoid},(Cint,Cint),numerator,denominator)
     return GAPRat(x)
 end
 
@@ -41,93 +39,93 @@ end
 ##
 
 function zero( a::GAPRat )
-    ptr = ccall( Main.gap_MyFuncZERO, Ptr{Cvoid},
+    ptr = ccall( :MyFuncZERO, Ptr{Cvoid},
                 (Ptr{Cvoid},), a.obj.ptr )
     return GAPRat( GapObj(ptr) )
 end
 
 function -( a::GAPRat )
-    ptr = ccall( Main.gap_MyFuncAINV, Ptr{Cvoid},
+    ptr = ccall( :MyFuncAINV, Ptr{Cvoid},
                 (Ptr{Cvoid},), a.obj.ptr )
     return GAPRat( GapObj(ptr) )
 end
 
 function one( a::GAPRat )
-    ptr = ccall( Main.gap_MyFuncONE, Ptr{Cvoid},
+    ptr = ccall( :MyFuncONE, Ptr{Cvoid},
                 (Ptr{Cvoid},), a.obj.ptr )
     return GAPRat( GapObj(ptr) )
 end
 
 function inv( a::GAPRat )
-    ptr = ccall( Main.gap_MyFuncINV, Ptr{Cvoid},
+    ptr = ccall( :MyFuncINV, Ptr{Cvoid},
                 (Ptr{Cvoid},), a.obj.ptr )
     return GAPRat( GapObj(ptr) )
 end
 
 function ==( a::GAPRat, b::GAPRat )
-    return Bool( ccall( Main.gap_MyFuncEQ, Int,
+    return Bool( ccall( :MyFuncEQ, Int,
                 (Ptr{Cvoid}, Ptr{Cvoid}), a.obj.ptr, b.obj.ptr ) )
 end
 
 function isless( a::GAPRat, b::GAPRat )
-    return Bool( ccall( Main.gap_MyFuncLT, Int,
+    return Bool( ccall( :MyFuncLT, Int,
                 (Ptr{Cvoid}, Ptr{Cvoid}), a.obj.ptr, b.obj.ptr ) )
 end
 
 function +( a::GAPRat, b::GAPRat )
-    ptr = ccall( Main.gap_MyFuncSUM, Ptr{Cvoid},
+    ptr = ccall( :MyFuncSUM, Ptr{Cvoid},
                 (Ptr{Cvoid}, Ptr{Cvoid}), a.obj.ptr, b.obj.ptr )
     return GAPRat( GapObj(ptr) )
 #   return GAPRat( SUM( a.obj, b.obj ) )
 end
 
 function -( a::GAPRat, b::GAPRat )
-    ptr = ccall( Main.gap_MyFuncDIFF, Ptr{Cvoid},
+    ptr = ccall( :MyFuncDIFF, Ptr{Cvoid},
                 (Ptr{Cvoid}, Ptr{Cvoid}), a.obj.ptr, b.obj.ptr )
     return GAPRat( GapObj(ptr) )
 end
 
 function *( a::GAPRat, b::GAPRat )
-    ptr = ccall( Main.gap_MyFuncPROD, Ptr{Cvoid},
+    ptr = ccall( :MyFuncPROD, Ptr{Cvoid},
                 (Ptr{Cvoid}, Ptr{Cvoid}), a.obj.ptr, b.obj.ptr )
     return GAPRat( GapObj(ptr) )
 end
 
 function //( a::GAPRat, b::GAPRat )
     iszero( b ) && throw( DivideError() )
-    ptr = ccall( Main.gap_MyFuncQUO, Ptr{Cvoid},
+    ptr = ccall( :MyFuncQUO, Ptr{Cvoid},
                 (Ptr{Cvoid}, Ptr{Cvoid}), a.obj.ptr, b.obj.ptr )
     return GAPRat( GapObj(ptr) )
 end
 
 function ^( a::GAPRat, b::GAPRat )
-    ptr = ccall( Main.gap_MyFuncPOW, Ptr{Cvoid},
+    ptr = ccall( :MyFuncPOW, Ptr{Cvoid},
                 (Ptr{Cvoid}, Ptr{Cvoid}), a.obj.ptr, b.obj.ptr )
     return GAPRat( GapObj(ptr) )
 end
 
 function ^( a::GAPRat, b::Int )
-    int_ptr = ccall( Main.gap_INTOBJ_INT, Ptr{Cvoid}, (Int,), b )
-    ptr = ccall( Main.gap_MyFuncPOW, Ptr{Cvoid},
+    int_ptr = ccall( :ObjInt_Int, Ptr{Cvoid}, (Int,), b )
+    ptr = ccall( :MyFuncPOW, Ptr{Cvoid},
                 (Ptr{Cvoid}, Int), a.obj.ptr, int_ptr )
     return GAPRat( GapObj(ptr) )
 end
 
 function mod( a::GAPRat, b::GAPRat )
-    ptr = ccall( Main.gap_MyFuncMOD, Ptr{Cvoid},
+    ptr = ccall( :MyFuncMOD, Ptr{Cvoid},
                 (Ptr{Cvoid}, Ptr{Cvoid}), a.obj.ptr, b.obj.ptr )
     return GAPRat( GapObj(ptr) )
 end
 
 function iszero( a::GAPRat )
-    return Bool( ccall( Main.gap_MyFuncZERO, Ptr{Cvoid},
+    return Bool( ccall( :MyFuncZERO, Ptr{Cvoid},
                 (Ptr{Cvoid},), a.obj.ptr ) == a.obj.ptr )
 end
 
 
 #T defined in Nemo, can we assume that Nemo is loaded? (then add 'using'?)
 # function isone( a::GAPRat )
-#     return GAPRat( ccall( Main.gap_MyFuncONE, Ptr{Cvoid},(Ptr{Cvoid},), a.obj.ptr ) == a
+#     return GAPRat( ccall( :MyFuncONE, Ptr{Cvoid},(Ptr{Cvoid},), a.obj.ptr ) == a
 # end
 
 #T defined in Nemo
@@ -140,14 +138,14 @@ end
 ##
 
 function ==( a::GAPRat, b::Int )
-    int_ptr = ccall( Main.gap_INTOBJ_INT, Ptr{Cvoid}, (Int,), b )
-    return Bool( ccall( Main.gap_MyFuncEQ, Int,
+    int_ptr = ccall( :ObjInt_Int, Ptr{Cvoid}, (Int,), b )
+    return Bool( ccall( :MyFuncEQ, Int,
                 (Ptr{Cvoid}, Ptr{Cvoid}), a.obj.ptr, int_ptr ) )
 end
 
 function ==( a::Int, b::GAPRat )
-    int_ptr = ccall( Main.gap_INTOBJ_INT, Ptr{Cvoid}, (Int,), a )
-    return Bool( ccall( Main.gap_MyFuncEQ, Int,
+    int_ptr = ccall( :ObjInt_Int, Ptr{Cvoid}, (Int,), a )
+    return Bool( ccall( :MyFuncEQ, Int,
                 (Ptr{Cvoid}, Ptr{Cvoid}), int_ptr, b.obj.ptr ) )
 end
 
@@ -161,14 +159,14 @@ end
 
 
 function isless( a::GAPRat, b::Int )
-    int_ptr = ccall( Main.gap_INTOBJ_INT, Ptr{Cvoid}, (Int,), b )
-    return Bool( ccall( Main.gap_MyFuncLT, Int,
+    int_ptr = ccall( :ObjInt_Int, Ptr{Cvoid}, (Int,), b )
+    return Bool( ccall( :MyFuncLT, Int,
                 (Ptr{Cvoid}, Ptr{Cvoid}), a.obj.ptr, int_ptr ) )
 end
 
 function isless( a::Int, b::GAPRat )
-    int_ptr = ccall( Main.gap_INTOBJ_INT, Ptr{Cvoid}, (Int,), a )
-    return Bool( ccall( Main.gap_MyFuncLT, Int,
+    int_ptr = ccall( :ObjInt_Int, Ptr{Cvoid}, (Int,), a )
+    return Bool( ccall( :MyFuncLT, Int,
                 (Ptr{Cvoid}, Ptr{Cvoid}), int_ptr, a.obj.ptr ) )
 end
 
@@ -182,15 +180,15 @@ end
 
 
 function +( a::GAPRat, b::Int )
-    int_ptr = ccall( Main.gap_INTOBJ_INT, Ptr{Cvoid}, (Int,), b )
-    ptr = ccall( Main.gap_MyFuncSUM, Ptr{Cvoid},
+    int_ptr = ccall( :ObjInt_Int, Ptr{Cvoid}, (Int,), b )
+    ptr = ccall( :MyFuncSUM, Ptr{Cvoid},
                 (Ptr{Cvoid}, Int), a.obj.ptr, int_ptr )
     return GAPRat( GapObj(ptr) )
 end
 
 function +( a::Int, b::GAPRat )
-    int_ptr = ccall( Main.gap_INTOBJ_INT, Ptr{Cvoid}, (Int,), a )
-    ptr = ccall( Main.gap_MyFuncSUM, Ptr{Cvoid},
+    int_ptr = ccall( :ObjInt_Int, Ptr{Cvoid}, (Int,), a )
+    ptr = ccall( :MyFuncSUM, Ptr{Cvoid},
                 (Ptr{Cvoid}, Int), int_ptr, b.obj.ptr )
     return GAPRat( GapObj(ptr) )
 end
@@ -205,15 +203,15 @@ end
 
 
 function -( a::GAPRat, b::Int )
-    int_ptr = ccall( Main.gap_INTOBJ_INT, Ptr{Cvoid}, (Int,), b )
-    ptr = ccall( Main.gap_MyFuncDIFF, Ptr{Cvoid},
+    int_ptr = ccall( :ObjInt_Int, Ptr{Cvoid}, (Int,), b )
+    ptr = ccall( :MyFuncDIFF, Ptr{Cvoid},
                 (Ptr{Cvoid}, Int), a.obj.ptr, int_ptr )
     return GAPRat( GapObj(ptr) )
 end
 
 function -( a::Int, b::GAPRat )
-    int_ptr = ccall( Main.gap_INTOBJ_INT, Ptr{Cvoid}, (Int,), a )
-    ptr = ccall( Main.gap_MyFuncDIFF, Ptr{Cvoid},
+    int_ptr = ccall( :ObjInt_Int, Ptr{Cvoid}, (Int,), a )
+    ptr = ccall( :MyFuncDIFF, Ptr{Cvoid},
                 (Ptr{Cvoid}, Int), int_ptr, b.obj.ptr )
     return GAPRat( GapObj(ptr) )
 end
@@ -228,15 +226,15 @@ end
 
 
 function *( a::GAPRat, b::Int )
-    int_ptr = ccall( Main.gap_INTOBJ_INT, Ptr{Cvoid}, (Int,), b )
-    ptr = ccall( Main.gap_MyFuncPROD, Ptr{Cvoid},
+    int_ptr = ccall( :ObjInt_Int, Ptr{Cvoid}, (Int,), b )
+    ptr = ccall( :MyFuncPROD, Ptr{Cvoid},
                 (Ptr{Cvoid}, Int), a.obj.ptr, int_ptr )
     return GAPRat( GapObj(ptr) )
 end
 
 function *( a::Int, b::GAPRat )
-    int_ptr = ccall( Main.gap_INTOBJ_INT, Ptr{Cvoid}, (Int,), a )
-    ptr = ccall( Main.gap_MyFuncPROD, Ptr{Cvoid},
+    int_ptr = ccall( :ObjInt_Int, Ptr{Cvoid}, (Int,), a )
+    ptr = ccall( :MyFuncPROD, Ptr{Cvoid},
                 (Ptr{Cvoid}, Int), int_ptr, b.obj.ptr )
     return GAPRat( GapObj(ptr) )
 end
@@ -251,15 +249,15 @@ end
 
 
 function //( a::GAPRat, b::Int )
-    int_ptr = ccall( Main.gap_INTOBJ_INT, Ptr{Cvoid}, (Int,), b )
-    ptr = ccall( Main.gap_MyFuncQUO, Ptr{Cvoid},
+    int_ptr = ccall( :ObjInt_Int, Ptr{Cvoid}, (Int,), b )
+    ptr = ccall( :MyFuncQUO, Ptr{Cvoid},
                 (Ptr{Cvoid}, Int), a.obj.ptr, int_ptr )
     return GAPRat( GapObj(ptr) )
 end 
 
 function //( a::Int, b::GAPRat )
-    int_ptr = ccall( Main.gap_INTOBJ_INT, Ptr{Cvoid}, (Int,), a )
-    ptr = ccall( Main.gap_MyFuncQUO, Ptr{Cvoid},
+    int_ptr = ccall( :ObjInt_Int, Ptr{Cvoid}, (Int,), a )
+    ptr = ccall( :MyFuncQUO, Ptr{Cvoid},
                 (Ptr{Cvoid}, Int), int_ptr, b.obj.ptr )
     return GAPRat( GapObj(ptr) )
 end    
@@ -274,15 +272,15 @@ end
 
 
 function mod( a::GAPRat, b::Int )
-    int_ptr = ccall( Main.gap_INTOBJ_INT, Ptr{Cvoid}, (Int,), b )
-    ptr = ccall( Main.gap_MyFuncMOD, Ptr{Cvoid},
+    int_ptr = ccall( :ObjInt_Int, Ptr{Cvoid}, (Int,), b )
+    ptr = ccall( :MyFuncMOD, Ptr{Cvoid},
                 (Ptr{Cvoid}, Int), a.obj.ptr, int_ptr )
     return GAPRat( GapObj(ptr) )
 end
 
 function mod( a::Int, b::GAPRat )
-    int_ptr = ccall( Main.gap_INTOBJ_INT, Ptr{Cvoid}, (Int,), a )
-    ptr = ccall( Main.gap_MyFuncMOD, Ptr{Cvoid},
+    int_ptr = ccall( :ObjInt_Int, Ptr{Cvoid}, (Int,), a )
+    ptr = ccall( :MyFuncMOD, Ptr{Cvoid},
                 (Ptr{Cvoid}, Int), int_ptr, b.obj.ptr )
     return GAPRat( GapObj(ptr) )
 end
@@ -319,40 +317,40 @@ end
 ##
 
 function numerator( a::GAPRat )
-    ptr = ccall( Main.gap_NUM_RAT, Ptr{Cvoid},
+    ptr = ccall( :NUM_RAT, Ptr{Cvoid},
                 (Ptr{Cvoid},), a.obj.ptr )
     return GAPRat( GapObj(ptr) )
 end
 
 function denominator( a::GAPRat )
-    ptr = ccall( Main.gap_DEN_RAT, Ptr{Cvoid},
+    ptr = ccall( :DEN_RAT, Ptr{Cvoid},
                 (Ptr{Cvoid},), a.obj.ptr )
     return GAPRat( GapObj(ptr) )
 end
 
 #T This works only for GAP integers, GAP has no C function for GAP rationals?
 function abs( a::GAPRat )
-    ptr = ccall( Main.gap_AbsInt, Ptr{Cvoid},
+    ptr = ccall( :AbsInt, Ptr{Cvoid},
                 (Ptr{Cvoid},), a.obj.ptr )
     return GAPRat( GapObj(ptr) )
 end
 
 function gcd( a::GAPRat, b::GAPRat )
-    ptr = ccall( Main.gap_GcdInt, Ptr{Cvoid},
+    ptr = ccall( :GcdInt, Ptr{Cvoid},
                 (Ptr{Cvoid}, Ptr{Cvoid}), a.obj.ptr, b.obj.ptr )
     return GAPRat( GapObj(ptr) )
 end
 
 function gcd( a::GAPRat, b::Int )
-    int_ptr = ccall( Main.gap_INTOBJ_INT, Ptr{Cvoid}, (Int,), b )
-    ptr = ccall( Main.gap_GcdInt, Ptr{Cvoid},
+    int_ptr = ccall( :ObjInt_Int, Ptr{Cvoid}, (Int,), b )
+    ptr = ccall( :GcdInt, Ptr{Cvoid},
                 (Ptr{Cvoid}, Ptr{Cvoid}), a.obj.ptr, int_ptr )
     return GAPRat( GapObj(ptr) )
 end
 
 function gcd( a::Int, b::GAPRat )
-    int_ptr = ccall( Main.gap_INTOBJ_INT, Ptr{Cvoid}, (Int,), a )
-    return ccall( Main.gap_GcdInt, Ptr{Cvoid},
+    int_ptr = ccall( :ObjInt_Int, Ptr{Cvoid}, (Int,), a )
+    return ccall( :GcdInt, Ptr{Cvoid},
                 (Ptr{Cvoid}, Ptr{Cvoid}), int_ptr, b.obj.ptr )
 end
 

@@ -1,7 +1,4 @@
-// Functions for accessing GAP macros
-// This file should be completely obsolete
-// once LibGap is completed
-
+#include "libgap-api.h"
 
 // Provide other access functions.
 Int LengthList(Obj list)
@@ -27,6 +24,9 @@ jl_value_t * julia_gap(Obj obj)
     if (IS_FFE(obj)) {
         // TODO
         return jl_nothing;
+    }
+    if (IS_JULIA_OBJ(obj)) {
+        return GET_JULIA_OBJ(obj);
     }
     return (jl_value_t *)obj;
 }
@@ -57,18 +57,4 @@ jl_value_t * call_gap_func(void * func, jl_value_t * arg_array)
         return jl_nothing;
     }
     return julia_gap(return_val);
-}
-
-void JuliaInitializeGAPFunctionPointers()
-{
-    // the following are used by orbits.jl
-    INITIALIZE_JULIA_CPOINTER(LengthList);
-    INITIALIZE_JULIA_CPOINTER(Elm0_List);
-    INITIALIZE_JULIA_CPOINTER(True);
-    INITIALIZE_JULIA_CPOINTER(False);
-    INITIALIZE_JULIA_CPOINTER(Call2Args);
-    INITIALIZE_JULIA_CPOINTER(NewJuliaObj);
-
-    INITIALIZE_JULIA_CPOINTER(call_gap_func);
-    INITIALIZE_JULIA_CPOINTER(julia_gap);
 }

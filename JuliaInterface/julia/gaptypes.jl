@@ -11,6 +11,7 @@
 module GAPUtils
 
 import REPL.REPLCompletions: completions
+import Base: show
 
 """
     get_symbols_in_module(module_t::Module) :: Array{Symbol,1}
@@ -44,8 +45,7 @@ function call_with_catch( juliafunc, arguments )
     end
 end
 
-export get_function_symbols_in_module, get_variable_symbols_in_module,
-       call_with_catch
+export call_with_catch
 
 end
 
@@ -53,7 +53,7 @@ end
 
 module GAP
 
-#import Base: +
+import Base: getproperty
 
 import Main.ForeignGAP: MPtr
 
@@ -82,20 +82,6 @@ struct GapFunc
     ptr::MPtr
 end
 
-function sanitize_call_array(array)
-    new_array = Array{Ptr{Cvoid},1}(undef,length(array))
-    for i in 1:length(array)
-        if typeof(array[i]) == MPtr
-            new_array[i] = reinterpret(Ptr{Cvoid},array[i])
-        elseif typeof(array[i]) == GapObj
-            new_array[i] = array[i].ptr
-        else
-            new_array[i] = array[i]
-        end
-    end
-    return new_array
-end
-
 """
     (func::GapFunc)(args...)
 
@@ -107,12 +93,29 @@ end
 """
 function(func::GapFunc)(args...)
     arg_array = collect(args)
-    result = ccall(Main.gap_call_gap_func,Any,
+    result = ccall(:call_gap_func,Any,
                         (MPtr,Any),func.ptr, arg_array )
     return result
 end
 
-baremodule GAPFuncs
+struct GAPFuncsType
+    funcs::Dict{Symbol,GapFunc}
+end
+
+Base.show(io::IO,::GAPFuncsType) = Base.show(io,"GAP function object")
+
+GAPFuncs = GAPFuncsType(Dict{Symbol,GapFunc}())
+
+function getproperty(funcobj::GAPFuncsType,name::Symbol)
+    cache = getfield(funcobj,:funcs)
+    if haskey(cache,name)
+        return cache[name]
+    end
+    name_string = string(name)
+    variable = ccall(:GAP_ValueGlobalVariable,MPtr,(Ptr{UInt8},),name_string)
+    current_func = GapFunc(variable)
+    cache[name] = current_func
+    return current_func
 end
 
 

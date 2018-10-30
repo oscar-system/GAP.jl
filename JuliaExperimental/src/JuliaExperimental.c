@@ -40,7 +40,6 @@ static Int InitKernel( StructInitInfo *module )
 {
     // init filters and functions
     InitHdlrFuncsFromTable( GVarFuncs );
-    JuliaExperimentalInitializeGAPFunctionPointers();
 
     // return success
     return 0;

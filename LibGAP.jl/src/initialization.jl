@@ -45,8 +45,12 @@ function initialize( argv::Array{String,1}, env::Array{String,1} )
     ccall( Libdl.dlsym(gap_library, :GAP_EvalString)
            , Ptr{Cvoid}
            , (Ptr{UInt8},)
+           , "BindGlobal(\"JULIAINTERNAL_LOADED_FROM_JULIA\", true );" )
+    ccall( Libdl.dlsym(gap_library, :GAP_EvalString)
+           , Ptr{Cvoid}
+           , (Ptr{UInt8},)
            , "LoadPackage(\"JuliaInterface\");" )
-    include( pkgdir * "/libgap.jl")
+    Base.include( Main, pkgdir * "/libgap.jl")
 end
 
 function finalize( )
