@@ -29,7 +29,7 @@ if test ! -r $GAPPATH/sysinfo.gap ; then
 fi
 
 GAPPATH=$(cd ${GAPPATH} && pwd )
-
+SCRIPTDIR=${PWD}
 
 echo "all: ${packages}" > Makefile
 
@@ -42,3 +42,6 @@ for package in $packages; do
 done
 
 echo ".PHONY: all" >> Makefile
+
+sed -e "s|@GAPJULIA_DIR@|${SCRIPTDIR}|g" -e "s|@GAPPATH@|${GAPPATH}|g" runtests.jl.in > LibGAP.jl/test/runtests.jl
+
