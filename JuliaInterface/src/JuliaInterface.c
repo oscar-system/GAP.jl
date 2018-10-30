@@ -83,6 +83,9 @@ static ALWAYS_INLINE Obj DoCallJuliaFunc(Obj       func,
     default:
         result = jl_call(f, (jl_value_t **)a, narg);
     }
+    // It suffices to use JULIAINTERFACE_EXCEPTION_HANDLER here, as jl_call
+    // and its variants are part of the jlapi, so don't have to be wrapped in
+    // JL_TRY/JL_CATCH.
     JULIAINTERFACE_EXCEPTION_HANDLER
     if (IsGapObj(result))
         return (Obj)result;
@@ -466,9 +469,10 @@ jl_function_t * get_function_from_obj_or_string(Obj func)
         return (jl_function_t *)GET_JULIA_OBJ(func);
     }
     if (IS_STRING_REP(func)) {
+        // jl_get_function is a thin wrapper for jl_get_global and never
+        // throws an exception
         jl_function_t * function =
             jl_get_function(jl_main_module, CSTR_STRING(func));
-        JULIAINTERFACE_EXCEPTION_HANDLER
         if (function == 0) {
             ErrorMayQuit("Function is not defined in julia", 0, 0);
         }
@@ -481,6 +485,9 @@ jl_function_t * get_function_from_obj_or_string(Obj func)
 
 jl_module_t * get_module_from_string(char * name)
 {
+    // It suffices to use JULIAINTERFACE_EXCEPTION_HANDLER here, as
+    // jl_eval_string is part of the jlapi, so don't have to be wrapped in
+    // JL_TRY/JL_CATCH.
     jl_value_t * module_value = jl_eval_string(name);
     JULIAINTERFACE_EXCEPTION_HANDLER
     if (!jl_is_module(module_value))
@@ -520,6 +527,10 @@ static Obj FuncJuliaEvalString(Obj self, Obj string)
     char * current = CSTR_STRING(string);
     char   copy[strlen(current) + 1];
     strcpy(copy, current);
+
+    // It suffices to use JULIAINTERFACE_EXCEPTION_HANDLER here, as
+    // jl_eval_string is part of the jlapi, so don't have to be wrapped in
+    // JL_TRY/JL_CATCH.
     jl_value_t * result = jl_eval_string(copy);
     JULIAINTERFACE_EXCEPTION_HANDLER
     return NewJuliaObj(result);
@@ -808,9 +819,7 @@ static Obj FuncJuliaTuple(Obj self, Obj list)
         jl_svecset(param_types, i, jl_typeof(current_obj));
     }
     tuple_type = jl_apply_tuple_type(param_types);
-    JULIAINTERFACE_EXCEPTION_HANDLER
     result = jl_new_structv(tuple_type, jl_svec_data(params), len);
-    JULIAINTERFACE_EXCEPTION_HANDLER
     JL_GC_POP();
     return NewJuliaObj(result);
 }
@@ -838,7 +847,6 @@ static Obj FuncJuliaModule(Obj self, Obj name)
     }
 
     jl_module_t * julia_module = get_module_from_string(CSTR_STRING(name));
-    JULIAINTERFACE_EXCEPTION_HANDLER
     return NewJuliaObj((jl_value_t *)julia_module);
 }
 
@@ -849,9 +857,7 @@ static Obj FuncJuliaSetVal(Obj self, Obj name, Obj julia_val)
 {
     jl_value_t * julia_obj = GET_JULIA_OBJ(julia_val);
     jl_sym_t *   julia_symbol = jl_symbol(CSTR_STRING(name));
-    JULIAINTERFACE_EXCEPTION_HANDLER
     jl_set_global(jl_main_module, julia_symbol, julia_obj);
-    JULIAINTERFACE_EXCEPTION_HANDLER
     return 0;
 }
 
@@ -864,7 +870,6 @@ static Obj Func_JuliaGetGlobalVariable(Obj self, Obj name)
         return Fail;
     }
     jl_value_t * value = jl_get_global(jl_main_module, symbol);
-    JULIAINTERFACE_EXCEPTION_HANDLER
     return NewJuliaObj(value);
 }
 
@@ -887,7 +892,6 @@ static Obj Func_JuliaGetGlobalVariableByModule(Obj self, Obj name, Obj module)
         return Fail;
     }
     jl_value_t * value = jl_get_global(module_t, symbol);
-    JULIAINTERFACE_EXCEPTION_HANDLER
     return NewJuliaObj(value);
 }
 
@@ -896,6 +900,9 @@ static Obj Func_JuliaGetGlobalVariableByModule(Obj self, Obj name, Obj module)
 // <super_object> must be a julia object GAP object, and <name> a string.
 static Obj FuncJuliaGetFieldOfObject(Obj self, Obj super_obj, Obj field_name)
 {
+    // It suffices to use JULIAINTERFACE_EXCEPTION_HANDLER here, as
+    // jl_get_field is part of the jlapi, so don't have to be wrapped in
+    // JL_TRY/JL_CATCH.
     jl_value_t * extracted_superobj = GET_JULIA_OBJ(super_obj);
     jl_value_t * field_value =
         jl_get_field(extracted_superobj, CSTR_STRING(field_name));
