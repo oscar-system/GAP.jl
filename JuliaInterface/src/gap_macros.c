@@ -1,21 +1,5 @@
 #include "libgap-api.h"
 
-// Provide other access functions.
-Int LengthList(Obj list)
-{
-    return LEN_PLIST(list);
-}
-
-Obj Elm0_List(Obj list, int pos)
-{
-    return ELM_PLIST(list, pos);
-}
-
-Obj Call2Args(Obj func, Obj a1, Obj a2)
-{
-    return CALL_2ARGS(func, a1, a2);
-}
-
 jl_value_t * julia_gap(Obj obj)
 {
     if (IS_INT(obj)) {
