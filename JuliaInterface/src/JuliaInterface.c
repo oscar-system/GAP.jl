@@ -819,8 +819,13 @@ static Obj FuncJuliaTuple(Obj self, Obj list)
 // :<name>.
 static Obj FuncJuliaSymbol(Obj self, Obj name)
 {
+    if (!IS_STRING_REP(name)) {
+        ErrorMayQuit("JuliaSymbol: <name> must be a string", 0, 0);
+    }
+
+    // jl_symbol never throws an exception and always returns a valid
+    // result, so no need for extra checks.
     jl_sym_t * julia_symbol = jl_symbol(CSTR_STRING(name));
-    JULIAINTERFACE_EXCEPTION_HANDLER
     return NewJuliaObj((jl_value_t *)julia_symbol);
 }
 
@@ -828,6 +833,10 @@ static Obj FuncJuliaSymbol(Obj self, Obj name)
 // module <name>.
 static Obj FuncJuliaModule(Obj self, Obj name)
 {
+    if (!IS_STRING_REP(name)) {
+        ErrorMayQuit("JuliaModule: <name> must be a string", 0, 0);
+    }
+
     jl_module_t * julia_module = get_module_from_string(CSTR_STRING(name));
     JULIAINTERFACE_EXCEPTION_HANDLER
     return NewJuliaObj((jl_value_t *)julia_module);
