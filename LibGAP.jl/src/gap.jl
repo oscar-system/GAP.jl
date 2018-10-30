@@ -9,13 +9,13 @@ function GAPFunctionPointer( name :: String )
     return GAP.GapFunc( ValueGlobalVariable(name).ptr )
 end
 
-function Base.show( io::IO, obj::MPtr )
+function Base.show( io::IO, obj::Union{MPtr,GAP.GapFFE} )
     str = GAP.GAPFuncs.String( obj )
     stri = CSTR_STRING( str )
     print(io,"GAP: $stri")
 end
 
-function Base.string( obj::MPtr )
+function Base.string( obj::Union{MPtr,GAP.GapFFE} )
     str = GAP.String( obj )
     return CSTR_STRING( str )
 end

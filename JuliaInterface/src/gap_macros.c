@@ -6,8 +6,7 @@ jl_value_t * julia_gap(Obj obj)
         return jl_box_int64(INT_INTOBJ(obj));
     }
     if (IS_FFE(obj)) {
-        // TODO
-        return jl_nothing;
+        return gap_box_gapffe(obj);
     }
     if (IS_JULIA_OBJ(obj)) {
         return GET_JULIA_OBJ(obj);
@@ -22,6 +21,9 @@ Obj gap_julia(jl_value_t * julia_obj)
     }
     if (IsGapObj(julia_obj)) {
         return (Obj)(julia_obj);
+    }
+    if (jl_typeis(julia_obj, JULIA_GAPFFE_type)) {
+        return gap_unbox_gapffe(julia_obj);
     }
     return NewJuliaObj(julia_obj);
 }
