@@ -4,13 +4,6 @@
 #include "src/compiled.h" /* GAP headers */
 #include <julia.h>
 
-extern void handle_jl_exception(void);
-
-#define JULIAINTERFACE_EXCEPTION_HANDLER                                     \
-    if (jl_exception_occurred()) {                                           \
-        handle_jl_exception();                                               \
-    }
-
 // Internal Julia access functions
 
 // SET_JULIA_OBJ(o,v)
