@@ -55,5 +55,37 @@ gap> JuliaModule(1);
 Error, JuliaModule: <name> must be a string
 
 ##
+gap> _JuliaGetGlobalVariable(0);
+Error, _JuliaGetGlobalVariable: <name> must be a string
+gap> _JuliaGetGlobalVariable("not-a-global-variable");
+fail
+gap> _JuliaGetGlobalVariable("sqrt");
+<Julia: sqrt>
+
+##
+gap> _JuliaGetGlobalVariableByModule(0, 0);
+Error, _JuliaGetGlobalVariableByModule: <name> must be a string
+gap> _JuliaGetGlobalVariableByModule("sqrt", 0);
+Error, _JuliaGetGlobalVariableByModule: <module> must be a string or a Julia m\
+odule
+gap> _JuliaGetGlobalVariableByModule("sqrt", Julia.Base.sqrt);
+Error, _JuliaGetGlobalVariableByModule: <module> must be a string or a Julia m\
+odule
+gap> _JuliaGetGlobalVariableByModule("Base","sqrt");
+Error, Not a module
+gap> _JuliaGetGlobalVariableByModule("sqrt","Base");
+<Julia: sqrt>
+gap> _JuliaGetGlobalVariableByModule("sqrt", JuliaModule("Base"));
+<Julia: sqrt>
+
+##
+gap> JuliaGetFieldOfObject(1, "");
+Error, JuliaGetFieldOfObject: <super_obj> must be a Julia object
+gap> JuliaGetFieldOfObject(JuliaModule("Base"), fail);
+Error, JuliaGetFieldOfObject: <field_name> must be a string
+gap> JuliaGetFieldOfObject(JuliaModule("Base"), "not-a-field");
+Error, type Module has no field not-a-field
+
+##
 gap> STOP_TEST( "utils.tst", 1 );
 
