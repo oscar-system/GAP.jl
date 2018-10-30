@@ -870,6 +870,10 @@ static Obj FuncJuliaSetVal(Obj self, Obj name, Obj julia_val)
 // currently bound to the julia identifier <name>.
 static Obj Func_JuliaGetGlobalVariable(Obj self, Obj name)
 {
+    if (!IS_STRING_REP(name)) {
+        ErrorMayQuit("_JuliaGetGlobalVariable: <name> must be a string", 0, 0);
+    }
+
     jl_sym_t * symbol = jl_symbol(CSTR_STRING(name));
     if (!jl_boundp(jl_main_module, symbol)) {
         return Fail;
@@ -882,21 +886,27 @@ static Obj Func_JuliaGetGlobalVariable(Obj self, Obj name)
 // currently bound to the julia identifier <module_name>.<name>.
 static Obj Func_JuliaGetGlobalVariableByModule(Obj self, Obj name, Obj module)
 {
-    jl_module_t * module_t = 0;
+    if (!IS_STRING_REP(name)) {
+        ErrorMayQuit("_JuliaGetGlobalVariableByModule: <name> must be a string", 0, 0);
+    }
+
+    jl_module_t * m = 0;
     if (IS_JULIA_OBJ(module)) {
-        module_t = (jl_module_t *)GET_JULIA_OBJ(module);
+        m = (jl_module_t *)GET_JULIA_OBJ(module);
+        if (!jl_is_module(m))
+            m = 0;
     }
     else if (IS_STRING_REP(module)) {
-        module_t = get_module_from_string(CSTR_STRING(module));
+        m = get_module_from_string(CSTR_STRING(module));
     }
-    if (!module_t) {
-        ErrorMayQuit("second argument is not a module", 0, 0);
+    if (!m) {
+        ErrorMayQuit("_JuliaGetGlobalVariableByModule: <module> must be a string or a Julia module", 0, 0);
     }
     jl_sym_t * symbol = jl_symbol(CSTR_STRING(name));
-    if (!jl_boundp(module_t, symbol)) {
+    if (!jl_boundp(m, symbol)) {
         return Fail;
     }
-    jl_value_t * value = jl_get_global(module_t, symbol);
+    jl_value_t * value = jl_get_global(m, symbol);
     return NewJuliaObj(value);
 }
 
@@ -905,10 +915,18 @@ static Obj Func_JuliaGetGlobalVariableByModule(Obj self, Obj name, Obj module)
 // <super_object> must be a julia object GAP object, and <name> a string.
 static Obj FuncJuliaGetFieldOfObject(Obj self, Obj super_obj, Obj field_name)
 {
+    if (!IS_JULIA_OBJ(super_obj)) {
+        ErrorMayQuit("JuliaGetFieldOfObject: <super_obj> must be a Julia object", 0, 0);
+    }
+    if (!IS_STRING_REP(field_name)) {
+        ErrorMayQuit("JuliaGetFieldOfObject: <field_name> must be a string", 0, 0);
+    }
+
+    jl_value_t * extracted_superobj = GET_JULIA_OBJ(super_obj);
+
     // It suffices to use JULIAINTERFACE_EXCEPTION_HANDLER here, as
     // jl_get_field is part of the jlapi, so don't have to be wrapped in
     // JL_TRY/JL_CATCH.
-    jl_value_t * extracted_superobj = GET_JULIA_OBJ(super_obj);
     jl_value_t * field_value =
         jl_get_field(extracted_superobj, CSTR_STRING(field_name));
     JULIAINTERFACE_EXCEPTION_HANDLER

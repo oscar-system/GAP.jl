@@ -164,6 +164,87 @@ gap> f7w(1,2,3,4,5,6,7);
 <Julia: (1, 2, 3, 4, 5, 6, 7)>
 
 #
+# calls via function wrappers, auto conversion turned off
+#
+
+# variadic function
+gap> fwN := _JuliaFunction("f", false);;
+
+#
+gap> fwN();
+<Julia: ()>
+
+#
+gap> fwN(1);
+<Julia: (1,)>
+
+#
+gap> fwN(1,2);
+<Julia: (1, 2)>
+
+#
+gap> fwN(1,2,3);
+<Julia: (1, 2, 3)>
+
+#
+gap> fwN(1,2,3,4);
+<Julia: (1, 2, 3, 4)>
+
+#
+gap> fwN(1,2,3,4,5);
+<Julia: (1, 2, 3, 4, 5)>
+
+#
+gap> fwN(1,2,3,4,5,6);
+<Julia: (1, 2, 3, 4, 5, 6)>
+
+#
+gap> fwN(1,2,3,4,5,6,7);
+<Julia: (1, 2, 3, 4, 5, 6, 7)>
+
+# non-variadic functions
+gap> f0wN := _JuliaFunction("f0", false);;
+gap> f1wN := _JuliaFunction("f1", false);;
+gap> f2wN := _JuliaFunction("f2", false);;
+gap> f3wN := _JuliaFunction("f3", false);;
+gap> f4wN := _JuliaFunction("f4", false);;
+gap> f5wN := _JuliaFunction("f5", false);;
+gap> f6wN := _JuliaFunction("f6", false);;
+gap> f7wN := _JuliaFunction("f7", false);;
+
+#
+gap> f0wN();
+<Julia: nothing>
+
+#
+gap> f1wN(1);
+<Julia: (1,)>
+
+#
+gap> f2wN(1,2);
+<Julia: (1, 2)>
+
+#
+gap> f3wN(1,2,3);
+<Julia: (1, 2, 3)>
+
+#
+gap> f4wN(1,2,3,4);
+<Julia: (1, 2, 3, 4)>
+
+#
+gap> f5wN(1,2,3,4,5);
+<Julia: (1, 2, 3, 4, 5)>
+
+#
+gap> f6wN(1,2,3,4,5,6);
+<Julia: (1, 2, 3, 4, 5, 6)>
+
+#
+gap> f7wN(1,2,3,4,5,6,7);
+<Julia: (1, 2, 3, 4, 5, 6, 7)>
+
+#
 # calls via wrapped C function pointers
 #
 
