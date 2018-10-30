@@ -20,7 +20,7 @@ static jl_value_t * _ConvertedToJulia_internal(Obj obj);
 static Obj DoCallJuliaFunc0Arg(Obj func);
 static Obj DoCallJuliaFunc0ArgConv(Obj func);
 
-static void handle_jl_exception(void)
+void handle_jl_exception(void)
 {
     jl_call2(JULIA_FUNC_showerror, JULIA_ERROR_IOBuffer,
              jl_exception_occurred());
@@ -30,11 +30,6 @@ static void handle_jl_exception(void)
         jl_call1(JULIA_FUNC_String_constructor, string_object);
     ErrorMayQuit(jl_string_data(string_object), 0, 0);
 }
-
-#define JULIAINTERFACE_EXCEPTION_HANDLER                                     \
-    if (jl_exception_occurred()) {                                           \
-        handle_jl_exception();                                               \
-    }
 
 // FIXME: get rid of IS_JULIA_FUNC??
 static inline Int IS_JULIA_FUNC(Obj obj)
