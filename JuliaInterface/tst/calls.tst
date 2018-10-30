@@ -13,32 +13,32 @@ gap> f();
 <Julia: ()>
 
 #
-gap> f(1);
-<Julia: (1,)>
+gap> f(true);
+<Julia: (true,)>
 
 #
-gap> f(1,2);
-<Julia: (1, 2)>
+gap> f(true,2);
+<Julia: (true, 2)>
 
 #
-gap> f(1,2,3);
-<Julia: (1, 2, 3)>
+gap> f(true,2,3);
+<Julia: (true, 2, 3)>
 
 #
-gap> f(1,2,3,4);
-<Julia: (1, 2, 3, 4)>
+gap> f(true,2,3,4);
+<Julia: (true, 2, 3, 4)>
 
 #
-gap> f(1,2,3,4,5);
-<Julia: (1, 2, 3, 4, 5)>
+gap> f(true,2,3,4,5);
+<Julia: (true, 2, 3, 4, 5)>
 
 #
-gap> f(1,2,3,4,5,6);
-<Julia: (1, 2, 3, 4, 5, 6)>
+gap> f(true,2,3,4,5,6);
+<Julia: (true, 2, 3, 4, 5, 6)>
 
 #
-gap> f(1,2,3,4,5,6,7);
-<Julia: (1, 2, 3, 4, 5, 6, 7)>
+gap> f(true,2,3,4,5,6,7);
+<Julia: (true, 2, 3, 4, 5, 6, 7)>
 
 # non-variadic functions
 gap> f0 := JuliaEvalString("function f0() end");;
@@ -55,32 +55,32 @@ gap> f0();
 <Julia: nothing>
 
 #
-gap> f1(1);
-<Julia: (1,)>
+gap> f1(true);
+<Julia: (true,)>
 
 #
-gap> f2(1,2);
-<Julia: (1, 2)>
+gap> f2(true,2);
+<Julia: (true, 2)>
 
 #
-gap> f3(1,2,3);
-<Julia: (1, 2, 3)>
+gap> f3(true,2,3);
+<Julia: (true, 2, 3)>
 
 #
-gap> f4(1,2,3,4);
-<Julia: (1, 2, 3, 4)>
+gap> f4(true,2,3,4);
+<Julia: (true, 2, 3, 4)>
 
 #
-gap> f5(1,2,3,4,5);
-<Julia: (1, 2, 3, 4, 5)>
+gap> f5(true,2,3,4,5);
+<Julia: (true, 2, 3, 4, 5)>
 
 #
-gap> f6(1,2,3,4,5,6);
-<Julia: (1, 2, 3, 4, 5, 6)>
+gap> f6(true,2,3,4,5,6);
+<Julia: (true, 2, 3, 4, 5, 6)>
 
 #
-gap> f7(1,2,3,4,5,6,7);
-<Julia: (1, 2, 3, 4, 5, 6, 7)>
+gap> f7(true,2,3,4,5,6,7);
+<Julia: (true, 2, 3, 4, 5, 6, 7)>
 
 #
 # calls via function wrappers
@@ -94,32 +94,32 @@ gap> fw();
 <Julia: ()>
 
 #
-gap> fw(1);
-<Julia: (1,)>
+gap> fw(true);
+<Julia: (true,)>
 
 #
-gap> fw(1,2);
-<Julia: (1, 2)>
+gap> fw(true,2);
+<Julia: (true, 2)>
 
 #
-gap> fw(1,2,3);
-<Julia: (1, 2, 3)>
+gap> fw(true,2,3);
+<Julia: (true, 2, 3)>
 
 #
-gap> fw(1,2,3,4);
-<Julia: (1, 2, 3, 4)>
+gap> fw(true,2,3,4);
+<Julia: (true, 2, 3, 4)>
 
 #
-gap> fw(1,2,3,4,5);
-<Julia: (1, 2, 3, 4, 5)>
+gap> fw(true,2,3,4,5);
+<Julia: (true, 2, 3, 4, 5)>
 
 #
-gap> fw(1,2,3,4,5,6);
-<Julia: (1, 2, 3, 4, 5, 6)>
+gap> fw(true,2,3,4,5,6);
+<Julia: (true, 2, 3, 4, 5, 6)>
 
 #
-gap> fw(1,2,3,4,5,6,7);
-<Julia: (1, 2, 3, 4, 5, 6, 7)>
+gap> fw(true,2,3,4,5,6,7);
+<Julia: (true, 2, 3, 4, 5, 6, 7)>
 
 # non-variadic functions
 gap> f0w := JuliaFunction("f0");;
@@ -136,32 +136,32 @@ gap> f0w();
 <Julia: nothing>
 
 #
-gap> f1w(1);
-<Julia: (1,)>
+gap> f1w(true);
+<Julia: (true,)>
 
 #
-gap> f2w(1,2);
-<Julia: (1, 2)>
+gap> f2w(true,2);
+<Julia: (true, 2)>
 
 #
-gap> f3w(1,2,3);
-<Julia: (1, 2, 3)>
+gap> f3w(true,2,3);
+<Julia: (true, 2, 3)>
 
 #
-gap> f4w(1,2,3,4);
-<Julia: (1, 2, 3, 4)>
+gap> f4w(true,2,3,4);
+<Julia: (true, 2, 3, 4)>
 
 #
-gap> f5w(1,2,3,4,5);
-<Julia: (1, 2, 3, 4, 5)>
+gap> f5w(true,2,3,4,5);
+<Julia: (true, 2, 3, 4, 5)>
 
 #
-gap> f6w(1,2,3,4,5,6);
-<Julia: (1, 2, 3, 4, 5, 6)>
+gap> f6w(true,2,3,4,5,6);
+<Julia: (true, 2, 3, 4, 5, 6)>
 
 #
-gap> f7w(1,2,3,4,5,6,7);
-<Julia: (1, 2, 3, 4, 5, 6, 7)>
+gap> f7w(true,2,3,4,5,6,7);
+<Julia: (true, 2, 3, 4, 5, 6, 7)>
 
 #
 # calls via function wrappers, auto conversion turned off
@@ -175,32 +175,32 @@ gap> fwN();
 <Julia: ()>
 
 #
-gap> fwN(1);
-<Julia: (1,)>
+gap> fwN(true);
+<Julia: (GAP: true,)>
 
 #
-gap> fwN(1,2);
-<Julia: (1, 2)>
+gap> fwN(true,2);
+<Julia: (GAP: true, 2)>
 
 #
-gap> fwN(1,2,3);
-<Julia: (1, 2, 3)>
+gap> fwN(true,2,3);
+<Julia: (GAP: true, 2, 3)>
 
 #
-gap> fwN(1,2,3,4);
-<Julia: (1, 2, 3, 4)>
+gap> fwN(true,2,3,4);
+<Julia: (GAP: true, 2, 3, 4)>
 
 #
-gap> fwN(1,2,3,4,5);
-<Julia: (1, 2, 3, 4, 5)>
+gap> fwN(true,2,3,4,5);
+<Julia: (GAP: true, 2, 3, 4, 5)>
 
 #
-gap> fwN(1,2,3,4,5,6);
-<Julia: (1, 2, 3, 4, 5, 6)>
+gap> fwN(true,2,3,4,5,6);
+<Julia: (GAP: true, 2, 3, 4, 5, 6)>
 
 #
-gap> fwN(1,2,3,4,5,6,7);
-<Julia: (1, 2, 3, 4, 5, 6, 7)>
+gap> fwN(true,2,3,4,5,6,7);
+<Julia: (GAP: true, 2, 3, 4, 5, 6, 7)>
 
 # non-variadic functions
 gap> f0wN := _JuliaFunction("f0", false);;
@@ -217,32 +217,32 @@ gap> f0wN();
 <Julia: nothing>
 
 #
-gap> f1wN(1);
-<Julia: (1,)>
+gap> f1wN(true);
+<Julia: (GAP: true,)>
 
 #
-gap> f2wN(1,2);
-<Julia: (1, 2)>
+gap> f2wN(true,2);
+<Julia: (GAP: true, 2)>
 
 #
-gap> f3wN(1,2,3);
-<Julia: (1, 2, 3)>
+gap> f3wN(true,2,3);
+<Julia: (GAP: true, 2, 3)>
 
 #
-gap> f4wN(1,2,3,4);
-<Julia: (1, 2, 3, 4)>
+gap> f4wN(true,2,3,4);
+<Julia: (GAP: true, 2, 3, 4)>
 
 #
-gap> f5wN(1,2,3,4,5);
-<Julia: (1, 2, 3, 4, 5)>
+gap> f5wN(true,2,3,4,5);
+<Julia: (GAP: true, 2, 3, 4, 5)>
 
 #
-gap> f6wN(1,2,3,4,5,6);
-<Julia: (1, 2, 3, 4, 5, 6)>
+gap> f6wN(true,2,3,4,5,6);
+<Julia: (GAP: true, 2, 3, 4, 5, 6)>
 
 #
-gap> f7wN(1,2,3,4,5,6,7);
-<Julia: (1, 2, 3, 4, 5, 6, 7)>
+gap> f7wN(true,2,3,4,5,6,7);
+<Julia: (GAP: true, 2, 3, 4, 5, 6, 7)>
 
 #
 # calls via wrapped C function pointers
@@ -279,32 +279,32 @@ Error, Only 0-6 arguments are supported
 #
 gap> g0();
 <Julia: Ptr{Nothing} @0x0000000000000000>
-gap> g1(1);
-<Julia: 1>
-gap> g2(1,2);
+gap> g1(true);
+<Julia: true>
+gap> g2(true,2);
 <Julia: 2>
-gap> g3(1,2,3);
+gap> g3(true,2,3);
 <Julia: 3>
-gap> g4(1,2,3,4);
+gap> g4(true,2,3,4);
 <Julia: 4>
-gap> g5(1,2,3,4,5);
+gap> g5(true,2,3,4,5);
 <Julia: 5>
-gap> g6(1,2,3,4,5,6);
+gap> g6(true,2,3,4,5,6);
 <Julia: 6>
 
 #
 gap> g0C();
-gap> g1C(1);
-1
-gap> g2C(1,2);
+gap> g1C(true);
+true
+gap> g2C(true,2);
 2
-gap> g3C(1,2,3);
+gap> g3C(true,2,3);
 3
-gap> g4C(1,2,3,4);
+gap> g4C(true,2,3,4);
 4
-gap> g5C(1,2,3,4,5);
+gap> g5C(true,2,3,4,5);
 5
-gap> g6C(1,2,3,4,5,6);
+gap> g6C(true,2,3,4,5,6);
 6
 
 #
@@ -328,17 +328,17 @@ gap> h6C := JuliaBindCFunction("h6", "a,b,c,d,e,f");;
 #
 gap> h0C();
 Error, TypeError: in h0, in cfunction, expected Ptr{Nothing}, got Nothing
-gap> h1C(1);
+gap> h1C(true);
 Error, TypeError: in h1, in cfunction, expected Ptr{Nothing}, got Nothing
-gap> h2C(1,2);
+gap> h2C(true,2);
 Error, TypeError: in h2, in cfunction, expected Ptr{Nothing}, got Nothing
-gap> h3C(1,2,3);
+gap> h3C(true,2,3);
 Error, TypeError: in h3, in cfunction, expected Ptr{Nothing}, got Nothing
-gap> h4C(1,2,3,4);
+gap> h4C(true,2,3,4);
 Error, TypeError: in h4, in cfunction, expected Ptr{Nothing}, got Nothing
-gap> h5C(1,2,3,4,5);
+gap> h5C(true,2,3,4,5);
 Error, TypeError: in h5, in cfunction, expected Ptr{Nothing}, got Nothing
-gap> h6C(1,2,3,4,5,6);
+gap> h6C(true,2,3,4,5,6);
 Error, TypeError: in h6, in cfunction, expected Ptr{Nothing}, got Nothing
 
 #
