@@ -788,15 +788,16 @@ static Obj Func_ConvertedFromJulia_record_dict(Obj self, Obj dict)
 // object GAP object which holds the pointer to that tuple.
 static Obj FuncJuliaTuple(Obj self, Obj list)
 {
+    if (!IS_PLIST(list)) {
+        ErrorMayQuit("argument is not a plain list", 0, 0);
+    }
+
     jl_datatype_t * tuple_type = 0;
     jl_svec_t *     params = 0;
     jl_svec_t *     param_types = 0;
     jl_value_t *    result = 0;
     JL_GC_PUSH4(&tuple_type, &params, &param_types, &result);
 
-    if (!IS_PLIST(list)) {
-        ErrorMayQuit("argument is not a plain list", 0, 0);
-    }
     int len = LEN_PLIST(list);
     params = jl_alloc_svec(len);
     param_types = jl_alloc_svec(len);

@@ -28,6 +28,16 @@ gap> JuliaSetVal("foo", JuliaEvalString("1"));
 gap> JuliaGetGlobalVariable("foo");
 <Julia: 1>
 
+#
+gap> JuliaTuple([]);
+<Julia: ()>
+gap> JuliaTuple([1]);
+<Julia: (1,)>
+gap> JuliaTuple([1,true,fail]);
+<Julia: (1, true, GAP: fail)>
+gap> JuliaTuple(1);
+Error, argument is not a plain list
+
 ##
 gap> STOP_TEST( "utils.tst", 1 );
 
