@@ -23,10 +23,36 @@ rec( ok := false,
   value := "DomainError(-1.0, \"sqrt will only return a complex result if call\
 ed with a complex argument. Try sqrt(Complex(x)).\")" )
 
-#
+##
 gap> JuliaSetVal("foo", JuliaEvalString("1"));
 gap> JuliaGetGlobalVariable("foo");
 <Julia: 1>
+
+##
+gap> JuliaTuple([]);
+<Julia: ()>
+gap> JuliaTuple([1]);
+<Julia: (1,)>
+gap> JuliaTuple([1,true,fail]);
+<Julia: (1, true, GAP: fail)>
+gap> JuliaTuple(1);
+Error, argument is not a plain list
+
+##
+gap> JuliaSymbol("someSymbol");
+<Julia: :someSymbol>
+gap> JuliaSymbol("");
+<Julia: Symbol("")>
+gap> JuliaSymbol(1);
+Error, JuliaSymbol: <name> must be a string
+
+##
+gap> JuliaModule("Base");
+<Julia: Base>
+gap> JuliaModule("This_Module_Does_Not_Exist");
+Error, UndefVarError: This_Module_Does_Not_Exist not defined
+gap> JuliaModule(1);
+Error, JuliaModule: <name> must be a string
 
 ##
 gap> STOP_TEST( "utils.tst", 1 );
