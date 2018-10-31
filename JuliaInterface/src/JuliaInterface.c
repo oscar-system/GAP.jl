@@ -20,7 +20,7 @@ static jl_value_t * _ConvertedToJulia_internal(Obj obj);
 static Obj DoCallJuliaFunc0Arg(Obj func);
 static Obj DoCallJuliaFunc0ArgConv(Obj func);
 
-static void handle_jl_exception(void)
+void handle_jl_exception(void)
 {
     jl_call2(JULIA_FUNC_showerror, JULIA_ERROR_IOBuffer,
              jl_exception_occurred());
@@ -30,11 +30,6 @@ static void handle_jl_exception(void)
         jl_call1(JULIA_FUNC_String_constructor, string_object);
     ErrorMayQuit(jl_string_data(string_object), 0, 0);
 }
-
-#define JULIAINTERFACE_EXCEPTION_HANDLER                                     \
-    if (jl_exception_occurred()) {                                           \
-        handle_jl_exception();                                               \
-    }
 
 // FIXME: get rid of IS_JULIA_FUNC??
 static inline Int IS_JULIA_FUNC(Obj obj)
@@ -260,64 +255,40 @@ static inline ObjFunc get_c_function_pointer(Obj func)
 static Obj DoCallJuliaCFunc0Arg(Obj func)
 {
     ObjFunc function = get_c_function_pointer(func);
-    Obj result;
-    JL_TRY {
+    Obj     result;
+    BEGIN_JULIA
         result = function();
-        jl_exception_clear();
-    }
-    JL_CATCH {
-        jl_get_ptls_states()->previous_exception = jl_current_exception();
-        result = 0;
-    }
-    JULIAINTERFACE_EXCEPTION_HANDLER
+    END_JULIA
     return result;
 }
 
 static Obj DoCallJuliaCFunc1Arg(Obj func, Obj arg1)
 {
     ObjFunc function = get_c_function_pointer(func);
-    Obj result;
-    JL_TRY {
+    Obj     result;
+    BEGIN_JULIA
         result = function(arg1);
-        jl_exception_clear();
-    }
-    JL_CATCH {
-        jl_get_ptls_states()->previous_exception = jl_current_exception();
-        result = 0;
-    }
-    JULIAINTERFACE_EXCEPTION_HANDLER
+    END_JULIA
     return result;
 }
 
 static Obj DoCallJuliaCFunc2Arg(Obj func, Obj arg1, Obj arg2)
 {
     ObjFunc function = get_c_function_pointer(func);
-    Obj result;
-    JL_TRY {
+    Obj     result;
+    BEGIN_JULIA
         result = function(arg1, arg2);
-        jl_exception_clear();
-    }
-    JL_CATCH {
-        jl_get_ptls_states()->previous_exception = jl_current_exception();
-        result = 0;
-    }
-    JULIAINTERFACE_EXCEPTION_HANDLER
+    END_JULIA
     return result;
 }
 
 static Obj DoCallJuliaCFunc3Arg(Obj func, Obj arg1, Obj arg2, Obj arg3)
 {
     ObjFunc function = get_c_function_pointer(func);
-    Obj result;
-    JL_TRY {
+    Obj     result;
+    BEGIN_JULIA
         result = function(arg1, arg2, arg3);
-        jl_exception_clear();
-    }
-    JL_CATCH {
-        jl_get_ptls_states()->previous_exception = jl_current_exception();
-        result = 0;
-    }
-    JULIAINTERFACE_EXCEPTION_HANDLER
+    END_JULIA
     return result;
 }
 
@@ -325,16 +296,10 @@ static Obj
 DoCallJuliaCFunc4Arg(Obj func, Obj arg1, Obj arg2, Obj arg3, Obj arg4)
 {
     ObjFunc function = get_c_function_pointer(func);
-    Obj result;
-    JL_TRY {
+    Obj     result;
+    BEGIN_JULIA
         result = function(arg1, arg2, arg3, arg4);
-        jl_exception_clear();
-    }
-    JL_CATCH {
-        jl_get_ptls_states()->previous_exception = jl_current_exception();
-        result = 0;
-    }
-    JULIAINTERFACE_EXCEPTION_HANDLER
+    END_JULIA
     return result;
 }
 
@@ -342,16 +307,10 @@ static Obj DoCallJuliaCFunc5Arg(
     Obj func, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5)
 {
     ObjFunc function = get_c_function_pointer(func);
-    Obj result;
-    JL_TRY {
+    Obj     result;
+    BEGIN_JULIA
         result = function(arg1, arg2, arg3, arg4, arg5);
-        jl_exception_clear();
-    }
-    JL_CATCH {
-        jl_get_ptls_states()->previous_exception = jl_current_exception();
-        result = 0;
-    }
-    JULIAINTERFACE_EXCEPTION_HANDLER
+    END_JULIA
     return result;
 }
 
@@ -359,16 +318,10 @@ static Obj DoCallJuliaCFunc6Arg(
     Obj func, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6)
 {
     ObjFunc function = get_c_function_pointer(func);
-    Obj result;
-    JL_TRY {
+    Obj     result;
+    BEGIN_JULIA
         result = function(arg1, arg2, arg3, arg4, arg5, arg6);
-        jl_exception_clear();
-    }
-    JL_CATCH {
-        jl_get_ptls_states()->previous_exception = jl_current_exception();
-        result = 0;
-    }
-    JULIAINTERFACE_EXCEPTION_HANDLER
+    END_JULIA
     return result;
 }
 
@@ -519,6 +472,8 @@ static Obj Func_JuliaFunction(Obj self, Obj func, Obj autoConvert)
 static Obj Func_JuliaFunctionByModule(Obj self, Obj function_name, Obj module_name, Obj autoConvert)
 {
     jl_module_t * module_t = get_module_from_string(CSTR_STRING(module_name));
+    // jl_get_function is a thin wrapper for jl_get_global and never throws
+    // an exception
     jl_function_t * function =
         jl_get_function(module_t, CSTR_STRING(function_name));
     if (function == 0)
@@ -812,20 +767,20 @@ static Obj FuncJuliaTuple(Obj self, Obj list)
     jl_svec_t *     params = 0;
     jl_svec_t *     param_types = 0;
     jl_value_t *    result = 0;
-    JL_GC_PUSH4(&tuple_type, &params, &param_types, &result);
 
-    int len = LEN_PLIST(list);
-    params = jl_alloc_svec(len);
-    param_types = jl_alloc_svec(len);
-    for (int i = 0; i < len; i++) {
-        jl_value_t * current_obj =
-            _ConvertedToJulia_internal(ELM_PLIST(list, i + 1));
-        jl_svecset(params, i, current_obj);
-        jl_svecset(param_types, i, jl_typeof(current_obj));
-    }
-    tuple_type = jl_apply_tuple_type(param_types);
-    result = jl_new_structv(tuple_type, jl_svec_data(params), len);
-    JL_GC_POP();
+    BEGIN_JULIA
+        int len = LEN_PLIST(list);
+        params = jl_alloc_svec(len);
+        param_types = jl_alloc_svec(len);
+        for (int i = 0; i < len; i++) {
+            jl_value_t * current_obj =
+                _ConvertedToJulia_internal(ELM_PLIST(list, i + 1));
+            jl_svecset(params, i, current_obj);
+            jl_svecset(param_types, i, jl_typeof(current_obj));
+        }
+        tuple_type = jl_apply_tuple_type(param_types);
+        result = jl_new_structv(tuple_type, jl_svec_data(params), len);
+    END_JULIA
     return NewJuliaObj(result);
 }
 

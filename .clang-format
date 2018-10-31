@@ -24,3 +24,6 @@ PointerBindsToType: Middle
 SpacesBeforeTrailingComments: 4
 UseTab: Never
 SortIncludes: false
+
+MacroBlockBegin: "^BEGIN_JULIA$"
+MacroBlockEnd: "^END_JULIA$"
