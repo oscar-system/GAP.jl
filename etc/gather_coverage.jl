@@ -6,7 +6,9 @@ using Coverage
 import JSON
 
 # gather coverage
-data = Codecov.process_folder(pwd())
+data = Codecov.process_folder("JuliaInterface")
+append!(data, Codecov.process_folder("JuliaExperimental"))
+append!(data, Codecov.process_folder("LibGAP.jl"))
 data_dict = Codecov.to_json(data)
 
 # write it to a file for the upload script
