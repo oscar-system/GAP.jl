@@ -2,7 +2,7 @@
 
 jl_value_t * julia_gap(Obj obj)
 {
-    if (IS_INT(obj)) {
+    if (IS_INTOBJ(obj)) {
         return jl_box_int64(INT_INTOBJ(obj));
     }
     if (IS_FFE(obj)) {
