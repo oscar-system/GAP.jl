@@ -8,8 +8,7 @@ static jl_value_t *    JULIA_ERROR_IOBuffer;
 static jl_function_t * JULIA_FUNC_take_inplace;
 static jl_function_t * JULIA_FUNC_String_constructor;
 static jl_function_t * JULIA_FUNC_showerror;
-
-#include "gap_macros.c"
+static jl_datatype_t * JULIA_GAPFFE_type;
 
 Obj TheTypeJuliaObject;
 UInt T_JULIA_OBJ;
@@ -30,6 +29,46 @@ void handle_jl_exception(void)
         jl_call1(JULIA_FUNC_String_constructor, string_object);
     ErrorMayQuit(jl_string_data(string_object), 0, 0);
 }
+
+jl_module_t * get_module_from_string(char * name)
+{
+    // It suffices to use JULIAINTERFACE_EXCEPTION_HANDLER here, as
+    // jl_eval_string is part of the jlapi, so don't have to be wrapped in
+    // JL_TRY/JL_CATCH.
+    jl_value_t * module_value = jl_eval_string(name);
+    JULIAINTERFACE_EXCEPTION_HANDLER
+    if (!jl_is_module(module_value))
+        ErrorQuit("Not a module", 0, 0);
+    return (jl_module_t *)module_value;
+}
+
+// This function needs to be called after the `gaptypes.jl`
+// file is loaded into Julia and the GAP module is present.
+// Therefore we do not call in InitKernel, but in the `read.g` file.
+Obj Func_InitializeGAPFFEType()
+{
+    JULIA_GAPFFE_type = (jl_datatype_t *)jl_new_primitivetype(
+        (jl_value_t *)jl_symbol("GapFFE"), get_module_from_string("GAP"),
+        jl_any_type, jl_emptysvec, sizeof(Obj) * 8);
+    jl_set_const(get_module_from_string("GAP"), jl_symbol("GapFFE"),
+                 (jl_value_t *)JULIA_GAPFFE_type);
+    return NULL;
+}
+
+jl_value_t * gap_box_gapffe(Obj value)
+{
+    jl_ptls_t    ptls = jl_get_ptls_states();
+    jl_value_t * v = jl_gc_alloc_typed(ptls, sizeof(Obj), JULIA_GAPFFE_type);
+    *(Obj *)jl_data_ptr(v) = value;
+    return v;
+}
+
+Obj gap_unbox_gapffe(jl_value_t * gapffe)
+{
+    return *(Obj *)jl_data_ptr(gapffe);
+}
+
+#include "gap_macros.c"
 
 // FIXME: get rid of IS_JULIA_FUNC??
 static inline Int IS_JULIA_FUNC(Obj obj)
@@ -438,19 +477,6 @@ jl_function_t * get_function_from_obj_or_string(Obj func)
     }
     ErrorMayQuit("argument is not a julia object or string", 0, 0);
     return 0;
-}
-
-
-jl_module_t * get_module_from_string(char * name)
-{
-    // It suffices to use JULIAINTERFACE_EXCEPTION_HANDLER here, as
-    // jl_eval_string is part of the jlapi, so don't have to be wrapped in
-    // JL_TRY/JL_CATCH.
-    jl_value_t * module_value = jl_eval_string(name);
-    JULIAINTERFACE_EXCEPTION_HANDLER
-    if (!jl_is_module(module_value))
-        ErrorQuit("Not a module", 0, 0);
-    return (jl_module_t *)module_value;
 }
 
 
@@ -892,8 +918,8 @@ static Obj FuncJuliaGetFieldOfObject(Obj self, Obj super_obj, Obj field_name)
 // Table of functions to export
 static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(_JuliaFunction, 2, "string, autoConvert"),
-    GVAR_FUNC(_JuliaFunctionByModule, 3, "function_name, module_name, autoConvert"),
-
+    GVAR_FUNC(
+        _JuliaFunctionByModule, 3, "function_name, module_name, autoConvert"),
     GVAR_FUNC(JuliaEvalString, 1, "string"),
     GVAR_FUNC(_ConvertedFromJulia, 1, "obj"),
     GVAR_FUNC(_ConvertedToJulia, 1, "obj"),
@@ -906,6 +932,7 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(JuliaModule, 1, "name"),
     GVAR_FUNC(_ConvertedFromJulia_record_dict, 1, "dict"),
     GVAR_FUNC(_NewJuliaCFunc, 2, "ptr,arg_names"),
+    GVAR_FUNC(_InitializeGAPFFEType, 0, ""),
     { 0 } /* Finish with an empty entry */
 
 };

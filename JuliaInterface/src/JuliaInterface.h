@@ -3,6 +3,7 @@
 
 #include "src/compiled.h" /* GAP headers */
 #include <julia.h>
+#include <julia_gcext.h>
 
 // internal helper
 extern NOINLINE void handle_jl_exception(void);

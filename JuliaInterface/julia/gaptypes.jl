@@ -83,6 +83,13 @@ struct GapFunc
 end
 
 """
+    GapFEE
+
+> Wraps a pointer to a GAP FFE immediate object
+> This type is defined in the JuliaInterface C code.
+"""
+
+"""
     (func::GapFunc)(args...)
 
 > This function makes it possible to call GapFunc objects on

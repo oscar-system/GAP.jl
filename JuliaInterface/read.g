@@ -11,6 +11,8 @@ dirs:= DirectoriesPackageLibrary( "JuliaInterface", "julia" );
 
 JuliaIncludeFile( Filename( dirs, "gaptypes.jl" ) );
 
+_InitializeGAPFFEType();
+
 ImportJuliaModuleIntoGAP( "GAP" );
 
 if not IsBound( JULIAINTERNAL_LOADED_FROM_JULIA ) then
