@@ -10,7 +10,7 @@ static jl_function_t * JULIA_FUNC_String_constructor;
 static jl_function_t * JULIA_FUNC_showerror;
 static jl_datatype_t * JULIA_GAPFFE_type;
 
-Obj TheTypeJuliaObject;
+Obj  TheTypeJuliaObject;
 UInt T_JULIA_OBJ;
 
 static jl_value_t * _ConvertedToJulia_internal(Obj obj);
@@ -25,8 +25,7 @@ void handle_jl_exception(void)
              jl_exception_occurred());
     jl_value_t * string_object =
         jl_call1(JULIA_FUNC_take_inplace, JULIA_ERROR_IOBuffer);
-    string_object =
-        jl_call1(JULIA_FUNC_String_constructor, string_object);
+    string_object = jl_call1(JULIA_FUNC_String_constructor, string_object);
     ErrorMayQuit(jl_string_data(string_object), 0, 0);
 }
 
@@ -406,9 +405,7 @@ Obj NewJuliaCFunc(void * function, Obj arg_names)
     return func;
 }
 
-static Obj Func_NewJuliaCFunc(Obj self,
-                       Obj julia_function_ptr,
-                       Obj arg_names)
+static Obj Func_NewJuliaCFunc(Obj self, Obj julia_function_ptr, Obj arg_names)
 {
     jl_value_t * func_ptr = GET_JULIA_OBJ(julia_function_ptr);
     void *       ptr = jl_unbox_voidpointer(func_ptr);
@@ -495,7 +492,10 @@ static Obj Func_JuliaFunction(Obj self, Obj func, Obj autoConvert)
  * Returns the function with name <function_name> from the Julia module with
  * name <module_name>.
  */
-static Obj Func_JuliaFunctionByModule(Obj self, Obj function_name, Obj module_name, Obj autoConvert)
+static Obj Func_JuliaFunctionByModule(Obj self,
+                                      Obj function_name,
+                                      Obj module_name,
+                                      Obj autoConvert)
 {
     jl_module_t * module_t = get_module_from_string(CSTR_STRING(module_name));
     // jl_get_function is a thin wrapper for jl_get_global and never throws
@@ -691,8 +691,7 @@ static jl_value_t * _ConvertedToJulia_internal(Obj obj)
                 continue;
             }
             jl_arrayset(new_array,
-                        _ConvertedToJulia_internal(ELM_PLIST(obj, i + 1)),
-                        i);
+                        _ConvertedToJulia_internal(ELM_PLIST(obj, i + 1)), i);
         }
         return (jl_value_t *)(new_array);
     }
@@ -852,7 +851,8 @@ static Obj FuncJuliaSetVal(Obj self, Obj name, Obj julia_val)
 static Obj Func_JuliaGetGlobalVariable(Obj self, Obj name)
 {
     if (!IS_STRING_REP(name)) {
-        ErrorMayQuit("_JuliaGetGlobalVariable: <name> must be a string", 0, 0);
+        ErrorMayQuit("_JuliaGetGlobalVariable: <name> must be a string", 0,
+                     0);
     }
 
     jl_sym_t * symbol = jl_symbol(CSTR_STRING(name));
@@ -868,7 +868,8 @@ static Obj Func_JuliaGetGlobalVariable(Obj self, Obj name)
 static Obj Func_JuliaGetGlobalVariableByModule(Obj self, Obj name, Obj module)
 {
     if (!IS_STRING_REP(name)) {
-        ErrorMayQuit("_JuliaGetGlobalVariableByModule: <name> must be a string", 0, 0);
+        ErrorMayQuit(
+            "_JuliaGetGlobalVariableByModule: <name> must be a string", 0, 0);
     }
 
     jl_module_t * m = 0;
@@ -881,7 +882,9 @@ static Obj Func_JuliaGetGlobalVariableByModule(Obj self, Obj name, Obj module)
         m = get_module_from_string(CSTR_STRING(module));
     }
     if (!m) {
-        ErrorMayQuit("_JuliaGetGlobalVariableByModule: <module> must be a string or a Julia module", 0, 0);
+        ErrorMayQuit("_JuliaGetGlobalVariableByModule: <module> must be a "
+                     "string or a Julia module",
+                     0, 0);
     }
     jl_sym_t * symbol = jl_symbol(CSTR_STRING(name));
     if (!jl_boundp(m, symbol)) {
@@ -897,10 +900,13 @@ static Obj Func_JuliaGetGlobalVariableByModule(Obj self, Obj name, Obj module)
 static Obj FuncJuliaGetFieldOfObject(Obj self, Obj super_obj, Obj field_name)
 {
     if (!IS_JULIA_OBJ(super_obj)) {
-        ErrorMayQuit("JuliaGetFieldOfObject: <super_obj> must be a Julia object", 0, 0);
+        ErrorMayQuit(
+            "JuliaGetFieldOfObject: <super_obj> must be a Julia object", 0,
+            0);
     }
     if (!IS_STRING_REP(field_name)) {
-        ErrorMayQuit("JuliaGetFieldOfObject: <field_name> must be a string", 0, 0);
+        ErrorMayQuit("JuliaGetFieldOfObject: <field_name> must be a string",
+                     0, 0);
     }
 
     jl_value_t * extracted_superobj = GET_JULIA_OBJ(super_obj);
