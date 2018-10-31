@@ -5,6 +5,12 @@ set -e
 export CFLAGS=--coverage
 export LDFLAGS=--coverage
 
+# check code formatting
+find . -name '*.c' -exec clang-format -i {} \;
+find . -name '*.h' -exec clang-format -i {} \;
+git diff --exit-code -- . # detect if there are any diffs
+
+
 ./configure $GAPROOT
 make
 
