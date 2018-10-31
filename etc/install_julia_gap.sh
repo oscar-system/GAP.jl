@@ -16,6 +16,7 @@ cd gap
 ./autogen.sh
 ./configure --with-gc=julia --with-julia=${main_dir}/julia/
 make -j4
+make libgap.la
 make bootstrap-pkg-minimal
 
 # Download and install GAPJulia

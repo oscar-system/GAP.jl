@@ -14,14 +14,22 @@ git diff --exit-code -- . # detect if there are any diffs
 ./configure $GAPROOT
 make
 
+#
 cd JuliaInterface
 pwd
 $GAPROOT/gap -A --quitonbreak --norepl --cover $TRAVIS_BUILD_DIR/coverage/JuliaInterface tst/testall.g
 gcov -o .. src/*.c*
 cd ..
 
+#
 cd JuliaExperimental
 pwd
 $GAPROOT/gap -A --quitonbreak --norepl --cover $TRAVIS_BUILD_DIR/coverage/JuliaExperimental tst/testall.g
 gcov -o .. src/*.c*
+cd ..
+
+#
+cd LibGAP.jl
+pwd
+${JULIAROOT}/bin/julia test/runtests.jl
 cd ..

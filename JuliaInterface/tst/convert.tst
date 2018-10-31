@@ -49,4 +49,8 @@ gap> List( list2, ConvertedFromJulia );
 [ 1, fail, 3 ]
 
 ##
+gap> JuliaEvalString("GAP.GAPFuncs.PROD(2^59,2^59)");
+332306998946228968225951765070086144
+
+##
 gap> STOP_TEST( "convert.tst", 1 );
