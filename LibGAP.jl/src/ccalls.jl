@@ -1,9 +1,5 @@
 ## Internal ccall's
 
-import Main.GAP: GapFunc
-
-### Internal stuff
-
 function GET_FROM_GAP(ptr::Ptr{Cvoid})::Any
     return ccall(:julia_gap,Any,(Ptr{Cvoid},),ptr)
 end
