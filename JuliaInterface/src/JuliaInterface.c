@@ -4,6 +4,13 @@
 
 #include "JuliaInterface.h"
 
+#include "calls.h"
+
+#include <src/compiled.h>    // GAP headers
+
+#include <julia_gcext.h>
+
+
 static jl_value_t *    JULIA_ERROR_IOBuffer;
 static jl_function_t * JULIA_FUNC_take_inplace;
 static jl_function_t * JULIA_FUNC_String_constructor;
@@ -13,11 +20,6 @@ static jl_datatype_t * JULIA_GAPFFE_type;
 Obj  TheTypeJuliaObject;
 UInt T_JULIA_OBJ;
 
-static jl_value_t * _ConvertedToJulia_internal(Obj obj);
-
-
-static Obj DoCallJuliaFunc0Arg(Obj func);
-static Obj DoCallJuliaFunc0ArgConv(Obj func);
 
 void handle_jl_exception(void)
 {
@@ -73,342 +75,6 @@ int is_gapffe(jl_value_t * v)
     return jl_typeis(v, JULIA_GAPFFE_type);
 }
 
-// FIXME: get rid of IS_JULIA_FUNC??
-static inline Int IS_JULIA_FUNC(Obj obj)
-{
-    return IS_FUNC(obj) && (HDLR_FUNC(obj, 0) == DoCallJuliaFunc0Arg ||
-                            HDLR_FUNC(obj, 0) == DoCallJuliaFunc0ArgConv);
-}
-
-static inline jl_function_t * GET_JULIA_FUNC(Obj obj)
-{
-    GAP_ASSERT(IS_JULIA_FUNC(obj));
-    // TODO
-    return (jl_function_t *)FEXS_FUNC(obj);
-}
-
-static ALWAYS_INLINE Obj DoCallJuliaFunc(Obj       func,
-                                         const int narg,
-                                         Obj *     a,
-                                         const int autoConvert)
-{
-    jl_value_t * result;
-
-    if (autoConvert) {
-        for (int i = 0; i < narg; i++) {
-            a[i] = (Obj)_ConvertedToJulia_internal(a[i]);
-        }
-    }
-    else {
-        for (int i = 0; i < narg; i++) {
-            if (IS_INTOBJ(a[i]))
-                a[i] = (Obj)jl_box_int64(INT_INTOBJ(a[i]));
-            else if (IS_FFE(a[i]))
-                ErrorQuit("TODO: implement conversion for T_FFE", 0, 0);
-        }
-    }
-    jl_function_t * f = GET_JULIA_FUNC(func);
-    switch (narg) {
-    case 0:
-        result = jl_call0(f);
-        break;
-    case 1:
-        result = jl_call1(f, (jl_value_t *)a[0]);
-        break;
-    case 2:
-        result = jl_call2(f, (jl_value_t *)a[0], (jl_value_t *)a[1]);
-        break;
-    case 3:
-        result = jl_call3(f, (jl_value_t *)a[0], (jl_value_t *)a[1],
-                          (jl_value_t *)a[2]);
-        break;
-    default:
-        result = jl_call(f, (jl_value_t **)a, narg);
-    }
-    // It suffices to use JULIAINTERFACE_EXCEPTION_HANDLER here, as jl_call
-    // and its variants are part of the jlapi, so don't have to be wrapped in
-    // JL_TRY/JL_CATCH.
-    JULIAINTERFACE_EXCEPTION_HANDLER
-    if (IsGapObj(result))
-        return (Obj)result;
-    return NewJuliaObj(result);
-}
-
-static Obj DoCallJuliaFunc0ArgConv(Obj func)
-{
-    return DoCallJuliaFunc(func, 0, 0, 1);
-}
-
-static Obj DoCallJuliaFunc1ArgConv(Obj func, Obj arg1)
-{
-    Obj a[] = { arg1 };
-    return DoCallJuliaFunc(func, 1, a, 1);
-}
-
-static Obj DoCallJuliaFunc2ArgConv(Obj func, Obj arg1, Obj arg2)
-{
-    Obj a[] = { arg1, arg2 };
-    return DoCallJuliaFunc(func, 2, a, 1);
-}
-
-static Obj DoCallJuliaFunc3ArgConv(Obj func, Obj arg1, Obj arg2, Obj arg3)
-{
-    Obj a[] = { arg1, arg2, arg3 };
-    return DoCallJuliaFunc(func, 3, a, 1);
-}
-
-static Obj
-DoCallJuliaFunc4ArgConv(Obj func, Obj arg1, Obj arg2, Obj arg3, Obj arg4)
-{
-    Obj a[] = { arg1, arg2, arg3, arg4 };
-    return DoCallJuliaFunc(func, 4, a, 1);
-}
-
-static Obj DoCallJuliaFunc5ArgConv(
-    Obj func, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5)
-{
-    Obj a[] = { arg1, arg2, arg3, arg4, arg5 };
-    return DoCallJuliaFunc(func, 5, a, 1);
-}
-
-static Obj DoCallJuliaFunc6ArgConv(
-    Obj func, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6)
-{
-    Obj a[] = { arg1, arg2, arg3, arg4, arg5, arg6 };
-    return DoCallJuliaFunc(func, 6, a, 1);
-}
-
-static Obj DoCallJuliaFuncXArgConv(Obj func, Obj args)
-{
-    const int len = LEN_PLIST(args);
-    Obj       a[len];
-    for (int i = 0; i < len; i++) {
-        a[i] = ELM_PLIST(args, i + 1);
-    }
-    return DoCallJuliaFunc(func, len, a, 1);
-}
-
-//
-//
-//
-
-
-static Obj DoCallJuliaFunc0Arg(Obj func)
-{
-    return DoCallJuliaFunc(func, 0, 0, 0);
-}
-
-static Obj DoCallJuliaFunc1Arg(Obj func, Obj arg1)
-{
-    Obj a[] = { arg1 };
-    return DoCallJuliaFunc(func, 1, a, 0);
-}
-
-static Obj DoCallJuliaFunc2Arg(Obj func, Obj arg1, Obj arg2)
-{
-    Obj a[] = { arg1, arg2 };
-    return DoCallJuliaFunc(func, 2, a, 0);
-}
-
-static Obj DoCallJuliaFunc3Arg(Obj func, Obj arg1, Obj arg2, Obj arg3)
-{
-    Obj a[] = { arg1, arg2, arg3 };
-    return DoCallJuliaFunc(func, 3, a, 0);
-}
-
-static Obj
-DoCallJuliaFunc4Arg(Obj func, Obj arg1, Obj arg2, Obj arg3, Obj arg4)
-{
-    Obj a[] = { arg1, arg2, arg3, arg4 };
-    return DoCallJuliaFunc(func, 4, a, 0);
-}
-
-static Obj DoCallJuliaFunc5Arg(
-    Obj func, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5)
-{
-    Obj a[] = { arg1, arg2, arg3, arg4, arg5 };
-    return DoCallJuliaFunc(func, 5, a, 0);
-}
-
-static Obj DoCallJuliaFunc6Arg(
-    Obj func, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6)
-{
-    Obj a[] = { arg1, arg2, arg3, arg4, arg5, arg6 };
-    return DoCallJuliaFunc(func, 6, a, 0);
-}
-
-static Obj DoCallJuliaFuncXArg(Obj func, Obj args)
-{
-    const int len = LEN_PLIST(args);
-    Obj       a[len];
-    for (int i = 0; i < len; i++) {
-        a[i] = ELM_PLIST(args, i + 1);
-    }
-    return DoCallJuliaFunc(func, len, a, 0);
-}
-
-
-//
-//
-//
-Obj NewJuliaFunc(jl_function_t * function, int autoConvert)
-{
-    // TODO: set a sensible name?
-    //     jl_datatype_t * dt = ...
-    //     jl_typename_t * tname = dt->name;
-    //     //    struct _jl_methtable_t *mt;
-    //     jl_sym_t *name = tname->mt->name;
-
-    Obj func = NewFunctionC("", -1, "arg", 0);
-
-    SET_HDLR_FUNC(
-        func, 0, autoConvert ? DoCallJuliaFunc0ArgConv : DoCallJuliaFunc0Arg);
-    SET_HDLR_FUNC(
-        func, 1, autoConvert ? DoCallJuliaFunc1ArgConv : DoCallJuliaFunc1Arg);
-    SET_HDLR_FUNC(
-        func, 2, autoConvert ? DoCallJuliaFunc2ArgConv : DoCallJuliaFunc2Arg);
-    SET_HDLR_FUNC(
-        func, 3, autoConvert ? DoCallJuliaFunc3ArgConv : DoCallJuliaFunc3Arg);
-    SET_HDLR_FUNC(
-        func, 4, autoConvert ? DoCallJuliaFunc4ArgConv : DoCallJuliaFunc4Arg);
-    SET_HDLR_FUNC(
-        func, 5, autoConvert ? DoCallJuliaFunc5ArgConv : DoCallJuliaFunc5Arg);
-    SET_HDLR_FUNC(
-        func, 6, autoConvert ? DoCallJuliaFunc6ArgConv : DoCallJuliaFunc6Arg);
-    SET_HDLR_FUNC(
-        func, 7, autoConvert ? DoCallJuliaFuncXArgConv : DoCallJuliaFuncXArg);
-
-    // trick: fexs is unused for kernel functions, so we can store
-    // the Julia function point in here
-    SET_FEXS_FUNC(func, (Obj)function);
-
-    return func;
-}
-
-/*
- * C function pointer calls
- */
-
-static inline ObjFunc get_c_function_pointer(Obj func)
-{
-    return jl_unbox_voidpointer((jl_value_t *)FEXS_FUNC(func));
-}
-
-static Obj DoCallJuliaCFunc0Arg(Obj func)
-{
-    ObjFunc function = get_c_function_pointer(func);
-    Obj     result;
-    BEGIN_JULIA
-        result = function();
-    END_JULIA
-    return result;
-}
-
-static Obj DoCallJuliaCFunc1Arg(Obj func, Obj arg1)
-{
-    ObjFunc function = get_c_function_pointer(func);
-    Obj     result;
-    BEGIN_JULIA
-        result = function(arg1);
-    END_JULIA
-    return result;
-}
-
-static Obj DoCallJuliaCFunc2Arg(Obj func, Obj arg1, Obj arg2)
-{
-    ObjFunc function = get_c_function_pointer(func);
-    Obj     result;
-    BEGIN_JULIA
-        result = function(arg1, arg2);
-    END_JULIA
-    return result;
-}
-
-static Obj DoCallJuliaCFunc3Arg(Obj func, Obj arg1, Obj arg2, Obj arg3)
-{
-    ObjFunc function = get_c_function_pointer(func);
-    Obj     result;
-    BEGIN_JULIA
-        result = function(arg1, arg2, arg3);
-    END_JULIA
-    return result;
-}
-
-static Obj
-DoCallJuliaCFunc4Arg(Obj func, Obj arg1, Obj arg2, Obj arg3, Obj arg4)
-{
-    ObjFunc function = get_c_function_pointer(func);
-    Obj     result;
-    BEGIN_JULIA
-        result = function(arg1, arg2, arg3, arg4);
-    END_JULIA
-    return result;
-}
-
-static Obj DoCallJuliaCFunc5Arg(
-    Obj func, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5)
-{
-    ObjFunc function = get_c_function_pointer(func);
-    Obj     result;
-    BEGIN_JULIA
-        result = function(arg1, arg2, arg3, arg4, arg5);
-    END_JULIA
-    return result;
-}
-
-static Obj DoCallJuliaCFunc6Arg(
-    Obj func, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6)
-{
-    ObjFunc function = get_c_function_pointer(func);
-    Obj     result;
-    BEGIN_JULIA
-        result = function(arg1, arg2, arg3, arg4, arg5, arg6);
-    END_JULIA
-    return result;
-}
-
-
-Obj NewJuliaCFunc(void * function, Obj arg_names)
-{
-    ObjFunc handler;
-
-    switch (LEN_PLIST(arg_names)) {
-    case 0:
-        handler = DoCallJuliaCFunc0Arg;
-        break;
-    case 1:
-        handler = DoCallJuliaCFunc1Arg;
-        break;
-    case 2:
-        handler = DoCallJuliaCFunc2Arg;
-        break;
-    case 3:
-        handler = DoCallJuliaCFunc3Arg;
-        break;
-    case 4:
-        handler = DoCallJuliaCFunc4Arg;
-        break;
-    case 5:
-        handler = DoCallJuliaCFunc5Arg;
-        break;
-    case 6:
-        handler = DoCallJuliaCFunc6Arg;
-        break;
-    default:
-        ErrorQuit("Only 0-6 arguments are supported", 0, 0);
-        break;
-    }
-
-    Obj func = NewFunction(0, LEN_PLIST(arg_names), arg_names, handler);
-
-    // trick: fexs is unused for kernel functions, so we can store
-    // the function pointer here. Since fexs gets marked by the GC, we
-    // store it as a valid julia obj (i.e., void ptr).
-    SET_FEXS_FUNC(func, (Obj)jl_box_voidpointer(function));
-
-    return func;
-}
-
 static Obj Func_NewJuliaCFunc(Obj self, Obj julia_function_ptr, Obj arg_names)
 {
     jl_value_t * func_ptr = GET_JULIA_OBJ(julia_function_ptr);
@@ -433,6 +99,11 @@ static Int JuliaObjIsMutableFunc(Obj obj)
 {
     /* always immutable as GAP object */
     return 0L;
+}
+
+inline int IS_JULIA_OBJ(Obj o)
+{
+    return TNUM_OBJ(o) == T_JULIA_OBJ;
 }
 
 void SET_JULIA_OBJ(Obj o, jl_value_t * p)
@@ -629,7 +300,7 @@ static Obj Func_ConvertedFromJulia(Obj self, Obj obj)
     return _ConvertedFromJulia_internal(julia_obj);
 }
 
-static jl_value_t * _ConvertedToJulia_internal(Obj obj)
+jl_value_t * _ConvertedToJulia_internal(Obj obj)
 {
     size_t i;
     Obj    current;

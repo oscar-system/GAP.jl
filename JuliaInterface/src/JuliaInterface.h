@@ -1,9 +1,8 @@
 #ifndef JULIAINTERFACE_H_
 #define JULIAINTERFACE_H_
 
-#include "src/compiled.h" /* GAP headers */
 #include <julia.h>
-#include <julia_gcext.h>
+#include <libgap-api.h>
 
 // internal helper
 extern NOINLINE void handle_jl_exception(void);
@@ -62,10 +61,7 @@ extern UInt T_JULIA_OBJ;
 // IS_JULIA_OBJ(o)
 //
 // Checks if o is a julia object GAP object.
-static inline int IS_JULIA_OBJ(Obj o)
-{
-    return TNUM_OBJ(o) == T_JULIA_OBJ;
-}
+extern int IS_JULIA_OBJ(Obj o);
 
 // NewJuliaFunc(f,autoConvert)
 //
@@ -93,5 +89,8 @@ Obj gap_unbox_gapffe(jl_value_t * gapffe);
 
 //
 int is_gapffe(jl_value_t * v);
+
+// internal
+extern jl_value_t * _ConvertedToJulia_internal(Obj obj);
 
 #endif
