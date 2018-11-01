@@ -2,6 +2,9 @@
 
 #include "convert.h"
 
+// Helper used to call GAP functions from Julia.
+//
+// This function is used by LibGAP.jl
 jl_value_t * call_gap_func(void * func, jl_value_t * arg_array)
 {
     jl_array_t * array_ptr = (jl_array_t *)arg_array;

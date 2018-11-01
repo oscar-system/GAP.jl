@@ -1,5 +1,6 @@
 #include "convert.h"
 
+// This function is used by LibGAP.jl
 jl_value_t * julia_gap(Obj obj)
 {
     if (IS_INTOBJ(obj)) {
@@ -14,6 +15,7 @@ jl_value_t * julia_gap(Obj obj)
     return (jl_value_t *)obj;
 }
 
+// This function is used by LibGAP.jl
 Obj gap_julia(jl_value_t * julia_obj)
 {
     if (jl_typeis(julia_obj, jl_int64_type)) {
