@@ -5,6 +5,6 @@
 #include <libgap-api.h>
 
 extern jl_value_t * julia_gap(Obj obj);
-extern Obj gap_julia(jl_value_t * julia_obj);
+extern Obj          gap_julia(jl_value_t * julia_obj);
 
 #endif
