@@ -20,6 +20,11 @@ static jl_datatype_t * JULIA_GAPFFE_type;
 Obj  TheTypeJuliaObject;
 UInt T_JULIA_OBJ;
 
+Obj JI_SUM(Obj a, Obj b)
+{
+    return SUM(a, b);
+}
+
 
 void handle_jl_exception(void)
 {
