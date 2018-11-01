@@ -5,7 +5,7 @@
 #
 MODULE_NAME = JuliaInterface
 
-SOURCES = src/JuliaInterface.c
+SOURCES = src/JuliaInterface.c src/calls.c src/convert.c
 
 LDFLAGS += -ljulia
 

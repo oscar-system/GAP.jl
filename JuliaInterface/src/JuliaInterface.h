@@ -84,4 +84,14 @@ Obj NewJuliaObj(jl_value_t *);
 // Returns a julia module pointer to the module <name>.
 jl_module_t * get_module_from_string(char * name);
 
+
+//
+jl_value_t * gap_box_gapffe(Obj value);
+
+//
+Obj gap_unbox_gapffe(jl_value_t * gapffe);
+
+//
+int is_gapffe(jl_value_t * v);
+
 #endif

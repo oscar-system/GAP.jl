@@ -67,7 +67,11 @@ Obj gap_unbox_gapffe(jl_value_t * gapffe)
     return *(Obj *)jl_data_ptr(gapffe);
 }
 
-#include "gap_macros.c"
+//
+int is_gapffe(jl_value_t * v)
+{
+    return jl_typeis(v, JULIA_GAPFFE_type);
+}
 
 // FIXME: get rid of IS_JULIA_FUNC??
 static inline Int IS_JULIA_FUNC(Obj obj)
