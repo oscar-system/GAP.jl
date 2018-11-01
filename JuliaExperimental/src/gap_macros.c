@@ -2,6 +2,7 @@
 // This file should be completely obsolete
 // once LibGap is completed
 
+#include <src/compiled.h>
 
 // Provide C functions that can call the functions
 // in GAP's kernel tables (see GAP's 'src/ariths.h').
