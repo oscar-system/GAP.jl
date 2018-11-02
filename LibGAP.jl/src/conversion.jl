@@ -10,15 +10,8 @@ function to_gap(v :: Array{T, 1} where T) :: MPtr
     for i in 1:length(v)
         l[i] = v[i]
     end
-    # FIXME: size of l is never set, thus remains zero
     return l
 end
-
-# FIXME: this method makes no sense: it returns the value
-# computed by `map`, which will *not* be a valid GAP object
-#function to_gap(v :: AbstractArray)
-#    return map(to_gap, v)
-#end
 
 ## Conversion from GAP
 ##

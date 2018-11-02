@@ -20,6 +20,7 @@ static jl_datatype_t * JULIA_GAPFFE_type;
 Obj  TheTypeJuliaObject;
 UInt T_JULIA_OBJ;
 
+
 void handle_jl_exception(void)
 {
     jl_call2(JULIA_FUNC_showerror, JULIA_ERROR_IOBuffer,
