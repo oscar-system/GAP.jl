@@ -26,6 +26,9 @@ large_int_t2 = GAP.EvalString( "2^101;" )[1][2]
         @test large_int > large_int_m1
         @test large_int >= large_int_m1
         @test large_int == large_int
+
+        @test mod(large_int,2) == 0
+        @test mod(large_int_p1,2) == 1
     end
 
 end
