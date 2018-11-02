@@ -57,19 +57,3 @@ for types in typecombinations
         end
     end
 end
-
-
-# #
-# +(x::GAPInputType, y::GAPInputType) = GAP.GAPFuncs.SUM(x, y)
-# -(x::GAPInputType, y::GAPInputType) = GAP.GAPFuncs.DIFF(x, y)
-# *(x::GAPInputType, y::GAPInputType) = GAP.GAPFuncs.PROD(x, y)
-# /(x::GAPInputType, y::GAPInputType) = GAP.GAPFuncs.QUO(x, y)
-# ^(x::GAPInputType, y::GAPInputType) = GAP.GAPFuncs.POW(x, y)
-# mod(x::GAPInputType, y::GAPInputType) = GAP.GAPFuncs.MOD(x, y)
-
-# <(x::GAPInputType, y::GAPInputType) = GAP.GAPFuncs.LT(x, y)
-# ==(x::GAPInputType, y::GAPInputType) = GAP.GAPFuncs.EQ(x, y)
-
-
-# TODO: do benchmarks to compare this with ccall:
-#+(x::GAP.MPtr, y::GAP.MPtr) = ccall( :MyFuncSUM, GAP.MPtr, (GAP.MPtr, GAP.MPtr), x, y )

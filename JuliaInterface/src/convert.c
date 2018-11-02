@@ -16,6 +16,12 @@ jl_value_t * julia_gap(Obj obj)
     if (IS_JULIA_OBJ(obj)) {
         return GET_JULIA_OBJ(obj);
     }
+    if (obj == True) {
+        return jl_true;
+    }
+    if (obj == False) {
+        return jl_false;
+    }
     return (jl_value_t *)obj;
 }
 
@@ -30,6 +36,9 @@ Obj gap_julia(jl_value_t * julia_obj)
     }
     if (is_gapffe(julia_obj)) {
         return gap_unbox_gapffe(julia_obj);
+    }
+    if (jl_typeis(julia_obj, jl_bool_type)) {
+        return julia_obj == jl_true ? True : False;
     }
     return NewJuliaObj(julia_obj);
 }
