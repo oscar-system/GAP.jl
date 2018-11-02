@@ -36,6 +36,11 @@ Base.getproperty(x::MPtr, f::Symbol) = GAP.GAPFuncs.ELM_REC(x, RNamObj(f))
 Base.setproperty!(x::MPtr, f::Symbol, v) = GAP.GAPFuncs.ASS_REC(x, RNamObj(f), v)
 
 #
+Base.zero(x::GAPInputType_noint) = GAP.GAPFuncs.ZERO(x)
+Base.one(x::GAPInputType_noint) = GAP.GAPFuncs.ONE(x)
+Base.:-(x::GAPInputType_noint) = GAP.GAPFuncs.AINV(x)
+
+#
 typecombinations = ((:GAPInputType_noint,:GAPInputType_noint),
                     (:GAPInputType_noint,:Int64),
                     (:Int64,:GAPInputType_noint))
@@ -43,6 +48,7 @@ function_combinations = ((:+,:SUM),
                          (:-,:DIFF),
                          (:*,:PROD),
                          (:/,:QUO),
+                         (:\,:LQUO),
                          (:^,:POW),
                          (:mod,:MOD),
                          (:<,:LT),
