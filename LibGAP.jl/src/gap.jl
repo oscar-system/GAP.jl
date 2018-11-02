@@ -28,12 +28,12 @@ Base.length(x::MPtr) = GAP.GAPFuncs.Length(x)
 
 # matrix
 Base.getindex(x::MPtr, i::Int64, j::Int64) = GAP.GAPFuncs.ELM_LIST(x, i, j)
-Base.setindex!(x::MPtr, v::GAPInputType, i::Int64, j::Int64) = GAP.GAPFuncs.ASS_LIST(x, i, j, to_gap(v))
+Base.setindex!(x::MPtr, v::GAPInputType, i::Int64, j::Int64) = GAP.GAPFuncs.ASS_LIST(x, i, j, v)
 
 # records
 RNamObj(f::Symbol) = GAP.GAPFuncs.RNamObj(MakeString(string(f)))
 Base.getproperty(x::MPtr, f::Symbol) = GAP.GAPFuncs.ELM_REC(x, RNamObj(f))
-Base.setproperty!(x::MPtr, f::Symbol, v) = GAP.GAPFuncs.ASS_REC(x, RNamObj(f), to_gap(v))
+Base.setproperty!(x::MPtr, f::Symbol, v) = GAP.GAPFuncs.ASS_REC(x, RNamObj(f), v)
 
 
 import Base: *, +, -, /, ^, mod, <, ==
