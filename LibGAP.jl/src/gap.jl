@@ -35,25 +35,23 @@ RNamObj(f::Symbol) = GAP.GAPFuncs.RNamObj(MakeString(string(f)))
 Base.getproperty(x::MPtr, f::Symbol) = GAP.GAPFuncs.ELM_REC(x, RNamObj(f))
 Base.setproperty!(x::MPtr, f::Symbol, v) = GAP.GAPFuncs.ASS_REC(x, RNamObj(f), v)
 
+#
+typecombinations = ((:GAPInputType_noint,:GAPInputType_noint),
+                    (:GAPInputType_noint,:Int64),
+                    (:Int64,:GAPInputType_noint))
+function_combinations = ((:+,:SUM),
+                         (:-,:DIFF),
+                         (:*,:PROD),
+                         (:/,:QUO),
+                         (:^,:POW),
+                         (:mod,:MOD),
+                         (:<,:LT),
+                         (:(==),:EQ))
 
-import Base: *, +, -, /, ^, mod, <, ==
-
-typecombinations = [[:GAPInputType_noint,:GAPInputType_noint],
-                    [:GAPInputType_noint,:Int64],
-                    [:Int64,:GAPInputType_noint]]
-function_combinations = [[:(+),:SUM],
-                         [:(-),:DIFF],
-                         [:(*),:PROD],
-                         [:(/),:QUO],
-                         [:(^),:POW],
-                         [:(mod),:MOD],
-                         [:(<),:LT],
-                         [:(==),:EQ]]
-
-for types in typecombinations
-    for func in function_combinations
+for (left, right) in typecombinations
+    for (funcJ, funcC) in function_combinations
         @eval begin
-            $(func[1])(x::$(types[1]),y::$(types[2])) = GAP.GAPFuncs.$(func[2])(x,y)
+            Base.$(funcJ)(x::$left,y::$right) = GAP.GAPFuncs.$(funcC)(x,y)
         end
     end
 end
