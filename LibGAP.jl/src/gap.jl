@@ -3,7 +3,8 @@ import Base: convert, getindex, setindex!, length, show
 const True = GAP.GAPFuncs.ReturnTrue()
 const False = GAP.GAPFuncs.ReturnFalse()
 
-const GAPInputType = Union{MPtr,Int64,GAP.GapFFE}
+const GAPInputType_noint = Union{MPtr,GAP.GapFFE}
+const GAPInputType = Union{GAPInputType_noint,Int64}
 
 function GAPFunctionPointer( name :: String )
     return GAP.GapFunc( ValueGlobalVariable(name).ptr )
@@ -37,16 +38,37 @@ Base.setproperty!(x::MPtr, f::Symbol, v) = GAP.GAPFuncs.ASS_REC(x, RNamObj(f), t
 
 import Base: *, +, -, /, ^, mod, <, ==
 
-#
-+(x::GAPInputType, y::GAPInputType) = GAP.GAPFuncs.SUM(x, y)
--(x::GAPInputType, y::GAPInputType) = GAP.GAPFuncs.DIFF(x, y)
-*(x::GAPInputType, y::GAPInputType) = GAP.GAPFuncs.PROD(x, y)
-/(x::GAPInputType, y::GAPInputType) = GAP.GAPFuncs.QUO(x, y)
-^(x::GAPInputType, y::GAPInputType) = GAP.GAPFuncs.POW(x, y)
-mod(x::GAPInputType, y::GAPInputType) = GAP.GAPFuncs.MOD(x, y)
+typecombinations = [[:GAPInputType_noint,:GAPInputType_noint],
+                    [:GAPInputType_noint,:Int64],
+                    [:Int64,:GAPInputType_noint]]
+function_combinations = [[:(+),:SUM],
+                         [:(-),:DIFF],
+                         [:(*),:PROD],
+                         [:(/),:QUO],
+                         [:(^),:POW],
+                         [:(mod),:MOD],
+                         [:(<),:LT],
+                         [:(==),:EQ]]
 
-<(x::GAPInputType, y::GAPInputType) = GAP.GAPFuncs.LT(x, y)
-==(x::GAPInputType, y::GAPInputType) = GAP.GAPFuncs.EQ(x, y)
+for types in typecombinations
+    for func in function_combinations
+        @eval begin
+            $(func[1])(x::$(types[1]),y::$(types[2])) = GAP.GAPFuncs.$(func[2])(x,y)
+        end
+    end
+end
+
+
+# #
+# +(x::GAPInputType, y::GAPInputType) = GAP.GAPFuncs.SUM(x, y)
+# -(x::GAPInputType, y::GAPInputType) = GAP.GAPFuncs.DIFF(x, y)
+# *(x::GAPInputType, y::GAPInputType) = GAP.GAPFuncs.PROD(x, y)
+# /(x::GAPInputType, y::GAPInputType) = GAP.GAPFuncs.QUO(x, y)
+# ^(x::GAPInputType, y::GAPInputType) = GAP.GAPFuncs.POW(x, y)
+# mod(x::GAPInputType, y::GAPInputType) = GAP.GAPFuncs.MOD(x, y)
+
+# <(x::GAPInputType, y::GAPInputType) = GAP.GAPFuncs.LT(x, y)
+# ==(x::GAPInputType, y::GAPInputType) = GAP.GAPFuncs.EQ(x, y)
 
 
 # TODO: do benchmarks to compare this with ccall:
