@@ -1,7 +1,0 @@
-using Test
-
-include(joinpath("@GAPJULIA_DIR@","LibGAP.jl","src","initialization.jl"))
-
-libgap.run_it("@GAPPATH@")
-
-include("runtests_includes.jl")

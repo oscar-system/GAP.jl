@@ -1,4 +1,4 @@
 /Makefile
 /gap/
 /gh-pages/
-/LibGAP.jl/test/runtests.jl
+/LibGAP.jl/test/runtests_dir.jl
