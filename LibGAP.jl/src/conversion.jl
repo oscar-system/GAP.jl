@@ -1,16 +1,9 @@
 ## Conversion to GAP
 
-to_gap(str :: String)         = MakeString(str)
-to_gap(v :: Any)              = v
-
-
-function to_gap( v :: Bool ) :: MPtr
-    if v
-        return True
-    else
-        return False
-    end
-end
+to_gap(v :: MPtr)       = v
+to_gap(v :: GapFFE)     = v
+to_gap(v :: String)     = MakeString(v)
+to_gap(v :: Bool)       = v ? True : False
 
 function to_gap(v :: Array{T, 1} where T) :: MPtr
     l = NewPlist(length(v))
@@ -20,9 +13,14 @@ function to_gap(v :: Array{T, 1} where T) :: MPtr
     return l
 end
 
-function to_gap(v :: AbstractArray)
-    return map(to_gap, v)
-end
+## Conversion from GAP
+##
+## FIXME: these are not very user friendly (user has to know type of the GAP
+## object in advanced), and some may even crash. It is not even clear that
+## here is the right place to perform most of these conversions, maybe they
+## should be done on the GAP and/or in the JuliaInterface GAP kernel
+## extension instead. We need to work this out...
+
 
 from_gap_string(obj :: MPtr) = CSTR_STRING(obj)
 
