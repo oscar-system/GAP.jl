@@ -31,5 +31,5 @@ cd ..
 #
 cd LibGAP.jl
 pwd
-${JULIAROOT}/bin/julia test/runtests.jl
+${JULIAROOT}/bin/julia --code-coverage --inline=no test/runtests.jl
 cd ..
