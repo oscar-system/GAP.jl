@@ -38,22 +38,20 @@ Base.setproperty!(x::MPtr, f::Symbol, v) = GAP.GAPFuncs.ASS_REC(x, RNamObj(f), v
 
 import Base: *, +, -, /, ^, mod, <, ==
 
-typecombinations = [[:GAPInputType_noint,:GAPInputType_noint],
-                    [:GAPInputType_noint,:Int64],
-                    [:Int64,:GAPInputType_noint]]
-function_combinations = [[:(+),:SUM],
-                         [:(-),:DIFF],
-                         [:(*),:PROD],
-                         [:(/),:QUO],
-                         [:(^),:POW],
-                         [:(mod),:MOD],
-                         [:(<),:LT],
-                         [:(==),:EQ]]
+typecombinations = [(:GAPInputType_noint,:GAPInputType_noint),
+                    (:GAPInputType_noint,:Int64),
+                    (:Int64,:GAPInputType_noint)]
+function_combinations = [(:(+),:SUM),
+                         (:(-),:DIFF),
+                         (:(*),:PROD),
+                         (:(/),:QUO),
+                         (:(^),:POW),
+                         (:(mod),:MOD),
+                         (:(<),:LT),
+                         (:(==),:EQ)]
 
-for types in typecombinations
-    for func in function_combinations
-        @eval begin
-            $(func[1])(x::$(types[1]),y::$(types[2])) = GAP.GAPFuncs.$(func[2])(x,y)
-        end
+for (t1,t2) in typecombinations
+    for (f1,f2) in function_combinations
+        @eval $f1(x::$t1,y::$t2) = GAP.GAPFuncs.$f2(x,y)
     end
 end
