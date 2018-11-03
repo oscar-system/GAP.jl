@@ -5,21 +5,30 @@
     large_int = GAP.EvalString( "2^100;" )[1][2]
     large_int_p1 = GAP.EvalString( "2^100 + 1;" )[1][2]
     large_int_m1 = GAP.EvalString( "2^100 - 1;" )[1][2]
-    large_int_double = GAP.EvalString( "2^200;" )[1][2]
+    large_int_squared = GAP.EvalString( "2^200;" )[1][2]
     large_int_t2 = GAP.EvalString( "2^101;" )[1][2]
 
+    @test zero(large_int) == 0
+    @test one(large_int) == 1
 
     @test large_int + 1 == large_int_p1
     @test 1 + large_int == large_int_p1
+
+    @test large_int + (-large_int) == 0
 
     @test large_int - 1 == large_int_m1
 
     @test large_int * 2 == large_int_t2
     @test 2 * large_int == large_int_t2
 
-    @test large_int * large_int == large_int_double
+    @test large_int * large_int == large_int_squared
+    @test large_int^2 == large_int_squared
+
     @test large_int / large_int == 1
     @test large_int / 2^50 == 2^50
+
+    @test large_int \ large_int == 1
+    @test 2^50 \ large_int == 2^50
 
     @test large_int < large_int_p1
     @test large_int <= large_int_p1
@@ -33,17 +42,21 @@ end
 
 @testset "ffe_arithmetics" begin
 
-    f3_gen = GAP.EvalString( "Z(3);" )[1][2]
-    f3_one = GAP.EvalString( "Z(3)^0;" )[1][2]
-    f3_zero = GAP.EvalString( "0 * Z(3);" )[1][2]
+    z3_gen = GAP.EvalString( "Z(3);" )[1][2]
+    z3_one = GAP.EvalString( "Z(3)^0;" )[1][2]
+    z3_zero = GAP.EvalString( "0 * Z(3);" )[1][2]
 
-    f3_call = GAP.GAPFuncs.Z(3)
+    z3 = GAP.GAPFuncs.Z(3)
 
-    @test f3_call * 1 == f3_gen
-    @test f3_call + 1 == f3_zero
-    @test f3_call + 2 == f3_one
-    @test f3_call ^ 2 == f3_one
-    @test f3_call - 1 == f3_one
+    @test z3_gen == z3
+    @test z3_one == one(z3)
+    @test z3_zero == zero(z3)
+
+    @test z3 * 1 == z3_gen
+    @test z3 + 1 == z3_zero
+    @test z3 + 2 == z3_one
+    @test z3 ^ 2 == z3_one
+    @test z3 - 1 == z3_one
 end
 
 @testset "object_access" begin
