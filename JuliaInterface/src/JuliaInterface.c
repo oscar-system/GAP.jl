@@ -137,7 +137,7 @@ jl_function_t * get_function_from_obj_or_string(Obj func)
     if (IS_JULIA_OBJ(func)) {
         return (jl_function_t *)GET_JULIA_OBJ(func);
     }
-    if (IS_STRING_REP(func)) {
+    if (IsStringConv(func)) {
         // jl_get_function is a thin wrapper for jl_get_global and never
         // throws an exception
         jl_function_t * function =
@@ -486,7 +486,7 @@ static Obj FuncJuliaTuple(Obj self, Obj list)
 // :<name>.
 static Obj FuncJuliaSymbol(Obj self, Obj name)
 {
-    if (!IS_STRING_REP(name)) {
+    if (!IsStringConv(name)) {
         ErrorMayQuit("JuliaSymbol: <name> must be a string", 0, 0);
     }
 
@@ -500,7 +500,7 @@ static Obj FuncJuliaSymbol(Obj self, Obj name)
 // module <name>.
 static Obj FuncJuliaModule(Obj self, Obj name)
 {
-    if (!IS_STRING_REP(name)) {
+    if (!IsStringConv(name)) {
         ErrorMayQuit("JuliaModule: <name> must be a string", 0, 0);
     }
 
@@ -523,7 +523,7 @@ static Obj FuncJuliaSetVal(Obj self, Obj name, Obj julia_val)
 // currently bound to the julia identifier <name>.
 static Obj Func_JuliaGetGlobalVariable(Obj self, Obj name)
 {
-    if (!IS_STRING_REP(name)) {
+    if (!IsStringConv(name)) {
         ErrorMayQuit("_JuliaGetGlobalVariable: <name> must be a string", 0,
                      0);
     }
@@ -540,7 +540,7 @@ static Obj Func_JuliaGetGlobalVariable(Obj self, Obj name)
 // currently bound to the julia identifier <module_name>.<name>.
 static Obj Func_JuliaGetGlobalVariableByModule(Obj self, Obj name, Obj module)
 {
-    if (!IS_STRING_REP(name)) {
+    if (!IsStringConv(name)) {
         ErrorMayQuit(
             "_JuliaGetGlobalVariableByModule: <name> must be a string", 0, 0);
     }
@@ -551,7 +551,7 @@ static Obj Func_JuliaGetGlobalVariableByModule(Obj self, Obj name, Obj module)
         if (!jl_is_module(m))
             m = 0;
     }
-    else if (IS_STRING_REP(module)) {
+    else if (IsStringConv(module)) {
         m = get_module_from_string(CSTR_STRING(module));
     }
     if (!m) {
@@ -577,7 +577,7 @@ static Obj FuncJuliaGetFieldOfObject(Obj self, Obj super_obj, Obj field_name)
             "JuliaGetFieldOfObject: <super_obj> must be a Julia object", 0,
             0);
     }
-    if (!IS_STRING_REP(field_name)) {
+    if (!IsStringConv(field_name)) {
         ErrorMayQuit("JuliaGetFieldOfObject: <field_name> must be a string",
                      0, 0);
     }
