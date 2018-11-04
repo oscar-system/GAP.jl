@@ -46,7 +46,7 @@ jl_module_t * get_module_from_string(char * name)
 // This function needs to be called after the `gaptypes.jl`
 // file is loaded into Julia and the GAP module is present.
 // Therefore we do not call in InitKernel, but in the `read.g` file.
-Obj Func_InitializeGAPFFEType()
+Obj Func_InitializeGAPFFEType(Obj self)
 {
     JULIA_GAPFFE_type = (jl_datatype_t *)jl_new_primitivetype(
         (jl_value_t *)jl_symbol("GapFFE"), get_module_from_string("GAP"),
