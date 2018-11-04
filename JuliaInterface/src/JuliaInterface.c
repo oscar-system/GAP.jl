@@ -275,10 +275,8 @@ Obj _ConvertedFromJulia_internal(jl_value_t * julia_obj)
     }
 
     else if (jl_is_symbol(julia_obj)) {
-        Obj    return_string;
         char * symbol_name = jl_symbol_name((jl_sym_t *)julia_obj);
-        C_NEW_STRING(return_string, strlen(symbol_name), symbol_name);
-        return return_string;
+        return MakeImmString(symbol_name);
     }
 
     else if (IsGapObj(julia_obj)) {
