@@ -24,6 +24,12 @@ rec( ok := false,
 ed with a complex argument. Try sqrt(Complex(x)).\")" )
 
 ##
+gap> JuliaEvalString(fail);
+Error, JuliaEvalString: <string> must be a string
+
+##
+gap> JuliaSetVal(fail, 1);
+Error, JuliaSetVal: <name> must be a string
 gap> JuliaSetVal("foo", JuliaEvalString("1"));
 gap> JuliaGetGlobalVariable("foo");
 <Julia: 1>
@@ -88,4 +94,3 @@ Error, type Module has no field not-a-field
 
 ##
 gap> STOP_TEST( "utils.tst", 1 );
-

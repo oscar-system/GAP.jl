@@ -77,6 +77,13 @@ int is_gapffe(jl_value_t * v)
 
 static Obj Func_NewJuliaCFunc(Obj self, Obj julia_function_ptr, Obj arg_names)
 {
+    if (!IS_JULIA_OBJ(julia_function_ptr)) {
+        ErrorMayQuit("NewJuliaCFunc: <ptr> must be a Julia object", 0, 0);
+    }
+    if (!IS_PLIST(arg_names)) {
+        ErrorMayQuit("NewJuliaCFunc: <arg_names> must be plain list", 0, 0);
+    }
+
     jl_value_t * func_ptr = GET_JULIA_OBJ(julia_function_ptr);
     void *       ptr = jl_unbox_voidpointer(func_ptr);
     return NewJuliaCFunc(ptr, arg_names);
@@ -172,6 +179,16 @@ static Obj Func_JuliaFunctionByModule(Obj self,
                                       Obj module_name,
                                       Obj autoConvert)
 {
+    if (!IsStringConv(function_name)) {
+        ErrorMayQuit(
+            "_JuliaFunctionByModule: <function_name> must be a string", 0, 0);
+    }
+
+    if (!IsStringConv(module_name)) {
+        ErrorMayQuit("_JuliaFunctionByModule: <module_name> must be a string",
+                     0, 0);
+    }
+
     jl_module_t * module_t = get_module_from_string(CSTR_STRING(module_name));
     // jl_get_function is a thin wrapper for jl_get_global and never throws
     // an exception
@@ -185,6 +202,10 @@ static Obj Func_JuliaFunctionByModule(Obj self,
 // Executes the string <string> in the current julia session.
 static Obj FuncJuliaEvalString(Obj self, Obj string)
 {
+    if (!IsStringConv(string)) {
+        ErrorMayQuit("JuliaEvalString: <string> must be a string", 0, 0);
+    }
+
     char * current = CSTR_STRING(string);
     char   copy[strlen(current) + 1];
     strcpy(copy, current);
@@ -513,6 +534,12 @@ static Obj FuncJuliaModule(Obj self, Obj name)
 // This function is for debugging purposes
 static Obj FuncJuliaSetVal(Obj self, Obj name, Obj julia_val)
 {
+    if (!IsStringConv(name)) {
+        ErrorMayQuit("JuliaSetVal: <name> must be a string", 0, 0);
+    }
+    if (!IS_JULIA_OBJ(julia_val)) {
+        ErrorMayQuit("JuliaSetVal: <julia_val> must be a Julia object", 0, 0);
+    }
     jl_value_t * julia_obj = GET_JULIA_OBJ(julia_val);
     jl_sym_t *   julia_symbol = jl_symbol(CSTR_STRING(name));
     jl_set_global(jl_main_module, julia_symbol, julia_obj);
