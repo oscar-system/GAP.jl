@@ -42,16 +42,10 @@ Perform([[ "IsJuliaObject", "IsJuliaObject" ],
         InstallOtherMethod( \+, argTypes, Julia.Base.\+ );
         InstallOtherMethod( \*, argTypes, Julia.Base.\* );
         InstallOtherMethod( \-, argTypes, Julia.Base.\- );
+        InstallOtherMethod( \^, argTypes, Julia.Base.\^ );
         InstallOtherMethod( \=, argTypes, Julia.Base.\=\= );
         InstallOtherMethod( \<, argTypes, Julia.Base.\< );
     end);
-
-
-InstallOtherMethod( \^,
-    [ "IsJuliaObject", "IsPosInt and IsSmallIntRep" ],
-    function( obj, i )
-      return Julia.Base.("^")( obj, i );
-    end );
 
 
 #############################################################################

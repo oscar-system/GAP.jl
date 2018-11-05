@@ -16,7 +16,7 @@ gap> large_int_t2 := JuliaEvalString("big(2)^101");
 #
 gap> zero := Zero(large_int);
 <Julia: 0>
-gap> One(large_int);
+gap> one := One(large_int);
 <Julia: 1>
 
 #
@@ -38,9 +38,13 @@ gap> large_int * 2 = large_int_t2;
 true
 gap> 2 * large_int = large_int_t2;
 true
+gap> large_int * large_int = large_int_squared;
+true
 
 #
-gap> large_int * large_int = large_int_squared;
+gap> large_int^0 = one;
+true
+gap> large_int^1 = large_int;
 true
 gap> large_int^2 = large_int_squared;
 true
