@@ -99,10 +99,7 @@ end
 > (except that they are GapObj) is done by GAP itself.
 """
 function(func::GapFunc)(args...)
-    arg_array = collect(args)
-    result = ccall(:call_gap_func,Any,
-                        (MPtr,Any),func.ptr, arg_array )
-    return result
+    return ccall(:call_gap_func, Any, (MPtr,Any), func.ptr, args)
 end
 
 struct GAPFuncsType
