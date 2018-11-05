@@ -59,8 +59,13 @@ function finalize( )
            , () )
 end
 
+gap_is_initialized = false
+
 run_it = function(gapdir::String)
-    global sysinfo
+    global sysinfo, gap_is_initialized
+    if gap_is_initialized
+        throw(ErrorException("GAP already initialized"))
+    end
     sysinfo = read_sysinfo_gap(gapdir)
     println("Adding path ", gapdir * "/.libs", " to DL_LOAD_PATH")
     push!( Libdl.DL_LOAD_PATH, gapdir * "/.libs" )
@@ -68,6 +73,7 @@ run_it = function(gapdir::String)
                        , "-l", sysinfo["GAP_LIB_DIR"]
                        , "-T", "-r", "-A", "--nointeract"
                        , "-m", "512m" ], [""] )
+    gap_is_initialized = true
 end
 
 
