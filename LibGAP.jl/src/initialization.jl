@@ -64,7 +64,7 @@ gap_is_initialized = false
 run_it = function(gapdir::String)
     global sysinfo, gap_is_initialized
     if gap_is_initialized
-        throw(ErrorException("GAP already initialized"))
+        error("GAP already initialized")
     end
     sysinfo = read_sysinfo_gap(gapdir)
     println("Adding path ", gapdir * "/.libs", " to DL_LOAD_PATH")
