@@ -342,4 +342,24 @@ gap> h6C(true,2,3,4,5,6);
 Error, TypeError: in h6, in cfunction, expected Ptr{Nothing}, got Nothing
 
 #
+gap> _NewJuliaCFunc(fail, fail);
+Error, NewJuliaCFunc: <ptr> must be a Julia object
+gap> _NewJuliaCFunc(JuliaEvalString("1"), fail);
+Error, NewJuliaCFunc: <arg_names> must be plain list
+
+#
+gap> _JuliaFunction(fail, fail);
+Error, argument is not a julia object or string
+gap> _JuliaFunction("foo_bar_quux_not_defined", fail);
+Error, Function is not defined in julia
+
+#
+gap> _JuliaFunctionByModule(fail, fail, fail);
+Error, _JuliaFunctionByModule: <function_name> must be a string
+gap> _JuliaFunctionByModule("foo", fail, fail);
+Error, _JuliaFunctionByModule: <module_name> must be a string
+gap> _JuliaFunctionByModule("foo", "bar", fail);
+Error, UndefVarError: bar not defined
+
+#
 gap> STOP_TEST( "calls.tst", 1 );
