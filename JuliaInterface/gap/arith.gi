@@ -35,59 +35,15 @@ InstallOtherMethod( \[\],
       return Julia.Base.getindex( obj, i, j );
     end );
 
-InstallOtherMethod( \+,
-    [ "IsJuliaObject", "IsJuliaObject" ],
-    function( obj1, obj2 )
-      return Julia.Base.("+")( obj1, obj2 );
-    end );
+Perform([[ "IsJuliaObject", "IsJuliaObject" ],
+         [ "IsJuliaObject", "IsInt and IsSmallIntRep" ],
+         [ "IsInt and IsSmallIntRep", "IsJuliaObject" ]],
+    function(argTypes)
+        InstallOtherMethod( \+, argTypes, Julia.Base.\+ );
+        InstallOtherMethod( \*, argTypes, Julia.Base.\* );
+        InstallOtherMethod( \-, argTypes, Julia.Base.\- );
+    end);
 
-InstallOtherMethod( \+,
-    [ "IsJuliaObject", "IsInt and IsSmallIntRep" ],
-    function( obj, i )
-      return Julia.Base.("+")( obj, i );
-    end );
-
-InstallOtherMethod( \+,
-    [ "IsInt and IsSmallIntRep", "IsJuliaObject" ],
-    function( i, obj )
-      return Julia.Base.("+")( i, obj );
-    end );
-
-InstallOtherMethod( \-,
-    [ "IsJuliaObject", "IsJuliaObject" ],
-    function( obj1, obj2 )
-      return Julia.Base.("-")( obj1, obj2 );
-    end );
-
-InstallOtherMethod( \-,
-    [ "IsJuliaObject", "IsInt and IsSmallIntRep" ],
-    function( obj, i )
-      return Julia.Base.("-")( obj, i );
-    end );
-
-InstallOtherMethod( \-,
-    [ "IsInt and IsSmallIntRep", "IsJuliaObject" ],
-    function( i, obj )
-      return Julia.Base.("-")( i, obj );
-    end );
-
-InstallOtherMethod( \*,
-    [ "IsJuliaObject", "IsJuliaObject" ],
-    function( obj1, obj2 )
-      return Julia.Base.("*")( obj1, obj2 );
-    end );
-
-InstallOtherMethod( \*,
-    [ "IsJuliaObject", "IsInt and IsSmallIntRep" ],
-    function( obj, i )
-      return Julia.Base.("*")( obj, i );
-    end );
-
-InstallOtherMethod( \*,
-    [ "IsInt and IsSmallIntRep", "IsJuliaObject" ],
-    function( i, obj )
-      return Julia.Base.("*")( i, obj );
-    end );
 
 InstallOtherMethod( \^,
     [ "IsJuliaObject", "IsPosInt and IsSmallIntRep" ],
