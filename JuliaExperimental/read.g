@@ -6,7 +6,6 @@
 
 # ...
 ReadPackage( "JuliaExperimental", "gap/utils.gi");
-ReadPackage( "JuliaExperimental", "gap/arith.gi");
 
 
 # ReadPackage( "JuliaExperimental", "gap/convertcyc.g");

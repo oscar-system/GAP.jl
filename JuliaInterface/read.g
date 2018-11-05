@@ -19,3 +19,5 @@ if not IsBound( JULIAINTERNAL_LOADED_FROM_JULIA ) then
     dirs:= DirectoriesPackageLibrary( "JuliaInterface", "../LibGAP.jl/src" );
     Julia.Base.include( Julia.Main.GAP!.julia_pointer, Filename( dirs, "libgap.jl" ) );
 fi;
+
+ReadPackage( "JuliaInterface", "gap/arith.gi");
