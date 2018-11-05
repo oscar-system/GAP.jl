@@ -176,31 +176,31 @@ gap> fwN();
 
 #
 gap> fwN(true);
-<Julia: (GAP: true,)>
+<Julia: (true,)>
 
 #
 gap> fwN(true,2);
-<Julia: (GAP: true, 2)>
+<Julia: (true, 2)>
 
 #
 gap> fwN(true,2,3);
-<Julia: (GAP: true, 2, 3)>
+<Julia: (true, 2, 3)>
 
 #
 gap> fwN(true,2,3,4);
-<Julia: (GAP: true, 2, 3, 4)>
+<Julia: (true, 2, 3, 4)>
 
 #
 gap> fwN(true,2,3,4,5);
-<Julia: (GAP: true, 2, 3, 4, 5)>
+<Julia: (true, 2, 3, 4, 5)>
 
 #
 gap> fwN(true,2,3,4,5,6);
-<Julia: (GAP: true, 2, 3, 4, 5, 6)>
+<Julia: (true, 2, 3, 4, 5, 6)>
 
 #
 gap> fwN(true,2,3,4,5,6,7);
-<Julia: (GAP: true, 2, 3, 4, 5, 6, 7)>
+<Julia: (true, 2, 3, 4, 5, 6, 7)>
 
 # non-variadic functions
 gap> f0wN := _JuliaFunction("f0", false);;
@@ -218,31 +218,31 @@ gap> f0wN();
 
 #
 gap> f1wN(true);
-<Julia: (GAP: true,)>
+<Julia: (true,)>
 
 #
 gap> f2wN(true,2);
-<Julia: (GAP: true, 2)>
+<Julia: (true, 2)>
 
 #
 gap> f3wN(true,2,3);
-<Julia: (GAP: true, 2, 3)>
+<Julia: (true, 2, 3)>
 
 #
 gap> f4wN(true,2,3,4);
-<Julia: (GAP: true, 2, 3, 4)>
+<Julia: (true, 2, 3, 4)>
 
 #
 gap> f5wN(true,2,3,4,5);
-<Julia: (GAP: true, 2, 3, 4, 5)>
+<Julia: (true, 2, 3, 4, 5)>
 
 #
 gap> f6wN(true,2,3,4,5,6);
-<Julia: (GAP: true, 2, 3, 4, 5, 6)>
+<Julia: (true, 2, 3, 4, 5, 6)>
 
 #
 gap> f7wN(true,2,3,4,5,6,7);
-<Julia: (GAP: true, 2, 3, 4, 5, 6, 7)>
+<Julia: (true, 2, 3, 4, 5, 6, 7)>
 
 #
 # calls via wrapped C function pointers
@@ -280,17 +280,17 @@ Error, Only 0-6 arguments are supported
 gap> g0();
 <Julia: Ptr{Nothing} @0x0000000000000000>
 gap> g1(true);
-<Julia: true>
+true
 gap> g2(true,2);
-<Julia: 2>
+2
 gap> g3(true,2,3);
-<Julia: 3>
+3
 gap> g4(true,2,3,4);
-<Julia: 4>
+4
 gap> g5(true,2,3,4,5);
-<Julia: 5>
+5
 gap> g6(true,2,3,4,5,6);
-<Julia: 6>
+6
 
 #
 gap> g0C();
@@ -344,7 +344,7 @@ Error, TypeError: in h6, in cfunction, expected Ptr{Nothing}, got Nothing
 #
 gap> _NewJuliaCFunc(fail, fail);
 Error, NewJuliaCFunc: <ptr> must be a Julia object
-gap> _NewJuliaCFunc(JuliaEvalString("1"), fail);
+gap> _NewJuliaCFunc(JuliaEvalString("'a'"), fail);
 Error, NewJuliaCFunc: <arg_names> must be plain list
 
 #
