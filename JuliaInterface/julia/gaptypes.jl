@@ -57,20 +57,8 @@ import Base: getproperty
 
 import Main.ForeignGAP: MPtr
 
-export gap_funcs, prepare_func_for_gap, GapObj, GapFunc, gap_object_finalizer
+export GapFunc
 
-gap_funcs = []
-
-
-"""
-    GapObj
-
-> Holds a pointer to an object in the GAP CAS, and additionally some internal information for
-> GAP's garbage collection. It can be used as arguments for GapFunc's.
-"""
-mutable struct GapObj
-    ptr::Ptr{Cvoid}
-end
 
 """
     GapFunc

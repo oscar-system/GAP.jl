@@ -18,7 +18,7 @@
 #!  Returns a GAP function that acts like a kernel function in GAP,
 #!  but calls the Julia function <A>julia_name</A>. The function in Julia
 #!  must exist, bound to the global name <A>julia_name</A> in the module <C>Main</C>,
-#!  and must be callable on <A>nr_args</A> <C>GAP.GapObj</C>. <A>arg_name</A> must
+#!  and must be callable on <A>nr_args</A> arguments. <A>arg_name</A> must
 #!  be a list of strings of length <A>nr_args</A> describing the argument names
 #!  that are displayed in the function header by &GAP;.
 DeclareGlobalFunction( "JuliaBindCFunction" );
@@ -29,5 +29,5 @@ DeclareGlobalFunction( "JuliaBindCFunction" );
 #! @Returns nothing
 #! @Description
 #!  Sets the function <A>func</A> in Julia as <C>GAP.</C><A>name</A>.
-#!  The resulting function is then callable from Julia on <A>argument_number</A> <C>GAP.GapObj</C>s.
+#!  The resulting function is then callable from Julia on <A>argument_number</A> arguments.
 DeclareGlobalFunction( "JuliaSetGAPFuncAsJuliaObjFunc" );
