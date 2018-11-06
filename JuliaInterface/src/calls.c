@@ -101,10 +101,7 @@ static ALWAYS_INLINE Obj DoCallJuliaFunc(Obj       func,
     }
     else {
         for (int i = 0; i < narg; i++) {
-            if (IS_INTOBJ(a[i]))
-                a[i] = (Obj)jl_box_int64(INT_INTOBJ(a[i]));
-            else if (IS_FFE(a[i]))
-                ErrorQuit("TODO: implement conversion for T_FFE", 0, 0);
+            a[i] = (Obj)julia_gap(a[i]);
         }
     }
     jl_function_t * f = GET_JULIA_FUNC(func);
@@ -129,9 +126,7 @@ static ALWAYS_INLINE Obj DoCallJuliaFunc(Obj       func,
     // and its variants are part of the jlapi, so don't have to be wrapped in
     // JL_TRY/JL_CATCH.
     JULIAINTERFACE_EXCEPTION_HANDLER
-    if (IsGapObj(result))
-        return (Obj)result;
-    return NewJuliaObj(result);
+    return gap_julia(result);
 }
 
 static Obj DoCallJuliaFunc0ArgConv(Obj func)

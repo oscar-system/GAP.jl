@@ -32,7 +32,7 @@ gap> JuliaSetVal(fail, 1);
 Error, JuliaSetVal: <name> must be a string
 gap> JuliaSetVal("foo", JuliaEvalString("1"));
 gap> JuliaGetGlobalVariable("foo");
-<Julia: 1>
+1
 
 ##
 gap> JuliaTuple([]);

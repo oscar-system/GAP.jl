@@ -28,6 +28,10 @@ InstallMethod( ConvertedFromJulia,
                [ IsJuliaObject ],
     _ConvertedFromJulia );
 
+InstallMethod( ConvertedFromJulia,
+               [ IsObject ],
+    IdFunc );
+
 InstallMethod( ConvertedToJulia,
                 [ IsObject ],
   function( obj )
@@ -91,9 +95,9 @@ InstallMethod( \.,
         Error( rnam, " is not bound in Julia" );
     fi;
 
-    if ConvertedFromJulia( _JULIA_ISA( global_variable, _JULIA_FUNCTION_TYPE ) ) then
+    if _JULIA_ISA( global_variable, _JULIA_FUNCTION_TYPE ) then
         global_variable := _JuliaFunction( global_variable, true );
-    elif ConvertedFromJulia( _JULIA_ISA( global_variable, _JULIA_MODULE_TYPE ) ) then
+    elif _JULIA_ISA( global_variable, _JULIA_MODULE_TYPE ) then
         global_variable := _WrapJuliaModule( rnam, global_variable );
     fi;
 
@@ -195,7 +199,7 @@ InstallGlobalFunction( ImportJuliaModuleIntoGAP,
     is_module_present := JuliaEvalString( Concatenation( "isdefined( Main, :", name, ")" ) );
     
     if no_import = false then
-        if not ConvertedFromJulia( is_module_present ) then
+        if not is_module_present then
             ## Local modules cannot be imported
             callstring:= Concatenation( "import ", name );
             JuliaEvalString( callstring );
@@ -218,7 +222,7 @@ InstallGlobalFunction( JuliaImportPackage, function( pkgname )
     fi;
     callstring := Concatenation( "try import ", pkgname,
                      "; return true; catch e; return e; end" );
-    if ConvertedFromJulia( JuliaEvalString( callstring ) ) = true then
+    if JuliaEvalString( callstring ) = true then
         return true;
     else
       Info( InfoWarning, 1,
@@ -238,7 +242,7 @@ InstallGlobalFunction( CallJuliaFunctionWithCatch,
     local res;
 
     res:= Julia.GAPUtils.call_with_catch( juliafunc, arguments );
-    if ConvertedFromJulia( res[1] ) = true then
+    if res[1] then
       return rec( ok:= true, value:= res[2] );
     else
       return rec( ok:= false, value:= ConvertedFromJulia( res[2] ) );

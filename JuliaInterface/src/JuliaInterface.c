@@ -5,6 +5,7 @@
 #include "JuliaInterface.h"
 
 #include "calls.h"
+#include "convert.h"
 
 #include <src/compiled.h>    // GAP headers
 
@@ -215,7 +216,7 @@ static Obj FuncJuliaEvalString(Obj self, Obj string)
     // JL_TRY/JL_CATCH.
     jl_value_t * result = jl_eval_string(copy);
     JULIAINTERFACE_EXCEPTION_HANDLER
-    return NewJuliaObj(result);
+    return gap_julia(result);
 }
 
 // Converts the julia value pointer <julia_obj> into a GAP object
@@ -288,6 +289,8 @@ Obj _ConvertedFromJulia_internal(jl_value_t * julia_obj)
                 continue;
             }
             jl_value_t * current_jl_element = jl_arrayref(array_ptr, i);
+            // TODO: replace NewJuliaObj here by gap_julia, or
+            // by a recursive call to _ConvertedFromJulia_internal?
             current_element = NewJuliaObj(current_jl_element);
             SET_ELM_PLIST(return_list, i + 1, current_element);
             CHANGED_BAG(return_list);
@@ -455,8 +458,10 @@ static Obj Func_ConvertedFromJulia_record_dict(Obj self, Obj dict)
         real_index++;
         current_value = jl_arrayref(dict_values, i);
         current_index = jl_arrayref(dict_indices, i);
+        // FIXME: should we use gap_julia here instead of NewJuliaObj?
         SET_ELM_PLIST(values_gap, real_index, NewJuliaObj(current_value));
         CHANGED_BAG(values_gap);
+        // FIXME: should we use gap_julia here instead of NewJuliaObj?
         SET_ELM_PLIST(indices_gap, real_index, NewJuliaObj(current_index));
         CHANGED_BAG(indices_gap);
     }
@@ -529,18 +534,14 @@ static Obj FuncJuliaModule(Obj self, Obj name)
     return NewJuliaObj((jl_value_t *)julia_module);
 }
 
-// Sets the value of the julia identifier <name> to the julia value the julia
-// object GAP object <julia_val> points to.
-// This function is for debugging purposes
-static Obj FuncJuliaSetVal(Obj self, Obj name, Obj julia_val)
+// Sets the value of the julia identifier <name> to the <val>.
+// This function is for debugging purposes.
+static Obj FuncJuliaSetVal(Obj self, Obj name, Obj val)
 {
     if (!IsStringConv(name)) {
         ErrorMayQuit("JuliaSetVal: <name> must be a string", 0, 0);
     }
-    if (!IS_JULIA_OBJ(julia_val)) {
-        ErrorMayQuit("JuliaSetVal: <julia_val> must be a Julia object", 0, 0);
-    }
-    jl_value_t * julia_obj = GET_JULIA_OBJ(julia_val);
+    jl_value_t * julia_obj = julia_gap(val);
     jl_sym_t *   julia_symbol = jl_symbol(CSTR_STRING(name));
     jl_set_global(jl_main_module, julia_symbol, julia_obj);
     return 0;
@@ -560,7 +561,7 @@ static Obj Func_JuliaGetGlobalVariable(Obj self, Obj name)
         return Fail;
     }
     jl_value_t * value = jl_get_global(jl_main_module, symbol);
-    return NewJuliaObj(value);
+    return gap_julia(value);
 }
 
 // Returns the julia object GAP object that holds a pointer to the value
@@ -591,7 +592,7 @@ static Obj Func_JuliaGetGlobalVariableByModule(Obj self, Obj name, Obj module)
         return Fail;
     }
     jl_value_t * value = jl_get_global(m, symbol);
-    return NewJuliaObj(value);
+    return gap_julia(value);
 }
 
 // Returns the julia object GAP object that holds a pointer to the value
@@ -617,7 +618,7 @@ static Obj FuncJuliaGetFieldOfObject(Obj self, Obj super_obj, Obj field_name)
     jl_value_t * field_value =
         jl_get_field(extracted_superobj, CSTR_STRING(field_name));
     JULIAINTERFACE_EXCEPTION_HANDLER
-    return NewJuliaObj(field_value);
+    return gap_julia(field_value);
 }
 
 

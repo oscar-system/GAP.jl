@@ -44,7 +44,7 @@ DeclareOperation( "ConvertedToJulia", [ IsObject ] );
 #! @Description
 #!  Retuns an object that is a sensible conversion from the Julia object <A>julia_object</A>.
 #!  If no conversion exists, <C>fail</C> is returned.
-DeclareOperation( "ConvertedFromJulia", [ IsJuliaObject ] );
+DeclareOperation( "ConvertedFromJulia", [ IsObject ] );
 
 #! @Arguments julia_object
 #! @Returns an object
@@ -139,5 +139,3 @@ DeclareGlobalFunction( "JuliaTypeInfo" );
 #!  If an error occured then <C>ok</C> has the value <K>false</K>,
 #!  and <C>value</C> is the error message as a &GAP; string.
 DeclareGlobalFunction( "CallJuliaFunctionWithCatch" );
-
-
