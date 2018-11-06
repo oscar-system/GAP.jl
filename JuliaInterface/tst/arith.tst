@@ -2,80 +2,89 @@
 gap> START_TEST( "arith.tst" );
 
 #
-gap> large_int := JuliaEvalString("big(2)^100");
+gap> N := JuliaEvalString("big(2)^100");
 <Julia: 1267650600228229401496703205376>
-gap> large_int_p1 := JuliaEvalString("big(2)^100 + 1");
+gap> N_p1 := JuliaEvalString("big(2)^100 + 1");
 <Julia: 1267650600228229401496703205377>
-gap> large_int_m1 := JuliaEvalString("big(2)^100 - 1");
+gap> N_m1 := JuliaEvalString("big(2)^100 - 1");
 <Julia: 1267650600228229401496703205375>
-gap> large_int_squared := JuliaEvalString("big(2)^200");
+gap> N_squared := JuliaEvalString("big(2)^200");
 <Julia: 1606938044258990275541962092341162602522202993782792835301376>
-gap> large_int_t2 := JuliaEvalString("big(2)^101");
+gap> N_t2 := JuliaEvalString("big(2)^101");
 <Julia: 2535301200456458802993406410752>
 
 #
-gap> zero := Zero(large_int);
+gap> zero := Zero(N);
 <Julia: 0>
-gap> one := One(large_int);
+gap> one := One(N);
 <Julia: 1>
 
 #
-gap> large_int + 1 = large_int_p1;
-true
-gap> 1 + large_int = large_int_p1;
+gap> -N;
+<Julia: -1267650600228229401496703205376>
+
+#
+gap> N + 1;
+<Julia: 1267650600228229401496703205377>
+gap> 1 + N;
+<Julia: 1267650600228229401496703205377>
+gap> N + N;
+<Julia: 2535301200456458802993406410752>
+
+#
+gap> N - 1;
+<Julia: 1267650600228229401496703205375>
+gap> 1 - N;
+<Julia: -1267650600228229401496703205375>
+gap> N - N;
+<Julia: 0>
+
+#
+gap> N * 2;
+<Julia: 2535301200456458802993406410752>
+gap> 2 * N;
+<Julia: 2535301200456458802993406410752>
+gap> N * N = N_squared;
 true
 
 #
-gap> large_int + (-large_int) = zero;
+gap> N^0;
+<Julia: 1>
+gap> N^1;
+<Julia: 1267650600228229401496703205376>
+gap> N^2 = N_squared;
 true
 
 #
-gap> large_int - 1 = large_int_m1;
-true
-
-#
-gap> large_int * 2 = large_int_t2;
-true
-gap> 2 * large_int = large_int_t2;
-true
-gap> large_int * large_int = large_int_squared;
-true
-
-#
-gap> large_int^0 = one;
-true
-gap> large_int^1 = large_int;
-true
-gap> large_int^2 = large_int_squared;
-true
-
-#
-#gap> large_int / large_int = 1;
+#gap> N / N = 1;
 #true
-#gap> large_int / 2^50 = 2^50;
+#gap> N / 2^50 = 2^50;
 #true
 
 #
-#gap> large_int \ large_int = 1;
+#gap> N \ N = 1;
 #true
-#gap> 2^50 \ large_int = 2^50;
+#gap> 2^50 \ N = 2^50;
 #true
 
 #
-gap> large_int < large_int_p1;
-true
-gap> large_int <= large_int_p1;
-true
-gap> large_int > large_int_m1;
-true
-gap> large_int >= large_int_m1;
-true
-gap> large_int = large_int;
-true
+gap> data := [ -N_p1, -N, -N_m1, -1, 0, 1, N_m1, N, N_p1 ];;
+gap> TestBinOp := op -> SetX( [1..Length(data)], [1..Length(data)],
+>                             {i,j} -> op(data[i], data[j]) = op(i,j) );;
+gap> TestBinOp({a,b} -> a < b);
+[ true ]
+gap> TestBinOp({a,b} -> a <= b);
+[ true ]
+gap> TestBinOp({a,b} -> a > b);
+[ true ]
+gap> TestBinOp({a,b} -> a >= b);
+[ true ]
+gap> TestBinOp({a,b} -> a = b);
+[ true ]
 
 #
-#gap> mod(large_int,2) = 0;
-#gap> mod(large_int_p1,2) = 1;
+#gap> mod(N,2) = 0;
+#gap> mod(N_p1,2) = 1;
 
 #
 gap> STOP_TEST( "arith.tst", 1 );
