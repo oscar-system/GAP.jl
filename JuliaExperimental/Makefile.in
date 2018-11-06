@@ -8,6 +8,7 @@ MODULE_NAME = JuliaExperimental
 SOURCES = src/JuliaExperimental.c
 
 CFLAGS += -I../JuliaInterface/src/
+CFLAGS += -g
 LDFLAGS += -ljulia
 
 ########################################################################
