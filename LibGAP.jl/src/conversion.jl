@@ -23,10 +23,11 @@ end
 
 
 from_gap_string(obj :: MPtr) = CSTR_STRING(obj)
+from_gap_symbol(obj :: MPtr) = Symbol(from_gap_string(obj))
 
 function from_gap_list( obj :: MPtr)
     len = length( obj )
-    array = Array{Any,1}( nothing, len)
+    array = Array{Any,1}( undef, len)
     for i in 1:len
         array[i] = obj[i]
     end
@@ -39,11 +40,12 @@ end
 
 from_gap(x,::Type{Any})    = x
 from_gap(x,::Type{String}) = from_gap_string( x )
+from_gap(x,::Type{Symbol}) = from_gap_symbol( x )
 from_gap(x,::Type{Bool})   = from_gap_bool( x )
 
 function from_gap_list_type( obj :: MPtr, element_type :: DataType ) 
     len_list = length(obj)
-    new_array = Array{element_type}(len_list)
+    new_array = Array{element_type,1}( undef, len_list)
     for i in 1:len_list
         new_array[ i ] = from_gap(obj[i],element_type)
     end
@@ -53,3 +55,5 @@ end
 from_gap_list_int16( x ) = from_gap_list_type( x, Int16 )
 from_gap_list_int32( x ) = from_gap_list_type( x, Int32 )
 from_gap_list_int64( x ) = from_gap_list_type( x, Int64 )
+from_gap_list_string( x ) = from_gap_list_type( x, String )
+from_gap_list_symbol( x ) = from_gap_list_type( x, Symbol )

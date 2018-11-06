@@ -5,4 +5,6 @@
 
     @test l[1] == 1
     @test l[end] == 3
+    
+    @test Symbol("Print") in propertynames(GAP.Globals,false)
 end
