@@ -56,16 +56,16 @@ gap> N^2 = N_squared;
 true
 
 #
-#gap> N / N = 1;
-#true
-#gap> N / 2^50 = 2^50;
-#true
+gap> N / N;
+<Julia: 1.0>
+gap> N / 2^50;
+<Julia: 1.125899906842624e+15>
 
 #
-#gap> N \ N = 1;
-#true
-#gap> 2^50 \ N = 2^50;
-#true
+gap> LQUO(N, N);
+<Julia: 1.0>
+gap> LQUO(2^50, N);
+<Julia: 1.125899906842624e+15>
 
 #
 gap> data := [ -N_p1, -N, -N_m1, -1, 0, 1, N_m1, N, N_p1 ];;

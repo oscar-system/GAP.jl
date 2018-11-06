@@ -42,6 +42,8 @@ Perform([[ "IsJuliaObject", "IsJuliaObject" ],
         InstallOtherMethod( \+, argTypes, Julia.Base.\+ );
         InstallOtherMethod( \*, argTypes, Julia.Base.\* );
         InstallOtherMethod( \-, argTypes, Julia.Base.\- );
+        InstallOtherMethod( \/, argTypes, Julia.Base.\/ );
+        InstallOtherMethod( LQUO, argTypes, Julia.Base.\\ );
         InstallOtherMethod( \^, argTypes, Julia.Base.\^ );
         InstallOtherMethod( \=, argTypes, Julia.Base.\=\= );
         InstallOtherMethod( \<, argTypes, Julia.Base.\< );
