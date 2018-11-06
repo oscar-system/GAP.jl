@@ -4,4 +4,5 @@
     l = GAP.to_gap([1,2,3])
 
     @test l[1] == 1
+    @test l[end] == 3
 end
