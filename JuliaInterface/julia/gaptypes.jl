@@ -53,62 +53,12 @@ end
 
 module GAP
 
-import Base: getproperty
-
-import Main.ForeignGAP: MPtr
-
-export GapFunc
-
-
-"""
-    GapFunc
-
-> Holds a pointer to a function in the GAP CAS.
-> Such functions can be called on GapObj's.
-"""
-struct GapFunc
-    ptr::MPtr
-end
-
 """
     GapFEE
 
 > Wraps a pointer to a GAP FFE immediate object
 > This type is defined in the JuliaInterface C code.
 """
-
-"""
-    (func::GapFunc)(args...)
-
-> This function makes it possible to call GapFunc objects on
-> GapObj objects. It also makes sure that the resulting object
-> is a GapObj holding a pointer to the result.
-> There is no argument number checking here, all checks on the arguments
-> (except that they are GapObj) is done by GAP itself.
-"""
-function(func::GapFunc)(args...)
-    return ccall(:call_gap_func, Any, (MPtr,Any), func.ptr, args)
-end
-
-struct GAPFuncsType
-    funcs::Dict{Symbol,GapFunc}
-end
-
-Base.show(io::IO,::GAPFuncsType) = Base.show(io,"GAP function object")
-
-GAPFuncs = GAPFuncsType(Dict{Symbol,GapFunc}())
-
-function getproperty(funcobj::GAPFuncsType,name::Symbol)
-    cache = getfield(funcobj,:funcs)
-    if haskey(cache,name)
-        return cache[name]
-    end
-    name_string = string(name)
-    variable = ccall(:GAP_ValueGlobalVariable,MPtr,(Ptr{UInt8},),name_string)
-    current_func = GapFunc(variable)
-    cache[name] = current_func
-    return current_func
-end
 
 
 end

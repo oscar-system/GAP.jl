@@ -7,6 +7,9 @@
 // This function is used by LibGAP.jl
 jl_value_t * julia_gap(Obj obj)
 {
+    if (obj == 0) {
+        return jl_nothing;
+    }
     if (IS_INTOBJ(obj)) {
         return jl_box_int64(INT_INTOBJ(obj));
     }

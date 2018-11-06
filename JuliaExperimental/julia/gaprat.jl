@@ -15,8 +15,7 @@ export GAPRat, get_gaprat_ptr
 """
     GapObj
 
-> Holds a pointer to an object in the GAP CAS, and additionally some internal information for
-> GAP's garbage collection. It can be used as arguments for GapFunc's.
+> Holds a pointer to an object in the GAP CAS.
 """
 mutable struct GapObj
     ptr::Ptr{Cvoid}

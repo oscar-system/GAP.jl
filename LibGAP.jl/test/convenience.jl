@@ -46,7 +46,7 @@ end
     z3_one = GAP.EvalString( "Z(3)^0;" )[1][2]
     z3_zero = GAP.EvalString( "0 * Z(3);" )[1][2]
 
-    z3 = GAP.GAPFuncs.Z(3)
+    z3 = GAP.Globals.Z(3)
 
     @test z3_gen == z3
     @test z3_one == one(z3)
