@@ -1,6 +1,6 @@
 ## Internal ccall's
 
-import Base: getproperty
+import Base: getproperty, propertynames
 
 function GET_FROM_GAP(ptr::Ptr{Cvoid})::Any
     return ccall(:julia_gap,Any,(Ptr{Cvoid},),ptr)
@@ -77,6 +77,12 @@ function getproperty(funcobj::GlobalsType, name::Symbol)
         error("GAP variable ", name, " not bound")
     end
     return v
+end
+
+function propertynames(funcobj::GlobalsType,private)
+    list = Globals.NamesGVars()
+    list_converted = from_gap_list_symbol( list )
+    return tuple(list_converted...)
 end
 
 # For backwards compatibility
