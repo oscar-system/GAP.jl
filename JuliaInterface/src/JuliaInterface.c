@@ -351,31 +351,6 @@ jl_value_t * _ConvertedToJulia_internal(Obj obj)
         return jl_false;
     }
 
-    // perm
-    else if (TNUM_OBJ(obj) == T_PERM2) {
-        jl_value_t * array_type =
-            jl_apply_array_type((jl_value_t *)jl_uint16_type, 1);
-        jl_array_t * new_perm_array =
-            jl_alloc_array_1d(array_type, DEG_PERM2(obj));
-        UInt2 * perm_array = ADDR_PERM2(obj);
-        for (i = 0; i < DEG_PERM2(obj); i++) {
-            jl_arrayset(new_perm_array, jl_box_uint16(perm_array[i]), i);
-        }
-        return (jl_value_t *)(new_perm_array);
-    }
-
-    else if (TNUM_OBJ(obj) == T_PERM4) {
-        jl_value_t * array_type =
-            jl_apply_array_type((jl_value_t *)jl_uint32_type, 1);
-        jl_array_t * new_perm_array =
-            jl_alloc_array_1d(array_type, DEG_PERM4(obj));
-        UInt4 * perm_array = ADDR_PERM4(obj);
-        for (i = 0; i < DEG_PERM4(obj); i++) {
-            jl_arrayset(new_perm_array, jl_box_uint32(perm_array[i]), i);
-        }
-        return (jl_value_t *)(new_perm_array);
-    }
-
     // plist
     else if (IS_PLIST(obj)) {
         size_t       len = LEN_PLIST(obj);
