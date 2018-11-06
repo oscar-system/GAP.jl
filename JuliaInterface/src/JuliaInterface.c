@@ -18,6 +18,8 @@ static jl_function_t * JULIA_FUNC_String_constructor;
 static jl_function_t * JULIA_FUNC_showerror;
 static jl_datatype_t * JULIA_GAPFFE_type;
 
+static jl_value_t * jl_bigint_type = NULL;
+
 Obj  TheTypeJuliaObject;
 UInt T_JULIA_OBJ;
 
@@ -223,8 +225,6 @@ static Obj FuncJuliaEvalString(Obj self, Obj string)
 // if possible.
 Obj _ConvertedFromJulia_internal(jl_value_t * julia_obj)
 {
-    size_t i;
-
     // small int
     if (jl_typeis(julia_obj, jl_int64_type)) {
         return ObjInt_Int8(jl_unbox_int64(julia_obj));
@@ -249,6 +249,36 @@ Obj _ConvertedFromJulia_internal(jl_value_t * julia_obj)
     }
     if (jl_typeis(julia_obj, jl_uint8_type)) {
         return INTOBJ_INT(jl_unbox_uint8(julia_obj));
+    }
+
+    // bigint
+    else if (jl_bigint_type && jl_typeis(julia_obj, jl_bigint_type)) {
+        jl_value_t * sizefield = jl_get_nth_field(julia_obj, 1);
+        int32_t      sz = jl_unbox_int32(sizefield);
+        if (sz == 0)
+            return INTOBJ_INT(0);
+
+        UInt * data =
+            (UInt *)jl_unbox_voidpointer(jl_get_nth_field(julia_obj, 2));
+        if (sz == 1)
+            return ObjInt_UInt(data[0]);
+
+        // TODO: would be nice to use ObjInt_UIntInv here, but GAP does not
+        // export it. Change that? Or perhaps add a more generic "construct
+        // int from size + data" function, which most interfaces that
+        // construct GAP integers from GMP bigints could use.
+        if (sz == -1)
+            return AInvInt(ObjInt_UInt(data[0]));
+
+        size_t nb = (sz < 0 ? -sz : sz);
+        Obj    obj = NewBag(sz > 0 ? T_INTPOS : T_INTNEG, nb * sizeof(UInt));
+        memcpy(ADDR_INT(obj), data, nb * sizeof(UInt));
+
+        // FIXME: necessary to normalize and reduce???
+        obj = GMP_NORMALIZE(obj);
+        obj = GMP_REDUCE(obj);
+
+        return obj;
     }
 
     // float
@@ -284,7 +314,7 @@ Obj _ConvertedFromJulia_internal(jl_value_t * julia_obj)
         size_t       len = jl_array_len(array_ptr);
         Obj          return_list = NEW_PLIST(T_PLIST, len);
         SET_LEN_PLIST(return_list, len);
-        for (i = 0; i < len; i++) {
+        for (size_t i = 0; i < len; i++) {
             if (!jl_array_isassigned(array_ptr, i)) {
                 continue;
             }
@@ -327,11 +357,19 @@ jl_value_t * _ConvertedToJulia_internal(Obj obj)
     size_t i;
     Obj    current;
 
-    // integer, small and large
+    // small integer
     if (IS_INTOBJ(obj)) {
         return jl_box_int64(INT_INTOBJ(obj));
-        // TODO: BIGINT
     }
+
+#if 0
+    // large integer
+    else if (IS_INT(obj)) {
+        // TODO: might be better to do this from Julia code,
+        // as that requires less hard coding of knowledge about
+        // the internal layout of Julia objects?
+    }
+#endif
 
     // float
     else if (IS_MACFLOAT(obj)) {
@@ -650,6 +688,21 @@ static Int InitKernel(StructInitInfo * module)
     JULIA_FUNC_take_inplace = jl_get_function(jl_base_module, "take!");
     JULIA_FUNC_String_constructor = jl_get_function(jl_base_module, "String");
     JULIA_FUNC_showerror = jl_get_function(jl_base_module, "showerror");
+
+    //
+    jl_bigint_type = jl_base_module
+                         ? jl_get_global(jl_base_module, jl_symbol("BigInt"))
+                         : NULL;
+    if (jl_bigint_type) {
+        jl_module_t * gmp_module =
+            (jl_module_t *)jl_get_global(jl_base_module, jl_symbol("GMP"));
+        int bits_per_limb = jl_unbox_long(
+            jl_get_global(gmp_module, jl_symbol("BITS_PER_LIMB")));
+        if (INTEGER_UNIT_SIZE * 8 != bits_per_limb) {
+            Panic("GMP limb size is %d in GAP and %d in Julia",
+                  INTEGER_UNIT_SIZE * 8, bits_per_limb);
+        }
+    }
 
     // return success
     return 0;

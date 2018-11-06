@@ -98,6 +98,18 @@ gap> ConvertedFromJulia(x);
 ###
 
 #
+gap> big2 := JuliaEvalString("big(2)");
+<Julia: 2>
+gap> Zero(big2);
+<Julia: 0>
+gap> ConvertedFromJulia( Zero(big2) );
+0
+gap> ForAll([0..64], n -> ConvertedFromJulia(big2^n) = 2^n);
+true
+gap> ForAll([0..64], n -> ConvertedFromJulia(-big2^n) = -2^n);
+true
+
+#
 gap> string := ConvertedToJulia( "bla" );
 <Julia: "bla">
 gap> ConvertedFromJulia( string );
