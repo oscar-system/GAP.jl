@@ -10,9 +10,17 @@ module GAPRatModule
 import Base: zero, -, one, inv, ==, isless, +, *, //, ^, mod, iszero, string,
              numerator, denominator, abs, gcd
 
-import Main.GAP: GapObj
-
 export GAPRat, get_gaprat_ptr
+
+"""
+    GapObj
+
+> Holds a pointer to an object in the GAP CAS, and additionally some internal information for
+> GAP's garbage collection. It can be used as arguments for GapFunc's.
+"""
+mutable struct GapObj
+    ptr::Ptr{Cvoid}
+end
 
 struct GAPRat
     obj::GapObj
