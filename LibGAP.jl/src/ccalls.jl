@@ -72,7 +72,11 @@ function getproperty(funcobj::GlobalsType, name::Symbol)
         cache[name] = gvar
     end
     v = ccall(:ValGVar, Ptr{Cvoid}, (Cuint,), gvar)
-    return GET_FROM_GAP(v)
+    v = GET_FROM_GAP(v)
+    if v == nothing
+        error("GAP variable ", name, " not bound")
+    end
+    return v
 end
 
 # For backwards compatibility
