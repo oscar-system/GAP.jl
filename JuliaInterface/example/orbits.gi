@@ -1,30 +1,29 @@
 LoadPackage( "JuliaInterface" );
 
 bahn := function( element, generators, action )
-  local return_set, work_set, current_element, current_generator, current_result;
-    work_set := [ element ];
-    return_set := [ element ];
-    while not IsEmpty( work_set ) do
-        current_element := Remove( work_set );
-        for current_generator in generators do
-            current_result := action( current_element, current_generator );
-            if not ForAny( return_set, i -> i = current_result ) then
-                Add( work_set, current_result );
-                Add( return_set, current_result );
-            fi;
-        od;
+  local orb, dict, b, g, c;
+  orb := [ element ];
+  dict := NewDictionary(element, true);
+  AddDictionary(dict, element, 1);
+  for b in orb do
+    for g in generators do
+      c := action(b, g);
+      if not KnowsDictionary(dict, c) then
+        Add(orb, c);
+        AddDictionary(dict, c, Length(orb));
+      fi;
     od;
-    return return_set;
+  od;
+  return orb;
 end;
 
 example_dirs := DirectoriesPackageLibrary( "JuliaInterface", "example" );
 JuliaIncludeFile( Filename( example_dirs, "orbits.jl" ) );
 
-bahn_jl := JuliaBindCFunction( "bahn", 3, [ "elem","gens","oper" ] );
+bahn_jl := JuliaFunction( "bahn" );
 
-grp := GeneratorsOfGroup( SymmetricGroup( 10000 ) );
-elem := 1;
-action := function( elem, grp_elem ) return elem^grp_elem; end;
+grp := SymmetricGroup( 10000 );
+gens := GeneratorsOfGroup( grp );;
 
-bahn(elem,grp,action);;time;
-bahn_jl(elem,grp,action);;time;
+bahn(1, gens, OnPoints);;time;
+bahn_jl(1, gens, OnPoints);;time;
