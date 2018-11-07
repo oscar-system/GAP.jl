@@ -2,9 +2,13 @@ using Test
 
 include("runtests_dir.jl")
 
-include(INIT_FILE)
+if ! @isdefined(libgap)
+    include(INIT_FILE)
+end
 
-libgap.run_it(GAPPATH)
+if !libgap.gap_is_initialized
+    libgap.run_it(GAPPATH)
+end
 
 include("basics.jl")
 include("convenience.jl")
