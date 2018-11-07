@@ -20,6 +20,8 @@ static jl_datatype_t * JULIA_GAPFFE_type;
 
 static jl_value_t * jl_bigint_type = NULL;
 
+jl_datatype_t * gap_datatype_mptr;
+
 Obj  TheTypeJuliaObject;
 UInt T_JULIA_OBJ;
 
@@ -78,6 +80,12 @@ int is_gapffe(jl_value_t * v)
     return jl_typeis(v, JULIA_GAPFFE_type);
 }
 
+//
+int is_gapobj(jl_value_t * v)
+{
+    return jl_typeis(v, gap_datatype_mptr);
+}
+
 static Obj Func_NewJuliaCFunc(Obj self, Obj julia_function_ptr, Obj arg_names)
 {
     if (!IS_JULIA_OBJ(julia_function_ptr)) {
@@ -131,13 +139,12 @@ static Obj JuliaObjectTypeFunc(Obj o)
     return TheTypeJuliaObject;
 }
 
-Obj NewJuliaObj(jl_value_t * C)
+Obj NewJuliaObj(jl_value_t * v)
 {
-    if (IsGapObj(C))
-        return (Obj)C;
-    Obj o;
-    o = NewBag(T_JULIA_OBJ, 1 * sizeof(Obj));
-    SET_JULIA_OBJ(o, C);
+    if (is_gapobj(v))
+        return (Obj)v;
+    Obj o = NewBag(T_JULIA_OBJ, 1 * sizeof(Obj));
+    SET_JULIA_OBJ(o, v);
     return o;
 }
 
@@ -333,8 +340,8 @@ Obj _ConvertedFromJulia_internal(jl_value_t * julia_obj)
         return MakeImmString(symbol_name);
     }
 
-    else if (IsGapObj(julia_obj)) {
-        return (Obj)(julia_obj);
+    else if (is_gapobj(julia_obj)) {
+        return (Obj)julia_obj;
     }
 
     return Fail;
@@ -689,13 +696,14 @@ static Int InitKernel(StructInitInfo * module)
     JULIA_FUNC_String_constructor = jl_get_function(jl_base_module, "String");
     JULIA_FUNC_showerror = jl_get_function(jl_base_module, "showerror");
 
-    //
+    // import bigint type from Julia
     jl_bigint_type = jl_base_module
                          ? jl_get_global(jl_base_module, jl_symbol("BigInt"))
                          : NULL;
     if (jl_bigint_type) {
         jl_module_t * gmp_module =
             (jl_module_t *)jl_get_global(jl_base_module, jl_symbol("GMP"));
+        GAP_ASSERT(gmp_module);
         int bits_per_limb = jl_unbox_long(
             jl_get_global(gmp_module, jl_symbol("BITS_PER_LIMB")));
         if (INTEGER_UNIT_SIZE * 8 != bits_per_limb) {
@@ -703,6 +711,14 @@ static Int InitKernel(StructInitInfo * module)
                   INTEGER_UNIT_SIZE * 8, bits_per_limb);
         }
     }
+
+    // import mptr type from GAP
+    jl_module_t * gap_module =
+        (jl_module_t *)jl_get_global(jl_main_module, jl_symbol("ForeignGAP"));
+    GAP_ASSERT(gap_module);
+    gap_datatype_mptr =
+        (jl_datatype_t *)jl_get_global(gap_module, jl_symbol("MPtr"));
+    GAP_ASSERT(gap_datatype_mptr);
 
     // return success
     return 0;
