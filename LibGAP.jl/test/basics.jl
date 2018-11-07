@@ -7,4 +7,13 @@
     @test l[end] == 3
     
     @test Symbol("Print") in propertynames(GAP.Globals,false)
+
+    x = GAP.NewPlist(0)
+    x[1] = 1
+    @test x[1] == 1
+    @test length(x) == 1
+
+    @test GAP.True
+    @test ! GAP.False
+
 end
