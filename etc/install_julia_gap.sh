@@ -10,8 +10,7 @@ mkdir julia
 tar xf julia-latest-linux64.tar.gz -C julia --strip-components 1
 
 # Download and install GAP
-#git clone --depth=1 https://github.com/gap-system/gap
-git clone --depth=1 https://github.com/rbehrends/gap -b alt-gc
+git clone --depth=1 https://github.com/gap-system/gap -b stable-4.10
 cd gap
 ./autogen.sh
 ./configure --with-gc=julia --with-julia=${main_dir}/julia/
