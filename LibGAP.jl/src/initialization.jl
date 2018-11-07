@@ -25,7 +25,7 @@ read_sysinfo_gap = function(dir::String)
 end
 
 function error_handler(message)
-    print(message)
+    error("Error thrown by GAP")
 end
 
 error_handler_func = @cfunction(error_handler,Cvoid,(Ptr{Char},))
