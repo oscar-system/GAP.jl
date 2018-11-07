@@ -24,11 +24,11 @@ read_sysinfo_gap = function(dir::String)
     return d
 end
 
-function error_handler(message)
+function error_handler()
     error("Error thrown by GAP")
 end
 
-error_handler_func = @cfunction(error_handler,Cvoid,(Ptr{Char},))
+error_handler_func = @cfunction(error_handler,Cvoid,())
 
 const pkgdir = realpath(dirname(@__FILE__))
 

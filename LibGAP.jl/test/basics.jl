@@ -16,4 +16,7 @@
     @test GAP.True
     @test ! GAP.False
 
+
+    xx = GAP.to_gap([1,2,3])
+    @test_throws ErrorException xx[4]
 end
