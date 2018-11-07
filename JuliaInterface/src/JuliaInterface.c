@@ -707,8 +707,7 @@ static Int InitKernel(StructInitInfo * module)
         int bits_per_limb = jl_unbox_long(
             jl_get_global(gmp_module, jl_symbol("BITS_PER_LIMB")));
         if (INTEGER_UNIT_SIZE * 8 != bits_per_limb) {
-            Panic("GMP limb size is %d in GAP and %d in Julia",
-                  INTEGER_UNIT_SIZE * 8, bits_per_limb);
+            Panic("GMP limb size in GAP and Julia differ");
         }
     }
 

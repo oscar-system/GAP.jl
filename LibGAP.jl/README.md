@@ -2,7 +2,7 @@ OSCAR - LibGAP
 --------------
 
 This is some prototype code that uses a version of GAP as a library,
-as found the GAP master branch, respectively in GAP 4.11,
+as found the GAP master branch, respectively in GAP 4.11 (to be released in 2019),
 to be able to call GAP functions from Julia.
 
 Please don't use for any production code just yet, but do use it for

@@ -1,7 +1,6 @@
 language: c
 env:
  global:
-   - DONT_FETCH_GAP_JULIA_PKG=yes
    - JULIAROOT=$TRAVIS_BUILD_DIR/julia
    - GAPROOT=$TRAVIS_BUILD_DIR/gap
    - MAKEFLAGS="-j4"
@@ -26,9 +25,9 @@ before_script:
   - git show --pretty=fuller -s
   - mkdir -p coverage
   - etc/install_julia_gap.sh
-  - ln -s $TRAVIS_BUILD_DIR/JuliaInterface $GAPROOT/pkg/
-  - ln -s $TRAVIS_BUILD_DIR/JuliaExperimental $GAPROOT/pkg/
-  - ln -s $TRAVIS_BUILD_DIR/LibGAP.jl $GAPROOT/pkg/
+  - mkdir -p ~/.gap/pkg
+  - ln -s $TRAVIS_BUILD_DIR/JuliaInterface ~/.gap/pkg/
+  - ln -s $TRAVIS_BUILD_DIR/JuliaExperimental ~/.gap/pkg/
   - etc/travis_build.sh
 
 script:
