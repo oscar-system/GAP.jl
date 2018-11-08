@@ -81,7 +81,7 @@ end
 
 function propertynames(funcobj::GlobalsType,private)
     list = Globals.NamesGVars()
-    list_converted = from_gap_list_symbol( list )
+    list_converted = from_gap( list, Array{Symbol,1} )
     return tuple(list_converted...)
 end
 
