@@ -19,6 +19,7 @@ end
 @testset "conversion from GAP" begin
 
     @test GAP.from_gap(1,Any) == 1
+    @test GAP.from_gap(1) == 1
 
     x = GAP.to_gap("foo")
     @test GAP.to_gap(x) == x
