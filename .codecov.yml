@@ -13,8 +13,6 @@ comment:
   behavior: default
 
 ignore:
-  - "PackageInfo.g"
-  - "init.g"
-  - "read.g"
-  - "tst/*"     # ignore test harness code
-  - "tst/**/*"  # ignore test harness code
+  - "*/PackageInfo.g"
+  - "*/tst/*"     # ignore test harness code
+  - "*/tst/**/*"  # ignore test harness code
