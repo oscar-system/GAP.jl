@@ -14,6 +14,7 @@
     x = GAP.EvalString("[1,2,3];")[1][2]
     @test GAP.to_gap([1,2,3]) == x
 
+    @test GAP.to_gap(:x) == GAP.to_gap("x")
 end
 
 @testset "conversion from GAP" begin

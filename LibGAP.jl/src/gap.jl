@@ -13,7 +13,7 @@ function Base.show( io::IO, obj::Union{MPtr,GAP.GapFFE} )
 end
 
 function Base.string( obj::Union{MPtr,GAP.GapFFE} )
-    str = GAP.String( obj )
+    str = GAP.Globals.String( obj )
     return CSTR_STRING( str )
 end
 
