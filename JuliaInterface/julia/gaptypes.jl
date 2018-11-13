@@ -50,15 +50,3 @@ export call_with_catch
 end
 
 #########################################################################
-
-module GAP
-
-"""
-    GapFEE
-
-> Wraps a pointer to a GAP FFE immediate object
-> This type is defined in the JuliaInterface C code.
-"""
-
-
-end
