@@ -27,10 +27,6 @@ if JuliaImportPackage( "Nemo" ) then
 fi;
 
 
-# GAP integers and rationals in Julia.
-ReadPackage( "JuliaExperimental", "gap/gaprat.g");
-
-
 # Julia permutations
 ReadPackage( "JuliaExperimental", "gap/gapperm.g");
 
