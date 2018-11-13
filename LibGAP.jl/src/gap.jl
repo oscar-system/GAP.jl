@@ -3,8 +3,10 @@ import Base: convert, getindex, setindex!, length, show
 const True = GAP.Globals.ReturnTrue()
 const False = GAP.Globals.ReturnFalse()
 
-const GAPInputType_noint = Union{MPtr,GAP.GapFFE}
-const GAPInputType = Union{GAPInputType_noint,Int64}
+const GAPInputType_internal = Union{MPtr,GAP.GapFFE}
+const GAPInputType = Union{GAPInputType_internal,Int64,Bool}
+
+const GAPObj = Union{GAPInputType,Nothing}
 
 function Base.show( io::IO, obj::Union{MPtr,GAP.GapFFE} )
     str = GAP.Globals.String( obj )
@@ -34,14 +36,16 @@ Base.getproperty(x::MPtr, f::Symbol) = GAP.Globals.ELM_REC(x, RNamObj(f))
 Base.setproperty!(x::MPtr, f::Symbol, v) = GAP.Globals.ASS_REC(x, RNamObj(f), v)
 
 #
-Base.zero(x::GAPInputType_noint) = GAP.Globals.ZERO(x)
-Base.one(x::GAPInputType_noint) = GAP.Globals.ONE(x)
-Base.:-(x::GAPInputType_noint) = GAP.Globals.AINV(x)
+Base.zero(x::GAPInputType_internal) = GAP.Globals.ZERO(x)
+Base.one(x::GAPInputType_internal) = GAP.Globals.ONE(x)
+Base.:-(x::GAPInputType_internal) = GAP.Globals.AINV(x)
 
 #
-typecombinations = ((:GAPInputType_noint,:GAPInputType_noint),
-                    (:GAPInputType_noint,:Int64),
-                    (:Int64,:GAPInputType_noint))
+typecombinations = ((:GAPInputType_internal,:GAPInputType_internal),
+                    (:GAPInputType_internal,:Int64),
+                    (:Int64,:GAPInputType_internal),
+                    (:GAPInputType_internal,:Bool),
+                    (:Bool,:GAPInputType_internal))
 function_combinations = ((:+,:SUM),
                          (:-,:DIFF),
                          (:*,:PROD),

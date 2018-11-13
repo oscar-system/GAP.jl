@@ -14,4 +14,5 @@ using Main.ForeignGAP: MPtr
 
 include( "ccalls.jl" )
 include( "gap.jl" )
-include( "conversion.jl" )
+include( "gap_to_julia.jl" )
+include( "julia_to_gap.jl" )
