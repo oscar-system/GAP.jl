@@ -32,7 +32,11 @@ jl_value_t * julia_gap(Obj obj)
 Obj gap_julia(jl_value_t * julia_obj)
 {
     if (jl_typeis(julia_obj, jl_int64_type)) {
-        return ObjInt_Int8(jl_unbox_int64(julia_obj));
+        int64_t v = jl_unbox_int64(julia_obj);
+        if (INT_INTOBJ_MIN <= v && v <= INT_INTOBJ_MAX) {
+            return INTOBJ_INT(v);
+        }
+        return NewJuliaObj(julia_obj);
     }
     if (is_gapobj(julia_obj)) {
         return (Obj)julia_obj;

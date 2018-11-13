@@ -48,4 +48,6 @@ end
     # passed and then extracted again
     @test f( (1,2,3) )[1] == (1,2,3)
 
+    @test GAP.Globals.IdFunc(2^62) isa Int64
+
 end
