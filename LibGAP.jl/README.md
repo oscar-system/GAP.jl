@@ -1,12 +1,12 @@
 OSCAR - LibGAP
 --------------
 
-This is some prototype code that uses a version of GAP as a library,
-as found the GAP master branch, respectively in GAP 4.11,
-to be able to call GAP functions from Julia.
+This is some prototype code that uses a version of GAP as a library, as found
+the GAP master branch, respectively in GAP 4.11 (to be released in 2019), to
+be able to call GAP functions from Julia.
 
 Please don't use for any production code just yet, but do use it for
-prototyping and let me know what's wrong with it.
+prototyping and let us know about any issues with it you encounter.
 
 How to use
 ----------
@@ -21,17 +21,15 @@ You need the following ingredients:
   (if you did not install Julia but built it in director `$juliasrc`, then set
   `$juliadir` to `$juliasrc/usr`)
 
-- The `GAPJulia` repository, checked out under `$oscarrepo`
+- The `GAPJulia` repository, checked out under `$oscardir`
 
-First we compile a version of GAP using the Julia installation in `$juliadir`,
-and make sure a `libgap` shared library is compiled:
+First compile a version of GAP using the Julia installation in `$juliadir`:
 
     cd $oscardir
     mkdir -p gap
     cd gap
     $gapdir/configure --with-gc=julia --with-julia=$juliadir
     make
-    make libgap.la
 
 Now we can compile JuliaInterface and JuliaExperimental:
 
