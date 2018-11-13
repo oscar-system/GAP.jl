@@ -1,4 +1,16 @@
-module libgap
+module GAP
+
+
+"""
+    GapFEE
+
+> Wraps a pointer to a GAP FFE immediate object
+> This type is defined in the JuliaInterface C code.
+"""
+
+primitive type GapFFE 64 end
+
+export GapFFE
 
 import Base: length, convert, finalize
 
@@ -50,7 +62,7 @@ function initialize( argv::Array{String,1}, env::Array{String,1} )
            , Ptr{Cvoid}
            , (Ptr{UInt8},)
            , "LoadPackage(\"JuliaInterface\");" )
-    Base.include( Main.GAP, pkgdir * "/libgap.jl")
+    Base.include( GAP, pkgdir * "/libgap.jl")
 end
 
 function finalize( )

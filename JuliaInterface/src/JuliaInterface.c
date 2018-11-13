@@ -51,13 +51,11 @@ jl_module_t * get_module_from_string(char * name)
 // This function needs to be called after the `gaptypes.jl`
 // file is loaded into Julia and the GAP module is present.
 // Therefore we do not call in InitKernel, but in the `read.g` file.
-Obj Func_InitializeGAPFFEType(Obj self)
+Obj Func_JULIAINTERFACE_INTERNAL_INIT(Obj self)
 {
-    JULIA_GAPFFE_type = (jl_datatype_t *)jl_new_primitivetype(
-        (jl_value_t *)jl_symbol("GapFFE"), get_module_from_string("GAP"),
-        jl_any_type, jl_emptysvec, sizeof(Obj) * 8);
-    jl_set_const(get_module_from_string("GAP"), jl_symbol("GapFFE"),
-                 (jl_value_t *)JULIA_GAPFFE_type);
+    jl_module_t * gap_module = get_module_from_string("GAP");
+    JULIA_GAPFFE_type =
+        (jl_datatype_t *)jl_get_global(gap_module, jl_symbol("GapFFE"));
     return NULL;
 }
 
@@ -659,7 +657,7 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(JuliaModule, 1, "name"),
     GVAR_FUNC(_ConvertedFromJulia_record_dict, 1, "dict"),
     GVAR_FUNC(_NewJuliaCFunc, 2, "ptr,arg_names"),
-    GVAR_FUNC(_InitializeGAPFFEType, 0, ""),
+    GVAR_FUNC(_JULIAINTERFACE_INTERNAL_INIT, 0, ""),
     { 0 } /* Finish with an empty entry */
 
 };
