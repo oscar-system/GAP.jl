@@ -4,31 +4,10 @@
 
 #include "JuliaInterface.h" /* JuliaInterface header (includes all the gappy stuff) */
 
-#include "gap_macros.c"
-
-
-Obj FuncJuliaGAPRatInt(Obj self, Obj integer)
-{
-    jl_module_t *   module_t = get_module_from_string("GAPRatModule");
-    jl_function_t * func = jl_get_function(module_t, "GAPRat");
-    jl_value_t *    rat_obj =
-        jl_call1(func, jl_box_voidpointer((void *)integer));
-    return NewJuliaObj(rat_obj);
-}
-
-Obj FuncJuliaObjGAPRat(Obj self, Obj gap_rat)
-{
-    jl_module_t *   module_t = get_module_from_string("GAPRatModule");
-    jl_function_t * func = jl_get_function(module_t, "get_gaprat_ptr");
-    void *          rat_obj =
-        jl_unbox_voidpointer(jl_call1(func, GET_JULIA_OBJ(gap_rat)));
-    return (Obj)rat_obj;
-}
+#include <src/compiled.h>
 
 // Table of functions to export
 static StructGVarFunc GVarFuncs[] = {
-    GVAR_FUNC(JuliaGAPRatInt, 1, "number"),
-    GVAR_FUNC(JuliaObjGAPRat, 1, "obj"),
 
     { 0 } /* Finish with an empty entry */
 
