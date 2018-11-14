@@ -66,7 +66,12 @@ end
 > There is no argument number checking here, all checks on the arguments
 > are done by GAP itself.
 """
-function(func::MPtr)(args...)
+function(func::MPtr)(args...; convert::Val{Convert} = Val(true)) where Convert
+    if Convert
+        new_args = Tuple(map(julia_to_gap,args))
+    else
+        new_args = args
+    end
     return ccall(:call_gap_func, Any, (MPtr, Any), func, args)
 end
 
