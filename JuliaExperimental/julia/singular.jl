@@ -5,7 +5,7 @@
 
 module GAPSingularModule
 
-using Singular
+import Singular
 
 export SingularPolynomialRingWrapper
 
@@ -17,7 +17,7 @@ export SingularPolynomialRingWrapper
 >   # keyword argument
 >   Singular.PolynomialRing( Singular.QQ, [ "x", "y" ], ordering = :lex )
 > 
->   # (key, value) pairs after ';'
+>   # (key, value) pairs after ';' (apparently no longer in Julia 1.0 ...)
 >   Singular.PolynomialRing( Singular.QQ, [ "x", "y" ]; (:ordering, :lex) )
 > 
 >   # iterable expression after ';'

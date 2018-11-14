@@ -15,7 +15,6 @@ JuliaIncludeFile(
     Filename( DirectoriesPackageLibrary( "JuliaExperimental", "julia" ),
     "singular.jl" ) );
 
-JuliaImportPackage( "AbstractAlgebra" );
 JuliaImportPackage( "Nemo" );
 JuliaImportPackage( "Singular" );
 
@@ -131,7 +130,7 @@ InstallMethod( PrintObj,
 
 BindGlobal( "SingularPolynomialRing", function( R, names )
     local filter, available_orderings, ordering, ordering2, degree_bound,
-          dict, juliaobj, efam, getindex, indets;
+          dict, juliaobj, efam, indets;
 
     filter:= IsSingularPolynomialRing and IsAttributeStoringRep
            and IsFreeLeftModule and IsFLMLORWithOne;
@@ -214,13 +213,12 @@ BindGlobal( "SingularPolynomialRing", function( R, names )
     # so we create always a new family.
 #T Is this a good idea?
 #T In Singular.jl, the ring constructor uses a cache.
-    efam:= NewFamily( "Singular_PolynomialsFamily", IsSingularObject );
+    efam:= NewFamily( "Singular_PolynomialsFamily", IsSingularObject, IsScalar );
 
     # Create the object and set attributes.
-    getindex:= Julia.Base.getindex;
     R:= ObjectifyWithAttributes( rec(),
             NewType( CollectionsFamily( efam ), filter ),
-            JuliaPointer, getindex( juliaobj, 1 ),
+            JuliaPointer, juliaobj[1],
             LeftActingDomain, R,
             IsFinite, false,
             IsFiniteDimensional, false,
@@ -235,7 +233,7 @@ BindGlobal( "SingularPolynomialRing", function( R, names )
         IsPolynomial and IsSingularObject and IsAttributeStoringRep, R );
 
     # Store the GAP list of wrapped Julia indeterminates.
-    indets:= List( ConvertedFromJulia( getindex( juliaobj, 2 ) ),
+    indets:= List( ConvertedFromJulia( juliaobj[2] ),
                    x -> SingularElement( R, x ) );
     SetIndeterminatesOfPolynomialRing( R, indets );
     SetGeneratorsOfLeftOperatorRingWithOne( R, indets );
@@ -266,7 +264,7 @@ InstallOtherMethod( IsSubset,
 
     for elm in elms do
       if not IsIdenticalObj( R, DataType( TypeObj( elm ) ) ) then
-#T This is not correct!
+#T This may be not correct.
         return false;
       fi;
     od;
@@ -295,7 +293,8 @@ InstallOtherMethod( GcdOp,
     [ "IsSingularPolynomialRing", "IsSingularPolynomial",
                                   "IsSingularPolynomial" ],
     function( R, f, g )
-        return SingularElement( f, Julia.Base.gcd( f, g ) );
+        return SingularElement( f, Julia.Base.gcd(
+                   JuliaPointer( f ), JuliaPointer( g ) ) );
     end );
 
 
@@ -303,7 +302,8 @@ InstallOtherMethod( GcdOp,
     IsIdenticalObj,
     [ "IsSingularPolynomial", "IsSingularPolynomial" ],
     function( f, g )
-        return SingularElement( f, Julia.Base.gcd( f, g ) );
+        return SingularElement( f, Julia.Base.gcd(
+                   JuliaPointer( f ), JuliaPointer( g ) ) );
     end );
 
 
@@ -352,6 +352,10 @@ InstallOtherMethod( IdealByGenerators,
 ##  Note that Singular's <C>std</C> function returns an ideal not a list of
 ##  polynomials.
 ##
+
+#T if the monomial ordering is fixed in the ring
+#T then we can make the Groebner basis an attribute of I
+
 BindGlobal( "GroebnerBasisIdeal", function( I )
     local filter, R, juliaobj, gens, G;
 
@@ -497,17 +501,11 @@ InstallOtherMethod( \*,
                  Julia.Base.("*")( x, JuliaPointer( y ) ) );
     end );
 
-#T Calling 'divexact' causes a segmentation fault in Julia!
-#T Is there an easier way to create rational coefficients in Singular?
 InstallOtherMethod( \/,
     [ "IsSingularObject", "IsInt and IsSmallIntRep" ], 100,
     function( x, y )
-      local c;
-
-      c:= Julia.Singular.divexact( Julia.Singular.QQ( 1 ),
-                                   Julia.Singular.QQ( y ) );
       return SingularElement( x,
-                 Julia.Base.("*")( c, JuliaPointer( x ) ) );
+                 Julia.Singular.divexact( JuliaPointer( x ), y ) );
     end );
 
 InstallOtherMethod( \^,
