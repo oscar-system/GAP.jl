@@ -56,9 +56,11 @@ Error, JuliaSymbol: <name> must be a string
 gap> JuliaModule("Base");
 <Julia: Base>
 gap> JuliaModule("This_Module_Does_Not_Exist");
-Error, UndefVarError: This_Module_Does_Not_Exist not defined
+Error, JuliaModule: Module <name> does not exists, did you import it?
 gap> JuliaModule(1);
 Error, JuliaModule: <name> must be a string
+gap> JuliaModule( "sqrt" );
+Error, JuliaModule: <name> is not a module
 
 ##
 gap> _JuliaGetGlobalVariable(0);

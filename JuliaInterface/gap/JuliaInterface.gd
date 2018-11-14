@@ -139,3 +139,11 @@ DeclareGlobalFunction( "JuliaTypeInfo" );
 #!  If an error occured then <C>ok</C> has the value <K>false</K>,
 #!  and <C>value</C> is the error message as a &GAP; string.
 DeclareGlobalFunction( "CallJuliaFunctionWithCatch" );
+
+#! @Arguments name
+#! @Returns a julia object
+#! @Description
+#!  Returns the Julia objects that points to the module
+#!  with <A>name</A>. Note that the module needs to be
+#!  imported before being present.
+DeclareGlobalFunction( "JuliaModule" );

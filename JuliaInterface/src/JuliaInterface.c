@@ -540,18 +540,6 @@ static Obj FuncJuliaSymbol(Obj self, Obj name)
     return NewJuliaObj((jl_value_t *)julia_symbol);
 }
 
-// Returns a julia object GAP object that holds the pointer to the julia
-// module <name>.
-static Obj FuncJuliaModule(Obj self, Obj name)
-{
-    if (!IsStringConv(name)) {
-        ErrorMayQuit("JuliaModule: <name> must be a string", 0, 0);
-    }
-
-    jl_module_t * julia_module = get_module_from_string(CSTR_STRING(name));
-    return NewJuliaObj((jl_value_t *)julia_module);
-}
-
 // Sets the value of the julia identifier <name> to the <val>.
 // This function is for debugging purposes.
 static Obj FuncJuliaSetVal(Obj self, Obj name, Obj val)
@@ -654,7 +642,6 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(JuliaGetFieldOfObject, 2, "obj,name"),
     GVAR_FUNC(JuliaTuple, 1, "list"),
     GVAR_FUNC(JuliaSymbol, 1, "name"),
-    GVAR_FUNC(JuliaModule, 1, "name"),
     GVAR_FUNC(_ConvertedFromJulia_record_dict, 1, "dict"),
     GVAR_FUNC(_NewJuliaCFunc, 2, "ptr,arg_names"),
     GVAR_FUNC(_JULIAINTERFACE_INTERNAL_INIT, 0, ""),
