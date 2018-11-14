@@ -50,6 +50,14 @@ function MakeObjInt(x::BigInt)
     return GET_FROM_GAP( o )
 end
 
+function NEW_MACFLOAT(x::Float64)
+    o = ccall( :NEW_MACFLOAT,
+               MPtr,
+               (Cdouble,),
+               x )
+    return o
+end
+
 
 """
     (func::MPtr)(args...)
