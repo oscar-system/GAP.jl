@@ -19,7 +19,7 @@ gap_to_julia(::Type{UInt16} ,x::Int64) = trunc(UInt16 ,x)
 gap_to_julia(::Type{UInt8}  ,x::Int64) = trunc(UInt8  ,x)
 
 function gap_to_julia(::Type{AbstractString},obj::MPtr)
-    if ! Globals.IsStringRep(obj)
+    if ! Globals.IsStringRep(obj,convert=Val(false))
         throw(ArgumentError("<obj> is not a string"))
     end
     return CSTR_STRING(obj)
@@ -31,7 +31,7 @@ gap_to_julia(::Type{BigInt}, x::Int64) = BigInt( x )
 
 function gap_to_julia(::Type{BigInt}, x::MPtr )
     ## Check for correct type
-    if ! Globals.IsInt(x)
+    if ! Globals.IsInt(x,convert=Val(false))
         throw(ArgumentError("GAP object is not a large integer"))
     end
     ## get size of GAP BigInt (in limbs), multiply
@@ -67,10 +67,10 @@ function gap_to_julia( ::Type{Array{T,1}}, obj :: MPtr ) where T
 end
 
 function gap_to_julia( ::Type{Dict{Symbol,T}}, obj :: MPtr ) where T
-    if ! Globals.IsRecord( obj )
+    if ! Globals.IsRecord( obj,convert=Val(false))
         throw(ArgumentError("first argument is not a record"))
     end
-    names = Globals.RecNames( obj )
+    names = Globals.RecNames( obj,convert=Val(false))
     names_list = gap_to_julia(Array{Symbol,1},names)
     dict = Dict{Symbol,T}()
     for i in names_list
