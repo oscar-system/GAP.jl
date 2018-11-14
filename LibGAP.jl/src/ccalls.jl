@@ -97,7 +97,7 @@ end
 
 function propertynames(funcobj::GlobalsType,private)
     list = Globals.NamesGVars()
-    list_converted = from_gap( list, Array{Symbol,1} )
+    list_converted = gap_to_julia( Array{Symbol,1}, list )
     return tuple(list_converted...)
 end
 
