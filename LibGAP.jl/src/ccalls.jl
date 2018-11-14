@@ -93,20 +93,6 @@ function propertynames(funcobj::GlobalsType,private)
     return tuple(list_converted...)
 end
 
-function to_gap(obj::Any)
-    ret_ptr = ccall(:_ConvertedFromJulia_internal,Ptr{Cvoid},(Any,),obj)
-    ret_val = GET_FROM_GAP(ret_ptr)
-    return ret_val
-end
-
-
-function from_gap(obj::MPtr,::Any)
-    ret_val = ccall(:_ConvertedToJulia_internal,Any,(MPtr,),obj)
-    return ret_val
-end
-
-
-
 # For backwards compatibility
 # TODO: remove this again
 GAPFuncs = Globals
