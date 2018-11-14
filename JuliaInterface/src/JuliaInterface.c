@@ -497,35 +497,6 @@ static Obj Func_ConvertedFromJulia_record_dict(Obj self, Obj dict)
     return return_list;
 }
 
-// Converts the GAP list <list> into a julia tuple and returns the julia
-// object GAP object which holds the pointer to that tuple.
-static Obj FuncJuliaTuple(Obj self, Obj list)
-{
-    if (!IS_PLIST(list)) {
-        ErrorMayQuit("argument is not a plain list", 0, 0);
-    }
-
-    jl_datatype_t * tuple_type = 0;
-    jl_svec_t *     params = 0;
-    jl_svec_t *     param_types = 0;
-    jl_value_t *    result = 0;
-
-    BEGIN_JULIA
-        int len = LEN_PLIST(list);
-        params = jl_alloc_svec(len);
-        param_types = jl_alloc_svec(len);
-        for (int i = 0; i < len; i++) {
-            jl_value_t * current_obj =
-                _ConvertedToJulia_internal(ELM_PLIST(list, i + 1));
-            jl_svecset(params, i, current_obj);
-            jl_svecset(param_types, i, jl_typeof(current_obj));
-        }
-        tuple_type = jl_apply_tuple_type(param_types);
-        result = jl_new_structv(tuple_type, jl_svec_data(params), len);
-    END_JULIA
-    return NewJuliaObj(result);
-}
-
 // Returns a julia object GAP object that holds the pointer to a julia symbol
 // :<name>.
 static Obj FuncJuliaSymbol(Obj self, Obj name)
@@ -652,7 +623,6 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(_JuliaGetGlobalVariable, 1, "name"),
     GVAR_FUNC(_JuliaGetGlobalVariableByModule, 2, "name,module"),
     GVAR_FUNC(JuliaGetFieldOfObject, 2, "obj,name"),
-    GVAR_FUNC(JuliaTuple, 1, "list"),
     GVAR_FUNC(JuliaSymbol, 1, "name"),
     GVAR_FUNC(JuliaModule, 1, "name"),
     GVAR_FUNC(_ConvertedFromJulia_record_dict, 1, "dict"),
