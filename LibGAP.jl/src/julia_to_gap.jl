@@ -14,11 +14,11 @@ julia_to_gap(x::UInt128) = MakeObjInt(BigInt(x)) # FIXME: inefficient hack
 
 julia_to_gap(x::BigInt)  = MakeObjInt(x)
 
+julia_to_gap(x::Float64) = NEW_MACFLOAT(x)
+julia_to_gap(x::Float32) = NEW_MACFLOAT(Float64(x))
+julia_to_gap(x::Float16) = NEW_MACFLOAT(Float64(x))
 
-julia_to_gap(x::Float64)  = NEW_MACFLOAT(x)
-julia_to_gap(x::Float32)  = NEW_MACFLOAT(Float64(x))
-julia_to_gap(x::Float16)  = NEW_MACFLOAT(Float64(x))
-
+julia_to_gap(x::AbstractString) = MakeString(x)
 
 julia_to_gap(x::GapFFE) = x
 julia_to_gap(x::MPtr) = x
