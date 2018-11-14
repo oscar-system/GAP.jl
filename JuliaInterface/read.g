@@ -22,3 +22,4 @@ _JULIAINTERFACE_INTERNAL_INIT();
 ImportJuliaModuleIntoGAP( "GAP" );
 
 ReadPackage( "JuliaInterface", "gap/arith.gi");
+ReadPackage( "JuliaInterface", "gap/convert.gi");
