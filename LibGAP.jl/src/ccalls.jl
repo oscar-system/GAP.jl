@@ -42,6 +42,14 @@ function NewPlist(length :: Int64)
     return o
 end
 
+function MakeObjInt(x::BigInt)
+    o = ccall( :MakeObjInt,
+               Ptr{Cvoid},
+               (Ptr{UInt64},Cint),
+               x.d, x.size )
+    return GET_FROM_GAP( o )
+end
+
 
 """
     (func::MPtr)(args...)
