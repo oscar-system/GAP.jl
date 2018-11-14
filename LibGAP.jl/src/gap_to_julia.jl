@@ -78,3 +78,10 @@ function gap_to_julia( ::Type{Dict{Symbol,T}}, obj :: MPtr ) where T
     end
     return dict
 end
+
+function gap_to_julia( ::Type{Cuchar}, obj::MPtr )
+    if ! Globals.IsChar(obj,convert=Val(false))
+        throw(ArgumentError("argument is not a character object"))
+    end
+    return trunc( Cuchar, Globals.INT_CHAR(obj,convert=Val(false) ) )
+end
