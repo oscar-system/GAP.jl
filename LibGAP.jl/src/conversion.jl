@@ -2,6 +2,7 @@
 to_gap(x::Int64) = x
 to_gap(x::GapFFE) = x
 to_gap(x::MPtr) = x
+to_gap(x::BigInt) = MakeObjInt(x)
 
 function to_gap(obj::Array{T,1}) where T
     len = length(obj)

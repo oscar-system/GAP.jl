@@ -15,6 +15,10 @@
     @test GAP.to_gap([1,2,3]) == x
 
     @test GAP.to_gap(:x) == GAP.to_gap("x")
+
+    @test GAP.to_gap(BigInt(2)) == 2
+    @test GAP.to_gap(BigInt(2)^100) == GAP.EvalString("2^100;")[1][2]
+
 end
 
 @testset "conversion from GAP" begin
