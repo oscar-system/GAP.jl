@@ -24,7 +24,7 @@
 
     @test_throws ErrorException GAP.Globals.FOOBARQUX
 
-    str = GAP.from_gap(GAP.ValueGlobalVariable("IdentifierLetters"), AbstractString);
+    str = GAP.gap_to_julia(AbstractString, GAP.ValueGlobalVariable("IdentifierLetters"));
     @test str == "0123456789@ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz"
 
     @test string(GAP.Globals) == "\"table of global GAP objects\""
