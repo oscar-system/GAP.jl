@@ -35,14 +35,14 @@ gap> JuliaGetGlobalVariable("foo");
 1
 
 ##
-gap> JuliaTuple([]);
+gap> Julia.Core.Tuple([]);
 <Julia: ()>
-gap> JuliaTuple([1]);
+gap> Julia.Core.Tuple([1]);
 <Julia: (1,)>
-gap> JuliaTuple([1,true,fail]);
+gap> Julia.Core.Tuple([1,true,fail]);
 <Julia: (1, true, GAP: fail)>
-gap> JuliaTuple(1);
-Error, argument is not a plain list
+gap> Julia.Core.Tuple(1);
+<Julia: (1,)>
 
 ##
 gap> JuliaSymbol("someSymbol");
