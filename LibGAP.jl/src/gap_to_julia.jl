@@ -3,6 +3,7 @@
 ## Default
 gap_to_julia(::Type{GAPInputType},x::GAPInputType) = x
 gap_to_julia(::Type{Any},         x::GAPInputType) = gap_to_julia(x)
+gap_to_julia(::Type{Any},         x::Any) = x
 
 ## Integers
 gap_to_julia(::Type{Int128} ,x::Int64) = trunc(Int128 ,x)
@@ -103,9 +104,7 @@ end
 
 ## Generic conversions
 
-gap_to_julia(x::Int64)  = x
-gap_to_julia(x::Bool)   = x
-gap_to_julia(x::GapFFE) = x
+gap_to_julia(x::Any)  = x
 
 function gap_to_julia(x::MPtr)
     if Globals.IsInt(x)
