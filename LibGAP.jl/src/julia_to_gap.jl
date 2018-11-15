@@ -72,6 +72,13 @@ function julia_to_gap(obj::Dict{T,S}) where S where T <: Union{Symbol,AbstractSt
 end
 
 ## Tuples
-# TODO
+function julia_to_gap(obj::Tuple)
+    size = length(obj)
+    array = Array{Any,1}(undef,size)
+    for i in 1:size
+        array[i] = obj[i]
+    end
+    return julia_to_gap(array)
+end
 
 ## TODO: BitArray <-> blist; ranges; ...
