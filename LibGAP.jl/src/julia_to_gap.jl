@@ -23,8 +23,17 @@ julia_to_gap(x::BigInt)  = MakeObjInt(x)
 
 ## Rationals
 function julia_to_gap(x::Rational{T}) where T <: Integer
-    numer = julia_to_gap(numerator(x))
-    denom = julia_to_gap(denominator(x))
+    denom_julia = denominator(x)
+    numer_julia = numerator(x)
+    if denom_julia == 0
+        if numer_julia >= 0
+            return GAP.Globals.infinity
+        else
+            return -GAP.Globals.infinity
+        end
+    end
+    numer = julia_to_gap(numer_julia)
+    denom = julia_to_gap(denom_julia)
     return Globals.QUO(numer,denom)
 end
 
