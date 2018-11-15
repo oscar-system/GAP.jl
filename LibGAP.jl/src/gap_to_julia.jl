@@ -18,14 +18,6 @@ gap_to_julia(::Type{UInt32} ,x::Int64) = trunc(UInt32 ,x)
 gap_to_julia(::Type{UInt16} ,x::Int64) = trunc(UInt16 ,x)
 gap_to_julia(::Type{UInt8}  ,x::Int64) = trunc(UInt8  ,x)
 
-function gap_to_julia(::Type{AbstractString},obj::MPtr)
-    if ! Globals.IsStringRep(obj)
-        throw(ArgumentError("<obj> is not a string"))
-    end
-    return CSTR_STRING(obj)
-end
-gap_to_julia(::Type{Symbol},obj::MPtr) = Symbol(gap_to_julia(AbstractString,obj))
-
 ## BigInts
 gap_to_julia(::Type{BigInt}, x::Int64) = BigInt( x )
 
@@ -48,6 +40,30 @@ function gap_to_julia(::Type{BigInt}, x::MPtr )
     return new_bigint
 end
 
+## Rationals
+# TODO
+
+## Floats
+# TODO
+
+## Chars
+function gap_to_julia( ::Type{Cuchar}, obj::MPtr )
+    if ! Globals.IsChar( obj )
+        throw(ArgumentError("argument is not a character object"))
+    end
+    return trunc( Cuchar, Globals.INT_CHAR(obj ) )
+end
+
+## Strings and symbols
+function gap_to_julia(::Type{AbstractString},obj::MPtr)
+    if ! Globals.IsStringRep(obj)
+        throw(ArgumentError("<obj> is not a string"))
+    end
+    return CSTR_STRING(obj)
+end
+gap_to_julia(::Type{Symbol},obj::MPtr) = Symbol(gap_to_julia(AbstractString,obj))
+
+## Arrays
 function gap_to_julia( ::Type{Array{GAPObj,1}}, obj :: MPtr )
     len_list = length(obj)
     new_array = Array{GAPObj,1}( undef, len_list)
@@ -66,6 +82,7 @@ function gap_to_julia( ::Type{Array{T,1}}, obj :: MPtr ) where T
     return new_array
 end
 
+## Dictionaries
 function gap_to_julia( ::Type{Dict{Symbol,T}}, obj :: MPtr ) where T
     if ! Globals.IsRecord( obj )
         throw(ArgumentError("first argument is not a record"))
@@ -79,9 +96,7 @@ function gap_to_julia( ::Type{Dict{Symbol,T}}, obj :: MPtr ) where T
     return dict
 end
 
-function gap_to_julia( ::Type{Cuchar}, obj::MPtr )
-    if ! Globals.IsChar( obj )
-        throw(ArgumentError("argument is not a character object"))
-    end
-    return trunc( Cuchar, Globals.INT_CHAR(obj ) )
-end
+## Tuples
+# TODO
+
+## TODO: BitArray <-> blist; ranges; ...

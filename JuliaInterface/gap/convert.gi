@@ -10,7 +10,7 @@ function(filter, obj)
     if Julia.isa(obj, Julia.Base.Integer) then
         return Julia.GAP.julia_to_gap(obj);
     fi;
-    Error("<obj> is not a Julia integer");
+    Error("<obj> must be a Julia integer");
 end);
 
 # handle immediate integers as well
@@ -24,7 +24,7 @@ function(filter, obj)
     if Julia.isa(obj, Julia.Base.Integer) or Julia.isa(obj, Julia.Base.Rational) then
         return Julia.GAP.julia_to_gap(obj);
     fi;
-    Error("<obj> is not a Julia integer or rational");
+    Error("<obj> must be a Julia integer or rational");
 end);
 
 # No default conversion for IsCyc
@@ -40,7 +40,7 @@ function(filter, obj)
     if Julia.isa(obj, Julia.Base.AbstractFloat) then
         return Julia.GAP.julia_to_gap(obj);
     fi;
-    Error("<obj> is not a Julia float");
+    Error("<obj> must be a Julia float");
 end);
 
 # No default conversion for T_PERM, T_TRANS, T_PPERM
@@ -58,19 +58,23 @@ function(filter, obj)
     Error("TODO: convert to GAP char");
 end);
 
+BindGlobal("_JL_Dict_Symbol", JuliaEvalString("Dict{Symbol}"));
+BindGlobal("_JL_Dict_AbstractString", JuliaEvalString("Dict{AbstractString}"));
+
 InstallMethod(JuliaToGAP, [IsRecord, IsJuliaObject],
 function(filter, obj)
-    # TODO: support Julia Dict{Symbol,T}, resp. Dict{AbstractString,T}
-    Error("TODO: convert to GAP record");
+    if Julia.isa(obj, _JL_Dict_Symbol) or Julia.isa(obj, _JL_Dict_AbstractString) then
+        return Julia.GAP.julia_to_gap(obj);
+    fi;
+    Error("<obj> must be a Julia Dict{Symbol} or Dict{AbstractString}");
 end);
 
-# convert array and tuple to GAP lists
 InstallMethod(JuliaToGAP, [IsList, IsJuliaObject],
 function(filter, obj)
     if Julia.isa(obj, Julia.Base.Array) or Julia.isa(obj, Julia.Base.Tuple) then
         return Julia.GAP.julia_to_gap(obj);
     fi;
-    Error("<obj> is not a Julia array or typle");
+    Error("<obj> must be a Julia array or tuple");
 end);
 
 InstallMethod(JuliaToGAP, [IsRange, IsJuliaObject],
@@ -78,13 +82,18 @@ function(filter, obj)
     if Julia.isa(obj, Julia.Base.AbstractRange) then
         return Julia.GAP.julia_to_gap(obj);
     fi;
-    Error("<obj> is not a Julia range");
+    Error("<obj> must be a Julia range");
 end);
+
+BindGlobal("_JL_Array_Bool_1", JuliaEvalString("Array{Bool,1}"));
+BindGlobal("_JL_BitArray_1", JuliaEvalString("BitArray{1}"));
 
 InstallMethod(JuliaToGAP, [IsBlist, IsJuliaObject],
 function(filter, obj)
-    # TODO: support Julia Array{Bool,1} and BitArray{1}
-    Error("TODO: convert to GAP boolean list");
+    if Julia.isa(obj, _JL_Array_Bool_1) or Julia.isa(obj, _JL_BitArray_1) then
+        return Julia.GAP.julia_to_gap(obj);
+    fi;
+    Error("<obj> must be a Julia Array{Bool,1} or BitArray{1}");
 end);
 
 InstallMethod(JuliaToGAP, [IsString, IsJuliaObject],
@@ -93,7 +102,7 @@ function(filter, obj)
     if Julia.isa(obj, Julia.Base.AbstractString) then
         return Julia.GAP.julia_to_gap(obj);
     fi;
-    Error("<obj> is not a Julia string");
+    Error("<obj> must be a Julia string");
 end);
 
 
