@@ -66,7 +66,7 @@ gap_to_julia(::Type{Symbol},obj::MPtr) = Symbol(gap_to_julia(AbstractString,obj)
 ## Arrays
 function gap_to_julia( ::Type{Array{GAPObj,1}}, obj :: MPtr )
     len_list = length(obj)
-    new_array = Array{GAPObj,1}( undef, len_list)
+    new_array = Array{Any,1}( undef, len_list)
     for i in 1:len_list
         new_array[ i ] = obj[i]
     end
