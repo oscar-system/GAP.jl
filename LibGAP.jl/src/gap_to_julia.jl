@@ -60,7 +60,16 @@ function gap_to_julia(::Type{Rational{T}}, x::MPtr) where T <: Integer
 end
 
 ## Floats
-# TODO
+function gap_to_julia( ::Type{Float64}, obj::MPtr)
+    if ! Globals.IsFloat(obj)
+        throw(ArgumentError("<obj> is not a MacFloat"))
+    end
+    return ValueMacFloat(obj)
+end
+
+gap_to_julia( ::Type{Float32}, obj::MPtr ) = Float32(gap_to_julia(Float64,obj))
+gap_to_julia( ::Type{Float16}, obj::MPtr ) = Float16(gap_to_julia(Float64,obj))
+gap_to_julia( ::Type{BigFloat}, obj::MPtr ) = BigFloat(gap_to_julia(Float64,obj))
 
 ## Chars
 function gap_to_julia( ::Type{Cuchar}, obj::MPtr )
