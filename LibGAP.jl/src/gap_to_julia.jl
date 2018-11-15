@@ -113,7 +113,18 @@ function gap_to_julia( ::Type{Dict{Symbol,T}}, obj :: MPtr ) where T
 end
 
 ## Tuples
-# TODO
+function gap_to_julia( ::Type{T}, obj::MPtr ) where T <: Tuple
+    if ! Globals.IsList(obj)
+        throw(ArgumentError("<obj> is not a list"))
+    end
+    list_translated = gap_to_julia(Array{GAPObj,1},obj)
+    parameters = T.parameters
+    list = Array{Any,1}(undef,length(parameters))
+    for i in 1:length(parameters)
+        list[i] = gap_to_julia(parameters[i],list_translated[i])
+    end
+    return T(list)
+end
 
 ## TODO: BitArray <-> blist; ranges; ...
 

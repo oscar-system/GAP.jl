@@ -62,7 +62,6 @@ function initialize( argv::Array{String,1}, env::Array{String,1} )
            , Ptr{Cvoid}
            , (Ptr{UInt8},)
            , "LoadPackage(\"JuliaInterface\");" )
-    Base.include( GAP, pkgdir * "/libgap.jl")
 end
 
 function finalize( )

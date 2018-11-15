@@ -10,11 +10,13 @@ dirs:= DirectoriesPackageLibrary( "JuliaInterface", "julia" );
 
 JuliaIncludeFile( Filename( dirs, "gaptypes.jl" ) );
 
+dirs:= DirectoriesPackageLibrary( "JuliaInterface", "../LibGAP.jl/src" );
+
 if not IsBound( JULIAINTERNAL_LOADED_FROM_JULIA ) then
-    dirs:= DirectoriesPackageLibrary( "JuliaInterface", "../LibGAP.jl/src" );
     Julia.Base.include( Julia.Main!.julia_pointer, ConvertedToJulia( Filename( dirs, "initialization.jl" ) ) );
-    Julia.Base.include( Julia.Main.GAP!.julia_pointer, ConvertedToJulia( Filename( dirs, "libgap.jl" ) ) );
 fi;
+
+Julia.Base.include( Julia.Main.GAP!.julia_pointer, ConvertedToJulia( Filename( dirs, "libgap.jl" ) ) );
 
 _JULIAINTERFACE_INTERNAL_INIT();
 
