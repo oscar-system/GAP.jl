@@ -1,5 +1,6 @@
 #include "convert.h"
 
+#include "calls.h"
 #include "JuliaInterface.h"
 
 #include <src/compiled.h>    // GAP headers
@@ -18,6 +19,9 @@ jl_value_t * julia_gap(Obj obj)
     }
     if (IS_JULIA_OBJ(obj)) {
         return GET_JULIA_OBJ(obj);
+    }
+    if (IS_JULIA_FUNC(obj)) {
+        return GET_JULIA_FUNC(obj);
     }
     if (obj == True) {
         return jl_true;
