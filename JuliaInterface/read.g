@@ -25,3 +25,4 @@ ImportJuliaModuleIntoGAP( "GAP" );
 ReadPackage( "JuliaInterface", "gap/arith.gi");
 ReadPackage( "JuliaInterface", "gap/calls.gi");
 ReadPackage( "JuliaInterface", "gap/convert.gi");
+ReadPackage( "JuliaInterface", "gap/utils.gi");

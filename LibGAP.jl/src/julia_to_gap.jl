@@ -58,7 +58,18 @@ function julia_to_gap(obj::Array{T,1}) where T
 end
 
 ## Dictionaries
-# TODO
+function julia_to_gap(obj::Dict{T,S}) where S where T <: Union{Symbol,AbstractString}
+    nr_entries = obj.count
+    keys = Array{T,1}(undef,nr_entries)
+    entries = Array{S,1}(undef,nr_entries)
+    i = 1
+    for (x,y) in obj
+        keys[i] = x
+        entries[i] = y
+        i += 1
+    end
+    return GAP.Globals.CreateRecFromKeyValuePairList(julia_to_gap(keys),julia_to_gap(entries))
+end
 
 ## Tuples
 # TODO
