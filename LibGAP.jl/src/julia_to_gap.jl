@@ -22,7 +22,11 @@ julia_to_gap(x::UInt8)  = Int64(x)
 julia_to_gap(x::BigInt)  = MakeObjInt(x)
 
 ## Rationals
-# TODO
+function julia_to_gap(x::Rational{T}) where T <: Integer
+    numer = julia_to_gap(numerator(x))
+    denom = julia_to_gap(denominator(x))
+    return Globals.QUO(numer,denom)
+end
 
 ## Floats
 julia_to_gap(x::Float64) = NEW_MACFLOAT(x)
