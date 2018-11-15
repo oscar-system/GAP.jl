@@ -5,7 +5,6 @@
 #include <src/compiled.h>    // GAP headers
 
 static Obj DoCallJuliaFunc0Arg(Obj func);
-static Obj DoCallJuliaFunc0ArgConv(Obj func);
 
 
 // Helper used to call GAP functions from Julia.
@@ -76,8 +75,7 @@ jl_value_t * call_gap_func(Obj func, jl_value_t * args)
 
 inline Int IS_JULIA_FUNC(Obj obj)
 {
-    return IS_FUNC(obj) && (HDLR_FUNC(obj, 0) == DoCallJuliaFunc0Arg ||
-                            HDLR_FUNC(obj, 0) == DoCallJuliaFunc0ArgConv);
+    return IS_FUNC(obj) && (HDLR_FUNC(obj, 0) == DoCallJuliaFunc0Arg);
 }
 
 inline jl_function_t * GET_JULIA_FUNC(Obj obj)
@@ -87,23 +85,14 @@ inline jl_function_t * GET_JULIA_FUNC(Obj obj)
     return (jl_function_t *)FEXS_FUNC(obj);
 }
 
-static ALWAYS_INLINE Obj DoCallJuliaFunc(Obj       func,
-                                         const int narg,
-                                         Obj *     a,
-                                         const int autoConvert)
+static ALWAYS_INLINE Obj DoCallJuliaFunc(Obj func, const int narg, Obj * a)
 {
     jl_value_t * result;
 
-    if (autoConvert) {
-        for (int i = 0; i < narg; i++) {
-            a[i] = (Obj)_ConvertedToJulia_internal(a[i]);
-        }
+    for (int i = 0; i < narg; i++) {
+        a[i] = (Obj)julia_gap(a[i]);
     }
-    else {
-        for (int i = 0; i < narg; i++) {
-            a[i] = (Obj)julia_gap(a[i]);
-        }
-    }
+
     jl_function_t * f = GET_JULIA_FUNC(func);
     switch (narg) {
     case 0:
@@ -129,60 +118,6 @@ static ALWAYS_INLINE Obj DoCallJuliaFunc(Obj       func,
     return gap_julia(result);
 }
 
-static Obj DoCallJuliaFunc0ArgConv(Obj func)
-{
-    return DoCallJuliaFunc(func, 0, 0, 1);
-}
-
-static Obj DoCallJuliaFunc1ArgConv(Obj func, Obj arg1)
-{
-    Obj a[] = { arg1 };
-    return DoCallJuliaFunc(func, 1, a, 1);
-}
-
-static Obj DoCallJuliaFunc2ArgConv(Obj func, Obj arg1, Obj arg2)
-{
-    Obj a[] = { arg1, arg2 };
-    return DoCallJuliaFunc(func, 2, a, 1);
-}
-
-static Obj DoCallJuliaFunc3ArgConv(Obj func, Obj arg1, Obj arg2, Obj arg3)
-{
-    Obj a[] = { arg1, arg2, arg3 };
-    return DoCallJuliaFunc(func, 3, a, 1);
-}
-
-static Obj
-DoCallJuliaFunc4ArgConv(Obj func, Obj arg1, Obj arg2, Obj arg3, Obj arg4)
-{
-    Obj a[] = { arg1, arg2, arg3, arg4 };
-    return DoCallJuliaFunc(func, 4, a, 1);
-}
-
-static Obj DoCallJuliaFunc5ArgConv(
-    Obj func, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5)
-{
-    Obj a[] = { arg1, arg2, arg3, arg4, arg5 };
-    return DoCallJuliaFunc(func, 5, a, 1);
-}
-
-static Obj DoCallJuliaFunc6ArgConv(
-    Obj func, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6)
-{
-    Obj a[] = { arg1, arg2, arg3, arg4, arg5, arg6 };
-    return DoCallJuliaFunc(func, 6, a, 1);
-}
-
-static Obj DoCallJuliaFuncXArgConv(Obj func, Obj args)
-{
-    const int len = LEN_PLIST(args);
-    Obj       a[len];
-    for (int i = 0; i < len; i++) {
-        a[i] = ELM_PLIST(args, i + 1);
-    }
-    return DoCallJuliaFunc(func, len, a, 1);
-}
-
 //
 //
 //
@@ -190,46 +125,46 @@ static Obj DoCallJuliaFuncXArgConv(Obj func, Obj args)
 
 static Obj DoCallJuliaFunc0Arg(Obj func)
 {
-    return DoCallJuliaFunc(func, 0, 0, 0);
+    return DoCallJuliaFunc(func, 0, 0);
 }
 
 static Obj DoCallJuliaFunc1Arg(Obj func, Obj arg1)
 {
     Obj a[] = { arg1 };
-    return DoCallJuliaFunc(func, 1, a, 0);
+    return DoCallJuliaFunc(func, 1, a);
 }
 
 static Obj DoCallJuliaFunc2Arg(Obj func, Obj arg1, Obj arg2)
 {
     Obj a[] = { arg1, arg2 };
-    return DoCallJuliaFunc(func, 2, a, 0);
+    return DoCallJuliaFunc(func, 2, a);
 }
 
 static Obj DoCallJuliaFunc3Arg(Obj func, Obj arg1, Obj arg2, Obj arg3)
 {
     Obj a[] = { arg1, arg2, arg3 };
-    return DoCallJuliaFunc(func, 3, a, 0);
+    return DoCallJuliaFunc(func, 3, a);
 }
 
 static Obj
 DoCallJuliaFunc4Arg(Obj func, Obj arg1, Obj arg2, Obj arg3, Obj arg4)
 {
     Obj a[] = { arg1, arg2, arg3, arg4 };
-    return DoCallJuliaFunc(func, 4, a, 0);
+    return DoCallJuliaFunc(func, 4, a);
 }
 
 static Obj DoCallJuliaFunc5Arg(
     Obj func, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5)
 {
     Obj a[] = { arg1, arg2, arg3, arg4, arg5 };
-    return DoCallJuliaFunc(func, 5, a, 0);
+    return DoCallJuliaFunc(func, 5, a);
 }
 
 static Obj DoCallJuliaFunc6Arg(
     Obj func, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6)
 {
     Obj a[] = { arg1, arg2, arg3, arg4, arg5, arg6 };
-    return DoCallJuliaFunc(func, 6, a, 0);
+    return DoCallJuliaFunc(func, 6, a);
 }
 
 static Obj DoCallJuliaFuncXArg(Obj func, Obj args)
@@ -239,14 +174,14 @@ static Obj DoCallJuliaFuncXArg(Obj func, Obj args)
     for (int i = 0; i < len; i++) {
         a[i] = ELM_PLIST(args, i + 1);
     }
-    return DoCallJuliaFunc(func, len, a, 0);
+    return DoCallJuliaFunc(func, len, a);
 }
 
 
 //
 //
 //
-Obj NewJuliaFunc(jl_function_t * function, int autoConvert)
+Obj NewJuliaFunc(jl_function_t * function)
 {
     // TODO: set a sensible name?
     //     jl_datatype_t * dt = ...
@@ -256,22 +191,14 @@ Obj NewJuliaFunc(jl_function_t * function, int autoConvert)
 
     Obj func = NewFunctionC("", -1, "arg", 0);
 
-    SET_HDLR_FUNC(
-        func, 0, autoConvert ? DoCallJuliaFunc0ArgConv : DoCallJuliaFunc0Arg);
-    SET_HDLR_FUNC(
-        func, 1, autoConvert ? DoCallJuliaFunc1ArgConv : DoCallJuliaFunc1Arg);
-    SET_HDLR_FUNC(
-        func, 2, autoConvert ? DoCallJuliaFunc2ArgConv : DoCallJuliaFunc2Arg);
-    SET_HDLR_FUNC(
-        func, 3, autoConvert ? DoCallJuliaFunc3ArgConv : DoCallJuliaFunc3Arg);
-    SET_HDLR_FUNC(
-        func, 4, autoConvert ? DoCallJuliaFunc4ArgConv : DoCallJuliaFunc4Arg);
-    SET_HDLR_FUNC(
-        func, 5, autoConvert ? DoCallJuliaFunc5ArgConv : DoCallJuliaFunc5Arg);
-    SET_HDLR_FUNC(
-        func, 6, autoConvert ? DoCallJuliaFunc6ArgConv : DoCallJuliaFunc6Arg);
-    SET_HDLR_FUNC(
-        func, 7, autoConvert ? DoCallJuliaFuncXArgConv : DoCallJuliaFuncXArg);
+    SET_HDLR_FUNC(func, 0, DoCallJuliaFunc0Arg);
+    SET_HDLR_FUNC(func, 1, DoCallJuliaFunc1Arg);
+    SET_HDLR_FUNC(func, 2, DoCallJuliaFunc2Arg);
+    SET_HDLR_FUNC(func, 3, DoCallJuliaFunc3Arg);
+    SET_HDLR_FUNC(func, 4, DoCallJuliaFunc4Arg);
+    SET_HDLR_FUNC(func, 5, DoCallJuliaFunc5Arg);
+    SET_HDLR_FUNC(func, 6, DoCallJuliaFunc6Arg);
+    SET_HDLR_FUNC(func, 7, DoCallJuliaFuncXArg);
 
     // trick: fexs is unused for kernel functions, so we can store
     // the Julia function point in here

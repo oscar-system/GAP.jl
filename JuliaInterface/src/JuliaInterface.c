@@ -172,20 +172,18 @@ jl_function_t * get_function_from_obj_or_string(Obj func)
  * or the function with name <func> from
  * the Julia main module.
  */
-static Obj Func_JuliaFunction(Obj self, Obj func, Obj autoConvert)
+static Obj Func_JuliaFunction(Obj self, Obj func)
 {
     jl_function_t * function = get_function_from_obj_or_string(func);
-    return NewJuliaFunc(function, autoConvert == True);
+    return NewJuliaFunc(function);
 }
 
 /*
  * Returns the function with name <function_name> from the Julia module with
  * name <module_name>.
  */
-static Obj Func_JuliaFunctionByModule(Obj self,
-                                      Obj function_name,
-                                      Obj module_name,
-                                      Obj autoConvert)
+static Obj
+Func_JuliaFunctionByModule(Obj self, Obj function_name, Obj module_name)
 {
     if (!IsStringConv(function_name)) {
         ErrorMayQuit(
@@ -204,7 +202,7 @@ static Obj Func_JuliaFunctionByModule(Obj self,
         jl_get_function(module_t, CSTR_STRING(function_name));
     if (function == 0)
         ErrorMayQuit("Function is not defined in julia", 0, 0);
-    return NewJuliaFunc(function, autoConvert == True);
+    return NewJuliaFunc(function);
 }
 
 // Executes the string <string> in the current julia session.
@@ -601,9 +599,8 @@ static Obj FuncJuliaGetFieldOfObject(Obj self, Obj super_obj, Obj field_name)
 
 // Table of functions to export
 static StructGVarFunc GVarFuncs[] = {
-    GVAR_FUNC(_JuliaFunction, 2, "string, autoConvert"),
-    GVAR_FUNC(
-        _JuliaFunctionByModule, 3, "function_name, module_name, autoConvert"),
+    GVAR_FUNC(_JuliaFunction, 1, "string"),
+    GVAR_FUNC(_JuliaFunctionByModule, 2, "function_name, module_name"),
     GVAR_FUNC(JuliaEvalString, 1, "string"),
     GVAR_FUNC(_ConvertedFromJulia, 1, "obj"),
     GVAR_FUNC(_ConvertedToJulia, 1, "obj"),

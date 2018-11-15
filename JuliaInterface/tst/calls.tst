@@ -164,87 +164,6 @@ gap> f7w(true,2,3,4,5,6,7);
 <Julia: (true, 2, 3, 4, 5, 6, 7)>
 
 #
-# calls via function wrappers, auto conversion turned off
-#
-
-# variadic function
-gap> fwN := _JuliaFunction("f", false);;
-
-#
-gap> fwN();
-<Julia: ()>
-
-#
-gap> fwN(true);
-<Julia: (true,)>
-
-#
-gap> fwN(true,2);
-<Julia: (true, 2)>
-
-#
-gap> fwN(true,2,3);
-<Julia: (true, 2, 3)>
-
-#
-gap> fwN(true,2,3,4);
-<Julia: (true, 2, 3, 4)>
-
-#
-gap> fwN(true,2,3,4,5);
-<Julia: (true, 2, 3, 4, 5)>
-
-#
-gap> fwN(true,2,3,4,5,6);
-<Julia: (true, 2, 3, 4, 5, 6)>
-
-#
-gap> fwN(true,2,3,4,5,6,7);
-<Julia: (true, 2, 3, 4, 5, 6, 7)>
-
-# non-variadic functions
-gap> f0wN := _JuliaFunction("f0", false);;
-gap> f1wN := _JuliaFunction("f1", false);;
-gap> f2wN := _JuliaFunction("f2", false);;
-gap> f3wN := _JuliaFunction("f3", false);;
-gap> f4wN := _JuliaFunction("f4", false);;
-gap> f5wN := _JuliaFunction("f5", false);;
-gap> f6wN := _JuliaFunction("f6", false);;
-gap> f7wN := _JuliaFunction("f7", false);;
-
-#
-gap> f0wN();
-<Julia: nothing>
-
-#
-gap> f1wN(true);
-<Julia: (true,)>
-
-#
-gap> f2wN(true,2);
-<Julia: (true, 2)>
-
-#
-gap> f3wN(true,2,3);
-<Julia: (true, 2, 3)>
-
-#
-gap> f4wN(true,2,3,4);
-<Julia: (true, 2, 3, 4)>
-
-#
-gap> f5wN(true,2,3,4,5);
-<Julia: (true, 2, 3, 4, 5)>
-
-#
-gap> f6wN(true,2,3,4,5,6);
-<Julia: (true, 2, 3, 4, 5, 6)>
-
-#
-gap> f7wN(true,2,3,4,5,6,7);
-<Julia: (true, 2, 3, 4, 5, 6, 7)>
-
-#
 # calls via wrapped C function pointers
 #
 
@@ -348,17 +267,17 @@ gap> _NewJuliaCFunc(JuliaEvalString("'a'"), fail);
 Error, NewJuliaCFunc: <arg_names> must be plain list
 
 #
-gap> _JuliaFunction(fail, fail);
+gap> _JuliaFunction(fail);
 Error, argument is not a julia object or string
-gap> _JuliaFunction("foo_bar_quux_not_defined", fail);
+gap> _JuliaFunction("foo_bar_quux_not_defined");
 Error, Function is not defined in julia
 
 #
-gap> _JuliaFunctionByModule(fail, fail, fail);
+gap> _JuliaFunctionByModule(fail, fail);
 Error, _JuliaFunctionByModule: <function_name> must be a string
-gap> _JuliaFunctionByModule("foo", fail, fail);
+gap> _JuliaFunctionByModule("foo", fail);
 Error, _JuliaFunctionByModule: <module_name> must be a string
-gap> _JuliaFunctionByModule("foo", "bar", fail);
+gap> _JuliaFunctionByModule("foo", "bar");
 Error, UndefVarError: bar not defined
 
 #

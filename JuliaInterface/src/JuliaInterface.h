@@ -63,12 +63,6 @@ extern UInt T_JULIA_OBJ;
 // Checks if o is a julia object GAP object.
 extern int IS_JULIA_OBJ(Obj o);
 
-// NewJuliaFunc(f,autoConvert)
-//
-// Creates a new julia function GAP object
-// from the julia function pointer f.
-Obj NewJuliaFunc(jl_function_t * f, int autoConvert);
-
 // NewJuliaObj(v)
 //
 // Creates a new julia object GAP object

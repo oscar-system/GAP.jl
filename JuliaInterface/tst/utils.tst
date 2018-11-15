@@ -35,11 +35,11 @@ gap> JuliaGetGlobalVariable("foo");
 1
 
 ##
-gap> Julia.Core.Tuple([]);
+gap> Julia.Core.Tuple( ConvertedToJulia( [] ) );
 <Julia: ()>
-gap> Julia.Core.Tuple([1]);
+gap> Julia.Core.Tuple( ConvertedToJulia( [1] ) );
 <Julia: (1,)>
-gap> Julia.Core.Tuple([1,true,fail]);
+gap> Julia.Core.Tuple(( ConvertedToJulia( [1,true,fail] ) ));
 <Julia: (1, true, GAP: fail)>
 gap> Julia.Core.Tuple(1);
 <Julia: (1,)>
