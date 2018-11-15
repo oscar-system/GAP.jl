@@ -47,7 +47,7 @@ function gap_to_julia(::Type{Rational{T}}, x::Int64) where T <: Integer
     return numerator // T(1)
 end
 
-function gap_to_julia(::Type{Rational{T}}, x::MPtr) where T
+function gap_to_julia(::Type{Rational{T}}, x::MPtr) where T <: Integer
     if Globals.IsInt(x)
         return gap_to_julia(T,x) // T(1)
     end
@@ -124,6 +124,8 @@ gap_to_julia(x::Any)  = x
 function gap_to_julia(x::MPtr)
     if Globals.IsInt(x)
         return gap_to_julia(BigInt,x)
+    elseif Globals.IsRat(x)
+        return gap_to_julia(Rational{BigInt},x)
     elseif Globals.IsChar(x)
         return gap_to_julia(Cuchar,x)
     elseif Globals.IsString(x)
