@@ -47,7 +47,6 @@ julia_to_gap(x::AbstractString) = MakeString(x)
 julia_to_gap(x::Symbol) = MakeString(string(x))
 
 ## Arrays
-# TODO: check the following func
 function julia_to_gap(obj::Array{T,1}) where T
     len = length(obj)
     ret_val = NewPlist(len)
