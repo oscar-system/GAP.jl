@@ -44,23 +44,6 @@ InstallMethod( ConvertedToJulia,
     return result;
 end );
 
-##
-##  We want to use &GAP's function call syntax also for certain Julia objects
-##  that are <E>not</E> functions, for example for types such as <C>fmpz</C>.
-##  Note that also Julia supports this.
-##
-InstallMethod( CallFuncList,
-    [ "IsJuliaObject", "IsList" ],
-    function( julia_obj, argument_list )
-        local apply;
-
-        # We do not get our hands on Julia's built-in function '_apply'
-        # via 'BindJuliaFunc', and we do not find it in 'Julia.Core' ...
-        apply:= JuliaFunction( "_apply", "Core" );
-        return apply( julia_obj, argument_list );
-    end );
-
-
 BindGlobal( "_JULIA_MODULE_TYPE", JuliaEvalString( "Module" ) );
 BindGlobal( "_JULIA_FUNCTION_TYPE", JuliaEvalString( "Function" ) );
 BindGlobal( "_JULIA_ISA", JuliaFunction( "isa" ) );
@@ -235,19 +218,6 @@ end );
 InstallGlobalFunction( JuliaTypeInfo,
     juliaobj -> ConvertedFromJulia(
                     Julia.Base.string( Julia.Core.typeof( juliaobj ) ) ) );
-
-
-InstallGlobalFunction( CallJuliaFunctionWithCatch,
-    function( juliafunc, arguments )
-    local res;
-
-    res:= Julia.GAPUtils.call_with_catch( juliafunc, arguments );
-    if res[1] then
-      return rec( ok:= true, value:= res[2] );
-    else
-      return rec( ok:= false, value:= ConvertedFromJulia( res[2] ) );
-    fi;
-end );
 
 
 InstallGlobalFunction( StructuralConvertedFromJulia,
