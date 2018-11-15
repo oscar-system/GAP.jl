@@ -100,3 +100,24 @@ end
 # TODO
 
 ## TODO: BitArray <-> blist; ranges; ...
+
+## Generic conversions
+
+gap_to_julia(x::Int64)  = x
+gap_to_julia(x::Bool)   = x
+gap_to_julia(x::GapFFE) = x
+
+function gap_to_julia(x::MPtr)
+    if Globals.IsInt(x)
+        return gap_to_julia(BigInt,x)
+    elseif Globals.IsChar(x)
+        return gap_to_julia(Cuchar,x)
+    elseif Globals.IsString(x)
+        return gap_to_julia(AbstractString,x)
+    elseif Globals.IsList(x)
+        return gap_to_julia(Array{Any,1},x)
+    elseif Globals.IsRecord(x)
+        return gap_to_julia(Dict{Symbol,Any},x)
+    end
+    return x
+end
