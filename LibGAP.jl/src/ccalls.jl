@@ -66,7 +66,9 @@ end
 > There is no argument number checking here, all checks on the arguments
 > are done by GAP itself.
 """
-function(func::MPtr)(args...)
+(func::MPtr)(args...) = call_gap_func(func,args...)
+
+function call_gap_func(func::MPtr,args...)
     return ccall(:call_gap_func, Any, (MPtr, Any), func, args)
 end
 
