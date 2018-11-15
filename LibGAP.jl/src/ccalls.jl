@@ -58,6 +58,14 @@ function NEW_MACFLOAT(x::Float64)
     return o
 end
 
+function ValueMacFloat(x::MPtr)
+    o = ccall( :GAP_ValueMacFloat,
+               Cdouble,
+               (MPtr,),
+               x )
+    return o
+end
+
 
 """
     (func::MPtr)(args...)

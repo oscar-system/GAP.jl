@@ -57,15 +57,35 @@ end
     x = GAP.EvalString("(1,2,3);")[1][2]
     @test_throws ArgumentError GAP.gap_to_julia(Rational{BigInt},x)
 
+    ## Floats
+## TODO: Currently disabled because of missing libgap
+##       API command.
+    # x = GAP.EvalString("2.;")[1][2]
+    # @test GAP.gap_to_julia(Float64,x) == 2.
+    # @test GAP.gap_to_julia(Float32,x) == Float32(2.)
+    # @test GAP.gap_to_julia(Float16,x) == Float16(2.)
+    # @test GAP.gap_to_julia(BigFloat,x) == BigFloat(2.)
+    # x = GAP.EvalString("(1,2,3);")[1][2]
+    # @test_throws ArgumentError GAP.gap_to_julia(Float64,x)
+
+    ## Chars
+    x = GAP.EvalString("'x';")[1][2]
+    @test GAP.gap_to_julia(Cuchar,x) == Cuchar('x')
+    x = GAP.EvalString("(1,2,3);")[1][2]
+    @test_throws ArgumentError GAP.gap_to_julia(Cuchar,x)
+
+    ## Strings & Symbols
+    x = GAP.EvalString("\"foo\";")[1][2]
+    @test GAP.gap_to_julia(AbstractString,x) == "foo"
+    @test GAP.gap_to_julia(Symbol,x) == :foo
+    x = GAP.EvalString("(1,2,3);")[1][2]
+    @test_throws ArgumentError GAP.gap_to_julia(AbstractString,x)
 
     # # TODO: reimplement the following
     # @test GAP.gap_to_julia(Any,1) == 1
     # @test GAP.gap_to_julia(1) == 1
 
-    # x = GAP.julia_to_gap("foo")
-    # #@test GAP.julia_to_gap(x) == x
-    # @test GAP.gap_to_julia(AbstractString,x) == "foo"
-    # @test GAP.gap_to_julia(Symbol,x) == :foo
+
 
     # x = GAP.julia_to_gap([1,2,3])
     # #@test GAP.gap_to_julia(Array{Any,1},x) == Array{Any,1}([1,2,3])
