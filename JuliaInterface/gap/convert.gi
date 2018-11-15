@@ -110,12 +110,4 @@ end);
 #
 #
 
-InstallMethod(GAPToJulia, [IsJuliaObject, IsObject],
-function(type, obj)
-    return Julia.GAP.gap_to_julia(type, obj);
-end);
-
-InstallOtherMethod(GAPToJulia, [IsObject],
-function(obj)
-    return Julia.GAP.gap_to_julia(obj);
-end);
+InstallGlobalFunction("GAPToJulia", Julia.GAP.gap_to_julia);

@@ -8,4 +8,4 @@
 DeclareConstructor("JuliaToGAP", [IsObject, IsObject]);
 
 #
-DeclareOperation("GAPToJulia", [IsJuliaObject, IsObject]);
+DeclareGlobalFunction("GAPToJulia");
