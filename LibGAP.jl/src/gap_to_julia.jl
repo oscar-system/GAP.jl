@@ -42,7 +42,22 @@ function gap_to_julia(::Type{BigInt}, x::MPtr )
 end
 
 ## Rationals
-# TODO
+function gap_to_julia(::Type{Rational{T}}, x::Int64) where T <: Integer
+    numerator = gap_to_julia(T,x)
+    return numerator // T(1)
+end
+
+function gap_to_julia(::Type{Rational{T}}, x::MPtr) where T
+    if Globals.IsInt(x)
+        return gap_to_julia(T,x) // T(1)
+    end
+    if ! Globals.IsRat(x)
+        throw(ArgumentError("obj is not a rational"))
+    end
+    numer = Globals.NumeratorRat(x)
+    denom = Globals.DenominatorRat(x)
+    return gap_to_julia(T,numer) // gap_to_julia(T,denom)
+end
 
 ## Floats
 # TODO
