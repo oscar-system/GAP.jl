@@ -19,25 +19,7 @@ JuliaIncludeFile(
 ##  <C>fmpz</C>.
 ##
 BindGlobal( "JuliaArrayOfFmpz", function( coeffs )
-    local arr, i, fmpz, parse, alp, entry, map;
-
-    arr:= [];
-    i:= 1;
-    fmpz:= JuliaFunction( "fmpz", "Nemo" );
-    parse:= JuliaFunction( "parse", "Base" );
-    alp:= ConvertedToJulia( 16 );
-    for entry in coeffs do
-      if IsSmallIntRep( entry ) then
-        arr[i]:= entry;
-      else
-        arr[i]:= parse( fmpz, HexStringInt( entry ), alp );
-      fi;
-      i:= i + 1;
-    od;
-    map:= JuliaFunction( "map", "Base" );
-    arr:= map( fmpz, ConvertedToJulia( arr ) );
-
-    return arr;
+    return Julia.Base.map( Julia.Nemo.fmpz, GAPToJulia( coeffs ) );
     end );
 
 
@@ -50,35 +32,24 @@ BindGlobal( "JuliaArrayOfFmpz", function( coeffs )
 ##  <C>fmpq</C>.
 ##
 BindGlobal( "JuliaArrayOfFmpq", function( coeffs )
-    local arr, i, fmpz, fmpq, div, parse, alp, entry, num, den, map;
+    local arr, i, fmpz, fmpq, div, entry, num, den;
 
     arr:= [];
     i:= 1;
-    fmpz:= JuliaFunction( "fmpz", "Nemo" );
-    fmpq:= JuliaFunction( "fmpq", "Nemo" );
+    fmpz:= Julia.Nemo.fmpz;
+    fmpq:= Julia.Nemo.fmpq;
     div:= Julia.Base.("//");
-    parse:= JuliaFunction( "parse", "Base" );  # why???
-    alp:= ConvertedToJulia( 16 );
     for entry in coeffs do
-      if IsSmallIntRep( entry ) then
+      if IsInt( entry ) then
         arr[i]:= entry;
-      elif IsInt( entry ) then
-        arr[i]:= parse( fmpz, HexStringInt( entry ), alp );
       else
-        num:= NumeratorRat( entry );
-        den:= DenominatorRat( entry );
-        if not IsSmallIntRep( num ) then
-          num:= parse( fmpz, HexStringInt( num ), alp );
-        fi;
-        if not IsSmallIntRep( den ) then
-          den:= parse( fmpz, HexStringInt( den ), alp );
-        fi;
+        num:= GAPToJulia( NumeratorRat( entry ) );
+        den:= GAPToJulia( DenominatorRat( entry ) );
         arr[i]:= div( fmpq( num ), fmpq( den ) );
       fi;
       i:= i + 1;
     od;
-    map:= JuliaFunction( "map", "Base" );
-    arr:= map( fmpq, ConvertedToJulia( arr ) );
+    arr:= Julia.Base.map( fmpq, GAPToJulia( arr ) );
 
     return arr;
     end );
