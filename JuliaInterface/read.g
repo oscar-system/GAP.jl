@@ -13,16 +13,16 @@ JuliaIncludeFile( Filename( dirs, "gaptypes.jl" ) );
 dirs:= DirectoriesPackageLibrary( "JuliaInterface", "../LibGAP.jl/src" );
 
 if not IsBound( JULIAINTERNAL_LOADED_FROM_JULIA ) then
-    Julia.Base.include( Julia.Main!.julia_pointer, ConvertedToJulia( Filename( dirs, "initialization.jl" ) ) );
+    JuliaEvalString( Concatenation( "Base.include( Main,\"", Filename( dirs, "initialization.jl" ), "\")" ) );
 fi;
 
-Julia.Base.include( Julia.Main.GAP!.julia_pointer, ConvertedToJulia( Filename( dirs, "libgap.jl" ) ) );
+JuliaEvalString( Concatenation( "Base.include( Main.GAP,\"", Filename( dirs, "libgap.jl" ), "\")" ) );
 
 _JULIAINTERFACE_INTERNAL_INIT();
-
-ImportJuliaModuleIntoGAP( "GAP" );
 
 ReadPackage( "JuliaInterface", "gap/arith.gi");
 ReadPackage( "JuliaInterface", "gap/calls.gi");
 ReadPackage( "JuliaInterface", "gap/convert.gi");
 ReadPackage( "JuliaInterface", "gap/utils.gi");
+
+ImportJuliaModuleIntoGAP( "GAP" );
