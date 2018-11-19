@@ -32,25 +32,28 @@ DeclareGlobalFunction( "JuliaFunction" );
 #!  be passed as argument to Julia functions.
 DeclareGlobalFunction( "JuliaGetGlobalVariable" );
 
-#! @Arguments object
-#! @Returns julia_object
-#! @Description
-#!  Retuns a Julia object that is a sensible conversion to Julia of the object <A>object</A>.
-#!  If no conversion exists, <C>fail</C> is returned.
-DeclareOperation( "ConvertedToJulia", [ IsObject ] );
+#####
+## Todo: Maybe reuse the comments, remove the rest
+#####
+# #! @Arguments object
+# #! @Returns julia_object
+# #! @Description
+# #!  Retuns a Julia object that is a sensible conversion to Julia of the object <A>object</A>.
+# #!  If no conversion exists, <C>fail</C> is returned.
+# DeclareOperation( "ConvertedToJulia", [ IsObject ] );
 
-#! @Arguments julia_object
-#! @Returns object
-#! @Description
-#!  Retuns an object that is a sensible conversion from the Julia object <A>julia_object</A>.
-#!  If no conversion exists, <C>fail</C> is returned.
-DeclareOperation( "ConvertedFromJulia", [ IsObject ] );
+# #! @Arguments julia_object
+# #! @Returns object
+# #! @Description
+# #!  Retuns an object that is a sensible conversion from the Julia object <A>julia_object</A>.
+# #!  If no conversion exists, <C>fail</C> is returned.
+# DeclareOperation( "ConvertedFromJulia", [ IsObject ] );
 
-#! @Arguments julia_object
-#! @Returns an object
-#! @Description
-#!  Like structural copy, also converts the contents of a Julia list recursively to GAP objects.
-DeclareGlobalFunction( "StructuralConvertedFromJulia" );
+# #! @Arguments julia_object
+# #! @Returns an object
+# #! @Description
+# #!  Like structural copy, also converts the contents of a Julia list recursively to GAP objects.
+# DeclareGlobalFunction( "StructuralConvertedFromJulia" );
 
 #! @Arguments filename
 #! @Returns nothing.

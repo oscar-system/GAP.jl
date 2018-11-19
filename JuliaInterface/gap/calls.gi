@@ -21,6 +21,6 @@ InstallGlobalFunction( CallJuliaFunctionWithCatch,
     if res[1] then
       return rec( ok:= true, value:= res[2] );
     else
-      return rec( ok:= false, value:= ConvertedFromJulia( res[2] ) );
+      return rec( ok:= false, value:= JuliaToGAP( IsString, res[2] ) );
     fi;
 end );

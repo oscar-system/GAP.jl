@@ -24,26 +24,6 @@ InstallGlobalFunction( JuliaGetGlobalVariable,
     Error( "arguments must be strings function_name[,module_name]" );
 end );
 
-InstallMethod( ConvertedFromJulia,
-               [ IsJuliaObject ],
-    _ConvertedFromJulia );
-
-InstallMethod( ConvertedFromJulia,
-               [ IsObject ],
-    IdFunc );
-
-InstallMethod( ConvertedToJulia,
-                [ IsObject ],
-  function( obj )
-    local result;
-    
-    result := _ConvertedToJulia( obj );
-    if result = fail then
-        TryNextMethod();
-    fi;
-    return result;
-end );
-
 BindGlobal( "_JULIA_MODULE_TYPE", JuliaEvalString( "Module" ) );
 BindGlobal( "_JULIA_FUNCTION_TYPE", JuliaEvalString( "Function" ) );
 BindGlobal( "_JULIA_ISA", JuliaFunction( "isa" ) );
@@ -154,14 +134,14 @@ end );
 InstallMethod( ViewString,
     [ IsJuliaFunction ],
     julia_func -> Concatenation( "<Julia: ",
-                      ConvertedFromJulia( Julia.Base.repr( julia_func ) ),
+                      JuliaToGAP( IsString, Julia.Base.repr( julia_func ) ),
                       ">" ) );
 
 InstallMethod( String,
                [ IsJuliaObject ],
 
   function( julia_obj )
-    return ConvertedFromJulia( Julia.Base.repr( julia_obj ) );
+    return JuliaToGAP( IsString, Julia.Base.repr( julia_obj ) );
 
 end );
 
@@ -191,7 +171,7 @@ InstallGlobalFunction( ImportJuliaModuleIntoGAP,
 
     current_module := Julia.(name);
     julia_list_func := JuliaFunction( "get_symbols_in_module", "GAPUtils" );
-    list := StructuralConvertedFromJulia( julia_list_func( current_module!.julia_pointer ) );
+    list := JuliaToGAP( IsList, julia_list_func( current_module!.julia_pointer ), true );
     for i in list do
         \.( current_module, RNamObj( i ) );
     od;
@@ -216,19 +196,19 @@ end );
 
 
 InstallGlobalFunction( JuliaTypeInfo,
-    juliaobj -> ConvertedFromJulia(
+    juliaobj -> JuliaToGAP( IsString,
                     Julia.Base.string( Julia.Core.typeof( juliaobj ) ) ) );
 
 
-InstallGlobalFunction( StructuralConvertedFromJulia,
-  function( object ) 
-    local unboxed_obj;
-    unboxed_obj := ConvertedFromJulia( object );
-    if IsList( unboxed_obj ) and not IsString( unboxed_obj ) then
-        return List( unboxed_obj, StructuralConvertedFromJulia );
-    fi;
-    return unboxed_obj;
-end );
+# InstallGlobalFunction( StructuralConvertedFromJulia,
+#   function( object ) 
+#     local unboxed_obj;
+#     unboxed_obj := ConvertedFromJulia( object );
+#     if IsList( unboxed_obj ) and not IsString( unboxed_obj ) then
+#         return List( unboxed_obj, StructuralConvertedFromJulia );
+#     fi;
+#     return unboxed_obj;
+# end );
 
 InstallGlobalFunction( JuliaModule,
   function( name )

@@ -60,27 +60,50 @@ end);
 
 BindGlobal("_JL_Dict_Symbol", JuliaEvalString("Dict{Symbol}"));
 BindGlobal("_JL_Dict_AbstractString", JuliaEvalString("Dict{AbstractString}"));
+BindGlobal("_JL_VAL_TRUE", JuliaEvalString("Val(true)"));
 
 InstallMethod(JuliaToGAP, [IsRecord, IsJuliaObject],
-function(filter, obj)
+    {filter,obj} -> JuliaToGAP(filter,obj,false) );
+
+InstallMethod(JuliaToGAP, [IsRecord, IsJuliaObject, IsBool],
+function(filter, obj, recursive)
     if Julia.isa(obj, _JL_Dict_Symbol) or Julia.isa(obj, _JL_Dict_AbstractString) then
-        return Julia.GAP.julia_to_gap(obj);
+        if recursive then
+            return Julia.GAP.julia_to_gap(obj,_JL_VAL_TRUE);
+        else
+            return Julia.GAP.julia_to_gap(obj);
+        fi;
     fi;
     Error("<obj> must be a Julia Dict{Symbol} or Dict{AbstractString}");
 end);
 
 InstallMethod(JuliaToGAP, [IsList, IsJuliaObject],
-function(filter, obj)
+    {filter,obj} -> JuliaToGAP(filter,obj,false) );
+
+InstallMethod(JuliaToGAP, [IsList, IsJuliaObject, IsBool],
+function(filter, obj, recursive)
     if Julia.isa(obj, Julia.Base.Array) or Julia.isa(obj, Julia.Base.Tuple) then
-        return Julia.GAP.julia_to_gap(obj);
+        if recursive then
+            return Julia.GAP.julia_to_gap(obj,_JL_VAL_TRUE);
+        else
+            return Julia.GAP.julia_to_gap(obj);
+        fi;
     fi;
     Error("<obj> must be a Julia array or tuple");
 end);
 
+
 InstallMethod(JuliaToGAP, [IsRange, IsJuliaObject],
-function(filter, obj)
+    {filter,obj} -> JuliaToGAP(filter,obj,false) );
+
+InstallMethod(JuliaToGAP, [IsRange, IsJuliaObject, IsBool],
+function(filter, obj, recursive)
     if Julia.isa(obj, Julia.Base.AbstractRange) then
-        return Julia.GAP.julia_to_gap(obj);
+        if recursive then
+            return Julia.GAP.julia_to_gap(obj,_JL_VAL_TRUE);
+        else
+            return Julia.GAP.julia_to_gap(obj);
+        fi;
     fi;
     Error("<obj> must be a Julia range");
 end);
@@ -89,9 +112,16 @@ BindGlobal("_JL_Array_Bool_1", JuliaEvalString("Array{Bool,1}"));
 BindGlobal("_JL_BitArray_1", JuliaEvalString("BitArray{1}"));
 
 InstallMethod(JuliaToGAP, [IsBlist, IsJuliaObject],
-function(filter, obj)
+    {filter,obj} -> JuliaToGAP(filter,obj,false) );
+
+InstallMethod(JuliaToGAP, [IsBlist, IsJuliaObject, IsBool],
+function(filter, obj, recursive)
     if Julia.isa(obj, _JL_Array_Bool_1) or Julia.isa(obj, _JL_BitArray_1) then
-        return Julia.GAP.julia_to_gap(obj);
+        if recursive then
+            return Julia.GAP.julia_to_gap(obj,_JL_VAL_TRUE);
+        else
+            return Julia.GAP.julia_to_gap(obj);
+        fi;
     fi;
     Error("<obj> must be a Julia Array{Bool,1} or BitArray{1}");
 end);
