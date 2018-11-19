@@ -103,4 +103,11 @@ end
     x = GAP.EvalString("(1,2,3);")[1][2]
     @test GAP.gap_to_julia(x) == x
 
+    ## Recursive conversions
+    xx = GAP.EvalString("l:=[1];x:=[l,l];")[2][2]
+    conv = GAP.gap_to_julia(xx)
+    @test conv[1] === conv[2]
+    conv = GAP.gap_to_julia(Tuple{Tuple{Int64},Tuple{Int64}},xx)
+    @test conv[1] === conv[2]
+
 end
