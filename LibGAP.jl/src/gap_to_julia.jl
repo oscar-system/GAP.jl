@@ -90,6 +90,9 @@ gap_to_julia(::Type{Symbol},obj::MPtr) = Symbol(gap_to_julia(AbstractString,obj)
 
 ## Arrays
 function gap_to_julia( ::Type{Array{GAPObj,1}}, obj :: MPtr )
+    if ! Globals.IsList( obj )
+        throw(ArgumentError("<obj> is not a list"))
+    end
     len_list = length(obj)
     new_array = Array{Any,1}( undef, len_list)
     for i in 1:len_list
@@ -99,26 +102,15 @@ function gap_to_julia( ::Type{Array{GAPObj,1}}, obj :: MPtr )
 end
 
 function gap_to_julia( ::Type{Array{T,1}}, obj :: MPtr ) where T
+    if ! Globals.IsList( obj )
+        throw(ArgumentError("<obj> is not a list"))
+    end
     len_list = length(obj)
     new_array = Array{T,1}( undef, len_list)
     for i in 1:len_list
         new_array[ i ] = gap_to_julia(T,obj[i])
     end
     return new_array
-end
-
-## Dictionaries
-function gap_to_julia( ::Type{Dict{Symbol,T}}, obj :: MPtr ) where T
-    if ! Globals.IsRecord( obj )
-        throw(ArgumentError("first argument is not a record"))
-    end
-    names = Globals.RecNames( obj )
-    names_list = gap_to_julia(Array{Symbol,1},names)
-    dict = Dict{Symbol,T}()
-    for i in names_list
-        dict[ i ] = gap_to_julia(T,getproperty(obj,i))
-    end
-    return dict
 end
 
 ## Tuples
@@ -135,6 +127,20 @@ function gap_to_julia( ::Type{T}, obj::MPtr ) where T <: Tuple
     return T(list)
 end
 
+## Dictionaries
+function gap_to_julia( ::Type{Dict{Symbol,T}}, obj :: MPtr ) where T
+    if ! Globals.IsRecord( obj )
+        throw(ArgumentError("first argument is not a record"))
+    end
+    names = Globals.RecNames( obj )
+    names_list = gap_to_julia(Array{Symbol,1},names)
+    dict = Dict{Symbol,T}()
+    for i in names_list
+        dict[ i ] = gap_to_julia(T,getproperty(obj,i))
+    end
+    return dict
+end
+
 ## TODO: BitArray <-> blist; ranges; ...
 
 ## Generic conversions
@@ -146,6 +152,8 @@ function gap_to_julia(x::MPtr)
         return gap_to_julia(BigInt,x)
     elseif Globals.IsRat(x)
         return gap_to_julia(Rational{BigInt},x)
+    elseif Globals.IsFloat(x)
+        return gap_to_julia(Float64,x)
     elseif Globals.IsChar(x)
         return gap_to_julia(Cuchar,x)
     elseif Globals.IsString(x)
