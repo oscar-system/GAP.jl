@@ -1,26 +1,3 @@
-@testset "conversion to GAP" begin
-    
-    @test GAP.julia_to_gap(1) == 1
-    
-    x = GAP.Globals.Z(3)
-    @test GAP.julia_to_gap(x) == x
-    
-    x = GAP.EvalString("\"foo\";")[1][2]
-    @test GAP.julia_to_gap("foo") == x
-
-    @test GAP.julia_to_gap(true)
-    @test ! GAP.julia_to_gap(false)
-
-    x = GAP.EvalString("[1,2,3];")[1][2]
-    @test GAP.julia_to_gap([1,2,3]) == x
-
-    @test GAP.julia_to_gap(:x) == GAP.julia_to_gap("x")
-
-    @test GAP.julia_to_gap(BigInt(2)) == 2
-    @test GAP.julia_to_gap(BigInt(2)^100) == GAP.EvalString("2^100;")[1][2]
-
-end
-
 @testset "conversion from GAP" begin
 
     ## Defaults
@@ -109,5 +86,73 @@ end
     @test conv[1] === conv[2]
     conv = GAP.gap_to_julia(Tuple{Tuple{Int64},Tuple{Int64}},xx)
     @test conv[1] === conv[2]
+
+end
+
+@testset "conversion to GAP" begin
+
+    ## Defaults
+    @test GAP.julia_to_gap( true )
+    
+    ## Integers
+    @test GAP.julia_to_gap(Int128(1)) == 1
+    @test GAP.julia_to_gap(Int64(1))  == 1
+    @test GAP.julia_to_gap(Int32(1))  == 1
+    @test GAP.julia_to_gap(Int16(1))  == 1
+    @test GAP.julia_to_gap(Int8(1))   == 1
+
+    ## Unsigned integers
+    @test GAP.julia_to_gap(UInt128(1)) == 1
+    @test GAP.julia_to_gap(UInt64(1))  == 1
+    @test GAP.julia_to_gap(UInt32(1))  == 1
+    @test GAP.julia_to_gap(UInt16(1))  == 1
+    @test GAP.julia_to_gap(UInt8(1))   == 1
+
+    ## BigInts
+    @test GAP.julia_to_gap(BigInt(1)) == 1
+    x = GAP.EvalString("2^100;")[1][2]
+    @test GAP.julia_to_gap(BigInt(2)^100) == x
+
+    ## Rationals
+    x = GAP.EvalString("2^100;")[1][2]
+    @test GAP.julia_to_gap(Rational{BigInt}(2)^100 // 1) == x
+    x = GAP.EvalString("2^100/3;")[1][2]
+    @test GAP.julia_to_gap(Rational{BigInt}(2)^100 // 3) == x
+    @test GAP.julia_to_gap(Rational{Int64}(1) // 0) == GAP.Globals.infinity
+
+    ## Floats
+    x = GAP.EvalString("2.;")[1][2]
+    @test GAP.julia_to_gap(2.) == x
+    @test GAP.julia_to_gap(Float32(2.)) == x
+    @test GAP.julia_to_gap(Float16(2.)) == x
+
+    ## Chars
+    x = GAP.EvalString("'x';")[1][2]
+    @test GAP.julia_to_gap('x') == x
+
+    ## Strings & Symbols
+    x = GAP.EvalString("\"foo\";")[1][2]
+    @test GAP.julia_to_gap("foo") == x
+    @test GAP.julia_to_gap(:foo) == x
+
+    ## Arrays
+    x = GAP.EvalString("[1,\"foo\",2];")[1][2]
+    @test GAP.julia_to_gap([1,"foo",BigInt(2)]) == x
+    
+    ## Tuples
+    x = GAP.EvalString("[1,\"foo\",2];")[1][2]
+    @test GAP.julia_to_gap((1,"foo",2)) == x
+    
+    ## Dictionaries
+    x = GAP.EvalString(" rec( foo := 1, bar := \"foo\" );" )[1][2]
+    y = Dict{Symbol,Any}( :foo => 1, :bar => "foo" )
+    @test GAP.julia_to_gap(y) == x
+
+    ## Recursive conversions
+    l = [1]
+    yy = [l,l]
+    xx = GAP.EvalString("l:=[1];x:=[l,l];")[2][2]
+    conv = GAP.julia_to_gap(xx)
+    @test GAP.Globals.IsIdenticalObj(conv[1],conv[2])
 
 end
