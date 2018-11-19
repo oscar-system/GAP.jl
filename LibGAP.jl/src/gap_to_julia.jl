@@ -1,28 +1,28 @@
 ## Converters
 
 ## Default
-gap_to_julia(::Type{GAPInputType},x::GAPInputType) = x
-gap_to_julia(::Type{Any},         x::GAPInputType) = gap_to_julia(x)
-gap_to_julia(::Type{Any},         x::Any) = x
+gap_to_julia(::Type{GAPInputType},x::GAPInputType, recusive_dict = nothing) = x
+gap_to_julia(::Type{Any},         x::GAPInputType, recusive_dict = nothing) = gap_to_julia(x)
+gap_to_julia(::Type{Any},         x::Any         , recusive_dict = nothing) = x
 
 ## Integers
-gap_to_julia(::Type{Int128} ,x::Int64) = trunc(Int128 ,x)
-gap_to_julia(::Type{Int64}  ,x::Int64) = x
-gap_to_julia(::Type{Int32}  ,x::Int64) = trunc(Int32  ,x)
-gap_to_julia(::Type{Int16}  ,x::Int64) = trunc(Int16  ,x)
-gap_to_julia(::Type{Int8}   ,x::Int64) = trunc(Int8   ,x)
+gap_to_julia(::Type{Int128} ,x::Int64, recusive_dict = nothing) = trunc(Int128 ,x)
+gap_to_julia(::Type{Int64}  ,x::Int64, recusive_dict = nothing) = x
+gap_to_julia(::Type{Int32}  ,x::Int64, recusive_dict = nothing) = trunc(Int32  ,x)
+gap_to_julia(::Type{Int16}  ,x::Int64, recusive_dict = nothing) = trunc(Int16  ,x)
+gap_to_julia(::Type{Int8}   ,x::Int64, recusive_dict = nothing) = trunc(Int8   ,x)
 
 ## Unsigned Integers
-gap_to_julia(::Type{UInt128},x::Int64) = trunc(UInt128,x)
-gap_to_julia(::Type{UInt64} ,x::Int64) = trunc(UInt64 ,x)
-gap_to_julia(::Type{UInt32} ,x::Int64) = trunc(UInt32 ,x)
-gap_to_julia(::Type{UInt16} ,x::Int64) = trunc(UInt16 ,x)
-gap_to_julia(::Type{UInt8}  ,x::Int64) = trunc(UInt8  ,x)
+gap_to_julia(::Type{UInt128},x::Int64, recusive_dict = nothing) = trunc(UInt128,x)
+gap_to_julia(::Type{UInt64} ,x::Int64, recusive_dict = nothing) = trunc(UInt64 ,x)
+gap_to_julia(::Type{UInt32} ,x::Int64, recusive_dict = nothing) = trunc(UInt32 ,x)
+gap_to_julia(::Type{UInt16} ,x::Int64, recusive_dict = nothing) = trunc(UInt16 ,x)
+gap_to_julia(::Type{UInt8}  ,x::Int64, recusive_dict = nothing) = trunc(UInt8  ,x)
 
 ## BigInts
-gap_to_julia(::Type{BigInt}, x::Int64) = BigInt( x )
+gap_to_julia(::Type{BigInt}, x::Int64, recusive_dict = nothing) = BigInt( x )
 
-function gap_to_julia(::Type{BigInt}, x::MPtr )
+function gap_to_julia(::Type{BigInt}, x::MPtr, recusive_dict = nothing)
     ## Check for correct type
     if ! Globals.IsInt(x)
         throw(ArgumentError("GAP object is not a large integer"))
@@ -42,12 +42,12 @@ function gap_to_julia(::Type{BigInt}, x::MPtr )
 end
 
 ## Rationals
-function gap_to_julia(::Type{Rational{T}}, x::Int64) where T <: Integer
+function gap_to_julia(::Type{Rational{T}}, x::Int64, recusive_dict = nothing) where T <: Integer
     numerator = gap_to_julia(T,x)
     return numerator // T(1)
 end
 
-function gap_to_julia(::Type{Rational{T}}, x::MPtr) where T <: Integer
+function gap_to_julia(::Type{Rational{T}}, x::MPtr, recusive_dict = nothing) where T <: Integer
     if Globals.IsInt(x)
         return gap_to_julia(T,x) // T(1)
     end
@@ -60,19 +60,19 @@ function gap_to_julia(::Type{Rational{T}}, x::MPtr) where T <: Integer
 end
 
 ## Floats
-function gap_to_julia( ::Type{Float64}, obj::MPtr)
+function gap_to_julia( ::Type{Float64}, obj::MPtr, recusive_dict = nothing)
     if ! Globals.IsFloat(obj)
         throw(ArgumentError("<obj> is not a MacFloat"))
     end
     return ValueMacFloat(obj)
 end
 
-gap_to_julia( ::Type{Float32}, obj::MPtr ) = Float32(gap_to_julia(Float64,obj))
-gap_to_julia( ::Type{Float16}, obj::MPtr ) = Float16(gap_to_julia(Float64,obj))
-gap_to_julia( ::Type{BigFloat}, obj::MPtr ) = BigFloat(gap_to_julia(Float64,obj))
+gap_to_julia( ::Type{Float32}, obj::MPtr, recusive_dict = nothing) = Float32(gap_to_julia(Float64,obj))
+gap_to_julia( ::Type{Float16}, obj::MPtr, recusive_dict = nothing) = Float16(gap_to_julia(Float64,obj))
+gap_to_julia( ::Type{BigFloat}, obj::MPtr, recusive_dict = nothing) = BigFloat(gap_to_julia(Float64,obj))
 
 ## Chars
-function gap_to_julia( ::Type{Cuchar}, obj::MPtr )
+function gap_to_julia( ::Type{Cuchar}, obj::MPtr, recusive_dict = nothing)
     if ! Globals.IsChar( obj )
         throw(ArgumentError("argument is not a character object"))
     end
@@ -80,41 +80,53 @@ function gap_to_julia( ::Type{Cuchar}, obj::MPtr )
 end
 
 ## Strings and symbols
-function gap_to_julia(::Type{AbstractString},obj::MPtr)
+function gap_to_julia(::Type{AbstractString},obj::MPtr, recusive_dict = nothing)
     if ! Globals.IsStringRep(obj)
         throw(ArgumentError("<obj> is not a string"))
     end
     return CSTR_STRING(obj)
 end
-gap_to_julia(::Type{Symbol},obj::MPtr) = Symbol(gap_to_julia(AbstractString,obj))
+gap_to_julia(::Type{Symbol},obj::MPtr, recusive_dict = nothing) = Symbol(gap_to_julia(AbstractString,obj))
 
 ## Arrays
-function gap_to_julia( ::Type{Array{GAPObj,1}}, obj :: MPtr )
+function gap_to_julia( ::Type{Array{GAPObj,1}}, obj :: MPtr , recursive_dict = Dict() )
     if ! Globals.IsList( obj )
         throw(ArgumentError("<obj> is not a list"))
     end
     len_list = length(obj)
     new_array = Array{Any,1}( undef, len_list)
     for i in 1:len_list
-        new_array[ i ] = obj[i]
+        current_obj = obj[i]
+        if haskey(recursive_dict,current_obj)
+            new_array[ i ] = recursive_dict[current_obj]
+        else
+            new_array[ i ] = current_obj
+            recursive_dict[ current_obj ] = new_array[ i ]
+        end
     end
     return new_array
 end
 
-function gap_to_julia( ::Type{Array{T,1}}, obj :: MPtr ) where T
+function gap_to_julia( ::Type{Array{T,1}}, obj :: MPtr, recursive_dict = Dict() ) where T
     if ! Globals.IsList( obj )
         throw(ArgumentError("<obj> is not a list"))
     end
     len_list = length(obj)
     new_array = Array{T,1}( undef, len_list)
     for i in 1:len_list
-        new_array[ i ] = gap_to_julia(T,obj[i])
+        current_obj = obj[ i ]
+        if haskey(recursive_dict,current_obj)
+            new_array[ i ] = recursive_dict[current_obj]
+        else
+            new_array[ i ] = gap_to_julia(T,current_obj,recursive_dict)
+            recursive_dict[ current_obj ] = new_array[ i ]
+        end
     end
     return new_array
 end
 
 ## Tuples
-function gap_to_julia( ::Type{T}, obj::MPtr ) where T <: Tuple
+function gap_to_julia( ::Type{T}, obj::MPtr, recursive_dict = Dict() ) where T <: Tuple
     if ! Globals.IsList(obj)
         throw(ArgumentError("<obj> is not a list"))
     end
@@ -128,7 +140,7 @@ function gap_to_julia( ::Type{T}, obj::MPtr ) where T <: Tuple
 end
 
 ## Dictionaries
-function gap_to_julia( ::Type{Dict{Symbol,T}}, obj :: MPtr ) where T
+function gap_to_julia( ::Type{Dict{Symbol,T}}, obj :: MPtr, recursive_dict = Dict() ) where T
     if ! Globals.IsRecord( obj )
         throw(ArgumentError("first argument is not a record"))
     end
@@ -136,7 +148,14 @@ function gap_to_julia( ::Type{Dict{Symbol,T}}, obj :: MPtr ) where T
     names_list = gap_to_julia(Array{Symbol,1},names)
     dict = Dict{Symbol,T}()
     for i in names_list
-        dict[ i ] = gap_to_julia(T,getproperty(obj,i))
+        current_obj = getproperty(obj,i)
+        if haskey(recursive_dict,current_obj)
+            dict[ i ] = recursive_dict[current_obj]
+        else
+            translated_obj = gap_to_julia(T,current_obj,recursive_dict)
+            dict[ i ] = translated_obj
+            recursive_dict[ current_obj ] = translated_obj
+        end
     end
     return dict
 end
