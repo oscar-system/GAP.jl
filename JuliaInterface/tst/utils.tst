@@ -6,11 +6,11 @@ gap> ImportJuliaModuleIntoGAP( "Base" );
 gap> ImportJuliaModuleIntoGAP( "GAPUtils" : NoImport := true );
 
 ##
-gap> JuliaTypeInfo( ConvertedToJulia( 1 ) );
+gap> JuliaTypeInfo( 1 );
 "Int64"
 gap> JuliaTypeInfo( 0 );
 "Int64"
-gap> JuliaTypeInfo( ConvertedToJulia( [ 1, 2, 3 ] ) );
+gap> JuliaTypeInfo( GAPToJulia( JuliaEvalString( "Array{Any,1}" ), [ 1, 2, 3 ] ) );
 "Array{Any,1}"
 gap> JuliaTypeInfo( Julia.Base.parse );
 "typeof(parse)"
@@ -35,11 +35,11 @@ gap> JuliaGetGlobalVariable("foo");
 1
 
 ##
-gap> Julia.Core.Tuple( ConvertedToJulia( [] ) );
+gap> Julia.Core.Tuple( GAPToJulia( JuliaEvalString( "Array{Any,1}" ), [] ) );
 <Julia: ()>
-gap> Julia.Core.Tuple( ConvertedToJulia( [1] ) );
+gap> Julia.Core.Tuple( GAPToJulia( JuliaEvalString( "Array{Any,1}" ), [1] ) );
 <Julia: (1,)>
-gap> Julia.Core.Tuple(( ConvertedToJulia( [1,true,fail] ) ));
+gap> Julia.Core.Tuple( GAPToJulia( JuliaEvalString( "Array{GAP.GAPObj,1}" ), [1,true,fail] ));
 <Julia: (1, true, GAP: fail)>
 gap> Julia.Core.Tuple(1);
 <Julia: (1,)>

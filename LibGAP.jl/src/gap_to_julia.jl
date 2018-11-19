@@ -89,7 +89,7 @@ end
 gap_to_julia(::Type{Symbol},obj::MPtr, recusive_dict = nothing) = Symbol(gap_to_julia(AbstractString,obj))
 
 ## Arrays
-function gap_to_julia( ::Type{Array{GAPObj,1}}, obj :: MPtr , recursive_dict = Dict() )
+function gap_to_julia( ::Type{Array{GAPObj,1}}, obj :: MPtr , recursive_dict = IdDict() )
     if ! Globals.IsList( obj )
         throw(ArgumentError("<obj> is not a list"))
     end
@@ -107,7 +107,7 @@ function gap_to_julia( ::Type{Array{GAPObj,1}}, obj :: MPtr , recursive_dict = D
     return new_array
 end
 
-function gap_to_julia( ::Type{Array{T,1}}, obj :: MPtr, recursive_dict = Dict() ) where T
+function gap_to_julia( ::Type{Array{T,1}}, obj :: MPtr, recursive_dict = IdDict() ) where T
     if ! Globals.IsList( obj )
         throw(ArgumentError("<obj> is not a list"))
     end
@@ -126,7 +126,7 @@ function gap_to_julia( ::Type{Array{T,1}}, obj :: MPtr, recursive_dict = Dict() 
 end
 
 ## Tuples
-function gap_to_julia( ::Type{T}, obj::MPtr, recursive_dict = Dict() ) where T <: Tuple
+function gap_to_julia( ::Type{T}, obj::MPtr, recursive_dict = IdDict() ) where T <: Tuple
     if ! Globals.IsList(obj)
         throw(ArgumentError("<obj> is not a list"))
     end
@@ -140,7 +140,7 @@ function gap_to_julia( ::Type{T}, obj::MPtr, recursive_dict = Dict() ) where T <
 end
 
 ## Dictionaries
-function gap_to_julia( ::Type{Dict{Symbol,T}}, obj :: MPtr, recursive_dict = Dict() ) where T
+function gap_to_julia( ::Type{Dict{Symbol,T}}, obj :: MPtr, recursive_dict = IdDict() ) where T
     if ! Globals.IsRecord( obj )
         throw(ArgumentError("first argument is not a record"))
     end
