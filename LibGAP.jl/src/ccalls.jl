@@ -66,6 +66,13 @@ function ValueMacFloat(x::MPtr)
     return o
 end
 
+function CharWithValue(x::Cuchar)
+    o = ccall( :GAP_CharWithValue,
+               MPtr,
+               (Cuchar,),
+               x )
+    return o
+end
 
 """
     (func::MPtr)(args...)
