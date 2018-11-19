@@ -21,14 +21,14 @@ end
 
 ## implement indexing interface
 Base.getindex(x::MPtr, i::Int64) = GAP.Globals.ELM_LIST(x, i)
-Base.setindex!(x::MPtr, v::GAPInputType, i::Int64 ) = GAP.Globals.ASS_LIST( x, i, v )
+Base.setindex!(x::MPtr, v::Any, i::Int64 ) = GAP.Globals.ASS_LIST( x, i, v )
 Base.length(x::MPtr) = GAP.Globals.Length(x)
 Base.firstindex(x::MPtr) = 1
 Base.lastindex(x::MPtr) = GAP.Globals.Length(x)
 
 # matrix
 Base.getindex(x::MPtr, i::Int64, j::Int64) = GAP.Globals.ELM_LIST(x, i, j)
-Base.setindex!(x::MPtr, v::GAPInputType, i::Int64, j::Int64) = GAP.Globals.ASS_LIST(x, i, j, v)
+Base.setindex!(x::MPtr, v::Any, i::Int64, j::Int64) = GAP.Globals.ASS_LIST(x, i, j, v)
 
 # records
 RNamObj(f::Symbol) = GAP.Globals.RNamObj(MakeString(string(f)))
