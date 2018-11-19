@@ -79,8 +79,8 @@ gap> JuliaToGAP(IsInt, x);
 123
 
 #
-gap> int := ConvertedToJulia( 11 );
-<Julia: 11>
+gap> int := GAPToJulia( Julia.Base.Int64, 11 );
+11
 gap> JuliaToGAP(IsInt,  int );
 11
 
@@ -125,58 +125,49 @@ gap> big2 := JuliaEvalString("big(2)");
 <Julia: 2>
 gap> Zero(big2);
 <Julia: 0>
-gap> ConvertedFromJulia( Zero(big2) );
+gap> JuliaToGAP( IsInt, Zero(big2) );
 0
-gap> ForAll([0..64], n -> ConvertedFromJulia(big2^n) = 2^n);
+gap> ForAll([0..64], n -> JuliaToGAP( IsInt, big2^n) = 2^n);
 true
-gap> ForAll([0..64], n -> ConvertedFromJulia(-big2^n) = -2^n);
+gap> ForAll([0..64], n -> JuliaToGAP( IsInt, -big2^n) = -2^n);
 true
 
 #
-gap> string := ConvertedToJulia( "bla" );
+gap> string := GAPToJulia( Julia.Base.AbstractString, "bla" );
 <Julia: "bla">
-gap> ConvertedFromJulia( string );
+gap> JuliaToGAP( IsString, string );
 "bla"
-gap> bool := ConvertedToJulia( true );
-<Julia: true>
-gap> ConvertedFromJulia( bool );
+gap> GAPToJulia( true );
 true
-gap> bool := ConvertedToJulia( false );
-<Julia: false>
-gap> ConvertedFromJulia( bool );
+gap> GAPToJulia( false );
 false
 
 ##
-gap> list:= ConvertedToJulia( [ 1, ConvertedToJulia( 2 ), 3 ] );
+gap> list:= GAPToJulia( [ 1, 2, 3 ] );
 <Julia: Any[1, 2, 3]>
-gap> ConvertedFromJulia( list );
-[ <Julia: 1>, <Julia: 2>, <Julia: 3> ]
-gap> List( ConvertedFromJulia( list ), ConvertedFromJulia );
+gap> JuliaToGAP( IsList, list );
 [ 1, 2, 3 ]
 
 ##  empty list vs. empty string
-gap> emptylist:= ConvertedToJulia( [] );
+gap> emptylist:= GAPToJulia( JuliaEvalString( "Array{Any,1}"), [] );
 <Julia: Any[]>
-gap> emptystring:= ConvertedToJulia( "" );
+gap> emptystring:= GAPToJulia( Julia.Base.AbstractString, "" );
 <Julia: "">
-gap> ConvertedFromJulia( emptylist );
+gap> JuliaToGAP( IsList, emptylist );
 [  ]
-gap> ConvertedFromJulia( emptystring );
+gap> JuliaToGAP( IsString, emptystring );
 ""
 
 ##  'ConvertedToJulia' for Julia functions (inside arrays)
 gap> parse:= JuliaFunction( "parse", "Base" );;
-gap> IsIdenticalObj( parse, ConvertedToJulia( parse ) );
-true
-gap> list:= ConvertedToJulia( [ 1, parse, 3 ] );
+gap> list:= GAPToJulia( JuliaEvalString( "Array{Any,1}"), [ 1, parse, 3 ] );
 <Julia: Any[1, parse, 3]>
-gap> list2:= ConvertedFromJulia( list );
-[ <Julia: 1>, <Julia: parse>, <Julia: 3> ]
-gap> List( list2, ConvertedFromJulia );
-[ 1, fail, 3 ]
+gap> list2:= JuliaToGAP( IsList, list );
+[ 1, <Julia: parse>, 3 ]
 
 ##
-gap> JuliaEvalString("GAP.GAPFuncs.PROD(2^59,2^59)");
+gap> xx := JuliaEvalString("GAP.GAPFuncs.PROD(2^59,2^59)");;
+gap> JuliaToGAP( IsInt, xx );
 332306998946228968225951765070086144
 
 ##
