@@ -158,7 +158,7 @@ gap> JuliaToGAP( IsList, emptylist );
 gap> JuliaToGAP( IsString, emptystring );
 ""
 
-##  'ConvertedToJulia' for Julia functions (inside arrays)
+##  'GAPToJulia' for Julia functions (inside arrays)
 gap> parse:= JuliaFunction( "parse", "Base" );;
 gap> list:= GAPToJulia( JuliaEvalString( "Array{Any,1}"), [ 1, parse, 3 ] );
 <Julia: Any[1, parse, 3]>
