@@ -137,15 +137,21 @@ end
 
     ## Arrays
     x = GAP.EvalString("[1,\"foo\",2];")[1][2]
+    @test GAP.julia_to_gap([1,"foo",BigInt(2)],Val(true)) == x
+    x = GAP.EvalString("[1,JuliaEvalString(\"\\\"foo\\\"\"),2];")[1][2]
     @test GAP.julia_to_gap([1,"foo",BigInt(2)]) == x
     
     ## Tuples
     x = GAP.EvalString("[1,\"foo\",2];")[1][2]
+    @test GAP.julia_to_gap((1,"foo",2),Val(true)) == x
+    x = GAP.EvalString("[1,JuliaEvalString(\"\\\"foo\\\"\"),2];")[1][2]
     @test GAP.julia_to_gap((1,"foo",2)) == x
     
     ## Dictionaries
     x = GAP.EvalString(" rec( foo := 1, bar := \"foo\" );" )[1][2]
     y = Dict{Symbol,Any}( :foo => 1, :bar => "foo" )
+    @test GAP.julia_to_gap(y,Val(true)) == x
+    x = GAP.EvalString(" rec( foo := 1, bar := JuliaEvalString(\"\\\"foo\\\"\") );" )[1][2]
     @test GAP.julia_to_gap(y) == x
 
     ## Recursive conversions
