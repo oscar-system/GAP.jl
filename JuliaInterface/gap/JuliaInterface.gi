@@ -200,16 +200,6 @@ InstallGlobalFunction( JuliaTypeInfo,
                     Julia.Base.string( Julia.Core.typeof( juliaobj ) ) ) );
 
 
-# InstallGlobalFunction( StructuralConvertedFromJulia,
-#   function( object ) 
-#     local unboxed_obj;
-#     unboxed_obj := ConvertedFromJulia( object );
-#     if IsList( unboxed_obj ) and not IsString( unboxed_obj ) then
-#         return List( unboxed_obj, StructuralConvertedFromJulia );
-#     fi;
-#     return unboxed_obj;
-# end );
-
 InstallGlobalFunction( JuliaModule,
   function( name )
     if not IsString( name ) then
