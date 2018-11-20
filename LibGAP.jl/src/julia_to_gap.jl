@@ -92,7 +92,7 @@ function julia_to_gap(obj::Dict{T,S}, recursive::Val{Recursive}=Val(false), recu
         entries[i] = y
         i += 1
     end
-    return GAP.Globals.CreateRecFromKeyValuePairList(julia_to_gap(keys),julia_to_gap(entries, recursive, recursion_dict))
+    return GAP.Globals.CreateRecFromKeyValuePairList(julia_to_gap(keys,Val(true)),julia_to_gap(entries, recursive, recursion_dict))
 end
 
 
