@@ -87,7 +87,7 @@ BannerFunction := function( info )
   if not IsBoundGlobal( "JuliaToGAP" ) then
     return str;
   fi;
-  version:= ValueGlobal( "JuliaToGAP" )( version );
+  version:= ValueGlobal( "JuliaToGAP" )( IsString, version );
 
   return ReplacedString( str, "Homepage",
              Concatenation( "(julia version is ", version, ")\nHomepage" ) );
