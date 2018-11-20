@@ -87,7 +87,4 @@ int is_gapffe(jl_value_t * v);
 //
 int is_gapobj(jl_value_t * v);
 
-// internal
-extern jl_value_t * _ConvertedToJulia_internal(Obj obj);
-
 #endif
