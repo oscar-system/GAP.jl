@@ -1,28 +1,39 @@
 ## Converters
+"""
+    julia_to_gap(input, recursive::Val{Recursive} = Val(false), recursion_dict = IdDict())
+
+Converts a julia object `input`` to an appropriate GAP object.
+If recursive is set to `Val(true)`, recursive conversions on
+arrays, tuples, and dictionaries is performed.
+
+The input `recursive_data` should never be set by the user, it is meant to keep egality
+of input data, by converting egal data to identical objects in GAP.
+"""
+
 
 ## Default
-julia_to_gap(x::GAPInputType, ::Val{Recursive}=Val(false), recursion_dict = nothing) where Recursive = x
+julia_to_gap(x::GAPInputType) = x
 
 
 ## Integers
-julia_to_gap(x::Int128, ::Val{Recursive}=Val(false), recursion_dict = nothing) where Recursive = MakeObjInt(BigInt(x)) # FIXME: inefficient hack
+julia_to_gap(x::Int128) = MakeObjInt(BigInt(x)) # FIXME: inefficient hack
 #julia_to_gap(x::Int64)  = x
-julia_to_gap(x::Int32, ::Val{Recursive}=Val(false), recursion_dict = nothing) where Recursive = Int64(x)
-julia_to_gap(x::Int16, ::Val{Recursive}=Val(false), recursion_dict = nothing) where Recursive = Int64(x)
-julia_to_gap(x::Int8, ::Val{Recursive}=Val(false), recursion_dict = nothing) where Recursive = Int64(x)
+julia_to_gap(x::Int32)  = Int64(x)
+julia_to_gap(x::Int16)  = Int64(x)
+julia_to_gap(x::Int8)   = Int64(x)
 
 ## Unsigned Integers
-julia_to_gap(x::UInt128, ::Val{Recursive}=Val(false), recursion_dict = nothing) where Recursive = MakeObjInt(BigInt(x)) # FIXME: inefficient hack
-julia_to_gap(x::UInt64, ::Val{Recursive}=Val(false), recursion_dict = nothing) where Recursive = MakeObjInt(BigInt(x)) # FIXME: inefficient hack
-julia_to_gap(x::UInt32, ::Val{Recursive}=Val(false), recursion_dict = nothing) where Recursive = Int64(x)
-julia_to_gap(x::UInt16, ::Val{Recursive}=Val(false), recursion_dict = nothing) where Recursive = Int64(x)
-julia_to_gap(x::UInt8, ::Val{Recursive}=Val(false), recursion_dict = nothing) where Recursive  = Int64(x)
+julia_to_gap(x::UInt128) = MakeObjInt(BigInt(x)) # FIXME: inefficient hack
+julia_to_gap(x::UInt64)  = MakeObjInt(BigInt(x)) # FIXME: inefficient hack
+julia_to_gap(x::UInt32)  = Int64(x)
+julia_to_gap(x::UInt16)  = Int64(x)
+julia_to_gap(x::UInt8)   = Int64(x)
 
 ## BigInts
-julia_to_gap(x::BigInt, ::Val{Recursive}=Val(false), recursion_dict = nothing) where Recursive = MakeObjInt(x)
+julia_to_gap(x::BigInt) = MakeObjInt(x)
 
 ## Rationals
-function julia_to_gap(x::Rational{T}, ::Val{Recursive}=Val(false), recursion_dict = nothing) where Recursive where T <: Integer
+function julia_to_gap(x::Rational{T}) where T <: Integer
     denom_julia = denominator(x)
     numer_julia = numerator(x)
     if denom_julia == 0
@@ -38,17 +49,20 @@ function julia_to_gap(x::Rational{T}, ::Val{Recursive}=Val(false), recursion_dic
 end
 
 ## Floats
-julia_to_gap(x::Float64, ::Val{Recursive}=Val(false), recursion_dict = nothing) where Recursive = NEW_MACFLOAT(x)
-julia_to_gap(x::Float32, ::Val{Recursive}=Val(false), recursion_dict = nothing) where Recursive = NEW_MACFLOAT(Float64(x))
-julia_to_gap(x::Float32, ::Val{Recursive}=Val(false), recursion_dict = nothing) where Recursive = NEW_MACFLOAT(Float64(x))
-julia_to_gap(x::Float16, ::Val{Recursive}=Val(false), recursion_dict = nothing) where Recursive = NEW_MACFLOAT(Float64(x))
+julia_to_gap(x::Float64) = NEW_MACFLOAT(x)
+julia_to_gap(x::Float32) = NEW_MACFLOAT(Float64(x))
+julia_to_gap(x::Float32) = NEW_MACFLOAT(Float64(x))
+julia_to_gap(x::Float16) = NEW_MACFLOAT(Float64(x))
 
 ## Chars
-julia_to_gap(x::Char, ::Val{Recursive}=Val(false), recursion_dict = nothing) where Recursive = CharWithValue(Cuchar(x)) 
+julia_to_gap(x::Char) = CharWithValue(Cuchar(x)) 
 
 ## Strings and symbols
-julia_to_gap(x::AbstractString, ::Val{Recursive}=Val(false), recursion_dict = nothing) where Recursive = MakeString(x)
-julia_to_gap(x::Symbol, ::Val{Recursive}=Val(false), recursion_dict = nothing) where Recursive = MakeString(string(x))
+julia_to_gap(x::AbstractString) = MakeString(x)
+julia_to_gap(x::Symbol) = MakeString(string(x))
+
+## Generic caller for optional arguments
+julia_to_gap(obj::Any, recursive, recursion_dict ) = julia_to_gap(obj)
 
 ## Arrays
 function julia_to_gap(obj::Array{T,1}, recursive::Val{Recursive}=Val(false), recursion_dict = IdDict()) where Recursive where T
