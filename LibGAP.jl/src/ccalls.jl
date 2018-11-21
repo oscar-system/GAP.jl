@@ -33,6 +33,16 @@ function CSTR_STRING( val::MPtr )::String
     return deepcopy(unsafe_string(char_ptr))
 end
 
+function UNSAFE_CSTR_STRING( val::MPtr )::Array{UInt8,1}
+    string_len = Int64( ccall( :GAP_LenString, Cuint,
+                               ( MPtr, ),
+                               val ) )
+    char_ptr = ccall( :GAP_CSTR_STRING, Ptr{UInt8},
+                      ( MPtr, ),
+                      val )
+    return unsafe_wrap( Array{UInt8,1}, char_ptr, string_len )
+end
+
 
 function NewPlist(length :: Int64)
     o = ccall( :GAP_NewPlist,
