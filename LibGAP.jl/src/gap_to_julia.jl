@@ -99,6 +99,15 @@ gap_to_julia(::Type{Symbol},obj::MPtr) = Symbol(gap_to_julia(AbstractString,obj)
 
 gap_to_julia(type_obj,obj,recursion_dict=nothing) = gap_to_julia(type_obj,obj)
 
+## Convert GAP string to Array{UInt8,1}
+function gap_to_julia( ::Type{Array{UInt8,1}}, obj :: MPtr )
+    if ! Globals.IsStringRep( obj )
+        return Array{UInt8,1}(gap_to_julia(Array{UInt16,1},obj))
+    end
+    array = UNSAFE_CSTR_STRING( obj )
+    return deepcopy(array)
+end
+
 ## Arrays
 function gap_to_julia( ::Type{Array{GAPObj,1}}, obj :: MPtr , recursion_dict = IdDict() )
     if ! Globals.IsList( obj )

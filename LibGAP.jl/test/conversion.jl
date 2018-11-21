@@ -60,6 +60,10 @@
     @test GAP.gap_to_julia(Symbol,x) == :foo
     x = GAP.EvalString("(1,2,3);")[1][2]
     @test_throws ArgumentError GAP.gap_to_julia(AbstractString,x)
+    x = GAP.EvalString("\"foo\";")[1][2]
+    @test GAP.gap_to_julia(Array{UInt8,1},x) == UInt8[0x66,0x6f,0x6f]
+    x = GAP.EvalString("[1,2,3];")[1][2]
+    @test GAP.gap_to_julia(Array{UInt8,1},x) == UInt8[1,2,3]
 
     ## Arrays
     x = GAP.julia_to_gap([1,2,3])
