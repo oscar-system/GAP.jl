@@ -164,5 +164,11 @@ end
     xx = GAP.EvalString("l:=[1];x:=[l,l];")[2][2]
     conv = GAP.julia_to_gap(xx)
     @test GAP.Globals.IsIdenticalObj(conv[1],conv[2])
+    ## FIXME: This test is broken because of
+    ##        infinite recursion in ViewString
+    # l = Any[1]
+    # l[1] = l
+    # xx = GAP.EvalString("l:=[];l[1]:=l;")[1][2];
+    # @test GAP.julia_to_gap(l) == xx
 
 end
