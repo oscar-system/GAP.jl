@@ -33,7 +33,7 @@
 end
 
 @testset "gapcalls" begin
-    f = GAP.EvalString("{x...} -> x;")[1][2]
+    f = GAP.EvalString("{x...} -> x")
     
     @test GAP.julia_to_gap([]) == f()
     @test GAP.julia_to_gap([1]) == f(1)
