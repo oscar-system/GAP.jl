@@ -51,7 +51,6 @@ end
 ## Floats
 julia_to_gap(x::Float64) = NEW_MACFLOAT(x)
 julia_to_gap(x::Float32) = NEW_MACFLOAT(Float64(x))
-julia_to_gap(x::Float32) = NEW_MACFLOAT(Float64(x))
 julia_to_gap(x::Float16) = NEW_MACFLOAT(Float64(x))
 
 ## Chars

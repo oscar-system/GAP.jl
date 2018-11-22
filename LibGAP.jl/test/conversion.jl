@@ -70,15 +70,23 @@
     @test GAP.gap_to_julia(Array{Any,1},x) == Array{Any,1}([1,2,3])
     @test GAP.gap_to_julia(x) == Array{Any,1}([1,2,3])
     @test GAP.gap_to_julia(Array{Int64,1},x) == [1,2,3]
-    
+    @test GAP.gap_to_julia(Array{BigInt,1},x) == [1,2,3]
+    n = GAP.julia_to_gap(big(2)^100)
+    @test_throws ArgumentError GAP.gap_to_julia(Array{Int64,1},n)
+    @test_throws ArgumentError GAP.gap_to_julia(Array{BigInt,1},n)
+
     ## Tuples
     @test GAP.gap_to_julia(Tuple{Int64,Any,Int32},x) == Tuple{Int64,Any,Int32}([1,2,3])
+    n = GAP.julia_to_gap(big(2)^100)
+    @test_throws ArgumentError GAP.gap_to_julia(Tuple{Int64,Any,Int32},n)
     
     ## Dictionaries
     x = GAP.EvalString(" rec( foo := 1, bar := \"foo\" );" )[1][2]
     y = Dict{Symbol,Any}( :foo => 1, :bar => "foo" )
     @test GAP.gap_to_julia(Dict{Symbol,Any},x) == y
     @test GAP.gap_to_julia(x) == y
+    n = GAP.julia_to_gap(big(2)^100)
+    @test_throws ArgumentError GAP.gap_to_julia(Dict{Symbol,Any},n)
 
     ## Default
     x = GAP.EvalString("(1,2,3);")[1][2]
@@ -122,7 +130,8 @@ end
     @test GAP.julia_to_gap(Rational{BigInt}(2)^100 // 1) == x
     x = GAP.EvalString("2^100/3;")[1][2]
     @test GAP.julia_to_gap(Rational{BigInt}(2)^100 // 3) == x
-    @test GAP.julia_to_gap(Rational{Int64}(1) // 0) == GAP.Globals.infinity
+    @test GAP.julia_to_gap(1 // 0) == GAP.Globals.infinity
+    @test GAP.julia_to_gap(-1 // 0) == -GAP.Globals.infinity
 
     ## Floats
     x = GAP.EvalString("2.;")[1][2]
