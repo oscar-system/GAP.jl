@@ -66,8 +66,12 @@ julia_to_gap(obj::Any, recursive, recursion_dict ) = julia_to_gap(obj)
 
 ## Arrays
 function julia_to_gap(obj::Array{T,1}, recursive::Val{Recursive}=Val(false), recursion_dict = IdDict()) where Recursive where T
+    if haskey(recursion_dict,obj)
+        return recursion_dict[obj]
+    end
     len = length(obj)
     ret_val = NewPlist(len)
+    recursion_dict[obj] = ret_val
     for i in 1:len
         current_obj = obj[i]
         if haskey(recursion_dict,current_obj)
@@ -97,6 +101,9 @@ end
 
 ## Dictionaries
 function julia_to_gap(obj::Dict{T,S}, recursive::Val{Recursive}=Val(false), recursion_dict = IdDict()) where Recursive where S where T <: Union{Symbol,AbstractString}
+    if haskey(recursion_dict,obj)
+        return recursion_dict[obj]
+    end
     nr_entries = obj.count
     keys = Array{T,1}(undef,nr_entries)
     entries = Array{S,1}(undef,nr_entries)
@@ -106,7 +113,10 @@ function julia_to_gap(obj::Dict{T,S}, recursive::Val{Recursive}=Val(false), recu
         entries[i] = y
         i += 1
     end
-    return GAP.Globals.CreateRecFromKeyValuePairList(julia_to_gap(keys,Val(true)),julia_to_gap(entries, recursive, recursion_dict))
+    record = GAP.Globals.CreateRecFromKeyValuePairList(julia_to_gap(keys,Val(true)),julia_to_gap(entries, recursive, recursion_dict))
+    ## FIXME: This is too late!
+    recursion_dict[obj] = record
+    return record
 end
 
 

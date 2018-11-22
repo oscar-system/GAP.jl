@@ -113,8 +113,12 @@ function gap_to_julia( ::Type{Array{GAPObj,1}}, obj :: MPtr , recursion_dict = I
     if ! Globals.IsList( obj )
         throw(ArgumentError("<obj> is not a list"))
     end
+    if haskey(recursion_dict,obj)
+        return recursion_dict[obj]
+    end
     len_list = length(obj)
     new_array = Array{Any,1}( undef, len_list)
+    recursion_dict[obj] = new_array
     for i in 1:len_list
         current_obj = obj[i]
         if haskey(recursion_dict,current_obj)
@@ -131,8 +135,12 @@ function gap_to_julia( ::Type{Array{T,1}}, obj :: MPtr, recursion_dict = IdDict(
     if ! Globals.IsList( obj )
         throw(ArgumentError("<obj> is not a list"))
     end
+    if haskey(recursion_dict,obj)
+        return recursion_dict[obj]
+    end
     len_list = length(obj)
     new_array = Array{T,1}( undef, len_list)
+    recursion_dict[obj] = new_array
     for i in 1:len_list
         current_obj = obj[ i ]
         if haskey(recursion_dict,current_obj)
@@ -164,9 +172,13 @@ function gap_to_julia( ::Type{Dict{Symbol,T}}, obj :: MPtr, recursion_dict = IdD
     if ! Globals.IsRecord( obj )
         throw(ArgumentError("first argument is not a record"))
     end
+    if haskey(recursion_dict,obj)
+        return recursion_dict[obj]
+    end
     names = Globals.RecNames( obj )
     names_list = gap_to_julia(Array{Symbol,1},names)
     dict = Dict{Symbol,T}()
+    recursion_dict[obj] = dict
     for i in names_list
         current_obj = getproperty(obj,i)
         if haskey(recursion_dict,current_obj)
