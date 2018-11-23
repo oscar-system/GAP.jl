@@ -6,11 +6,16 @@ function GET_FROM_GAP(ptr::Ptr{Cvoid})::Any
     return ccall(:julia_gap,Any,(Ptr{Cvoid},),ptr)
 end
 
-function EvalString( cmd :: String )
+function EvalStringEx( cmd :: String )
     res = ccall( :GAP_EvalString, MPtr, 
                  (Ptr{UInt8},),
                  cmd );
     return res
+end
+
+function EvalString( cmd :: String )
+    res = EvalStringEx(cmd * ";")
+    return res[end][2]
 end
 
 function ValueGlobalVariable( name :: String )

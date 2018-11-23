@@ -20,49 +20,49 @@
 
     ## BigInts
     @test GAP.gap_to_julia(BigInt,1) == BigInt(1)
-    x = GAP.EvalString("2^100;")[1][2]
+    x = GAP.EvalString("2^100")
     @test GAP.gap_to_julia(BigInt,x) == BigInt(2)^100
     @test GAP.gap_to_julia(x) == BigInt(2)^100
-    x = GAP.EvalString("1/2;")[1][2]
+    x = GAP.EvalString("1/2")
     @test_throws ArgumentError GAP.gap_to_julia(BigInt,x)
 
     ## Rationals
     @test GAP.gap_to_julia(Rational{Int64},1) == 1//1
-    x = GAP.EvalString("2^100;")[1][2]
+    x = GAP.EvalString("2^100")
     @test GAP.gap_to_julia(Rational{BigInt},x) == BigInt(2)^100 // 1
-    x = GAP.EvalString("2^100/3;")[1][2]
+    x = GAP.EvalString("2^100/3")
     @test GAP.gap_to_julia(Rational{BigInt},x) == BigInt(2)^100 // 3
     @test GAP.gap_to_julia(x) == BigInt(2)^100 // 3
-    x = GAP.EvalString("(1,2,3);")[1][2]
+    x = GAP.EvalString("(1,2,3)")
     @test_throws ArgumentError GAP.gap_to_julia(Rational{BigInt},x)
 
     ## Floats
-    x = GAP.EvalString("2.;")[1][2]
+    x = GAP.EvalString("2.")
     @test GAP.gap_to_julia(Float64,x) == 2.
     @test GAP.gap_to_julia(x) == 2.
     @test GAP.gap_to_julia(Float32,x) == Float32(2.)
     @test GAP.gap_to_julia(Float16,x) == Float16(2.)
     @test GAP.gap_to_julia(BigFloat,x) == BigFloat(2.)
-    x = GAP.EvalString("(1,2,3);")[1][2]
+    x = GAP.EvalString("(1,2,3)")
     @test_throws ArgumentError GAP.gap_to_julia(Float64,x)
 
     ## Chars
-    x = GAP.EvalString("'x';")[1][2]
+    x = GAP.EvalString("'x'")
     @test GAP.gap_to_julia(Cuchar,x) == Cuchar('x')
     @test GAP.gap_to_julia(x) == Cuchar('x')
-    x = GAP.EvalString("(1,2,3);")[1][2]
+    x = GAP.EvalString("(1,2,3)")
     @test_throws ArgumentError GAP.gap_to_julia(Cuchar,x)
 
     ## Strings & Symbols
-    x = GAP.EvalString("\"foo\";")[1][2]
+    x = GAP.EvalString("\"foo\"")
     @test GAP.gap_to_julia(AbstractString,x) == "foo"
     @test GAP.gap_to_julia(x) == "foo"
     @test GAP.gap_to_julia(Symbol,x) == :foo
-    x = GAP.EvalString("(1,2,3);")[1][2]
+    x = GAP.EvalString("(1,2,3)")
     @test_throws ArgumentError GAP.gap_to_julia(AbstractString,x)
-    x = GAP.EvalString("\"foo\";")[1][2]
+    x = GAP.EvalString("\"foo\"")
     @test GAP.gap_to_julia(Array{UInt8,1},x) == UInt8[0x66,0x6f,0x6f]
-    x = GAP.EvalString("[1,2,3];")[1][2]
+    x = GAP.EvalString("[1,2,3]")
     @test GAP.gap_to_julia(Array{UInt8,1},x) == UInt8[1,2,3]
 
     ## Arrays
@@ -81,7 +81,7 @@
     @test_throws ArgumentError GAP.gap_to_julia(Tuple{Int64,Any,Int32},n)
     
     ## Dictionaries
-    x = GAP.EvalString(" rec( foo := 1, bar := \"foo\" );" )[1][2]
+    x = GAP.EvalString(" rec( foo := 1, bar := \"foo\" )" )
     y = Dict{Symbol,Any}( :foo => 1, :bar => "foo" )
     @test GAP.gap_to_julia(Dict{Symbol,Any},x) == y
     @test GAP.gap_to_julia(x) == y
@@ -89,11 +89,11 @@
     @test_throws ArgumentError GAP.gap_to_julia(Dict{Symbol,Any},n)
 
     ## Default
-    x = GAP.EvalString("(1,2,3);")[1][2]
+    x = GAP.EvalString("(1,2,3)")
     @test GAP.gap_to_julia(x) == x
 
     ## Recursive conversions
-    xx = GAP.EvalString("l:=[1];x:=[l,l];")[2][2]
+    xx = GAP.EvalString("l:=[1];x:=[l,l];")
     conv = GAP.gap_to_julia(xx)
     @test conv[1] === conv[2]
     conv = GAP.gap_to_julia(Tuple{Tuple{Int64},Tuple{Int64}},xx)
@@ -122,62 +122,59 @@ end
 
     ## BigInts
     @test GAP.julia_to_gap(BigInt(1)) == 1
-    x = GAP.EvalString("2^100;")[1][2]
+    x = GAP.EvalString("2^100")
     @test GAP.julia_to_gap(BigInt(2)^100) == x
 
     ## Rationals
-    x = GAP.EvalString("2^100;")[1][2]
+    x = GAP.EvalString("2^100")
     @test GAP.julia_to_gap(Rational{BigInt}(2)^100 // 1) == x
-    x = GAP.EvalString("2^100/3;")[1][2]
+    x = GAP.EvalString("2^100/3")
     @test GAP.julia_to_gap(Rational{BigInt}(2)^100 // 3) == x
     @test GAP.julia_to_gap(1 // 0) == GAP.Globals.infinity
     @test GAP.julia_to_gap(-1 // 0) == -GAP.Globals.infinity
 
     ## Floats
-    x = GAP.EvalString("2.;")[1][2]
+    x = GAP.EvalString("2.")
     @test GAP.julia_to_gap(2.) == x
     @test GAP.julia_to_gap(Float32(2.)) == x
     @test GAP.julia_to_gap(Float16(2.)) == x
 
     ## Chars
-    x = GAP.EvalString("'x';")[1][2]
+    x = GAP.EvalString("'x'")
     @test GAP.julia_to_gap('x') == x
 
     ## Strings & Symbols
-    x = GAP.EvalString("\"foo\";")[1][2]
+    x = GAP.EvalString("\"foo\"")
     @test GAP.julia_to_gap("foo") == x
     @test GAP.julia_to_gap(:foo) == x
 
     ## Arrays
-    x = GAP.EvalString("[1,\"foo\",2];")[1][2]
+    x = GAP.EvalString("[1,\"foo\",2]")
     @test GAP.julia_to_gap([1,"foo",BigInt(2)],Val(true)) == x
-    x = GAP.EvalString("[1,JuliaEvalString(\"\\\"foo\\\"\"),2];")[1][2]
+    x = GAP.EvalString("[1,JuliaEvalString(\"\\\"foo\\\"\"),2]")
     @test GAP.julia_to_gap([1,"foo",BigInt(2)]) == x
     
     ## Tuples
-    x = GAP.EvalString("[1,\"foo\",2];")[1][2]
+    x = GAP.EvalString("[1,\"foo\",2]")
     @test GAP.julia_to_gap((1,"foo",2),Val(true)) == x
-    x = GAP.EvalString("[1,JuliaEvalString(\"\\\"foo\\\"\"),2];")[1][2]
+    x = GAP.EvalString("[1,JuliaEvalString(\"\\\"foo\\\"\"),2]")
     @test GAP.julia_to_gap((1,"foo",2)) == x
     
     ## Dictionaries
-    x = GAP.EvalString(" rec( foo := 1, bar := \"foo\" );" )[1][2]
+    x = GAP.EvalString(" rec( foo := 1, bar := \"foo\" )" )
     y = Dict{Symbol,Any}( :foo => 1, :bar => "foo" )
     @test GAP.julia_to_gap(y,Val(true)) == x
-    x = GAP.EvalString(" rec( foo := 1, bar := JuliaEvalString(\"\\\"foo\\\"\") );" )[1][2]
+    x = GAP.EvalString(" rec( foo := 1, bar := JuliaEvalString(\"\\\"foo\\\"\") )" )
     @test GAP.julia_to_gap(y) == x
 
     ## Recursive conversions
     l = [1]
     yy = [l,l]
-    xx = GAP.EvalString("l:=[1];x:=[l,l];")[2][2]
+    xx = GAP.EvalString("l:=[1];x:=[l,l];")
     conv = GAP.julia_to_gap(xx)
     @test GAP.Globals.IsIdenticalObj(conv[1],conv[2])
-    ## FIXME: This test is broken because of
-    ##        infinite recursion in ViewString
-    # l = Any[1]
-    # l[1] = l
-    # xx = GAP.EvalString("l:=[];l[1]:=l;")[1][2];
-    # @test GAP.julia_to_gap(l) == xx
+
+    xx = GAP.EvalString("[~]");
+    @test xx === xx[1]
 
 end
