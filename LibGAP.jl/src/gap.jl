@@ -3,18 +3,18 @@ import Base: convert, getindex, setindex!, length, show
 const True = GAP.Globals.ReturnTrue()
 const False = GAP.Globals.ReturnFalse()
 
-const GAPInputType_internal = Union{MPtr,GAP.GapFFE}
+const GAPInputType_internal = Union{MPtr,FFE}
 const GAPInputType = Union{GAPInputType_internal,Int64,Bool}
 
-const GAPObj = Union{GAPInputType,Nothing}
+const Obj = Union{GAPInputType,Nothing}
 
-function Base.show( io::IO, obj::Union{MPtr,GAP.GapFFE} )
+function Base.show( io::IO, obj::Union{MPtr,FFE} )
     str = GAP.Globals.String( obj )
     stri = CSTR_STRING( str )
     print(io,"GAP: $stri")
 end
 
-function Base.string( obj::Union{MPtr,GAP.GapFFE} )
+function Base.string( obj::Union{MPtr,FFE} )
     str = GAP.Globals.String( obj )
     return CSTR_STRING( str )
 end

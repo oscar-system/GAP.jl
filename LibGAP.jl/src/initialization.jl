@@ -8,9 +8,9 @@ module GAP
 > This type is defined in the JuliaInterface C code.
 """
 
-primitive type GapFFE 64 end
+primitive type FFE 64 end
 
-export GapFFE
+export FFE
 
 import Base: length, convert, finalize
 

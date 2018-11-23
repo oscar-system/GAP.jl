@@ -39,7 +39,7 @@ gap> Julia.Core.Tuple( GAPToJulia( JuliaEvalString( "Array{Any,1}" ), [] ) );
 <Julia: ()>
 gap> Julia.Core.Tuple( GAPToJulia( JuliaEvalString( "Array{Any,1}" ), [1] ) );
 <Julia: (1,)>
-gap> Julia.Core.Tuple( GAPToJulia( JuliaEvalString( "Array{GAP.GAPObj,1}" ), [1,true,fail] ));
+gap> Julia.Core.Tuple( GAPToJulia( JuliaEvalString( "Array{GAP.Obj,1}" ), [1,true,fail] ));
 <Julia: (1, true, GAP: fail)>
 gap> Julia.Core.Tuple(1);
 <Julia: (1,)>

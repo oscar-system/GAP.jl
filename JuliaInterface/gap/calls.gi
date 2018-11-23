@@ -1,4 +1,4 @@
-BindGlobal("_JL_Array_GAPObj_1", JuliaEvalString("Array{GAP.GAPObj,1}"));
+BindGlobal("_JL_Array_GAPObj_1", JuliaEvalString("Array{GAP.Obj,1}"));
 
 ##
 ##  We want to use &GAP's function call syntax also for certain Julia objects
