@@ -100,15 +100,16 @@ function LLLReducedGramMat( grammatrix::Array{Int,2}, y::Rational{Int} = 3//4 )
     n    = size( gram, 1 )
     k    = 2
     kmax = 1
-    mue  = zeros( gram )
+#   mue  = zeros( gram ) # this worked in earlier Julia versions ...
+    mue  = zeros( Rational{Int}, n, n )
     r    = 0
-    ak   = Array{Rational{Int}}( n )
-#   H    = Array{Array{Rational{Int},1},1}( n )
+    ak   = Array{Rational{Int},1}( undef, n )
+#   H    = Array{Array{Rational{Int},1},1}( undef, n )
 #    for i = 1:n
 #      H[i] = zeros( Rational{Int}, n )
 #      H[i][i] = 1
 #    end
-    H    = eye( gram )
+    H    = one( gram )
 
 #   Info( InfoZLattice, 1,
 #         "LLLReducedGramMat called with matrix of length ", n,
@@ -144,7 +145,7 @@ function LLLReducedGramMat( grammatrix::Array{Int,2}, y::Rational{Int} = 3//4 )
 
     end
 
-    B = Array{Rational{Int},1}( n )
+    B = Array{Rational{Int},1}( undef, n )
     B[1] = gram[1,1]
 
     while k <= n
@@ -327,13 +328,13 @@ function LLLReducedGramMat( grammatrix::Array{Int,2}, y::Rational{Int} = 3//4 )
     mue = mue[ (r+1):n, 1:n ]
     B = B[ (r+1):n ]
 
-    return Dict( "remainder"      => gram,
-           #     "relations"      => reshape( hcat( H[ 1:r ]... ), r, n ),
-                 "relations"      => H[ 1:r, : ],
-           #     "transformation" => reshape( hcat( H[ (r+1):n ]... ), n-r, n ),
-                 "transformation" => H[ (r+1):n, : ],
-                 "mue"            => mue,
-                 "B"              => B );
+    return Dict( :remainder      => gram,
+           #     :relations      => reshape( hcat( H[ 1:r ]... ), r, n ),
+                 :relations      => H[ 1:r, : ],
+           #     :transformation => reshape( hcat( H[ (r+1):n ]... ), n-r, n ),
+                 :transformation => H[ (r+1):n, : ],
+                 :mue            => mue,
+                 :B              => B );
 end
 
 
@@ -455,14 +456,14 @@ function ShortestVectors( grammat::Array{Int,2}, bound::Int, positive::String = 
     end
 
     llg = LLLReducedGramMat( grammat )
-    mue = llg[ "mue" ]
-    B = llg[ "B" ]
-    transformation = llg[ "transformation" ]
+    mue = llg[ :mue ]
+    B = llg[ :B ]
+    transformation = llg[ :transformation ]
 
     # main program
     srt( n, 0 )
 
-    return Dict( "vectors" => c_vectors, "norms" => c_norms )
+    return Dict( :vectors => c_vectors, :norms => c_norms )
 end
 
 
@@ -637,8 +638,8 @@ row = M[ii]
     if haskey( arec, "vectors" )
       x = arec[ "vectors" ]
       if isa( x, Array )
-        x = Dict( "vectors" => x,
-                  "norms" => map( v -> sum( ( v * AinvI ) .* v ), x ) )
+        x = Dict( :vectors => x,
+                  :norms => map( v -> sum( ( v * AinvI ) .* v ), x ) )
 #T does not work at all!!
 # and .* is slow!
       end
@@ -650,14 +651,14 @@ row = M[ii]
       end
     end
 
-    norms = sv[ "norms" ]
-    x = sv[ "vectors" ]
+    norms = sv[ :norms ]
+    x = sv[ :vectors ]
     m = length( x )
 
     if m == 0
-      return Dict( "vectors" => x,
-                   "norms" => map( x -> x / denom, norms ),
-                   "solutions" => [] )
+      return Dict( :vectors => x,
+                   :norms => map( x -> x / denom, norms ),
+                   :solutions => [] )
     end
 
 #   println( "found $m vectors" )
@@ -702,9 +703,9 @@ row = M[ii]
     x = map( pair -> pair[2], tosort )
 
     # Initialize the result record.
-    out = Dict( "vectors" => x,
-                "norms" => map( x -> x / denom, norms ),
-                "solutions" => [] )
+    out = Dict( :vectors => x,
+                :norms => map( x -> x / denom, norms ),
+                :solutions => [] )
 
     # 'x2[i]' stores the contribution of 'x[i]' to the diagonal of 'A'.
     x2 = map( v -> map( y -> y^2, v ), x )
@@ -892,7 +893,7 @@ row = M[ii]
           push!( single, j )
         end
       end
-      push!( out[ "solutions" ], single )
+      push!( out[ :solutions ], single )
     end
 
     return out

@@ -35,16 +35,17 @@ BindGlobal( "IsPositiveRealPartCyclotomic", function( cyc )
     fi;
 
     if ForAll( coeffs, IsSmallIntRep ) then
-      coeffs:= ConvertedToJulia( coeffs );
+      coeffs:= GAPToJulia( coeffs );
     else
       coeffs:= JuliaArrayOfFmpz( coeffs );
     fi;
     
     res:= Julia.GAPRealCycModule.isPositiveRealPartCyc( coeffs );
     if ValueOption( "ShowPrecision" ) = true then
-      Print( "#I  precision needed: ", ConvertedFromJulia( res[2] ), "\n" );
+      Print( "#I  precision needed: ", JuliaToGAP( IsInt, res[2] ), "\n" );
     fi;
-    return ConvertedFromJulia( res[1] );
+
+    return res[1];
 end );
 
 

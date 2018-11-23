@@ -13,10 +13,6 @@ ReadPackage( "JuliaExperimental", "gap/utils.gi");
 # BindJuliaFunc( "juliabox_cycs" );
 # 
 
-# Translate GAP records to Julia dictionaries and vice versa.
-ReadPackage( "JuliaExperimental", "gap/record.g");
-
-
 # shortest vectors, LLL, orthogonal embeddings
 ReadPackage( "JuliaExperimental", "gap/zlattice.g");
 

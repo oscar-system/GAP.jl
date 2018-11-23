@@ -195,12 +195,12 @@ BindGlobal( "SingularPolynomialRing", function( R, names )
 
     # Convert the names list from "Array{Any,1}" to "Array{String,1}".
     names:= Julia.Base.convert( JuliaEvalString( "Array{String,1}" ),
-                                ConvertedToJulia( names ) );
+                                GAPToJulia( names ) );
 
     # Create the julia objects.
     # If we would be able to deal with keyword arguments
     # then wrapping would not be needed here.
-    dict:= ConvertedToJulia( rec( ring:= JuliaPointer( R ),
+    dict:= GAPToJulia( rec( ring:= JuliaPointer( R ),
                           indeterminates:= names,
                           cached:= true,
                           ordering:= JuliaSymbol( ordering ),
@@ -233,7 +233,7 @@ BindGlobal( "SingularPolynomialRing", function( R, names )
         IsPolynomial and IsSingularObject and IsAttributeStoringRep, R );
 
     # Store the GAP list of wrapped Julia indeterminates.
-    indets:= List( ConvertedFromJulia( juliaobj[2] ),
+    indets:= List( JuliaToGAP( IsList, juliaobj[2] ),
                    x -> SingularElement( R, x ) );
     SetIndeterminatesOfPolynomialRing( R, indets );
     SetGeneratorsOfLeftOperatorRingWithOne( R, indets );
@@ -366,7 +366,7 @@ BindGlobal( "GroebnerBasisIdeal", function( I )
     # Create the Singular ideal.
     R:= LeftActingRingOfIdeal( I );
     juliaobj:= Julia.Base.std( JuliaPointer( I ) );
-    gens:= List( [ 1 .. ConvertedFromJulia( Julia.Singular.ngens( juliaobj ) ) ],
+    gens:= List( [ 1 .. Julia.Singular.ngens( juliaobj ) ],
                  i -> SingularElement( R, juliaobj[i] ) );
 
     # Create the GAP domain.
@@ -422,16 +422,14 @@ InstallOtherMethod( ViewString,
 InstallOtherMethod( \=,
     [ "IsSingularObject", "IsSingularObject" ], 100,
     function( x, y )
-      return ConvertedFromJulia(
-                 Julia.Base.("==")( JuliaPointer( x ), JuliaPointer( y ) ) );
+      return Julia.Base.("==")( JuliaPointer( x ), JuliaPointer( y ) );
     end );
 
 #T 'Singular.jl' does not define 'isless' methods for polynomials.
 # InstallOtherMethod( \<,
 #     [ "IsSingularObject", "IsSingularObject" ],
 #     function( x, y )
-#       return ConvertedFromJulia(
-#                  Julia.Base.isless( JuliaPointer( x ), JuliaPointer( y ) ) );
+#       return Julia.Base.isless( JuliaPointer( x ), JuliaPointer( y ) ) );
 #     end );
 
 InstallOtherMethod( \+,

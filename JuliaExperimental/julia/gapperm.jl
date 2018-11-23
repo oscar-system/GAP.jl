@@ -258,7 +258,7 @@ function PowPermInt( pL::Permutation2or4, n::Int )
 
         # make sure that the buffer bag is large enough
         # clear the buffer bag
-        ptKnown = falses( pLimgs )
+        ptKnown = falses( deg )
 
         # loop over all cycles
         for p in 1:deg
@@ -319,7 +319,7 @@ function PowPermInt( pL::Permutation2or4, n::Int )
 
         # make sure that the buffer bag is large enough
         # clear the buffer bag
-        ptKnown = falses( pLimgs )
+        ptKnown = falses( deg )
 
         # get pointer to the permutation and the power
         exp = -n
@@ -404,21 +404,21 @@ function QuoIntPerm( n::Int, pR::Permutation2or4 )
 end
 
 
+##  Here the syntax is different from that in GAP's C code.
 function LargestMovedPointPerm( perm::Permutation2or4 )
     local permimgs, sup
 
     permimgs = perm.imgs
-    sup = 0
 
     # find the largest moved point
     for sup in perm.degree:-1:1
       if permimgs[ sup ] != sup
-        break
+        return sup
       end
     end
 
     # return it
-    return sup
+    return 0
 end
 
 
@@ -429,7 +429,7 @@ function OrderPerm( perm::Permutation2or4 )
 
     # make sure that the buffer bag is large enough
     # clear the buffer bag
-    ptKnown2 = falses( permimgs )
+    ptKnown2 = falses( perm.degree )
 
     # start with order 1
     ord = 1

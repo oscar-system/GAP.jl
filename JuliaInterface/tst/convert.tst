@@ -170,5 +170,32 @@ gap> xx := JuliaEvalString("GAP.GAPFuncs.PROD(2^59,2^59)");;
 gap> JuliaToGAP( IsInt, xx );
 332306998946228968225951765070086144
 
+###
+###  Records/Dictionaries
+###
+
+##  empty record
+gap> dict:= GAPToJulia( rec() );
+<Julia: Dict{Symbol,Any}()>
+gap> JuliaToGAP( IsRecord, dict );
+rec(  )
+
+##  nested record: non-recursive vs. recursive
+gap> dict:= GAPToJulia( rec( bool:= true,
+>                            string:= "abc",
+>                            list:= [ 1, 2, 3 ],
+>                          ) );;
+gap> JuliaToGAP( IsRecord, dict );
+rec( bool := true, list := <Julia: Any[1, 2, 3]>, string := <Julia: "abc"> )
+gap> JuliaToGAP( IsRecord, dict, true );
+rec( bool := true, list := [ 1, 2, 3 ], string := "abc" )
+
+##  something where recursive conversion would run into a Julia error
+gap> dict:= GAPToJulia( rec( juliafunc:= Julia.Base.map,
+>                          ) );
+<Julia: Dict{Symbol,Any}(:juliafunc=>map)>
+gap> JuliaToGAP( IsRecord, dict );
+rec( juliafunc := <Julia: map> )
+
 ##
 gap> STOP_TEST( "convert.tst", 1 );
