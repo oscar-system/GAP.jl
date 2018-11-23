@@ -222,4 +222,8 @@ end
     conv = GAP.julia_to_gap(d, Val(true));
     @test conv === conv.b
 
+    ##Test nothing
+    xx = GAP.EvalString( "[1,,1]" )
+    @test GAP.julia_to_gap([1,nothing,1]) == xx
+
 end

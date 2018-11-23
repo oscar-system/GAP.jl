@@ -72,6 +72,9 @@ function julia_to_gap(obj::Array{T,1}, recursive::Val{Recursive}=Val(false), rec
     end
     for i in 1:len
         x = obj[i]
+        if x == nothing
+            continue
+        end
         if Recursive
 #=
             # It would be much nicer to write this, but we cannot in Julia 1.x, see
