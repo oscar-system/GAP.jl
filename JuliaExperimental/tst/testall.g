@@ -8,10 +8,10 @@ LoadPackage( "JuliaExperimental" );
 
 pairs:= [
   [ "gapnemo.tst", [ "Nemo" ] ],
+  [ "gapperm.tst", [] ],
   [ "hnf.tst", [ "Nemo" ] ],
   [ "numfield.tst", [ "Nemo" ] ],
   [ "realcyc.tst", [ "Nemo" ] ],
-  [ "record.tst", [] ],
   [ "singular.tst", [ "Singular" ] ],
   [ "utils.tst", [] ],
 ];

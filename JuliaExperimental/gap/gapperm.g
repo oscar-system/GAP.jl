@@ -42,8 +42,29 @@ BindGlobal( "ExtPermType",
     NewType( PermutationsFamily, IsExtPerm and IsPositionalObjectRep ) );
 
 BindGlobal( "PermutationInJulia",
-    gapperm -> Objectify( ExtPermType,
-       [ Julia.GAPPermutations.Permutation( ConvertedToJulia( ListPerm( gapperm ) ) ) ] ) );
+    function( gapperm, degree... )
+
+    if IsPerm( gapperm ) then
+      if Length( degree ) > 0 and IsInt( degree[1] ) then
+        gapperm:= ListPerm( gapperm, degree[1] );
+      else
+        gapperm:= ListPerm( gapperm );
+      fi;
+    elif IsPositionsList( gapperm ) then
+      if Length( degree ) > 0 and IsInt( degree[1] ) then
+        if degree[1] < Length( gapperm ) then
+          Error( "degree cannot be smaller than length of <gapperm>" );
+        fi;
+        gapperm:= Concatenation( gapperm,
+                                 [ Length( gapperm ) + 1 .. degree[1] ] );
+      fi;
+    else
+      Error( "<gapperm> must be a permutation or a list of positions" );
+    fi;
+
+    return Objectify( ExtPermType,
+       [ Julia.GAPPermutations.Permutation( GAPToJulia( gapperm ) ) ] );
+    end );
 
 BindGlobal( "WrappedPermutationInJulia",
     jperm -> Objectify( ExtPermType, [ jperm ] ) );
@@ -65,11 +86,11 @@ InstallMethod( ViewObj, [ IsExtPerm ], function( p )
     end );
 
 InstallMethod( \=, [ IsExtPerm, IsExtPerm ], function( p1, p2 )
-    return ConvertedFromJulia( Julia.Base.("==")( p1![1], p2![1] ) );
+    return Julia.Base.("==")( p1![1], p2![1] );
     end );
 
 InstallMethod( \<, [ IsExtPerm, IsExtPerm ], function( p1, p2 )
-    return ConvertedFromJulia( Julia.Base.isless( p1![1], p2![1] ) );
+    return Julia.Base.isless( p1![1], p2![1] );
     end );
 
 InstallMethod( \*, [ IsExtPerm, IsExtPerm ], function( p1, p2 )
@@ -79,23 +100,23 @@ InstallMethod( \*, [ IsExtPerm, IsExtPerm ], function( p1, p2 )
 
 InstallMethod( \^, [ IsExtPerm, IsInt ], function( p1, n )
     return WrappedPermutationInJulia( Julia.Base.("^")(
-               p1![1], ConvertedToJulia( n ) ) );
+               p1![1], GAPToJulia( n ) ) );
     end );
 
 InstallMethod( \^, [ IsInt, IsExtPerm ], function( i, p )
-    return ConvertedFromJulia( Julia.Base.("^")( ConvertedToJulia( i ), p![1] ) );
+    return JuliaToGAP( IsInt, Julia.Base.("^")( GAPToJulia( i ), p![1] ) );
     end );
 
 InstallMethod( \/, [ IsInt, IsExtPerm ], function( i, p )
-    return ConvertedFromJulia( Julia.Base.("/")( ConvertedToJulia( i ), p![1] ) );
+    return JuliaToGAP( IsInt, Julia.Base.("/")( GAPToJulia( i ), p![1] ) );
     end );
 
 InstallMethod( LargestMovedPoint, [ IsExtPerm ], function( p )
-    return ConvertedFromJulia( Julia.GAPPermutations.LargestMovedPointPerm( p![1] ) );
+    return JuliaToGAP( IsInt, Julia.GAPPermutations.LargestMovedPointPerm( p![1] ) );
     end );
 
 InstallMethod( Order, [ IsExtPerm ], function( p )
-    return ConvertedFromJulia( Julia.GAPPermutations.OrderPerm( p![1] ) );
+    return JuliaToGAP( IsInt, Julia.GAPPermutations.OrderPerm( p![1] ) );
     end );
 
 InstallMethod( One, [ IsExtPerm ], p -> JuliaIdentityPerm );

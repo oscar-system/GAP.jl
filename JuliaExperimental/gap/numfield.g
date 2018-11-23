@@ -79,7 +79,7 @@ ElementsFamily( FamilyObj( Nemo_QQ ) )!.matrixType:= NewType(
 ##  <names> must be a list of strings (then a multivariate ring is created).
 ##
 BindGlobal( "Nemo_PolynomialRing", function( R, names )
-    local type, juliaobj, efam, result, getindex, indets;
+    local type, juliaobj, efam, result, indets;
 
     type:= IsNemoPolynomialRing and IsAttributeStoringRep and IsFreeLeftModule
            and IsFLMLORWithOne;
@@ -102,11 +102,13 @@ BindGlobal( "Nemo_PolynomialRing", function( R, names )
 
     # Create the julia objects.
     if IsString( names ) then
-      juliaobj:= Julia.Nemo.PolynomialRing( JuliaPointer( R ), names );
+      juliaobj:= Julia.Nemo.PolynomialRing( JuliaPointer( R ),
+                                            GAPToJulia( names ) );
     elif IsList( names ) and ForAll( names, IsString ) then
       # Convert the names list from "Array{Any,1}" to "Array{String,1}".
       names:= Julia.Base.convert( JuliaEvalString( "Array{String,1}" ),
-                                  ConvertedToJulia( names ) );
+                                  GAPToJulia( names ) );
+#T prescribe the type, no convert needed then?
       juliaobj:= Julia.Nemo.PolynomialRing( JuliaPointer( R ), names );
     else
       Error( "<names> must be a string or a list of strings" );
@@ -123,13 +125,12 @@ BindGlobal( "Nemo_PolynomialRing", function( R, names )
     result!.isUnivariatePolynomialRing:= IsString( names );
 
     # Store the GAP list of wrapped Julia indeterminates.
-    getindex:= Julia.Base.getindex;
     if IsString( names ) then
       # univariate case
-      indets:= [ getindex( juliaobj, 2 ) ];
+      indets:= [ juliaobj[2] ];
     else
       # multivariate case
-      indets:= ConvertedFromJulia( getindex( juliaobj, 2 ) );
+      indets:= JuliaToGAP( IsList, juliaobj[2] );
     fi;
     indets:= List( indets,
                    x -> ObjectifyWithAttributes( rec(),
@@ -137,7 +138,7 @@ BindGlobal( "Nemo_PolynomialRing", function( R, names )
                             JuliaPointer, x ) );
 
     # Set attributes.
-    SetJuliaPointer( result, getindex( juliaobj, 1 ) );
+    SetJuliaPointer( result, juliaobj[1] );
     SetLeftActingDomain( result, R );
     SetIndeterminatesOfPolynomialRing( result, indets );
     SetGeneratorsOfLeftOperatorRingWithOne( result, indets );
@@ -176,7 +177,8 @@ BindGlobal( "Nemo_Polynomial", function( R, descr )
       if ForAll( descr, IsInt ) then
         # Convert the coefficient list from "Array{Any,1}" to "Array{Int,1}".
         descr:= Julia.Base.convert( JuliaEvalString( "Array{Int,1}" ),
-                                    ConvertedToJulia( descr ) );
+                                    GAPToJulia( descr ) );
+#T no need for convert if type prescribed!
       elif ForAll( descr, IsRat ) then
         # 'ConvertedToJulia' does not allow us to transfer rationals.
         fmpq:= Julia.Nemo.fmpq;
@@ -191,7 +193,7 @@ BindGlobal( "Nemo_Polynomial", function( R, descr )
         coeffs:= JuliaArrayOfFmpq( descr[1] );
         monoms:= Julia.Base.convert(
                      JuliaEvalString( "Array{Array{UInt,1},1}" ),
-                     TransposedMat( descr[2] ) );
+                     GAPToJulia( TransposedMat( descr[2] ) ) );
       else
         Error( "<descr> must be a list of length two" );
       fi;
@@ -221,9 +223,9 @@ BindGlobal( "GAPCoefficientsOfNemo_Polynomial", function( pol )
       info:= Julia.GAPNemoExperimental.CoefficientsOfUnivarateNemoPolynomialFmpq(
                  pol );
       info:= Julia.GAPNemoExperimental.CoefficientsNumDenOfFmpqArray( info );
-      num:= StructuralConvertedFromJulia( info[2] );
-      den:= StructuralConvertedFromJulia( info[3] );
-      if ConvertedFromJulia( info[1] ) = "int" then
+      num:= JuliaToGAP( IsList, info[2], true );
+      den:= JuliaToGAP( IsList, info[3], true );
+      if JuliaToGAP( info[1] ) = "int" then
         # Just convert the integers to GAP.
         return List( [ 1 .. Length( num ) ], i -> num[i] / den[i] );
       else
@@ -234,9 +236,9 @@ BindGlobal( "GAPCoefficientsOfNemo_Polynomial", function( pol )
     else
       info:= JuliaGetFieldOfObject( pol, "coeffs" );
       info:= Julia.GAPNemoExperimental.CoefficientsNumDenOfFmpqArray( info );
-      num:= StructuralConvertedFromJulia( info[2] );
-      den:= StructuralConvertedFromJulia( info[3] );
-      if ConvertedFromJulia( info[1] ) = "int" then
+      num:= JuliaToGAP( IsList, info[2], true );
+      den:= JuliaToGAP( IsList, info[3], true );
+      if JuliaToGAP( info[1] ) = "int" then
         # Just convert the integers to GAP.
         info:= List( [ 1 .. Length( num ) ], i -> num[i] / den[i] );
       else
@@ -248,7 +250,7 @@ BindGlobal( "GAPCoefficientsOfNemo_Polynomial", function( pol )
                       JuliaGetFieldOfObject( pol, "exps" ) );
 
       return [ info,
-               StructuralConvertedFromJulia( monomials ) ];
+               JuliaToGAP( IsList, monomials, true ) ];
     fi;
 end );
 
@@ -266,8 +268,7 @@ end );
 #F  Nemo_Field( <BaseField>, <GAP_coeffs>[, <name>] )
 ##
 BindGlobal( "Nemo_Field", function( F, descr... )
-    local name, coeffs, R, pol, juliaobj, efam, collfam, filt, result,
-          access, gen;
+    local name, coeffs, R, pol, juliaobj, efam, collfam, filt, result, gen;
 
     # Check the arguments.
     name:= "a";
@@ -301,7 +302,8 @@ BindGlobal( "Nemo_Field", function( F, descr... )
     # Create the julia objects.
     R:= Nemo_PolynomialRing( F, "$" );
     pol:= Nemo_Polynomial( R, coeffs );
-    juliaobj:= Julia.Nemo.NumberField( JuliaPointer( pol ), name );
+    juliaobj:= Julia.Nemo.NumberField( JuliaPointer( pol ),
+                                       GAPToJulia( name ) );
 
     # Create the GAP wrapper.
     # Note that elements from two NEMO field extensions cannot be compared,
@@ -318,11 +320,10 @@ BindGlobal( "Nemo_Field", function( F, descr... )
     result:= Objectify( NewType( collfam, filt ), rec() );
 
     # Set attributes.
-    access:= Julia.Base.getindex;
-    SetJuliaPointer( result, access( juliaobj, 1 ) );
+    SetJuliaPointer( result, juliaobj[1] );
 
     gen:= ObjectifyWithAttributes( rec(), efam!.defaultType,
-              JuliaPointer, access( juliaobj, 2 ) );
+              JuliaPointer, juliaobj[2] );
     SetLeftActingDomain( result, F );
     SetDefiningPolynomial( result, pol );
     SetRootOfDefiningPolynomial( result, gen );
@@ -356,7 +357,8 @@ BindGlobal( "ElementOfNemoNumberField", function( nemoF, coeffs )
 
     # Convert the list of integral coefficient vectors
     # to a suitable matrix in Julia (Nemo.fmpz_mat).
-    res:= Julia.GAPUtilsExperimental.MatrixFromNestedArray( [ coeffs ] );
+    res:= Julia.GAPUtilsExperimental.MatrixFromNestedArray(
+              GAPToJulia( [ coeffs ] ) );
     res:= Julia.Nemo.matrix( Julia.Nemo.ZZ, res );
 
     # Call the Julia function.
@@ -438,18 +440,15 @@ InstallMethod( PreImageElm,
     FamRangeEqFamElm,
     [ "IsIsomorphismToNemoField", "IsNemoFieldElement" ],
     function( iso, elm )
-    local numden, getindex, convert, num, den, coeffs, i;
+    local numden, convert, num, den, coeffs, i;
 
     numden:= Julia.GAPNumberFields.CoefficientVectorsNumDenOfNumberFieldElement(                 JuliaPointer( elm ), Dimension( Source( iso ) ) );
 
-    getindex:= Julia.Base.getindex;
     convert:= Julia.Base.convert;
-    num:= StructuralConvertedFromJulia(
-              convert( JuliaEvalString( "Array{Int,1}" ),
-                       getindex( numden, 1 ) ) );
-    den:= StructuralConvertedFromJulia(
-              convert( JuliaEvalString( "Array{Int,1}" ),
-                       getindex( numden, 2 ) ) );
+    num:= JuliaToGAP( IsList,
+              convert( JuliaEvalString( "Array{Int,1}" ), numden[1] ), true );
+    den:= JuliaToGAP( IsList,
+              convert( JuliaEvalString( "Array{Int,1}" ), numden[2] ), true );
     coeffs:= [];
     for i in [ 1 .. Length( num ) ] do
       coeffs[i]:= num[i] / den[i];
@@ -530,7 +529,7 @@ InstallOtherMethod( ViewString, [ "IsNemoObject" ],
 
 InstallOtherMethod( \=, [ "IsNemoObject", "IsNemoObject" ], NEMO_RANK_SHIFT,
     function( x, y )
-      return ConvertedFromJulia(
+      return JuliaToGAP(
                  Julia.Base.("==")( JuliaPointer( x ), JuliaPointer( y ) ) );
     end );
 
@@ -613,7 +612,8 @@ BindGlobal( "NemoMatrix", function( nemoF, gapmat )
 
       # Convert the list of integral coefficient vectors
       # to a suitable matrix in Julia (Nemo.fmpz_mat).
-      res:= Julia.GAPUtilsExperimental.MatrixFromNestedArray( coeffs );
+      res:= Julia.GAPUtilsExperimental.MatrixFromNestedArray(
+                GAPToJulia( coeffs ) );
 # The following does not work in Nemo 0.6.0 but works in Nemo 0.7.3 ...
       res:= Julia.Nemo.matrix( Julia.Nemo.ZZ, res );
 
@@ -638,11 +638,11 @@ end );
 #T different data format in Nemo for fmpz_mat and generic matrix over number fields!
 
 BindGlobal( "GAPMatrix", function( gapF, nemomat )
-    local ptr, m, n, d, efam, list, getindex, nums, dens, result, k, i, j;
+    local ptr, m, n, d, efam, list, nums, dens, result, k, i, j;
 
     ptr:= JuliaPointer( nemomat );
-    m:= ConvertedFromJulia( Julia.Nemo.rows( ptr ) );
-    n:= ConvertedFromJulia( Julia.Nemo.cols( ptr ) );
+    m:= Julia.Nemo.rows( ptr );
+    n:= Julia.Nemo.cols( ptr );
     d:= Dimension( gapF );
     efam:= ElementsFamily( FamilyObj( gapF ) );
 
@@ -658,9 +658,8 @@ Error( "sorry, not yet implemented for matrices of rationals ..." );
                  JuliaPointer( nemomat ), d );
 
       # Carry the coefficient vectors to GAP.
-      getindex:= Julia.Base.getindex;
-      nums:= GAPMatrix_fmpz_mat( getindex( list, 1 ) );
-      dens:= GAPMatrix_fmpz_mat( getindex( list, 2 ) );
+      nums:= GAPMatrix_fmpz_mat( list[1] );
+      dens:= GAPMatrix_fmpz_mat( list[2] );
 
       # Create the GAP matrix from the coefficient vectors.
       result:= [];
@@ -692,18 +691,18 @@ end );
 
 InstallMethod( NumberRows,
     [ "IsNemoMatrixObj" ],
-    nemomat -> ConvertedFromJulia( Julia.Nemo.rows( JuliaPointer( nemomat ) ) ) );
+    nemomat -> Julia.Nemo.rows( JuliaPointer( nemomat ) ) );
 
 InstallMethod( NumberColumns,
     [ "IsNemoMatrixObj" ],
-    nemomat -> ConvertedFromJulia( Julia.Nemo.cols( JuliaPointer( nemomat ) ) ) );
+    nemomat -> Julia.Nemo.cols( JuliaPointer( nemomat ) ) );
 
 #T hier!!
 
 
 InstallMethod( RankMat,
     [ "IsNemoMatrixObj" ],
-    nemomat -> ConvertedFromJulia( Julia.Base.rank( JuliaPointer( nemomat ) ) ) );
+    nemomat -> Julia.Base.rank( JuliaPointer( nemomat ) ) );
 #T RankMatDestructive?
 
 #T [] ? (absurd for mutable matrices)
@@ -741,13 +740,13 @@ InstallMethod( RankMat,
 InstallMethod( MatElm,
     [ "IsNemoMatrixObj", "IsPosInt", "IsPosInt" ],
     function( nemomat, i, j )
-      return Julia.Base.getindex( JuliaPointer( nemomat ), i, j );
+      return JuliaPointer( nemomat )[ i, j ];
     end );
 
 InstallMethod( \[\],
     [ "IsNemoMatrixObj", "IsPosInt", "IsPosInt" ],
     function( nemomat, i, j )
-      return Julia.Base.getindex( JuliaPointer( nemomat ), i, j );
+      return JuliaPointer( nemomat )[ i, j ];
     end );
 
 #T InstallMethod( SetMatElm,
