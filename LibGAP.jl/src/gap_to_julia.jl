@@ -97,7 +97,7 @@ function gap_to_julia(::Type{AbstractString},obj::MPtr)
 end
 gap_to_julia(::Type{Symbol},obj::MPtr) = Symbol(gap_to_julia(AbstractString,obj))
 
-gap_to_julia(type_obj,obj,recursion_dict=nothing) = gap_to_julia(type_obj,obj)
+gap_to_julia(type_obj,obj,recursion_dict) = gap_to_julia(type_obj,obj)
 
 ## Convert GAP string to Array{UInt8,1}
 function gap_to_julia( ::Type{Array{UInt8,1}}, obj :: MPtr )
