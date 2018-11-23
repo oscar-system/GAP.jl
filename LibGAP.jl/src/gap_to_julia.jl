@@ -13,6 +13,7 @@ of converted objects and should never be given by the user.
 gap_to_julia(::Type{GAPInputType},x::GAPInputType) = x
 gap_to_julia(::Type{Any},         x::GAPInputType) = gap_to_julia(x)
 gap_to_julia(::Type{Any},         x::Any         ) = x
+gap_to_julia(::Any,               x::Nothing     ) = nothing
 
 ## Integers
 gap_to_julia(::Type{Int128} ,x::Int64) = trunc(Int128 ,x)
@@ -125,7 +126,7 @@ function gap_to_julia( ::Type{Array{Obj,1}}, obj :: MPtr , recursion_dict = IdDi
     new_array = Array{Any,1}( undef, len_list)
     recursion_dict[obj] = new_array
     for i in 1:len_list
-        current_obj = obj[i]
+        current_obj = ElmList(obj,i)
         if haskey(recursion_dict,current_obj)
             new_array[ i ] = recursion_dict[current_obj]
         else
@@ -147,7 +148,30 @@ function gap_to_julia( ::Type{Array{T,1}}, obj :: MPtr, recursion_dict = IdDict(
     new_array = Array{T,1}( undef, len_list)
     recursion_dict[obj] = new_array
     for i in 1:len_list
-        current_obj = obj[ i ]
+        current_obj = ElmList(obj,i)
+        if haskey(recursion_dict,current_obj)
+            new_array[ i ] = recursion_dict[current_obj]
+        else
+            new_array[ i ] = gap_to_julia(T,current_obj,recursion_dict)
+            recursion_dict[ current_obj ] = new_array[ i ]
+        end
+    end
+    return new_array
+end
+
+## Special case for conversion of lists with holes
+function gap_to_julia( ::Type{Array{Union{Nothing,T},1}}, obj :: MPtr, recursion_dict = IdDict() ) where T
+    if ! Globals.IsList( obj )
+        throw(ArgumentError("<obj> is not a list"))
+    end
+    if haskey(recursion_dict,obj)
+        return recursion_dict[obj]
+    end
+    len_list = length(obj)
+    new_array = Array{Union{Nothing,T},1}( undef, len_list)
+    recursion_dict[obj] = new_array
+    for i in 1:len_list
+        current_obj = ElmList(obj,i)
         if haskey(recursion_dict,current_obj)
             new_array[ i ] = recursion_dict[current_obj]
         else

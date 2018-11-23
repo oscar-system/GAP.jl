@@ -89,6 +89,14 @@ function CharWithValue(x::Cuchar)
     return o
 end
 
+function ElmList(x::MPtr,position)
+    o = ccall( :GAP_ElmList,
+               Ptr{Cvoid},
+               (MPtr,Culong),
+               x,Culong(position))
+    return GET_FROM_GAP(o)
+end
+
 """
     (func::MPtr)(args...)
 
