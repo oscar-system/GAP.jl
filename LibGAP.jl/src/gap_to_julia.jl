@@ -89,13 +89,14 @@ function gap_to_julia( ::Type{Cuchar}, obj::MPtr)
 end
 
 ## Strings and symbols
-function gap_to_julia(::Type{AbstractString},obj::MPtr)
+function gap_to_julia(::Type{String},obj::MPtr)
     if ! Globals.IsStringRep(obj)
         throw(ArgumentError("<obj> is not a string"))
     end
     return CSTR_STRING(obj)
 end
-gap_to_julia(::Type{Symbol},obj::MPtr) = Symbol(gap_to_julia(AbstractString,obj))
+gap_to_julia(::Type{AbstractString},obj::MPtr) = gap_to_julia(String,obj)
+gap_to_julia(::Type{Symbol},obj::MPtr) = Symbol(gap_to_julia(String,obj))
 
 gap_to_julia(type_obj,obj,recursion_dict) = gap_to_julia(type_obj,obj)
 
