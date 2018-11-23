@@ -109,7 +109,7 @@ function gap_to_julia( ::Type{Array{UInt8,1}}, obj :: MPtr )
 end
 
 ## Arrays
-function gap_to_julia( ::Type{Array{GAPObj,1}}, obj :: MPtr , recursion_dict = IdDict() )
+function gap_to_julia( ::Type{Array{Obj,1}}, obj :: MPtr , recursion_dict = IdDict() )
     if ! Globals.IsList( obj )
         throw(ArgumentError("<obj> is not a list"))
     end
@@ -158,7 +158,7 @@ function gap_to_julia( ::Type{T}, obj::MPtr, recursion_dict = IdDict() ) where T
     if ! Globals.IsList(obj)
         throw(ArgumentError("<obj> is not a list"))
     end
-    list_translated = gap_to_julia(Array{GAPObj,1},obj)
+    list_translated = gap_to_julia(Array{Obj,1},obj)
     parameters = T.parameters
     list = Array{Any,1}(undef,length(parameters))
     for i in 1:length(parameters)

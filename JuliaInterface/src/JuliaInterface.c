@@ -55,7 +55,9 @@ Obj Func_JULIAINTERFACE_INTERNAL_INIT(Obj self)
 {
     jl_module_t * gap_module = get_module_from_string("GAP");
     JULIA_GAPFFE_type =
-        (jl_datatype_t *)jl_get_global(gap_module, jl_symbol("GapFFE"));
+        (jl_datatype_t *)jl_get_global(gap_module, jl_symbol("FFE"));
+    if (!JULIA_GAPFFE_type)
+        ErrorMayQuit("Could not locate the GAP.FFE datatype", 0, 0);
     return NULL;
 }
 
