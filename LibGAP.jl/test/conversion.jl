@@ -99,6 +99,10 @@
     conv = GAP.gap_to_julia(Tuple{Tuple{Int64},Tuple{Int64}},xx)
     @test conv[1] === conv[2]
 
+    ## Catch conversions to types that are not supported
+    xx = GAP.julia_to_gap( "a" )
+    @test_throws MethodError GAP.gap_to_julia( Dict{Int64,Int64}, xx )
+
 end
 
 @testset "conversion to GAP" begin
