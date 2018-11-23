@@ -102,11 +102,15 @@ gap_to_julia(type_obj,obj,recursion_dict) = gap_to_julia(type_obj,obj)
 
 ## Convert GAP string to Array{UInt8,1}
 function gap_to_julia( ::Type{Array{UInt8,1}}, obj :: MPtr )
-    if ! Globals.IsStringRep( obj )
-        return Array{UInt8,1}(gap_to_julia(Array{UInt16,1},obj))
+    ## convert strings to uint8 lists, if requested
+    if Globals.IsStringRep( obj )
+        array = UNSAFE_CSTR_STRING( obj )
+        return deepcopy(array)
+    elseif Globals.IsList( obj )
+        return Array{UInt8,1}(map(i->gap_to_julia(UInt8,obj[i]),1:length(obj)))
+    else
+        throw(ArgumentError("<obj> is not a list"))
     end
-    array = UNSAFE_CSTR_STRING( obj )
-    return deepcopy(array)
 end
 
 ## Arrays
