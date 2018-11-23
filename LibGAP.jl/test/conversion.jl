@@ -55,6 +55,7 @@
 
     ## Strings & Symbols
     x = GAP.EvalString("\"foo\"")
+    @test GAP.gap_to_julia(String,x) == "foo"
     @test GAP.gap_to_julia(AbstractString,x) == "foo"
     @test GAP.gap_to_julia(x) == "foo"
     @test GAP.gap_to_julia(Symbol,x) == :foo
