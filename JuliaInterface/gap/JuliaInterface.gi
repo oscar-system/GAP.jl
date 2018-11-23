@@ -32,11 +32,11 @@ BindGlobal( "_WrapJuliaModule",
   function( name, julia_pointer )
     local module;
 
-    module := rec( storage := rec( ),
-                   julia_pointer := julia_pointer );
+    module := rec( storage := rec( ) );
 
     ObjectifyWithAttributes( module, TheTypeOfJuliaModules,
-                             Name, Concatenation( "<Julia module ", name, ">" ) );
+                             Name, Concatenation( "<Julia module ", name, ">" ),
+                             JuliaPointer, julia_pointer );
 
     return module;
 
@@ -53,7 +53,7 @@ InstallMethod( \.,
 
     rnam := NameRNam( rnum );
 
-    global_variable := _JuliaGetGlobalVariableByModule( rnam, module!.julia_pointer );
+    global_variable := _JuliaGetGlobalVariableByModule( rnam, JuliaPointer( module ) );
     if global_variable = fail then
         Error( rnam, " is not bound in Julia" );
     fi;
@@ -82,7 +82,7 @@ InstallMethod( IsBound\.,
     if IsBound\.( module!.storage, rnum ) then
         return true;
     fi;
-    return fail <> _JuliaGetGlobalVariableByModule( NameRNam( rnum ), module!.julia_pointer );
+    return fail <> _JuliaGetGlobalVariableByModule( NameRNam( rnum ), JuliaPointer( module ) );
 end );
 
 
@@ -171,7 +171,7 @@ InstallGlobalFunction( ImportJuliaModuleIntoGAP,
 
     current_module := Julia.(name);
     julia_list_func := JuliaFunction( "get_symbols_in_module", "GAPUtils" );
-    list := JuliaToGAP( IsList, julia_list_func( current_module!.julia_pointer ), true );
+    list := JuliaToGAP( IsList, julia_list_func( JuliaPointer( current_module ) ), true );
     for i in list do
         \.( current_module, RNamObj( i ) );
     od;
@@ -211,6 +211,6 @@ InstallGlobalFunction( JuliaModule,
     if not IsJuliaModule( Julia.(name) ) then
         Error( "JuliaModule: <name> is not a module" );
     fi;
-    return Julia.(name)!.julia_pointer;
+    return JuliaPointer( Julia.(name) );
 end );
 

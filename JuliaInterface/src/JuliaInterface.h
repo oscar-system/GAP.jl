@@ -4,6 +4,9 @@
 #include <julia.h>
 #include <libgap-api.h>
 
+extern Obj JULIAINTERFACE_IsJuliaWrapper;
+extern Obj JULIAINTERFACE_JuliaPointer;
+
 // internal helper
 extern NOINLINE void handle_jl_exception(void);
 

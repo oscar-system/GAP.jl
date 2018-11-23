@@ -16,11 +16,6 @@ JuliaIncludeFile(
 ##
 
 
-#############################################################################
-##
-DeclareAttribute( "JuliaPointer", IsObject );
-
-
 ##############################################################################
 ##
 #F  JuliaMatrixFromGapMatrix( <gapmatrix> )

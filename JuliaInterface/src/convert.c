@@ -29,6 +29,20 @@ jl_value_t * julia_gap(Obj obj)
     if (obj == False) {
         return jl_false;
     }
+    UInt tnum = TNUM_OBJ(obj);
+    if ((tnum == T_COMOBJ || tnum == T_POSOBJ
+#ifdef HPCGAP
+         || tnum == T_APOSOBJ || tnum == T_ACOMOBJ
+#endif
+         ) &&
+        CALL_1ARGS(JULIAINTERFACE_IsJuliaWrapper, obj) == True) {
+        Obj return_value = CALL_1ARGS(JULIAINTERFACE_JuliaPointer, obj);
+        if (!IS_JULIA_OBJ(return_value)) {
+            ErrorMayQuit("JuliaPointer must be a Julia object (not a %s)",
+                         (Int)TNAM_OBJ(return_value), 0);
+        }
+        return GET_JULIA_OBJ(return_value);
+    }
     return (jl_value_t *)obj;
 }
 
