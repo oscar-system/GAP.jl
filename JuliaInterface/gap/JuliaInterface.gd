@@ -18,17 +18,22 @@ BindGlobal( "_JuliaFunctions", rec( ) );
 #! @Returns a Julia function
 #! @Description
 #!  Returns the Julia function <A>function_name</A> from the module <A>module_name</A>.
-#!  Both arguments must be strings. If <A>module_name</A> is not given, the function
-#!  is taken from the <C>Main</C> module. The resulting Julia function can be called on either Julia objects
-#!  or objects that can be boxed to Julia objects. The result will always be a Julia object.
+#!  Both arguments must be strings. If <A>module_name</A> is not given,
+#!  the function is taken from the <C>Main</C> module.
+#!  The resulting Julia function can be called on either Julia objects
+#!  or objects that can be boxed to Julia objects.
+#!
+#!  The result will always be a Julia object.
 DeclareGlobalFunction( "JuliaFunction" );
 
 #! @Arguments variable_name[, module_name]
 #! @Returns a Julia object
 #! @Description
 #!  Returns the Julia object <A>variable_name</A> from the module <A>module_name</A>.
-#!  Both arguments must be strings. If <A>module_name</A> is not given, the variable
-#!  is taken from the <C>Main</C> module. The result of this function is a Julia object, that can
+#!  Both arguments must be strings. If <A>module_name</A> is not given, 
+#!  the variable is taken from the <C>Main</C> module.
+#!
+#!  The result of this function is a Julia object, that can
 #!  be passed as argument to Julia functions.
 DeclareGlobalFunction( "JuliaGetGlobalVariable" );
 
@@ -67,7 +72,22 @@ DeclareGlobalFunction( "JuliaIncludeFile" );
 #!  and then load these files with <Ref Func="JuliaIncludeFile"/>.
 DeclareGlobalFunction( "JuliaImportPackage" );
 
-DeclareCategory( "IsJuliaModule", IsObject );
+#! @Description
+#!  If any component or positional object <C>obj</C> is in this category,
+#!  then calling a Julia function with <C>obj</C> as an argument
+#!  will not pass it as an <C>MPtr</C>,
+#!  but instead <C>JuliaPointer(obj)</C> is passed, which must be a Julia object.
+#!  This allows implementing high-level wrapper objects
+#!  for Julia object that behave just like the wrapped Julia
+#!  objects when used as arguments in calls to Julia functions.
+DeclareCategory( "IsJuliaWrapper", IsObject );
+
+#! @Description
+#!  Attribute for objects in the category <C>IsJuliaWrapper</C>.
+#!  The value of this attribute must be a Julia object.
+DeclareAttribute( "JuliaPointer", IsJuliaWrapper );
+
+DeclareCategory( "IsJuliaModule", IsObject and IsJuliaWrapper  );
 BindGlobal( "TheFamilyOfJuliaModules", NewFamily( "TheFamilyOfJuliaModules" ) );
 BindGlobal( "TheTypeOfJuliaModules", NewType( TheFamilyOfJuliaModules, IsJuliaModule and IsAttributeStoringRep ) );
 

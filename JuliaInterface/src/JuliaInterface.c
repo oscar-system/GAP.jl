@@ -25,6 +25,8 @@ jl_datatype_t * gap_datatype_mptr;
 Obj  TheTypeJuliaObject;
 UInt T_JULIA_OBJ;
 
+Obj JULIAINTERFACE_IsJuliaWrapper;
+Obj JULIAINTERFACE_JuliaPointer;
 
 void handle_jl_exception(void)
 {
@@ -399,6 +401,9 @@ static Int InitKernel(StructInitInfo * module)
     gap_datatype_mptr =
         (jl_datatype_t *)jl_get_global(gap_module, jl_symbol("MPtr"));
     GAP_ASSERT(gap_datatype_mptr);
+
+    ImportFuncFromLibrary("IsJuliaWrapper", &JULIAINTERFACE_IsJuliaWrapper);
+    ImportFuncFromLibrary("JuliaPointer", &JULIAINTERFACE_JuliaPointer);
 
     // return success
     return 0;
