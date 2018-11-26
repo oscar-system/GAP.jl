@@ -19,6 +19,11 @@ function fitsGAPSmallIntRep( x::Nemo.fmpz )
 end
 
 
+function CoefficientsOfUnivarateNemoPolynomial( pol )
+    return map( i -> Nemo.coeff( pol, i ), 0:(length(pol)-1) )
+end
+
+# still needed?
 function CoefficientsOfUnivarateNemoPolynomialFmpq( pol::Nemo.fmpq_poly )
     return map( i -> Nemo.coeff( pol, i ), 0:(length(pol)-1) )
 end

@@ -4,70 +4,36 @@
 ##
 gap> START_TEST( "numfield.tst" );
 
-# Nemo polynomials, univariate
-gap> R:= Nemo_PolynomialRing( Nemo_QQ, "x" );
-Nemo_QQ[x]
-gap> Nemo_Polynomial( R, [ 1, 0, 1 ] );
-<<Julia: x^2+1>>
-gap> Nemo_Polynomial( R, [ 1, 0, 1/2 ] );
-<<Julia: 1//2*x^2+1>>
-
-# Nemo polynomials, multivariate
-gap> R:= Nemo_PolynomialRing( Nemo_QQ, [ "x", "y" ] );
-Nemo_QQ[x,y]
-gap> Nemo_Polynomial( R, [ [ 1, 2, 3 ], [ [ 4, 5, 6 ], [ 7, 8, 9 ] ] ] );
-<<Julia: 3*x^6*y^9 + 2*x^5*y^8 + x^4*y^7>>
-gap> Nemo_Polynomial( R, [ [ 1, 2, 3/2 ], [ [ 4, 5, 6 ], [ 7, 8, 9 ] ] ] );
-<<Julia: 3/2*x^6*y^9 + 2*x^5*y^8 + x^4*y^7>>
-
-# polynomial arithmetics?
-
-# Nemo number fields
-gap> x:= X( Rationals );;
-gap> f:= AlgebraicExtension( Rationals, x^2+1 );;
-gap> iso:= IsomorphismToNemoField( f );;
-gap> ff:= Range( iso );;  # remove one semicolon when GAP has the right method
-gap> one:= Image( iso, One( f ) );
-<<Julia: 1>>
-gap> PreImage( iso, one );
-!1
-gap> a:= RootOfDefiningPolynomial( f );
-a
-gap> gen:= Image( iso, a );
-<<Julia: a>>
-gap> PreImage( iso, gen );
-a
-
-# Arithmetic operations in number fields? (which methods get called?)
-
-# matrix over Z
-gap> mat:= NemoMatrix( Nemo_ZZ, IdentityMat( 2 ) );
-<<Julia: [1 0]
-[0 1]>>
-
-# matrix over Q
-gap> mat:= NemoMatrix( Nemo_QQ, IdentityMat( 2 ) );
-<<Julia: [1 0]
-[0 1]>>
-
 # matrix over ext. field
-gap> x:= X( Rationals );;
+gap> x:= X( Rationals, "x" );;
 gap> f:= AlgebraicExtension( Rationals, x^2+1 );;
-gap> ff:= Nemo_Field( f );;
+gap> c:= ContextGAPNemo( f );
+<context for alg. ext. field over Rationals, w.r.t. polynomial x^2+1>
 gap> z:= Zero( f );;  o:= One( f );;  a:= RootOfDefiningPolynomial( f );;
 gap> mat:= [ [ o, a/2 ], [ z, o ] ];
 [ [ !1, 1/2*a ], [ !0, !1 ] ]
-gap> nmat:= NemoMatrix( ff, mat );
+gap> nmat:= GAPToNemo( c, mat );
 <<Julia: [1 1//2*a]
 [0 1]>>
+gap> JuliaTypeInfo( JuliaPointer( nmat ) );
+"AbstractAlgebra.Generic.Mat{Nemo.nf_elem}"
 gap> PrintObj( nmat );  Print( "\n" );
 [1 1//2*a]
 [0 1]
-gap> TraceMat( nmat );
+gap> nmat + 1;           # DO WE REALLY WANT THIS RESULT???
+<<Julia: [2 1//2*a]
+[0 2]>>
+gap> tr:= TraceMat( nmat );
 <<Julia: 2>>
-gap> GAPMatrix( f, nmat );
+gap> JuliaTypeInfo( JuliaPointer( tr ) );
+"Nemo.nf_elem"
+gap> det:= DeterminantMat( nmat );
+<<Julia: 1>>
+gap> JuliaTypeInfo( JuliaPointer( det ) );
+"Nemo.nf_elem"
+gap> NemoToGAP( c, nmat );
 [ [ !1, 1/2*a ], [ !0, !1 ] ]
-gap> no:= One( ff );
+gap> no:= GAPToNemo( c, One( f ) );
 <<Julia: 1>>
 gap> no + 1;
 <<Julia: 2>>

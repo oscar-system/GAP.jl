@@ -19,6 +19,10 @@ export NemoElementOfNumberField,
 
 # export ConvertedToJulia_Cyclotomics
 
+function VectorToArray( mat )
+    return map( i -> mat[1,i], 1:size( mat, 2 ) )
+end
+
 
 """
     NemoElementOfNumberField( f, lst, denom )
