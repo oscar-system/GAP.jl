@@ -415,6 +415,17 @@ InstallOtherMethod( One, [ "IsSingularObject" ], 200,
 ##  There are high ranked methods for polynomials in GAP,
 ##  thus we have to increase the ranks of our methods.
 ##
+
+
+##############################################################################
+##
+#M  Degree( <pol> ) . . . . . . . . . . . . . .  for a multivariate polynomial
+##
+InstallOtherMethod( Degree,
+    [ "IsSingularPolynomial" ],
+    pol -> Julia.Singular.degree( JuliaPointer( pol ) ) );
+
+
 InstallOtherMethod( ViewString,
     [ "IsSingularObject" ],
     x -> Concatenation( "<", ViewString( JuliaPointer( x ) ), ">" ) );
@@ -422,7 +433,7 @@ InstallOtherMethod( ViewString,
 InstallOtherMethod( \=,
     [ "IsSingularObject", "IsSingularObject" ], 100,
     function( x, y )
-      return Julia.Base.("==")( JuliaPointer( x ), JuliaPointer( y ) );
+      return Julia.Base.\=\=( JuliaPointer( x ), JuliaPointer( y ) );
     end );
 
 #T 'Singular.jl' does not define 'isless' methods for polynomials.
@@ -436,80 +447,80 @@ InstallOtherMethod( \+,
     [ "IsSingularObject", "IsSingularObject" ], 100,
     function( x, y )
       return SingularElement( x,
-                 Julia.Base.("+")( JuliaPointer( x ), JuliaPointer( y ) ) );
+                 Julia.Base.\+( JuliaPointer( x ), JuliaPointer( y ) ) );
     end );
 
 InstallOtherMethod( \+,
-    [ "IsSingularObject", "IsInt and IsSmallIntRep" ], 100,
+    [ "IsSingularObject", "IsInt" ], 100,
     function( x, y )
       return SingularElement( x,
-                 Julia.Base.("+")( JuliaPointer( x ), y ) );
+                 Julia.Base.\+( JuliaPointer( x ), y ) );
     end );
 
 InstallOtherMethod( \+,
-    [ "IsInt and IsSmallIntRep", "IsSingularObject" ], 100,
+    [ "IsInt", "IsSingularObject" ], 100,
     function( x, y )
       return SingularElement( y,
-                 Julia.Base.("+")( x, JuliaPointer( y ) ) );
+                 Julia.Base.\+( x, JuliaPointer( y ) ) );
     end );
 
 InstallOtherMethod( AdditiveInverse,
     [ "IsSingularObject" ], 100,
-    x -> SingularElement( x, Julia.Base.("-")( JuliaPointer( x ) ) ) );
+    x -> SingularElement( x, Julia.Base.\-( JuliaPointer( x ) ) ) );
 
 InstallOtherMethod( \-,
     [ "IsSingularObject", "IsSingularObject" ], 100,
     function( x, y )
       return SingularElement( x,
-                 Julia.Base.("-")( JuliaPointer( x ), JuliaPointer( y ) ) );
+                 Julia.Base.\-( JuliaPointer( x ), JuliaPointer( y ) ) );
     end );
 
 InstallOtherMethod( \-,
-    [ "IsSingularObject", "IsInt and IsSmallIntRep" ], 100,
+    [ "IsSingularObject", "IsInt" ], 100,
     function( x, y )
       return SingularElement( x,
-                 Julia.Base.("-")( JuliaPointer( x ), y ) );
+                 Julia.Base.\-( JuliaPointer( x ), y ) );
     end );
 
 InstallOtherMethod( \-,
-    [ "IsInt and IsSmallIntRep", "IsSingularObject" ], 100,
+    [ "IsInt", "IsSingularObject" ], 100,
     function( x, y )
       return SingularElement( y,
-                 Julia.Base.("-")( x, JuliaPointer( y ) ) );
+                 Julia.Base.\-( x, JuliaPointer( y ) ) );
     end );
 
 InstallOtherMethod( \*,
     [ "IsSingularObject", "IsSingularObject" ], 100,
     function( x, y )
       return SingularElement( x,
-                 Julia.Base.("*")( JuliaPointer( x ), JuliaPointer( y ) ) );
+                 Julia.Base.\*( JuliaPointer( x ), JuliaPointer( y ) ) );
     end );
 
 InstallOtherMethod( \*,
-    [ "IsSingularObject", "IsInt and IsSmallIntRep" ], 100,
+    [ "IsSingularObject", "IsInt" ], 100,
     function( x, y )
       return SingularElement( x,
-                 Julia.Base.("*")( JuliaPointer( x ), y ) );
+                 Julia.Base.\*( JuliaPointer( x ), y ) );
     end );
 
 InstallOtherMethod( \*,
-    [ "IsInt and IsSmallIntRep", "IsSingularObject" ], 100,
+    [ "IsInt", "IsSingularObject" ], 100,
     function( x, y )
       return SingularElement( y,
-                 Julia.Base.("*")( x, JuliaPointer( y ) ) );
+                 Julia.Base.\*( x, JuliaPointer( y ) ) );
     end );
 
 InstallOtherMethod( \/,
-    [ "IsSingularObject", "IsInt and IsSmallIntRep" ], 100,
+    [ "IsSingularObject", "IsInt" ], 100,
     function( x, y )
       return SingularElement( x,
                  Julia.Singular.divexact( JuliaPointer( x ), y ) );
     end );
 
 InstallOtherMethod( \^,
-    [ "IsSingularObject", "IsPosInt and IsSmallIntRep" ], 100,
+    [ "IsSingularObject", "IsPosInt" ], 100,
     function( x, n )
-      return SingularElement( x, Julia.Base.("^")( JuliaPointer( x ), n ) );
+      return SingularElement( x, Julia.Base.\^( JuliaPointer( x ), n ) );
     end );
 
 

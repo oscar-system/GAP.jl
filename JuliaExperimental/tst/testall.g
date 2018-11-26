@@ -7,6 +7,7 @@
 LoadPackage( "JuliaExperimental" );
 
 pairs:= [
+  [ "context.tst", [ "Nemo" ] ],
   [ "gapnemo.tst", [ "Nemo" ] ],
   [ "gapperm.tst", [] ],
   [ "hnf.tst", [ "Nemo" ] ],
@@ -14,6 +15,7 @@ pairs:= [
   [ "realcyc.tst", [ "Nemo" ] ],
   [ "singular.tst", [ "Singular" ] ],
   [ "utils.tst", [] ],
+  [ "zmodnz.tst", [ "Nemo" ] ],
 ];
 
 dirs:= DirectoriesPackageLibrary( "JuliaExperimental", "tst" );
