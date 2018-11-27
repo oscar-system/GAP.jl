@@ -93,12 +93,20 @@
     x = GAP.EvalString("(1,2,3)")
     @test GAP.gap_to_julia(x) == x
 
-    ## Recursive conversions
+    ## Conversions involving circular references
     xx = GAP.EvalString("l:=[1];x:=[l,l];")
     conv = GAP.gap_to_julia(xx)
     @test conv[1] === conv[2]
     conv = GAP.gap_to_julia(Tuple{Tuple{Int64},Tuple{Int64}},xx)
     @test conv[1] === conv[2]
+
+    xx = GAP.EvalString("[~]");
+    conv = GAP.gap_to_julia(xx)
+    @test conv === conv[1]
+
+    xx = GAP.EvalString("rec(a := 1, b := ~)");
+    conv = GAP.gap_to_julia(xx)
+    @test conv === conv[:b]
 
     ## Catch conversions to types that are not supported
     xx = GAP.julia_to_gap( "a" )
@@ -167,19 +175,42 @@ end
     
     ## Dictionaries
     x = GAP.EvalString(" rec( foo := 1, bar := \"foo\" )" )
+    # ... recursive conversion
     y = Dict{Symbol,Any}( :foo => 1, :bar => "foo" )
     @test GAP.julia_to_gap(y,Val(true)) == x
+    # ... non-recursive conversion
     x = GAP.EvalString(" rec( foo := 1, bar := JuliaEvalString(\"\\\"foo\\\"\") )" )
     @test GAP.julia_to_gap(y) == x
 
-    ## Recursive conversions
+    ## Conversions with identical sub-objects
     l = [1]
     yy = [l,l]
-    xx = GAP.EvalString("l:=[1];x:=[l,l];")
-    conv = GAP.julia_to_gap(xx)
-    @test GAP.Globals.IsIdenticalObj(conv[1],conv[2])
+    # ... recursive conversion
+    conv = GAP.julia_to_gap(yy, Val(true))
+    @test isa(conv[1], GAP.MPtr)
+    @test conv[1] === conv[2]
+    # ... non-recursive conversion
+    conv = GAP.julia_to_gap(yy, Val(false))
+    @test isa(conv[1], Array{Int64,1})
+    @test conv[1] === conv[2]
 
-    xx = GAP.EvalString("[~]");
-    @test xx === xx[1]
+    ## converting a list with circular refs
+    yy = Array{Any,1}(undef,2)
+    yy[1] = yy;
+    yy[2] = yy;
+    # ... recursive conversion
+    conv = GAP.julia_to_gap(yy, Val(true));
+    @test conv[1] === conv
+    @test conv[1] === conv[2]
+    # ... non-recursive conversion
+    conv = GAP.julia_to_gap(yy, Val(false))
+    @test conv[1] !== conv
+    @test conv[1] === conv[2]
+
+    ## converting a dictionary with circular refs
+    d = Dict{String,Any}("a" => 1)
+    d["b"] = d
+    conv = GAP.julia_to_gap(d, Val(true));
+    @test conv === conv.b
 
 end
