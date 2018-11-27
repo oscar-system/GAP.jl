@@ -239,7 +239,7 @@ function gap_to_julia(x::MPtr)
     elseif Globals.IsString(x)
         return gap_to_julia(AbstractString,x)
     elseif Globals.IsList(x)
-        return gap_to_julia(Array{Any,1},x)
+        return gap_to_julia(Array{Union{Any,Nothing},1},x)
     elseif Globals.IsRecord(x)
         return gap_to_julia(Dict{Symbol,Any},x)
     end
