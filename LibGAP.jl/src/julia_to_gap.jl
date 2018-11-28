@@ -62,20 +62,14 @@ julia_to_gap(x::Symbol) = MakeString(string(x))
 
 ## Generic caller for optional arguments
 julia_to_gap(obj::Any, recursive, recursion_dict ) = julia_to_gap(obj)
-#=
-function julia_to_gap(obj::Any, recursive, recursion_dict )
-    if haskey(recursion_dict,obj)
-        return recursion_dict[obj]
-    end
-    return julia_to_gap(obj)
-end
-=#
 
 ## Arrays
 function julia_to_gap(obj::Array{T,1}, recursive::Val{Recursive}=Val(false), recursion_dict = IdDict()) where Recursive where T
     len = length(obj)
     ret_val = NewPlist(len)
-    recursion_dict[obj] = ret_val
+    if Recursive
+        recursion_dict[obj] = ret_val
+    end
     for i in 1:len
         x = obj[i]
         if Recursive
@@ -106,7 +100,11 @@ end
 ## Dictionaries
 function julia_to_gap(obj::Dict{T,S}, recursive::Val{Recursive}=Val(false), recursion_dict = IdDict()) where Recursive where S where T <: Union{Symbol,AbstractString}
 
-    recursion_dict[obj] = record = EvalString("rec()")
+    # FIXME: add a dedicated method for creating an empty GAP record
+    record = EvalString("rec()")
+    if Recursive
+        recursion_dict[obj] = record
+    end
     for (x,y) in obj
         x = GAP.Globals.RNamObj(MakeString(string(x)))
         if Recursive
