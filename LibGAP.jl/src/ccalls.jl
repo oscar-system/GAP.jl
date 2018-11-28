@@ -112,13 +112,12 @@ Globals = GlobalsType(Dict{Symbol,Cuint}())
 
 function getproperty(funcobj::GlobalsType, name::Symbol)
     cache = getfield(funcobj,:funcs)
-    if haskey(cache, name)
-        gvar = cache[name]
-    else
+
+    gvar = get!(cache, name) do
         name_string = string(name)
-        gvar = ccall(:GVarName, Cuint, (Ptr{UInt8},), name_string)
-        cache[name] = gvar
+        ccall(:GVarName, Cuint, (Ptr{UInt8},), name_string)
     end
+
     v = ccall(:ValGVar, Ptr{Cvoid}, (Cuint,), gvar)
     v = GET_FROM_GAP(v)
     if v == nothing
