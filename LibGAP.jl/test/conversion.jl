@@ -112,7 +112,7 @@
     xx = GAP.julia_to_gap( "a" )
     @test_throws MethodError GAP.gap_to_julia( Dict{Int64,Int64}, xx )
 
-    ## Test nothing
+    ## Test converting GAP lists with holes in them
     xx = GAP.EvalString( "[1,,1]" )
     @test GAP.gap_to_julia(xx) == Any[1,nothing,1]
     @test GAP.gap_to_julia(Array{Any,1},xx) == Any[1,nothing,1]
@@ -222,7 +222,7 @@ end
     conv = GAP.julia_to_gap(d, Val(true));
     @test conv === conv.b
 
-    ## Test nothing
+    ## Test converting lists with 'nothing' in them -> should be converted to a hole in the list
     xx = GAP.EvalString( "[1,,1]" )
     @test GAP.julia_to_gap([1,nothing,1]) == xx
 
