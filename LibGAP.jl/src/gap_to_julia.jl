@@ -126,7 +126,7 @@ function gap_to_julia( ::Type{Array{Obj,1}}, obj :: MPtr , recursion_dict = IdDi
     new_array = Array{Any,1}( undef, len_list)
     recursion_dict[obj] = new_array
     for i in 1:len_list
-        current_obj = ElmList(obj,i)
+        current_obj = ElmList(obj,i)  # returns 'nothing' for holes in the list
         if haskey(recursion_dict,current_obj)
             new_array[ i ] = recursion_dict[current_obj]
         else
@@ -159,7 +159,7 @@ function gap_to_julia( ::Type{Array{T,1}}, obj :: MPtr, recursion_dict = IdDict(
     return new_array
 end
 
-## Special case for conversion of lists with holes
+## Special case for conversion of lists with holes; these are converted into 'nothing'
 function gap_to_julia( ::Type{Array{Union{Nothing,T},1}}, obj :: MPtr, recursion_dict = IdDict() ) where T
     if ! Globals.IsList( obj )
         throw(ArgumentError("<obj> is not a list"))
