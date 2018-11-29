@@ -36,12 +36,16 @@ jl_value_t * julia_gap(Obj obj)
 #endif
          ) &&
         CALL_1ARGS(JULIAINTERFACE_IsJuliaWrapper, obj) == True) {
-        Obj return_value = CALL_1ARGS(JULIAINTERFACE_JuliaPointer, obj);
-        if (!IS_JULIA_OBJ(return_value)) {
-            ErrorMayQuit("JuliaPointer must be a Julia object (not a %s)",
-                         (Int)TNAM_OBJ(return_value), 0);
+        obj = CALL_1ARGS(JULIAINTERFACE_JuliaPointer, obj);
+        if (IS_JULIA_OBJ(obj)) {
+            return GET_JULIA_OBJ(obj);
         }
-        return GET_JULIA_OBJ(return_value);
+        if (IS_JULIA_FUNC(obj)) {
+            return GET_JULIA_FUNC(obj);
+        }
+        // TODO: also allow wrapping auto-converted Julia objects???
+        ErrorMayQuit("JuliaPointer must be a Julia object (not a %s)",
+                     (Int)TNAM_OBJ(obj), 0);
     }
     return (jl_value_t *)obj;
 }
