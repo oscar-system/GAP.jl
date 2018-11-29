@@ -1,10 +1,6 @@
 ##
 gap> START_TEST( "utils.tst" );
 
-##  We want to call some functions from the Julia module Base.
-gap> ImportJuliaModuleIntoGAP( "Base" );
-gap> ImportJuliaModuleIntoGAP( "GAPUtils" : NoImport := true );
-
 ##
 gap> JuliaTypeInfo( 1 );
 "Int64"
@@ -33,6 +29,16 @@ Error, JuliaSetVal: <name> must be a string
 gap> JuliaSetVal("foo", JuliaEvalString("1"));
 gap> JuliaGetGlobalVariable("foo");
 1
+gap> JuliaGetGlobalVariable("foo_bar_quux_not_defined");
+fail
+gap> JuliaGetGlobalVariable();
+Error, arguments must be strings function_name[,module_name]
+gap> JuliaGetGlobalVariable(fail);
+Error, arguments must be strings function_name[,module_name]
+gap> JuliaGetGlobalVariable("foo", fail);
+Error, arguments must be strings function_name[,module_name]
+gap> JuliaGetGlobalVariable("parse", "Base");
+<Julia: parse>
 
 ##
 gap> Julia.Core.Tuple( GAPToJulia( JuliaEvalString( "Array{Any,1}" ), [] ) );

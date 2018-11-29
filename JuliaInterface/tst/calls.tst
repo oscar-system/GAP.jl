@@ -261,6 +261,18 @@ gap> h6C(true,2,3,4,5,6);
 Error, TypeError: in h6, in cfunction, expected Ptr{Nothing}, got Nothing
 
 #
+# handling invalid inputs
+#
+
+#
+gap> JuliaFunction();
+Error, arguments must be strings function_name[,module_name]
+gap> JuliaFunction(fail);
+Error, arguments must be strings function_name[,module_name]
+gap> JuliaFunction("foo_bar_quux_not_defined");
+Error, Function is not defined in julia
+
+#
 gap> _NewJuliaCFunc(fail, fail);
 Error, NewJuliaCFunc: <ptr> must be a Julia object
 gap> _NewJuliaCFunc(JuliaEvalString("'a'"), fail);

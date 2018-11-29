@@ -24,8 +24,8 @@ InstallGlobalFunction( JuliaGetGlobalVariable,
     Error( "arguments must be strings function_name[,module_name]" );
 end );
 
-BindGlobal( "_JULIA_MODULE_TYPE", JuliaEvalString( "Module" ) );
-BindGlobal( "_JULIA_FUNCTION_TYPE", JuliaEvalString( "Function" ) );
+BindGlobal( "_JULIA_MODULE_TYPE", _JuliaGetGlobalVariable( "Module" ) );
+BindGlobal( "_JULIA_FUNCTION_TYPE", _JuliaGetGlobalVariable( "Function" ) );
 BindGlobal( "_JULIA_ISA", JuliaFunction( "isa" ) );
 
 BindGlobal( "_WrapJuliaModule",
@@ -97,7 +97,7 @@ InstallGlobalFunction( JuliaSymbolsInModule,
                        [ IsJuliaModule ],
   module -> RecNames( module!.storage ) );
 
-InstallValue( Julia, _WrapJuliaModule( "Main", JuliaEvalString( "Main" ) ) );
+InstallValue( Julia, _WrapJuliaModule( "Main", _JuliaGetGlobalVariable( "Main" ) ) );
 
 
 InstallOtherMethod( \[\],
@@ -130,12 +130,6 @@ InstallMethod( ViewString,
     return Concatenation( "<Julia: ", String( julia_obj ), ">" );
 
 end );
-
-InstallMethod( ViewString,
-    [ IsJuliaFunction ],
-    julia_func -> Concatenation( "<Julia: ",
-                      JuliaToGAP( IsString, Julia.Base.repr( julia_func ) ),
-                      ">" ) );
 
 InstallMethod( String,
                [ IsJuliaObject ],
