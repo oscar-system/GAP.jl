@@ -31,13 +31,13 @@ InstallGlobalFunction( JuliaBindCFunction,
 
     ## Create a call to the @cfunction macro, to get a pointer to a compiled function
     cfunction_call_string := Concatenation( "temp = @cfunction(", julia_name );
-    cfunction_call_string := Concatenation( cfunction_call_string, ",Ptr{Cvoid},(" );
+    Append( cfunction_call_string, ",Ptr{Cvoid},(" );
     for i in [ 1 .. nr_args ] do
-        cfunction_call_string := Concatenation( cfunction_call_string, "Ptr{Cvoid}," );
+        Append( cfunction_call_string, "Ptr{Cvoid}," );
     od;
-    cfunction_call_string := Concatenation( cfunction_call_string, "));" );
+    Append( cfunction_call_string, "));\n" );
     ## Cast pointer to void to be able to unbox it later
-    cfunction_call_string := Concatenation( cfunction_call_string, "\nreinterpret(Ptr{Cvoid},temp)");
+    Append( cfunction_call_string, "reinterpret(Ptr{Cvoid},temp)");
     function_ptr := JuliaEvalString( cfunction_call_string );
     return _NewJuliaCFunc( function_ptr, arg_names );
 
