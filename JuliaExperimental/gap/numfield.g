@@ -630,10 +630,10 @@ InstallMethod( PrintObj,
 ##  methods for Nemo's polynomial rings and fields
 ##
 InstallOtherMethod( Zero, [ IsNemoObject ], 200,
-    F -> NemoElement( F, Julia.Base.zero( JuliaPointer( F ) ) ) );
+    F -> NemoElement( F, Julia.Base.zero( Julia.Base.parent( JuliaPointer( F ) ) ) ) );
 
 InstallOtherMethod( One, [ IsNemoObject ], 200,
-    F -> NemoElement( F, Julia.Base.one( JuliaPointer( F ) ) ) );
+    F -> NemoElement( F, Julia.Base.one( Julia.Base.parent( JuliaPointer( F ) ) ) ) );
 
 InstallMethod( RootOfDefiningPolynomial, [ IsNemoField ],
     F -> NemoElement( F, Julia.Nemo.gen( JuliaPointer( F ) ) ) );
