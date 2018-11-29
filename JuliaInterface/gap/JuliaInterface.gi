@@ -155,10 +155,7 @@ InstallGlobalFunction( ImportJuliaModuleIntoGAP,
     if no_import = fail then
         no_import := false;
     fi;
-
-    if name = "Main" then
-        Print( "WARNING: Do not import Main module into GAP\n" );
-    fi;
+    
     is_module_present := JuliaEvalString( Concatenation( "isdefined( Main, :", name, ")" ) );
     
     if no_import = false then
