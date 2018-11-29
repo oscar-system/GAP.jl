@@ -101,4 +101,12 @@ gap> JuliaGetFieldOfObject(JuliaModule("Base"), "not-a-field");
 Error, type Module has no field not-a-field
 
 ##
+gap> NameFunction(Julia.Base.parse);
+"parse"
+gap> Display(Julia.Base.parse);
+function ( arg... )
+    <<kernel code>> from Julia:parse
+end
+
+##
 gap> STOP_TEST( "utils.tst", 1 );
