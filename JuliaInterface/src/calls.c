@@ -183,13 +183,8 @@ static Obj DoCallJuliaFuncXArg(Obj func, Obj args)
 //
 Obj NewJuliaFunc(jl_function_t * function)
 {
-    // TODO: set a sensible name?
-    //     jl_datatype_t * dt = ...
-    //     jl_typename_t * tname = dt->name;
-    //     //    struct _jl_methtable_t *mt;
-    //     jl_sym_t *name = tname->mt->name;
-
-    Obj func = NewFunctionC("", -1, "arg", 0);
+    const char * name = jl_symbol_name(jl_gf_name(function));
+    Obj          func = NewFunctionC(name, -1, "arg", 0);
 
     SET_HDLR_FUNC(func, 0, DoCallJuliaFunc0Arg);
     SET_HDLR_FUNC(func, 1, DoCallJuliaFunc1Arg);
@@ -203,6 +198,16 @@ Obj NewJuliaFunc(jl_function_t * function)
     // trick: fexs is unused for kernel functions, so we can store
     // the Julia function point in here
     SET_FEXS_FUNC(func, (Obj)function);
+
+    // add a function body so that we can store some meta data about the
+    // origin of this function, for slightly more helpful printing of the
+    // function.
+    Obj body = NewBag(T_BODY, sizeof(BodyHeader));
+    SET_FILENAME_BODY(body, MakeImmString("Julia"));
+    SET_LOCATION_BODY(body, MakeImmString(name));
+    SET_BODY_FUNC(func, body);
+    CHANGED_BAG(body);
+    CHANGED_BAG(func);
 
     return func;
 }
