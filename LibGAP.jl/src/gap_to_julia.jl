@@ -14,6 +14,7 @@ gap_to_julia(::Type{GAPInputType},x::GAPInputType) = x
 gap_to_julia(::Type{Any},         x::GAPInputType) = gap_to_julia(x)
 gap_to_julia(::Type{Any},         x::Any         ) = x
 gap_to_julia(::Any,               x::Nothing     ) = nothing
+gap_to_julia(::Type{Any},         x::Nothing     ) = nothing
 
 ## Integers
 gap_to_julia(::Type{Int128} ,x::Int64) = trunc(Int128 ,x)
