@@ -131,12 +131,6 @@ InstallMethod( ViewString,
 
 end );
 
-InstallMethod( ViewString,
-    [ IsJuliaFunction ],
-    julia_func -> Concatenation( "<Julia: ",
-                      JuliaToGAP( IsString, Julia.Base.repr( julia_func ) ),
-                      ">" ) );
-
 InstallMethod( String,
                [ IsJuliaObject ],
 
