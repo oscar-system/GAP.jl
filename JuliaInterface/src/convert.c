@@ -29,22 +29,20 @@ jl_value_t * julia_gap(Obj obj)
     if (obj == False) {
         return jl_false;
     }
-    UInt tnum = TNUM_OBJ(obj);
-    if ((tnum == T_COMOBJ || tnum == T_POSOBJ
-#ifdef HPCGAP
-         || tnum == T_APOSOBJ || tnum == T_ACOMOBJ
-#endif
-         ) &&
+    if (TNUM_OBJ(obj) >= FIRST_EXTERNAL_TNUM &&
         CALL_1ARGS(JULIAINTERFACE_IsJuliaWrapper, obj) == True) {
         obj = CALL_1ARGS(JULIAINTERFACE_JuliaPointer, obj);
         if (IS_JULIA_OBJ(obj)) {
             return GET_JULIA_OBJ(obj);
         }
-        if (IS_JULIA_FUNC(obj)) {
-            return GET_JULIA_FUNC(obj);
-        }
-        // TODO: also allow wrapping auto-converted Julia objects???
-        ErrorMayQuit("JuliaPointer must be a Julia object (not a %s)",
+        // to handle immediate integers, booleans, FFEs, IS_JULIA_FUNC, we
+        // use recursion - but only for internal types; this prevents an
+        // infinite recursion, e.g. if an object's JuliaPointer points to the
+        // object itself
+        if (TNUM_OBJ(obj) < FIRST_EXTERNAL_TNUM)
+            return julia_gap(obj);
+        ErrorMayQuit("JuliaPointer must be a Julia object or an internal GAP "
+                     "object (not a %s)",
                      (Int)TNAM_OBJ(obj), 0);
     }
     return (jl_value_t *)obj;
