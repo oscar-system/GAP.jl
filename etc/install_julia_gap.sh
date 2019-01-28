@@ -13,7 +13,6 @@ julia/bin/julia <<UNTILEND
 using Pkg
 Pkg.add("AbstractAlgebra")
 Pkg.add("Nemo")
-#Pkg.develop("Hecke")
 Pkg.add(PackageSpec(url="https://github.com/thofma/Hecke.jl"))
 Pkg.add(PackageSpec(url="https://github.com/oscar-system/Singular.jl"))
 Pkg.add(PackageSpec(url="https://github.com/ederc/GB.jl", rev="master" ))
