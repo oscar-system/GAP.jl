@@ -2,6 +2,8 @@ language: c
 env:
  global:
    - DONT_FETCH_GAP_JULIA_PKG=yes
+   - DONT_BUILD_JULIA_PKGS=yes
+   - DONT_BUILD_GAP_PKGS=yes
    - JULIAROOT=$TRAVIS_BUILD_DIR/julia
    - GAPROOT=$TRAVIS_BUILD_DIR/gap
    - MAKEFLAGS="-j4"
