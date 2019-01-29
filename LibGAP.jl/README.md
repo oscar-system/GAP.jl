@@ -25,6 +25,8 @@ You need the following ingredients:
 
 First compile a version of GAP using the Julia installation in `$juliadir`:
 
+    cd $gapdir
+    $gapdir/autogen.sh
     cd $oscardir
     mkdir -p gap
     cd gap
