@@ -9,7 +9,8 @@ SOURCES = src/JuliaExperimental.c
 
 CFLAGS += -I../JuliaInterface/src/
 CFLAGS += -g
-LDFLAGS += -ljulia
+LDFLAGS += @JULIA_LDFLAGS@
+LDFLAGS += @JULIA_LIBS@
 
 ########################################################################
 # Do not edit below unless you know what you're doing

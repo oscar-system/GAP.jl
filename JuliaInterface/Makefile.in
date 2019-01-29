@@ -8,7 +8,8 @@ MODULE_NAME = JuliaInterface
 SOURCES = src/JuliaInterface.c src/calls.c src/convert.c
 
 CFLAGS += -g
-LDFLAGS += -ljulia
+LDFLAGS += @JULIA_LDFLAGS@
+LDFLAGS += @JULIA_LIBS@
 
 ########################################################################
 # Do not edit below unless you know what you're doing

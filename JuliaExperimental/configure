@@ -34,4 +34,6 @@ echo "Using config in $GAPPATH/sysinfo.gap"
 sed \
     -e "s;@GAPARCH@;$GAParch;g" \
     -e "s;@GAPPATH@;$GAPPATH;g" \
+    -e "s;@JULIA_LDFLAGS@;$JULIA_LDFLAGS;g" \
+    -e "s;@JULIA_LIBS@;$JULIA_LIBS;g" \
     Makefile.in > Makefile
