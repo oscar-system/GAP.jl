@@ -61,7 +61,14 @@ function initialize( argv::Array{String,1}, env::Array{String,1} )
     ccall( Libdl.dlsym(gap_library, :GAP_EvalString)
            , Ptr{Cvoid}
            , (Ptr{UInt8},)
-           , "LoadPackage(\"JuliaInterface\");" )
+           , "_JULIAINTERNAL_JULIAINTERFACE_LOADED := LoadPackage(\"JuliaInterface\");" )
+    loadpackage_return = ccall( Libdl.dlsym(gap_library, :GAP_EvalString)
+           , Ptr{Cvoid}
+           , (Ptr{UInt8},)
+           , "_JULIAINTERNAL_JULIAINTERFACE_LOADED;" )
+    if loadpackage_return == Libdl.dlsym(gap_library, :GAP_Fail )
+        throw(ErrorException( "JuliaInterface could not be loaded" ))
+    end
 end
 
 function finalize( )
