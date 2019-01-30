@@ -246,19 +246,19 @@ gap> h6C := JuliaBindCFunction("h6", "a,b,c,d,e,f");;
 
 #
 gap> h0C();
-Error, TypeError: in h0, in cfunction, expected Ptr{Nothing}, got Nothing
+Error, TypeError: in cfunction, expected Ptr{Nothing}, got Nothing
 gap> h1C(true);
-Error, TypeError: in h1, in cfunction, expected Ptr{Nothing}, got Nothing
+Error, TypeError: in cfunction, expected Ptr{Nothing}, got Nothing
 gap> h2C(true,2);
-Error, TypeError: in h2, in cfunction, expected Ptr{Nothing}, got Nothing
+Error, TypeError: in cfunction, expected Ptr{Nothing}, got Nothing
 gap> h3C(true,2,3);
-Error, TypeError: in h3, in cfunction, expected Ptr{Nothing}, got Nothing
+Error, TypeError: in cfunction, expected Ptr{Nothing}, got Nothing
 gap> h4C(true,2,3,4);
-Error, TypeError: in h4, in cfunction, expected Ptr{Nothing}, got Nothing
+Error, TypeError: in cfunction, expected Ptr{Nothing}, got Nothing
 gap> h5C(true,2,3,4,5);
-Error, TypeError: in h5, in cfunction, expected Ptr{Nothing}, got Nothing
+Error, TypeError: in cfunction, expected Ptr{Nothing}, got Nothing
 gap> h6C(true,2,3,4,5,6);
-Error, TypeError: in h6, in cfunction, expected Ptr{Nothing}, got Nothing
+Error, TypeError: in cfunction, expected Ptr{Nothing}, got Nothing
 
 #
 # handling invalid inputs
