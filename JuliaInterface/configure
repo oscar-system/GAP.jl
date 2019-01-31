@@ -31,6 +31,12 @@ fi
 echo "Using config in $GAPPATH/sysinfo.gap"
 
 . "$GAPPATH/sysinfo.gap"
+
+if test "x$JULIA_LIBS" = "x" ; then
+    echo "JULIA_LIBS not set in sysinfo.gap. Maybe your GAP version is too old"
+    exit 1
+fi
+
 sed \
     -e "s;@GAPARCH@;$GAParch;g" \
     -e "s;@GAPPATH@;$GAPPATH;g" \
