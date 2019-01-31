@@ -37,10 +37,11 @@ cd $main_dir/gap
 make doc
 
 # Download and install GAPJulia
+cd pkg
 if [[ $DONT_FETCH_GAP_JULIA_PKG = yes ]] ; then exit 0; fi
 git clone https://github.com/oscar-system/GAPJulia
 cd GAPJulia
-./configure
+./configure $main_dir/gap/
 make
 
 if [[ $DONT_BUILD_JULIA_PKGS != yes ]] ; then
