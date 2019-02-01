@@ -48,12 +48,12 @@ function initialize( argv::Array{String,1}, env::Array{String,1} )
     gap_library = Libdl.dlopen("libgap", Libdl.RTLD_GLOBAL)
     ccall( Libdl.dlsym(gap_library, :GAP_Initialize)
            , Cvoid
-           , (Int32, Ptr{Ptr{UInt8}},Ptr{Ptr{UInt8}},Ptr{Cvoid},Ptr{Cvoid})
+           , (Int32, Ptr{Ptr{UInt8}},Ptr{Cvoid},Ptr{Cvoid},Cuint)
            , length(argv)
            , argv
-           , env
            , C_NULL
-           , error_handler_func)
+           , error_handler_func
+           , Cuint(0) )
     ccall( Libdl.dlsym(gap_library, :GAP_EvalString)
            , Ptr{Cvoid}
            , (Ptr{UInt8},)
