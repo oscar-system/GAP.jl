@@ -34,5 +34,15 @@ function SingularPolynomialRingWrapper( dict::Dict{Symbol,Any} )
                degree_bound = dict[ :degree_bound ] )
 end
 
+function GAPExtRepOfSingularPolynomial( poly )
+    coeffs = []
+    exps = []
+    for i in 0:(length( poly )-1)
+      push!( coeffs, Singular.coeff( poly, i ) )
+      push!( exps, Singular.exponent( poly, i ) )
+    end
+    return (coeffs, exps)
+end
+
 end
 
