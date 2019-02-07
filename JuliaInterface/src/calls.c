@@ -7,6 +7,12 @@
 static Obj DoCallJuliaFunc0Arg(Obj func);
 
 
+typedef struct {
+    FuncBag f;
+    void *  juliaFunc;
+} JuliaFuncBag;
+
+
 // Helper used to call GAP functions from Julia.
 //
 // This function is used by LibGAP.jl
@@ -78,11 +84,10 @@ inline Int IS_JULIA_FUNC(Obj obj)
     return IS_FUNC(obj) && (HDLR_FUNC(obj, 0) == DoCallJuliaFunc0Arg);
 }
 
-inline jl_function_t * GET_JULIA_FUNC(Obj obj)
+inline jl_function_t * GET_JULIA_FUNC(Obj func)
 {
-    GAP_ASSERT(IS_JULIA_FUNC(obj));
-    // TODO
-    return (jl_function_t *)FEXS_FUNC(obj);
+    GAP_ASSERT(IS_JULIA_FUNC(func));
+    return ((const JuliaFuncBag *)CONST_ADDR_OBJ(func))->juliaFunc;
 }
 
 static ALWAYS_INLINE Obj DoCallJuliaFunc(Obj func, const int narg, Obj * a)
@@ -183,8 +188,9 @@ static Obj DoCallJuliaFuncXArg(Obj func, Obj args)
 //
 Obj NewJuliaFunc(jl_function_t * function)
 {
-    const char * name = jl_symbol_name(jl_gf_name(function));
-    Obj          func = NewFunctionC(name, -1, "arg", 0);
+    Obj name = MakeImmString(jl_symbol_name(jl_gf_name(function)));
+    Obj func = NewFunctionT(T_FUNCTION, sizeof(JuliaFuncBag), name, -1,
+                            ArgStringToList("arg"), 0);
 
     SET_HDLR_FUNC(func, 0, DoCallJuliaFunc0Arg);
     SET_HDLR_FUNC(func, 1, DoCallJuliaFunc1Arg);
@@ -195,16 +201,15 @@ Obj NewJuliaFunc(jl_function_t * function)
     SET_HDLR_FUNC(func, 6, DoCallJuliaFunc6Arg);
     SET_HDLR_FUNC(func, 7, DoCallJuliaFuncXArg);
 
-    // trick: fexs is unused for kernel functions, so we can store
-    // the Julia function point in here
-    SET_FEXS_FUNC(func, (Obj)function);
+    // store the the Julia function pointer
+    ((JuliaFuncBag *)ADDR_OBJ(func))->juliaFunc = function;
 
     // add a function body so that we can store some meta data about the
     // origin of this function, for slightly more helpful printing of the
     // function.
     Obj body = NewBag(T_BODY, sizeof(BodyHeader));
     SET_FILENAME_BODY(body, MakeImmString("Julia"));
-    SET_LOCATION_BODY(body, MakeImmString(name));
+    SET_LOCATION_BODY(body, name);
     SET_BODY_FUNC(func, body);
     CHANGED_BAG(body);
     CHANGED_BAG(func);
@@ -218,7 +223,8 @@ Obj NewJuliaFunc(jl_function_t * function)
 
 static inline ObjFunc get_c_function_pointer(Obj func)
 {
-    return jl_unbox_voidpointer((jl_value_t *)FEXS_FUNC(func));
+    void * ptr = ((const JuliaFuncBag *)CONST_ADDR_OBJ(func))->juliaFunc;
+    return jl_unbox_voidpointer((jl_value_t *)ptr);
 }
 
 static Obj DoCallJuliaCFunc0Arg(Obj func)
@@ -326,12 +332,13 @@ Obj NewJuliaCFunc(void * function, Obj arg_names)
         break;
     }
 
-    Obj func = NewFunction(0, LEN_PLIST(arg_names), arg_names, handler);
+    Obj func = NewFunctionT(T_FUNCTION, sizeof(JuliaFuncBag), 0,
+                            LEN_PLIST(arg_names), arg_names, handler);
 
-    // trick: fexs is unused for kernel functions, so we can store
-    // the function pointer here. Since fexs gets marked by the GC, we
+    // store function pointer in the bag; since it gets marked by the GC, we
     // store it as a valid julia obj (i.e., void ptr).
-    SET_FEXS_FUNC(func, (Obj)jl_box_voidpointer(function));
+    ((JuliaFuncBag *)ADDR_OBJ(func))->juliaFunc =
+        jl_box_voidpointer(function);
 
     return func;
 }
