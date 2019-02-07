@@ -25,6 +25,8 @@ function unpackedNemoMatrixFmpz( nemomat::Nemo.fmpz_mat )
     # Turn the 2-dim. array into a 1-dim. array of 1-dim. arrays
     # of small integers (which can then be unboxed with 'ConvertedFromJulia').
     return map( i -> mat[i,:], 1:size(mat,1) )
+#T call NestedArrayFromMatrix!
+#T also other places?
 end
 
 end

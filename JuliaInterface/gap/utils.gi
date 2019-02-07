@@ -4,7 +4,7 @@
 ##
 #############################################################################
 
-## Create a record from kay value lists
+## Create a record from key value lists
 BindGlobal( "CreateRecFromKeyValuePairList",
   function( keys, vals )
     local return_rec, i;

@@ -90,7 +90,8 @@ run_it = function(gapdir::String)
     initialize( [ ""
                        , "-l", sysinfo["GAP_LIB_DIR"]
                        , "-T", "-r", "-A", "--nointeract"
-                       , "-m", "512m" ], [""] )
+#                      , "-m", "512m" ], [""] )
+                       , "-m", "1000m" ], [""] )
     gap_is_initialized = true
 end
 
