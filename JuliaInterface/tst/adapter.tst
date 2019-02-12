@@ -1,5 +1,5 @@
 #
-gap> START_TEST( "arith.tst" );
+gap> START_TEST( "adapter.tst" );
 
 #
 gap> N := JuliaEvalString("big(2)^100");
@@ -83,8 +83,40 @@ gap> TestBinOp({a,b} -> a = b);
 [ true ]
 
 #
-#gap> mod(N,2) = 0;
-#gap> mod(N_p1,2) = 1;
+# lists
+#
+gap> l := GAPToJulia([1, 2, 3]);
+<Julia: Any[1, 2, 3]>
+gap> l[1];
+1
+gap> l[2] := false;
+false
+gap> l;
+<Julia: Any[1, false, 3]>
 
 #
-gap> STOP_TEST( "arith.tst", 1 );
+# "matrices" / lists of lists
+#
+gap> m:=JuliaEvalString("[1 2; 3 4]");
+<Julia: [1 2; 3 4]>
+gap> m[3];
+2
+gap> m[1,2];
+2
+gap> m[1,2] := 42;
+Error, Matrix Assignment: <mat> must be a mutable matrix
+
+#
+# access to fields and properties
+#
+gap> foo := JuliaEvalString("mutable struct Foo bar end ; Foo(\"Hello\")");
+<Julia: Foo("Hello")>
+gap> foo.bar;
+<Julia: "Hello">
+gap> foo.bar := 42;
+42
+gap> foo;
+<Julia: Foo(42)>
+
+#
+gap> STOP_TEST( "adapter.tst", 1 );
