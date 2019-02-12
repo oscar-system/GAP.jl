@@ -20,7 +20,7 @@ JuliaEvalString( Concatenation( "Base.include( Main.GAP,\"", Filename( dirs, "li
 
 _JULIAINTERFACE_INTERNAL_INIT();
 
-ReadPackage( "JuliaInterface", "gap/arith.gi");
+ReadPackage( "JuliaInterface", "gap/adapter.gi");
 ReadPackage( "JuliaInterface", "gap/calls.gi");
 ReadPackage( "JuliaInterface", "gap/convert.gi");
 ReadPackage( "JuliaInterface", "gap/utils.gi");
