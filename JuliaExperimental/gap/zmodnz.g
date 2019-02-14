@@ -59,7 +59,7 @@ InstallMethod( ContextGAPNemo,
     type:= IsNemoRing and IsAttributeStoringRep and
            IsFinite and IsCommutative and IsAssociative;
 
-    return NewContextGAPNemo( rec(
+    return NewContextGAPJulia( "Nemo", rec(
       Name:= Concatenation( "<context for Integers mod ", String( m ), ">" ),
 
       GAPDomain:= R,
@@ -71,7 +71,7 @@ InstallMethod( ContextGAPNemo,
 
       ElementType:= efam!.elementType,
 
-      ElementGAPToNemo:= function( C, obj )
+      ElementGAPToJulia:= function( C, obj )
         if IsInt( obj ) then
           return C!.JuliaDomainPointer( obj );
         elif IsZmodnZObj( obj ) then
@@ -79,18 +79,20 @@ InstallMethod( ContextGAPNemo,
         fi;
       end,
 
-      ElementNemoToGAP:= function( C, obj )
-        if HasJuliaPointer( obj ) then
-          obj:= JuliaPointer( obj );
-        fi;
+      ElementJuliaToGAP:= function( C, obj )
         return JuliaToGAP( IsInt, Julia.Base.getfield( obj,
                    JuliaSymbol( "data" ) ) ) * One( C!.GAPDomain );
 #T Deal with the case of fmpz!
       end,
 
+      ElementWrapped:= function( C, obj )
+        return ObjectifyWithAttributes( rec(), C!.ElementType,
+                   JuliaPointer,  obj );
+      end,
+
       VectorType:= efam!.vectorType,
 
-      VectorGAPToNemo:= function( C, vec )
+      VectorGAPToJulia:= function( C, vec )
         if IsZmodnZObjNonprimeCollection( vec ) then
           # 'vec' is a vector of residues, unpack it.
           if IsPlistRep( vec ) then
@@ -102,17 +104,20 @@ InstallMethod( ContextGAPNemo,
                        GAPToJulia( [ vec ] ) ) );
       end,
 
-      VectorNemoToGAP:= function( C, mat )
-        if HasJuliaPointer( mat ) then
-          mat:= JuliaPointer( mat );
-        fi;
+      VectorJuliaToGAP:= function( C, mat )
         return GAPMatrix_fmpz_mat( Julia.Nemo.lift( mat ) )[1]
                * One( C!.GAPDomain );
       end,
 
+      VectorWrapped:= function( C, mat )
+        return ObjectifyWithAttributes( rec(), C!.VectorType,
+                   JuliaPointer, mat,
+                   BaseDomain, C!.GAPDomain );
+      end,
+
       MatrixType:= efam!.matrixType,
 
-      MatrixGAPToNemo:= function( C, mat )
+      MatrixGAPToJulia:= function( C, mat )
         if IsZmodnZObjNonprimeCollColl( mat ) then
           # 'mat' is a matrix of residues, unpack it.
           if IsPlistRep( mat ) then
@@ -124,225 +129,51 @@ InstallMethod( ContextGAPNemo,
                        GAPToJulia( mat ) ) );
       end,
 
-      MatrixNemoToGAP:= function( C, mat )
-        if HasJuliaPointer( mat ) then
-          mat:= JuliaPointer( mat );
-        fi;
+      MatrixJuliaToGAP:= function( C, mat )
         return GAPMatrix_fmpz_mat( Julia.Nemo.lift( mat ) )
                * One( C!.GAPDomain );
       end,
 
+      MatrixWrapped:= function( C, mat )
+        return ObjectifyWithAttributes( rec(), C!.MatrixType,
+                   JuliaPointer, mat,
+                   BaseDomain, C!.GAPDomain );
+      end,
     ) );
     end );
 
 
-## --------------------------------------------------------------------
-
 #############################################################################
 ##
-#F  Nemo_ResidueRing( <m> )
-##
-##  the ring of residues modulo the integer <m>
+##  Support for matrix groups of Nemo matrices of residues
 ##
 
-#T not needed anymore!
 
-BindGlobal( "Nemo_ResidueRing", function( m )
-    local type, juliaobj, efam, collfam, result, gen;
-
-    type:= IsNemoRing and IsAttributeStoringRep and
-           IsCommutative and IsAssociative;
-
-    # Check the argument.
-    if not IsPosInt( m ) then
-      Error( "<m> must be a positive integer" );
-    fi;
-
-    juliaobj:= Julia.Nemo.ResidueRing( Julia.Nemo.ZZ, m );
-
-    # Create the GAP wrapper.
-    # Note that elements from two Nemo polynomial rings cannot be compared,
-    # so we create always a new family.
-    efam:= NewFamily( "NEMO_ResiduesFamily", IsNemoObject, IsScalar );
-    collfam:= CollectionsFamily( efam );
-    efam!.defaultType:= NewType( efam,
-        IsNemoRingElement and IsAttributeStoringRep );
-    # Do *NOT* set 'IsMatrix', this would imply 'IsList'!
-    efam!.matrixType:= NewType( CollectionsFamily( collfam ),
-        IsMatrixObj and IsNemoRingElement and IsAttributeStoringRep );
-
-    result:= Objectify( NewType( collfam, type ), rec() );
-
-    gen:= ObjectifyWithAttributes( rec(),
-                            efam!.defaultType,
-                            JuliaPointer, juliaobj( 1 ) );
-
-    # Set attributes.
-    SetJuliaPointer( result, juliaobj );
-    SetGeneratorsOfRing( result, [ gen ] );
-    SetIsFinite( result, true );
-    SetSize( result, m );
-#T set one and zero?
-
-    return result;
-end );
-
-
-
-InstallOtherMethod( InverseMutable,
-    [ "IsNemoRingElement" ],
+############################################################################
+##
+#M  RowsOfMatrix( <matobj> )
+##
+InstallMethod( RowsOfMatrix,
+    [ "IsNemoMatrixObj" ],
     function( mat )
-    local efam, juliaobj;
+    local C;
 
-    efam:= ElementsFamily( ElementsFamily( FamilyObj( mat ) ) );
-    juliaobj:= Julia.Base.inv( JuliaPointer( mat ) );
-
-    return ObjectifyWithAttributes( rec(),
-                            efam!.matrixType,
-                            JuliaPointer, juliaobj );
+    C:= ContextGAPNemo( FamilyObj( mat ) );
+    return List( NemoToGAP( C, mat ), row -> GAPToNemo( C, row ) );
     end );
-
-
-#############################################################################
-##
-##  matrix groups of Nemo matrices?
-##
-
-#T The higher ranked method from 'lib/grpmat.gi' calls 'IdentityMat'.
-#T (Remove the higher ranked method?)
-InstallOtherMethod( One,
-    "for a magma-with-one consisting of Nemo matrix objects",
-    [ "IsMagmaWithOne and IsNemoObjectCollCollColl" ],
-    RankFilter( IsMatrixGroup ),
-    M -> One( Representative( M ) ) );
-
-#T The method from 'lib/grpmat.gi' calls 'DimensionsMat'.
-#T (Adjust this method.)
-InstallMethod( IsGeneratorsOfMagmaWithInverses,
-    "for a list of matrices",
-    [ IsRingElementCollCollColl ],
-    function( matlist )
-    local nrows, ncols;
-
-    if ForAll( matlist, IsMatrixObj ) then
-      nrows:= NumberRows( matlist[1] );
-      ncols:= NumberColumns( matlist[1] );
-      return nrows = ncols and
-             ForAll( matlist,
-                     mat -> NumberRows( mat ) = nrows and
-                            NumberColumns( mat ) = ncols ) and
-             ForAll( matlist, mat -> Inverse( mat ) <> fail );
-    fi;
-
-    TryNextMethod();
-    end );
-
-#T The method from 'lib/grpmat.gi' does not know about 'IsMatrixObj'.
-#T (Adjust this method.)
-InstallMethod( DefaultScalarDomainOfMatrixList,
-    "generic: form ring",
-    [ IsList and IsCollection ],
-    function( l )
-    local i,j,k,fg,f;
-
-    if Length( l ) <> 0 and ForAll( l, IsMatrixObj ) then
-      # Take the BaseDomain.
-      return BaseDomain( l[1] );
-#T better compare
-    else
-      TryNextMethod();
-    fi;
-end);
-
-#T The method from 'lib/grpmat.gi' calls 'Length'.
-#T (Adjust this method.)
-InstallMethod( DimensionOfMatrixGroup, "from generators",
-    [ IsMatrixGroup and HasGeneratorsOfGroup ],
-    function( grp )
-    if not IsEmpty( GeneratorsOfGroup( grp ) )  then
-      return NumberRows( GeneratorsOfGroup( grp )[1] );
-    else
-        TryNextMethod();
-    fi;
-end );
-
-#T The method from 'lib/grpmat.gi' calls 'Length'.
-#T (Adjust this method.)
-InstallMethod( DimensionOfMatrixGroup, "from one",
-    [ IsMatrixGroup and HasOne ], 1,
-    grp -> NumberRows( One( grp ) ) );
-
-#T The method from 'lib/grpmat.gi' calls 'Length'.
-#T (Adjust this method.)
-InstallMethod( ViewObj,
-    "for a matrix group with stored generators",
-    [ IsMatrixGroup and HasGeneratorsOfGroup ],
-function(G)
-local gens;
-  gens:=GeneratorsOfGroup(G);
-  if Length(gens)>0 and Length(gens)*
-                        DimensionOfMatrixGroup(G)^2 / GAPInfo.ViewLength > 8 then
-    Print("<matrix group");
-    if HasSize(G) then
-      Print(" of size ",Size(G));
-    fi;
-    Print(" with ",Length(GeneratorsOfGroup(G)),
-          " generators>");
-  else
-    Print("Group(");
-    ViewObj(GeneratorsOfGroup(G));
-    Print(")");
-  fi;
-end);
-
-#T The method from 'lib/zmodnz.gi' calls iterated element access.
-#T (Adjust this method; and better take care of 0x0 matrices.)
-InstallMethod( DefaultFieldOfMatrixGroup,
-    "for a matrix group over a ring Z/nZ",
-    [ IsMatrixGroup and IsZmodnZObjNonprimeCollCollColl ],
-    G -> ZmodnZ( Characteristic( Representative( G )[1,1] ) ) );
-
-#T This is a hack.
-#T Perhaps Nemo should provide a method?
-InstallMethod( Characteristic,
-    [ "IsJuliaObject" ],
-    function( obj )
-    if JuliaTypeInfo( obj ) = "Nemo.nmod" then
-      return JuliaToGAP( IsInt, Julia.Base.getfield(
-                 Julia.Nemo.parent( obj ), JuliaSymbol( "n" ) ) );
-    fi;
-    TryNextMethod();
-    end );
-
-#T This is a hack.
-#T Better change GAP's 'NicomorphismOfGeneralMatrixGroup' such that
-#T not 'One(G)' is entered as the 2nd argument
-#T but a ``list of 'IsVectorObj' objects repres. the rows'';
-#T provide such a functionality in 'matobj.*'.
-InstallOtherMethod( SparseActionHomomorphismOp,
-  "no domain given", true,
-# [ IsGroup, IsList, IsList, IsList, IsFunction ], 0,
-  [ IsGroup, IsMatrixObj, IsList, IsList, IsFunction ], 0,
-function( G, start, gens, acts, act )
-  local c;
-  # Replace the matrix object by a plain list of its rows.
-  c:= ContextGAPNemo( FamilyObj( start ) );
-  start:= List( NemoToGAP( c, start ), row -> GAPToNemo( c, row ) );
-
-  return DoSparseActionHomomorphism(G,start,gens,acts,act,false);
-end); 
 
 
 ##############################################################################
 ##
-#M  <vecobj>^<matobj>
-##
-##  action of 'IsMatrixObj' matrices on 'IsVectorObj' vectors
-#T should become part of 'matobj.g*'?
+#T hack in order to work around a bug in SparseActionHomomorphism
+#T (fixed in master branch?)
 ##
 InstallOtherMethod( \^,
-    [ "IsVectorObj", "IsMatrixObj" ],
-    \* );
+    IsIdenticalObj,
+    [ "IsListDefault", "IsMatrixObj and IsNemoObject" ],
+    function( pnts, mat )
+      return List( pnts, pnt -> pnt^mat );
+    end );
 
 
 ##############################################################################
@@ -356,5 +187,4 @@ InstallOtherMethod( \^,
 # IsSubgroupSL  (other Natural-properties!)
 # InvariantBilinearForm
 # AffineActionByMatrixGroup
-
 

@@ -7,12 +7,10 @@
 
 module GAPUtilsExperimental
 
-# export MatrixFromNestedArray, JuliaSourceFile
-
 """
     MatrixFromNestedArray( lst )
 > Return a 2-dim array created from the 1-dim array of 1-dim arrays `lst`.
-> (Note that GAP's `ConvertedToJulia` creates nested arrays.)
+> (Note that GAP's `GAPToJulia` creates nested arrays.)
 """
 function MatrixFromNestedArray( lst ) return copy( hcat( lst... )' ) end
 
@@ -20,7 +18,7 @@ function MatrixFromNestedArray( lst ) return copy( hcat( lst... )' ) end
 """
     NestedArrayFromMatrix( lst )
 > Return an array of 1-dim arrays created from the 2-dim array `lst`.
-> (Note that GAP's `ConvertedFromJulia` expects nested arrays.)
+> (Note that GAP's `JuliaToGAP` expects nested arrays.)
 """
 function NestedArrayFromMatrix( mat )
     return map( i -> mat[i,:], 1:size(mat,1) )

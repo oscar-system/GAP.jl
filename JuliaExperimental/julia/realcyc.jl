@@ -5,9 +5,7 @@
 
 module GAPRealCycModule
 
-using Nemo
-
-export arbCyc, isPositiveRealPartCyc, test_this_module
+import Nemo
 
 """
     arbCyc( coeffs::Vector, R::Nemo.ArbField )
@@ -21,7 +19,7 @@ function arbCyc( coeffs::Vector, R::Nemo.ArbField )
     N::Int = length( coeffs )
     for k = 1:N
       if coeffs[k] != 0
-        val = val + coeffs[k] * cospi( fmpq( 2 * (k-1) // N ), R )
+        val = val + coeffs[k] * cospi( Nemo.fmpq( 2 * (k-1) // N ), R )
       end
     end
     return val

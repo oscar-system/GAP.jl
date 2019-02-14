@@ -722,8 +722,3 @@ InstallMethod( SecondaryInvariants,
     return result;
     end );
 
-
-##############################################################################
-##
-#E
-

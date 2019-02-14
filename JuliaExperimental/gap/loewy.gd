@@ -175,8 +175,3 @@ DeclareOperation( "MinimalDegreeOfSingerAlgebra", [ IsPosInt, IsPosInt ] );
 ##
 DeclareGlobalFunction( "SingerAlgebra" );
 
-
-#############################################################################
-##
-#E
-

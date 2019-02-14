@@ -14,9 +14,6 @@ import LinearAlgebra: diag
 import Base: abs, convert, copy, deepcopy, haskey, inv, lcm, length,
              map, push!, sign, size, sum, trunc, zero, zeros
 
-export LLLReducedGramMat, ShortestVectors, OrthogonalEmbeddings
-
-
 raw"""
     LLLReducedGramMat( grammatrix::Array{Int,2}, y::Rational{Int} = 3//4 )
 > Return a dictionary with the following components.

@@ -14,11 +14,6 @@ import Base: length, similar, zeros, ==, isless, *, one, inv, ^, /
 
 # import Base.hash
 
-export Permutation, Permutation2or4, IdentityPerm, LargestMovedPointPerm,
-       OrderPerm
-
-# export hash
-
 # create the julia types
 struct Permutation2 # means permutations of positive 16 bit integers
     degree::UInt16
@@ -62,7 +57,7 @@ function Permutation( imgsarray::Array{Int,1} )
         end
     end
 
-# Note that 'ConvertedToJulia' creates Array{Any,1}.
+# Note that 'GAPToJulia' creates Array{Any,1}.
 function Permutation( imgsarray::Array{Any,1} )
         local conv16, conv32
 

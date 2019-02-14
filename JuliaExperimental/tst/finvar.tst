@@ -159,5 +159,5 @@ gap> IsSubset( R4, sec4 );
 true
 
 ##
-gap> STOP_TEST( "finvar.tst", 1 );
+gap> STOP_TEST( "finvar.tst" );
 

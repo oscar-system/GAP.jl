@@ -7,6 +7,8 @@
 # ...
 ReadPackage( "JuliaExperimental", "gap/utils.gi" );
 
+ReadPackage( "JuliaExperimental", "gap/context.gd" );
+ReadPackage( "JuliaExperimental", "gap/context.gi" );
 
 # ReadPackage( "JuliaExperimental", "gap/convertcyc.g" );
 # JuliaIncludeFile( Filename( dirs, "convertcyc.jl" ) );
@@ -55,6 +57,8 @@ fi;
 
 # Singular
 if JuliaImportPackage( "Singular" ) then
+  ReadPackage( "JuliaExperimental", "gap/gapsingular.gd" );
+  ReadPackage( "JuliaExperimental", "gap/gapsingular.gi" );
   ReadPackage( "JuliaExperimental", "gap/singular.g" );
 
   if LoadPackage( "RingsForHomalg" ) = true then

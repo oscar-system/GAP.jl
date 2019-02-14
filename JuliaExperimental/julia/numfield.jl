@@ -9,15 +9,8 @@ module GAPNumberFields
 
 import Base: length, similar, zeros, ==, isless, *, one, inv, ^, /
 
-using Nemo
-# using Hecke
-
-export NemoElementOfNumberField,
-       Nemo_Matrix_over_NumberField,
-       CoefficientVectorsNumDenOfNumberFieldElement,
-       MatricesOfCoefficientVectorsNumDen
-
-# export ConvertedToJulia_Cyclotomics
+import Nemo
+# immport Hecke
 
 function VectorToArray( mat )
     return map( i -> mat[1,i], 1:size( mat, 2 ) )
@@ -127,14 +120,14 @@ end
 
 #T as soon as 'Qab.jl' is officially available in Hecke:
 # """
-#     ConvertedToJulia_Cyclotomics( N, lst, denom )
+#     GAPToJulia_Cyclotomics( N, lst, denom )
 # > Return an array of n `QabElem` objects,
 # > which correspond to the n entries of the array `lst`.
 # > Each entry is the vector of numerators of the coefficient vector
 # > of an element in the `N`-th cyclotomic field,
 # > and `denom` is the common denominator.
 # """
-# ConvertedToJulia_Cyclotomics = function( N, lst, denom )
+# GAPToJulia_Cyclotomics = function( N, lst, denom )
 #     local f, x, n, m, mat, d, res
 # 
 #     f, x = Nemo.CyclotomicField( N, "x" )

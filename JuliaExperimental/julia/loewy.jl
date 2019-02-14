@@ -9,9 +9,6 @@ module LoewyStructure
 
 import Primes
 
-export MinimalDegreeCheap, MinimalDegree, LoewyLayersData, LoewyVector
-
-
 """
     MinimalDegreeCache
 > a dictionary that stores at the key `e`, if bound,
@@ -216,13 +213,13 @@ end;
 
 
 raw"""
-    OrderMod( n::Int, m::Int )
+    OrderMod( n::Int, m )
 > Returns the multiplicative order of the integer n modulo the
 > positive integer m,
 > i. e., the smallest positive integer i such that $n^i \equiv 1 \pmod{m}$.
 > The function returns 0 if n and m are not coprime.
 """
-# function OrderMod( n::Int, m::Int )
+# function OrderMod( n::Int, m::Int )  -- example where this fails?
 function OrderMod( n::Int, m )
     local x, o, d
 
@@ -261,6 +258,7 @@ function OrderMod( n::Int, m )
     end
 
     return Int( o )
+#T why Int? (was not in alternative version)
 end;
 
 
@@ -336,6 +334,7 @@ function DivisorsInt( n::Int )
     factors = Primes.factor( Vector, n )
 
     # recursive function to compute the divisors
+#T without local function?
     divs = function( i::Int, m::Int )
       if length( factors ) < i
         return [ m ]

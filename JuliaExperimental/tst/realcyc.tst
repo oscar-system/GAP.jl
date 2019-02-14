@@ -40,5 +40,5 @@ gap> Julia.GAPRealCycModule.test_this_module();
 true
 
 ##
-gap> STOP_TEST( "realcyc.tst", 1 );
+gap> STOP_TEST( "realcyc.tst" );
 

@@ -151,5 +151,5 @@ gap> 4 / prod;
 4
 
 ##
-gap> STOP_TEST( "gapperm.tst", 1 );
+gap> STOP_TEST( "gapperm.tst" );
 

@@ -19,9 +19,9 @@ JuliaImportPackage( "Nemo" );
 
 #############################################################################
 ##
-##  Declare filters.
+##  Declare filters for the wrapped Julia objects.
 ##
-DeclareCategory( "IsNemoObject", IsObject );
+DeclareCategory( "IsNemoObject", IsJuliaWrapper );
 
 DeclareCategoryCollections( "IsNemoObject" );
 DeclareCategoryCollections( "IsNemoObjectCollection" );
@@ -42,40 +42,12 @@ DeclareSynonym( "IsNemoNumberField", IsNemoField and IsNumberField );
 
 ##############################################################################
 ##
-##  implementation of context objects,
-##  which are used for generic conversions between GAP and Nemo
-##
-
-
-##############################################################################
-##
-#C  IsContextObj( <obj> )
-##
-DeclareCategory( "IsContextObj", IsObject );
-
-
-##############################################################################
-##
-#A  ContextGAPNemo( <D> )
-##
-DeclareAttribute( "ContextGAPNemo", IsDomain );
-
-
-##############################################################################
-##
-#F  NewContextGAPNemo( <arec> )
-##
-##  checks the record <arec> for the availability of the mandatory components,
-##  and then turns the record <arec> into an object in the filter
-##  <Ref Cat="IsContextObj"/>.
-##
-DeclareGlobalFunction( "NewContextGAPNemo" );
-
-
-##############################################################################
-##
 #O  GAPToNemo( <context>, <obj> )
 #O  GAPToNemo( <domain>, <obj> )
+##
+##  Compute a wrapped Nemo object that corresponds to
+##  the given &GAP; object <A>obj</A>,
+##  w.r.t. the context <A>context</A>.
 ##
 DeclareOperation( "GAPToNemo", [ IsContextObj, IsObject ] );
 DeclareOperation( "GAPToNemo", [ IsDomain, IsObject ] );
@@ -85,10 +57,9 @@ DeclareOperation( "GAPToNemo", [ IsDomain, IsObject ] );
 ##
 #O  NemoToGAP( <context>, <obj> )
 ##
-DeclareOperation( "NemoToGAP", [ IsContextObj, IsObject ] );
-
-
-##############################################################################
+##  Compute a &GAP; object that corresponds to
+##  the given wrapped Nemo object <A>obj</A>,
+##  w.r.t. the context <A>context</A>.
 ##
-#E
+DeclareOperation( "NemoToGAP", [ IsContextObj, IsObject ] );
 

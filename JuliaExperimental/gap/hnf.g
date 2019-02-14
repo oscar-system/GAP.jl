@@ -88,8 +88,3 @@ BindGlobal( "HermiteNormalFormIntegerMatUsingNemo", function( juliamat )
     return GAPMatrix_fmpz_mat( juliahnf );
 end );
 
-
-##############################################################################
-##
-#E
-
