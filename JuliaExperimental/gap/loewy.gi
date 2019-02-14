@@ -293,8 +293,3 @@ InstallMethod( LoewyLength,
     return JuliaToGAP( IsInt, res );
     end );
 
-
-#############################################################################
-##
-#E
-

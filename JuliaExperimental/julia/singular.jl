@@ -7,8 +7,6 @@ module GAPSingularModule
 
 import Singular
 
-export SingularPolynomialRingWrapper
-
 """ 
     SingularPolynomialRingWrapper( dict::Dict{Any,Any} )
 > The purpose of this function is just to handle *keyword arguments*.

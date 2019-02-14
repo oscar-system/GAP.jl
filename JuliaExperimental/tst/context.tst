@@ -5,25 +5,28 @@
 gap> START_TEST( "context.tst" );
 
 ##  call NewContextGAPNemo
-gap> NewContextGAPNemo( [] );
+gap> NewContextGAPJulia( "", [] );
 Error, <arec> must be a record
-gap> NewContextGAPNemo( rec() );
+gap> NewContextGAPJulia( "Nemo", rec() );
 Error, the component 'Name' must be bound in <arec>
-gap> NewContextGAPNemo( rec(
+gap> NewContextGAPJulia( "Nemo", rec(
 >        Name:= "test",
 >        GAPDomain:= Domain( [ 1 ] ),
 >        JuliaDomain:= ObjectifyWithAttributes( rec(),
 >          TypeObj( ~.GAPDomain ),
 >          JuliaPointer, GAPToJulia( [ 1 ] ) ),
 >        ElementType:= TypeObj( 1 ),
->        ElementGAPToNemo:= ( x -> GAPToJulia( x ) ),
->        ElementNemoToGAP:= ( x -> JuliaToGAP( x ) ),
+>        ElementGAPToJulia:= ( x -> GAPToJulia( x ) ),
+>        ElementJuliaToGAP:= ( x -> JuliaToGAP( x ) ),
+>        ElementWrapped:= ( x -> x ),
 >        VectorType:= TypeObj( [ 1 ] ),
->        VectorGAPToNemo:= ( x -> GAPToJulia( x ) ),
->        VectorNemoToGAP:= ( x -> JuliaToGAP( x ) ),
+>        VectorGAPToJulia:= ( x -> GAPToJulia( x ) ),
+>        VectorJuliaToGAP:= ( x -> JuliaToGAP( x ) ),
+>        VectorWrapped:= ( x -> x ),
 >        MatrixType:= TypeObj( [ [ 1 ] ] ),
->        MatrixGAPToNemo:= ( x -> GAPToJulia( x ) ),
->        MatrixNemoToGAP:= ( x -> JuliaToGAP( x ) ),
+>        MatrixGAPToJulia:= ( x -> GAPToJulia( x ) ),
+>        MatrixJuliaToGAP:= ( x -> JuliaToGAP( x ) ),
+>        MatrixWrapped:= ( x -> x ),
 >   ) );
 test
 
@@ -171,5 +174,5 @@ gap> NemoToGAP( c, mat );
 [ [ a, a+1 ], [ 2*a, !0 ] ]
 
 ##
-gap> STOP_TEST( "context.tst", 1 );
+gap> STOP_TEST( "context.tst" );
 

@@ -26,14 +26,14 @@ gap> Julia.Base.parent( R(12) );
 
 ##  polynomial rings, polynomials
 gap> indetnames:= Julia.Base.convert( JuliaEvalString( "Array{String,1}" ),
->                     ConvertedToJulia( [ "x", "y", "z", "t" ] ) );
-<Julia: String["x", "y", "z", "t"]>
+>                     GAPToJulia( [ "x", "y", "z", "t" ] ) );
+<Julia: ["x", "y", "z", "t"]>
 gap> Rinfo:= Julia.Singular.PolynomialRing( Julia.Singular.QQ, indetnames );
 <Julia: (Singular Polynomial Ring (QQ),(x,y,z,t),(dp(4),C), Singular.spoly{Sin\
 gular.n_Q}[x, y, z, t])>
 gap> R:= Rinfo[1];
 <Julia: Singular Polynomial Ring (QQ),(x,y,z,t),(dp(4),C)>
-gap> indets:= ConvertedFromJulia( Rinfo[2] );
+gap> indets:= JuliaToGAP( IsList, Rinfo[2] );
 [ <Julia: x>, <Julia: y>, <Julia: z>, <Julia: t> ]
 gap> x:= indets[1];; y:= indets[2];; z:= indets[3];; t:= indets[4];;
 gap> f:= (x+y+z)*(x^2*y + 2*x);
@@ -51,7 +51,7 @@ gap> I2:= Julia.Singular.Ideal( R, x, t*z + x );
 <Julia: Singular Ideal over Singular Polynomial Ring (QQ),(x,y,z,t),(dp(4),C) \
 with generators (x, z*t+x)>
 gap> Julia.Singular.ngens( I2 );
-<Julia: 2>
+2
 gap> I2[2];
 <Julia: z*t+x>
 
@@ -59,11 +59,11 @@ gap> I2[2];
 gap> I:= Julia.Singular.Ideal( R, x*y + 1, x+y, 2*x+y+z );
 <Julia: Singular Ideal over Singular Polynomial Ring (QQ),(x,y,z,t),(dp(4),C) \
 with generators (x*y+1, x+y, 2*x+y+z)>
-gap> gbasis:= Julia.Base.std( I );
+gap> gbasis:= Julia.Singular.std( I );
 <Julia: Singular Ideal over Singular Polynomial Ring (QQ),(x,y,z,t),(dp(4),C) \
 with generators (y-z, 2*x+y+z, z^2-1)>
 gap> Julia.Singular.ngens( gbasis );
-<Julia: 3>
+3
 
 ##  syzygy matrix
 ##  (Currently there is no 'Julia.Singular.Matrix'.)
@@ -102,7 +102,7 @@ with generators (x*y, x, 2*x)>
 gap> I:= Julia.Singular.MaximalIdeal( R, 1 );
 <Julia: Singular Ideal over Singular Polynomial Ring (QQ),(x,y,z,t),(dp(4),C) \
 with generators (x, y, z, t)>
-gap> I:= Julia.Base.std( I );
+gap> I:= Julia.Singular.std( I );
 <Julia: Singular Ideal over Singular Polynomial Ring (QQ),(x,y,z,t),(dp(4),C) \
 with generators (t, z, y, x)>
 gap> r:= Julia.Singular.sres( I, 5 );
@@ -137,7 +137,7 @@ gap> r[2][1] + r[2][2];
 <Julia: -y*gen(1)-z*gen(1)+t*gen(3)+t*gen(2)>
 
 ##  standard bases and resolutions of modules
-gap> J:= Julia.Base.std( r[3] );
+gap> J:= Julia.Singular.std( r[3] );
 <Julia: Singular Module over Singular Polynomial Ring (QQ),(x,y,z,t),(dp(4),C)\
 , with Generators:
 y*gen(1)-z*gen(2)+t*gen(3)
@@ -159,7 +159,7 @@ gap> Rinfo:= Julia.Nemo.PolynomialRing( Julia.Singular.ZZ, indetnames );
 <Julia: (Multivariate Polynomial Ring in x, y, z, t over Integer Ring, Abstrac\
 tAlgebra.Generic.MPoly{Singular.n_Z}[x, y, z, t])>
 gap> R:= Rinfo[1];;
-gap> indets:= ConvertedFromJulia( Rinfo[2] );;
+gap> indets:= JuliaToGAP( IsList, Rinfo[2] );;
 gap> x:= indets[1];; y:= indets[2];; z:= indets[3];; t:= indets[4];;
 gap> f:= (2*t^2078*z^15*y^53-28*t^1080*z^15*y^44+98*t^82*z^15*y^35)*x^9
 >       +(t^2003*y^40-14*t^1005*y^31+49*t^7*y^22)*x^7
@@ -190,5 +190,5 @@ gap> p:= Julia.Base.gcd( f, g );
 ^78+7*x^3*y^11*t^102+7*x^3*y^11*t^2+x*z*t^4-39*x*t^3+z*t^101+z*t-39*t^100-39>
 
 ##
-gap> STOP_TEST( "singular_blog.tst", 1 );
+gap> STOP_TEST( "singular_blog.tst" );
 

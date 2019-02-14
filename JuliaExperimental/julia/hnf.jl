@@ -5,9 +5,7 @@
 
 module GAPHNFModule
 
-using Nemo
-
-export unpackedNemoMatrixFmpz
+import Nemo
 
 function fitsGAPSmallIntRep( x::Nemo.fmpz )
     return -2^60 <= x && x < 2^60
@@ -23,10 +21,8 @@ function unpackedNemoMatrixFmpz( nemomat::Nemo.fmpz_mat )
     mat = Matrix{BigInt}( nemomat )
 
     # Turn the 2-dim. array into a 1-dim. array of 1-dim. arrays
-    # of small integers (which can then be unboxed with 'ConvertedFromJulia').
-    return map( i -> mat[i,:], 1:size(mat,1) )
-#T call NestedArrayFromMatrix!
-#T also other places?
+    # of small integers (which can then be unboxed with 'JuliaToGAP').
+    return NestedArrayFromMatrix( mat )
 end
 
 end

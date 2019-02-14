@@ -102,8 +102,3 @@ BindGlobal( "OrthogonalEmbeddingsUsingJulia", function( juliagrammat, arec... )
     return r;
 end );
 
-
-##############################################################################
-##
-#E
-

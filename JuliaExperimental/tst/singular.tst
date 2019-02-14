@@ -74,10 +74,8 @@ gap> g:= ( x + y ) * ( x - y );
 <<Julia: x^2-y^2>>
 gap> IsSubset( R, [ f, g ] );                                         
 true
-?
 gap> DefaultRing( f, g );
-Singular_QQ[x,y]
-?
+Singular_PolynomialRing
 gap> Gcd( f, g );
 <<Julia: x+y>>
 gap> GcdOp( f, g );
@@ -86,5 +84,5 @@ gap> GcdOp( R, f, g );
 <<Julia: x+y>>
 
 ##
-gap> STOP_TEST( "singular.tst", 1 );
+gap> STOP_TEST( "singular.tst" );
 

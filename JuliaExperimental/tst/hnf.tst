@@ -29,5 +29,5 @@ gap> HermiteNormalFormIntegerMatUsingNemo( m_julia );
 [ [ 1, 2 ], [ 0, 36893488147419103226 ] ]
 
 ##
-gap> STOP_TEST( "hnf.tst", 1 );
+gap> STOP_TEST( "hnf.tst" );
 

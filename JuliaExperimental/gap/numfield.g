@@ -2,7 +2,7 @@
 ##
 ##  numfield.g
 ##
-##  This is an experimental interface to Nemo's elements of number fields.
+##  experimental interface to Nemo's elements of number fields
 ##
 
 #T as soon as Nemo/Hecke's QabElem objects are available,
@@ -59,7 +59,7 @@ InstallMethod( ContextGAPNemo,
     type:= IsNemoRing and IsAttributeStoringRep and
            IsCommutative and IsAssociative;
 
-    return NewContextGAPNemo( rec(
+    return NewContextGAPJulia( "Nemo", rec(
       Name:= "<context for Integers>",
 
       GAPDomain:= R,
@@ -72,7 +72,7 @@ InstallMethod( ContextGAPNemo,
 
       ElementType:= efam!.elementType,
 
-      ElementGAPToNemo:= function( C, obj )
+      ElementGAPToJulia:= function( C, obj )
         if IsInt( obj ) then
           return Julia.Nemo.fmpz( GAPToJulia( obj ) );
         else
@@ -80,41 +80,58 @@ InstallMethod( ContextGAPNemo,
         fi;
       end,
 
-      ElementNemoToGAP:= function( C, obj )
+      ElementJuliaToGAP:= function( C, obj )
         if HasJuliaPointer( obj ) then
           obj:= JuliaPointer( obj );
         fi;
         return FmpzToGAP( obj );
       end,
 
+      ElementWrapped:= function( C, obj )
+        return ObjectifyWithAttributes( rec(), C!.ElementType,
+                   JuliaPointer,  obj );
+      end,
+
       VectorType:= efam!.vectorType,
 
-      VectorGAPToNemo:= function( C, vec )
+      VectorGAPToJulia:= function( C, vec )
         return Julia.Nemo.matrix( C!.JuliaDomainPointer,
                  Julia.GAPUtilsExperimental.MatrixFromNestedArray(
                    GAPToJulia( [ vec ] ) ) );
       end,
 
-      VectorNemoToGAP:= function( C, mat )
+      VectorJuliaToGAP:= function( C, mat )
         if HasJuliaPointer( mat ) then
           mat:= JuliaPointer( mat );
         fi;
         return GAPMatrix_fmpz_mat( mat )[1];
       end,
 
+      VectorWrapped:= function( C, mat )
+        return ObjectifyWithAttributes( rec(), C!.VectorType,
+                   JuliaPointer, mat,
+                   BaseDomain, C!.GAPDomain );
+      end,
+
       MatrixType:= efam!.matrixType,
 
-      MatrixGAPToNemo:= function( C, mat )
+      MatrixGAPToJulia:= function( C, mat )
         return Julia.Nemo.matrix( C!.JuliaDomainPointer,
                  Julia.GAPUtilsExperimental.MatrixFromNestedArray(
                    GAPToJulia( mat ) ) );
       end,
 
-      MatrixNemoToGAP:= function( C, mat )
+      MatrixJuliaToGAP:= function( C, mat )
         if HasJuliaPointer( mat ) then
           mat:= JuliaPointer( mat );
         fi;
         return GAPMatrix_fmpz_mat( mat );
+      end,
+
+      MatrixWrapped:= function( C, mat )
+        return ObjectifyWithAttributes( rec(), C!.MatrixType,
+                   JuliaPointer, mat,
+                   BaseDomain, C!.GAPDomain );
       end,
     ) );
     end );
@@ -160,7 +177,7 @@ InstallMethod( ContextGAPNemo,
     type:= IsNemoField and IsAttributeStoringRep and
            IsCommutative and IsAssociative;
 
-    return NewContextGAPNemo( rec(
+    return NewContextGAPJulia( "Nemo", rec(
       Name:= "<context for Rationals>",
 
       GAPDomain:= R,
@@ -173,33 +190,35 @@ InstallMethod( ContextGAPNemo,
 
       ElementType:= efam!.elementType,
 
-      ElementGAPToNemo:= function( C, obj )
+      ElementGAPToJulia:= function( C, obj )
         return Julia.Nemo.fmpq(
             Julia.Base.\/\/( NumeratorRat( obj ), DenominatorRat( obj ) ) );
       end,
 
-      ElementNemoToGAP:= function( C, obj )
-        if HasJuliaPointer( obj ) then
-          obj:= JuliaPointer( obj );
-        fi;
+      ElementJuliaToGAP:= function( C, obj )
         return FmpzToGAP( Julia.Base.numerator( obj ) ) /
                FmpzToGAP( Julia.Base.denominator( obj ) );
       end,
 
+      ElementWrapped:= function( C, obj )
+        return ObjectifyWithAttributes( rec(), C!.ElementType,
+                   JuliaPointer,  obj );
+      end,
+
       VectorType:= efam!.vectorType,
 
-      VectorGAPToNemo:= function( C, vec )
+      VectorGAPToJulia:= function( C, vec )
         return NemoMatrix_fmpq( [ vec ] );
       end,
 
-      VectorNemoToGAP:= function( C, vec )
+      VectorJuliaToGAP:= function( C, vec )
         local result, j, entry;
 
         if HasJuliaPointer( vec ) then
           vec:= JuliaPointer( vec );
         fi;
         result:= [];
-        for j in [ 1 .. Julia.Nemo.cols( vec ) ] do
+        for j in [ 1 .. Julia.Nemo.ncols( vec ) ] do
           entry:= vec[ 1, j ];
           result[j]:= FmpzToGAP( Julia.Base.numerator( entry ) ) /
                       FmpzToGAP( Julia.Base.denominator( entry ) );
@@ -208,21 +227,27 @@ InstallMethod( ContextGAPNemo,
         return result;
       end,
 
+      VectorWrapped:= function( C, mat )
+        return ObjectifyWithAttributes( rec(), C!.VectorType,
+                   JuliaPointer, mat,
+                   BaseDomain, C!.GAPDomain );
+      end,
+
       MatrixType:= efam!.matrixType,
 
-      MatrixGAPToNemo:= function( C, mat )
+      MatrixGAPToJulia:= function( C, mat )
         return NemoMatrix_fmpq( mat );
       end,
 
-      MatrixNemoToGAP:= function( C, mat )
+      MatrixJuliaToGAP:= function( C, mat )
         local n, result, i, row, j, entry;
 
         if HasJuliaPointer( mat ) then
           mat:= JuliaPointer( mat );
         fi;
-        n:= Julia.Nemo.cols( mat );
+        n:= Julia.Nemo.ncols( mat );
         result:= [];
-        for i in [ 1 .. Julia.Nemo.rows( mat ) ] do
+        for i in [ 1 .. Julia.Nemo.nrows( mat ) ] do
           row:= [];
           for j in [ 1 .. n ] do
             entry:= mat[ i, j ];
@@ -233,6 +258,12 @@ InstallMethod( ContextGAPNemo,
         od;
 
         return result;
+      end,
+
+      MatrixWrapped:= function( C, mat )
+        return ObjectifyWithAttributes( rec(), C!.MatrixType,
+                   JuliaPointer, mat,
+                   BaseDomain, C!.GAPDomain );
       end,
     ) );
     end );
@@ -270,7 +301,7 @@ InstallMethod( ContextGAPNemo,
     # Note that elements from two Nemo polynomial rings cannot be compared,
     efam:= NewFamily( "Nemo_PolynomialsFamily", IsNemoObject, IsScalar );
 #   SetIsUFDFamily( efam, true );
-#T ?
+#T useful?
     collfam:= CollectionsFamily( efam );
     efam!.elementType:= NewType( efam,
         IsNemoPolynomial and IsAttributeStoringRep );
@@ -317,7 +348,7 @@ InstallMethod( ContextGAPNemo,
       type:= type and IsEuclideanRing and IsRationalsPolynomialRing;
     fi;
 
-    return NewContextGAPNemo( rec(
+    return NewContextGAPJulia( "Nemo", rec(
       Name:= Concatenation( "<context for pol. ring over ", String( F ),
                             ", with ", String( Length( indets ) ),
                             " indeterminates>" ),
@@ -335,8 +366,8 @@ InstallMethod( ContextGAPNemo,
 
       ElementType:= efam!.elementType,
 
-      ElementGAPToNemo:= function( C, obj )
-        local FContext, pol, len, coeffs, monoms;
+      ElementGAPToJulia:= function( C, obj )
+        local FContext, pol, len, coeffs, n, monoms;
 
         FContext:= ContextGAPNemo( LeftActingDomain( C!.GAPDomain ) );
 
@@ -345,27 +376,31 @@ InstallMethod( ContextGAPNemo,
             obj:= CoefficientsOfUnivariatePolynomial( obj );
           fi;
           obj:= GAPToNemo( FContext, obj );
-#T this yields "Nemo.fmpq_mat",
-#T but I need "Array{Nemo.fmpq,1}" ...
-          obj:= Julia.GAPNumberFields.VectorToArray( JuliaPointer( obj ) );
-
+          # This yields 'Nemo.fmpq_mat', but we need 'Array{Nemo.fmpq,1}'.
+          obj:= Julia.GAPNumberFields.VectorToArray( obj );
           pol:= C!.JuliaDomainPointer( obj );
         else
           if IsPolynomial( obj ) then
             obj:= ExtRepPolynomialRatFun( obj );
           fi;
           len:= Length( obj );
-          coeffs:= GAPToNemo( FContext, obj{ [ 2, 4 .. len ] } );
-          monoms:= Julia.Base.convert(
-                     JuliaEvalString( "Array{Array{UInt,1},1}" ),
-                     GAPToJulia( TransposedMat( obj{ [ 1, 3 .. len-1 ] } ) ) );
-          pol:= C!.JuliaDomainPointer( coeffs, monoms );
+          if len = 0 then
+            pol:= Julia.Base.zero( C!.JuliaDomain );
+          else
+            coeffs:= GAPToNemo( FContext, obj{ [ 2, 4 .. len ] } );
+            coeffs:= Julia.GAPNumberFields.VectorToArray( coeffs );
+            n:= Length( indets );
+            monoms:= GAPToJulia( JuliaEvalString( "Array{Array{UInt,1},1}" ),
+                         List( obj{ [ 1, 3 .. len-1 ] },
+                               w -> ExponentVectorFromWord( w, n ) ) );
+            pol:= C!.JuliaDomainPointer( coeffs, monoms );
+          fi;
         fi;
 
         return pol;
       end,
 
-      ElementNemoToGAP:= function( C, obj )
+      ElementJuliaToGAP:= function( C, obj )
         local descr;
 
         if HasJuliaPointer( obj ) then
@@ -379,45 +414,62 @@ InstallMethod( ContextGAPNemo,
                        IndeterminatesOfPolynomialRing( C!.GAPDomain )[1] ) );
         else
           return PolynomialByExtRep(
-# NC?
-                     ElementsFamily( FamilyObj( LeftActingDomain( C!.GAPDomain ) ) ), descr );
+#T add NC variant?
+                     ElementsFamily( FamilyObj( ( C!.GAPDomain ) ) ), descr );
         fi;
+      end,
+
+      ElementWrapped:= function( C, obj )
+        return ObjectifyWithAttributes( rec(), C!.ElementType,
+                   JuliaPointer,  obj );
       end,
 
       VectorType:= efam!.vectorType,
 
-      VectorGAPToNemo:= function( C, vec )
+      VectorGAPToJulia:= function( C, vec )
         return Julia.Nemo.matrix( C!.JuliaDomainPointer, 1, Length( vec ),
-                   GAPToJulia( List( vec, x -> C!.ElementGAPToNemo( C, x ) ) ) );
+                   GAPToJulia( List( vec, x -> C!.ElementGAPToJulia( C, x ) ) ) );
       end,
 
-      VectorNemoToGAP:= function( C, vec )
+      VectorJuliaToGAP:= function( C, vec )
         if HasJuliaPointer( vec ) then
           vec:= JuliaPointer( vec );
         fi;
-        return List( [ 1 .. Julia.Nemo.cols( vec ) ],
-                     j -> C!.ElementNemoToGAP( C, vec[ 1, j ] ) );
+        return List( [ 1 .. Julia.Nemo.ncols( vec ) ],
+                     j -> C!.ElementJuliaToGAP( C, vec[ 1, j ] ) );
+      end,
+
+      VectorWrapped:= function( C, mat )
+        return ObjectifyWithAttributes( rec(), C!.VectorType,
+                   JuliaPointer, mat,
+                   BaseDomain, C!.GAPDomain );
       end,
 
       MatrixType:= efam!.matrixType,
 
-      MatrixGAPToNemo:= function( C, mat )
+      MatrixGAPToJulia:= function( C, mat )
         return Julia.Nemo.matrix( C!.JuliaDomainPointer,
                    NumberRows( mat ), NumberColumns( mat ),
                    GAPToJulia( List( Concatenation( mat ),
-                                     x -> C!.ElementGAPToNemo( C, x ) ) ) );
+                                     x -> C!.ElementGAPToJulia( C, x ) ) ) );
       end,
 
-      MatrixNemoToGAP:= function( C, mat )
+      MatrixJuliaToGAP:= function( C, mat )
         local n;
 
         if HasJuliaPointer( mat ) then
           mat:= JuliaPointer( mat );
         fi;
-        n:= Julia.Nemo.cols( mat );
-        return List( [ 1 .. Julia.Nemo.rows( mat ) ],
+        n:= Julia.Nemo.ncols( mat );
+        return List( [ 1 .. Julia.Nemo.nrows( mat ) ],
                      i -> List( [ 1 .. n ],
-                                j -> C!.ElementNemoToGAP( C, mat[ i, j ] ) ) );
+                                j -> C!.ElementJuliaToGAP( C, mat[ i, j ] ) ) );
+      end,
+
+      MatrixWrapped:= function( C, mat )
+        return ObjectifyWithAttributes( rec(), C!.MatrixType,
+                   JuliaPointer, mat,
+                   BaseDomain, C!.GAPDomain );
       end,
     ) );
     end );
@@ -427,7 +479,7 @@ InstallMethod( ContextGAPNemo,
 ##
 #M  ContextGAPNemo( AlgebraicExtension( Q, pol ) )
 ##
-##  On the Nemo side, we have <C>Julia.Nemo....</C>.
+##  On the Nemo side, we have <C>Julia.Nemo.NumberField( ... )</C>.
 ##
 InstallMethod( ContextGAPNemo,
     [ "IsField and IsAlgebraicExtension and IsAttributeStoringRep" ],
@@ -450,7 +502,7 @@ InstallMethod( ContextGAPNemo,
 
     # Create the Nemo ring.
     npol:= GAPToNemo( PContext, pol );
-    juliaRing:= Julia.Nemo.NumberField( JuliaPointer( npol ), name );
+    juliaRing:= Julia.Nemo.NumberField( npol, name );
 
     # Create the GAP wrappers.
     # Create a new family.
@@ -477,10 +529,10 @@ InstallMethod( ContextGAPNemo,
                     JuliaPointer, juliaRing[2] );
 
     type:= IsNemoField and IsAttributeStoringRep and IsFiniteDimensional;
-#T also IsFinite value
-#T set also 'IsNumberField' etc., depending on the situation
+#T also IsFinite value?
+#T set also 'IsNumberField' etc., depending on the situation?
 
-    return NewContextGAPNemo( rec(
+    return NewContextGAPJulia( "Nemo", rec(
       Name:= Concatenation( "<context for alg. ext. field over ", String( F ),
                             ", w.r.t. polynomial ", String( pol ), ">" ),
 
@@ -497,7 +549,7 @@ InstallMethod( ContextGAPNemo,
 
       ElementType:= efam!.elementType,
 
-      ElementGAPToNemo:= function( C, obj )
+      ElementGAPToJulia:= function( C, obj )
         local coeffs, d, res;
 
         # Compute the common denominator.
@@ -517,13 +569,12 @@ InstallMethod( ContextGAPNemo,
                    C!.JuliaDomainPointer, res, d );
       end,
 
-      ElementNemoToGAP:= function( C, obj )
+      ElementJuliaToGAP:= function( C, obj )
         local numden, convert, num, den, coeffs;
 
         if HasJuliaPointer( obj ) then
           obj:= JuliaPointer( obj );
         fi;
-
 
         numden:= Julia.GAPNumberFields.CoefficientVectorsNumDenOfNumberFieldElement(
                      obj, Dimension( C!.GAPDomain ) );
@@ -538,40 +589,59 @@ InstallMethod( ContextGAPNemo,
         return AlgExtElm( ElementsFamily( FamilyObj( C!.GAPDomain ) ), coeffs );
       end,
 
-      VectorType:= efam!.vectorType,
-
-      VectorGAPToNemo:= function( C, vec )
-        return Julia.Nemo.matrix( C!.JuliaDomainPointer, 1, Length( vec ),
-                   GAPToJulia( List( vec, x -> C!.ElementGAPToNemo( C, x ) ) ) );
+      ElementWrapped:= function( C, obj )
+        return ObjectifyWithAttributes( rec(), C!.ElementType,
+                   JuliaPointer,  obj );
       end,
 
-      VectorNemoToGAP:= function( C, vec )
+      VectorType:= efam!.vectorType,
+
+      VectorGAPToJulia:= function( C, vec )
+        return Julia.Nemo.matrix( C!.JuliaDomainPointer, 1, Length( vec ),
+                   GAPToJulia( List( vec, x -> C!.ElementGAPToJulia( C, x ) ) ) );
+      end,
+
+      VectorJuliaToGAP:= function( C, vec )
         if HasJuliaPointer( vec ) then
           vec:= JuliaPointer( vec );
         fi;
-        return List( [ 1 .. Julia.Nemo.cols( vec ) ],
-                     j -> C!.ElementNemoToGAP( C, vec[ 1, j ] ) );
+        return List( [ 1 .. Julia.Nemo.ncols( vec ) ],
+                     j -> C!.ElementJuliaToGAP( C, vec[ 1, j ] ) );
+      end,
+
+      VectorWrapped:= function( C, mat )
+        return ObjectifyWithAttributes( rec(), C!.VectorType,
+                   JuliaPointer, mat,
+                   BaseDomain, C!.GAPDomain );
       end,
 
       MatrixType:= efam!.matrixType,
 
-      MatrixGAPToNemo:= function( C, mat )
+      MatrixGAPToJulia:= function( C, mat )
+#T better use Julia.GAPNumberFields.Nemo_Matrix_over_NumberField?
         return Julia.Nemo.matrix( C!.JuliaDomainPointer,
                    NumberRows( mat ), NumberColumns( mat ),
                    GAPToJulia( List( Concatenation( mat ),
-                                     x -> C!.ElementGAPToNemo( C, x ) ) ) );
+                                     x -> C!.ElementGAPToJulia( C, x ) ) ) );
       end,
 
-      MatrixNemoToGAP:= function( C, mat )
+      MatrixJuliaToGAP:= function( C, mat )
+#T better use Julia.GAPNumberFields.MatricesOfCoefficientVectorsNumDen?
         local n;
 
         if HasJuliaPointer( mat ) then
           mat:= JuliaPointer( mat );
         fi;
-        n:= Julia.Nemo.cols( mat );
-        return List( [ 1 .. Julia.Nemo.rows( mat ) ],
+        n:= Julia.Nemo.ncols( mat );
+        return List( [ 1 .. Julia.Nemo.nrows( mat ) ],
                      i -> List( [ 1 .. n ],
-                                j -> C!.ElementNemoToGAP( C, mat[ i, j ] ) ) );
+                                j -> C!.ElementJuliaToGAP( C, mat[ i, j ] ) ) );
+      end,
+
+      MatrixWrapped:= function( C, mat )
+        return ObjectifyWithAttributes( rec(), C!.MatrixType,
+                   JuliaPointer, mat,
+                   BaseDomain, C!.GAPDomain );
       end,
     ) );
     end );
@@ -584,20 +654,17 @@ InstallMethod( ContextGAPNemo,
 ##  is used to wrap field elements, matrices, ...
 ##
 BindGlobal( "NemoElement", function( template, jpointer )
-    local type, result;
+    local C, result;
 
-    if IsDomain( template ) then
-#T needed?
-      type:= ContextGAPNemo( FamilyObj( template ) )!.ElementType;
-    elif IsVectorObj( template ) then
-      type:= ContextGAPNemo( FamilyObj( template ) )!.VectorType;
+    C:= ContextGAPNemo( FamilyObj( template ) );
+    if IsVectorObj( template ) then
+      result:= C!.VectorWrapped( C, jpointer );
     elif IsMatrixObj( template ) then
-      type:= ContextGAPNemo( FamilyObj( template ) )!.MatrixType;
+      result:= C!.MatrixWrapped( C, jpointer );
     else
-      type:= ContextGAPNemo( FamilyObj( template ) )!.ElementType;
+      result:= C!.ElementWrapped( C, jpointer );
     fi;
 
-    result:= ObjectifyWithAttributes( rec(), type, JuliaPointer, jpointer );
     if HasParent( template ) then
       SetParent( result, Parent( template ) );
     fi;
@@ -606,219 +673,195 @@ BindGlobal( "NemoElement", function( template, jpointer )
 end );
 
 
-#T beat GAP's 'IsPolynomial' methods
+#T beat GAP's 'IsPolynomial' etc. methods
 NEMO_RANK_SHIFT:= 100;
 
 
 #############################################################################
 ##
-##  methods for Nemo's polynomials
+##  methods for Nemo's polynomials, polynomial rings, and fields
 ##
 InstallMethod( String,
-    [ "IsNemoObject and HasJuliaPointer" ], 100,
+    [ "IsNemoObject and HasJuliaPointer" ], NEMO_RANK_SHIFT,
     nemo_obj -> String( JuliaPointer( nemo_obj ) ) );
 
 InstallMethod( PrintObj,
-    [ "IsNemoObject and HasJuliaPointer" ], 100,
+    [ "IsNemoObject and HasJuliaPointer" ], NEMO_RANK_SHIFT,
     function( nemo_obj )
     Print( PrintString( nemo_obj ) );
     end );
 
+InstallOtherMethod( Zero, [ "IsNemoObject" ], NEMO_RANK_SHIFT,
+    F -> NemoElement( F, Julia.Base.zero( Julia.Base.parent( F ) ) ) );
 
-#############################################################################
-##
-##  methods for Nemo's polynomial rings and fields
-##
-InstallOtherMethod( Zero, [ IsNemoObject ], 200,
-    F -> NemoElement( F, Julia.Base.zero( Julia.Base.parent( JuliaPointer( F ) ) ) ) );
+InstallOtherMethod( One, [ "IsNemoObject" ], NEMO_RANK_SHIFT,
+    F -> NemoElement( F, Julia.Base.one( Julia.Base.parent( F ) ) ) );
 
-InstallOtherMethod( One, [ IsNemoObject ], 200,
-    F -> NemoElement( F, Julia.Base.one( Julia.Base.parent( JuliaPointer( F ) ) ) ) );
-
-InstallMethod( RootOfDefiningPolynomial, [ IsNemoField ],
-    F -> NemoElement( F, Julia.Nemo.gen( JuliaPointer( F ) ) ) );
+InstallMethod( RootOfDefiningPolynomial, [ "IsNemoField" ],
+    F -> NemoElement( F, Julia.Nemo.gen( F ) ) );
 
 
 #############################################################################
 ##
-##  methods for field elements
+##  methods for field elements, vectors, matrices; delegate to Julia
+#T TODO: Unify this with the Singular case, as far as possible?
+#T       On the other hand, 'Julia.Base' is responsible not in many cases.
 ##
 InstallOtherMethod( ViewString, [ "IsNemoObject" ],
     x -> Concatenation( "<", ViewString( JuliaPointer( x ) ), ">" ) );
 
 InstallOtherMethod( \=, [ "IsNemoObject", "IsNemoObject" ], NEMO_RANK_SHIFT,
-    function( x, y )
-      return Julia.Base.\=\=( JuliaPointer( x ), JuliaPointer( y ) );
-    end );
+    Julia.Base.\=\= );
 
 InstallOtherMethod( \+, [ "IsNemoObject", "IsNemoObject" ], NEMO_RANK_SHIFT,
     function( x, y )
-      return NemoElement( x,
-                 Julia.Base.\+( JuliaPointer( x ), JuliaPointer( y ) ) );
+      return NemoElement( x, Julia.Base.\+( x, y ) );
     end );
 
+#T TODO: Addition '<matrix> + <int>' is defined differently in Julia/Nemo,
+#T       the <int> is added just on the diagonal of the matrix!
+#T       How to deal with this incompatibility?
 InstallOtherMethod( \+, [ "IsNemoObject", "IsInt" ], NEMO_RANK_SHIFT,
     function( x, y )
-      return NemoElement( x,
-                 Julia.Base.\+( JuliaPointer( x ), y ) );
+      return NemoElement( x, Julia.Base.\+( x, y ) );
     end );
 
 InstallOtherMethod( AdditiveInverse, [ "IsNemoObject" ], NEMO_RANK_SHIFT,
-    x -> NemoElement( x, Julia.Base.\-( JuliaPointer( x ) ) ) );
+    x -> NemoElement( x, Julia.Base.\-( x ) ) );
 
 InstallOtherMethod( \-, [ "IsNemoObject", "IsNemoObject" ], NEMO_RANK_SHIFT,
     function( x, y )
-      return NemoElement( x,
-                 Julia.Base.\-( JuliaPointer( x ), JuliaPointer( y ) ) );
+      return NemoElement( x, Julia.Base.\-( x, y ) );
     end );
 
 InstallOtherMethod( \*, [ "IsNemoObject", "IsNemoObject" ], NEMO_RANK_SHIFT,
     function( x, y )
-      return NemoElement( x,
-                 Julia.Base.\*( JuliaPointer( x ), JuliaPointer( y ) ) );
+      return NemoElement( x, Julia.Base.\*( x, y ) );
     end );
 
 InstallOtherMethod( \/, [ "IsNemoObject", "IsNemoObject" ], NEMO_RANK_SHIFT,
     function( x, y )
-      return NemoElement( x, Julia.Nemo.divexact(
-                     JuliaPointer( x ), JuliaPointer( y ) ) );
+      return NemoElement( x, Julia.Nemo.divexact( x, y ) );
     end );
 
 InstallOtherMethod( \^, [ "IsNemoObject", "IsPosInt" ], NEMO_RANK_SHIFT,
     function( x, n )
-      return NemoElement( x, Julia.Base.\^( JuliaPointer( x ), n ) );
+      return NemoElement( x, Julia.Base.\^( x, n ) );
     end );
+
+InstallOtherMethod( InverseMutable, [ "IsNemoObject" ], NEMO_RANK_SHIFT,
+    x -> NemoElement( x, Julia.Base.inv( x ) ) );
 
 
 InstallMethod( NumberRows,
     [ "IsNemoMatrixObj" ],
-    nemomat -> Julia.Nemo.rows( JuliaPointer( nemomat ) ) );
+    Julia.Nemo.nrows );
 
 InstallMethod( NumberColumns,
     [ "IsNemoMatrixObj" ],
-    nemomat -> Julia.Nemo.cols( JuliaPointer( nemomat ) ) );
+    Julia.Nemo.ncols );
 
 InstallMethod( RankMat,
     [ "IsNemoMatrixObj" ],
-    nemomat -> Julia.Base.rank( JuliaPointer( nemomat ) ) );
-#T RankMatDestructive?
-
-#T [] ? (absurd for mutable matrices)
-#T Position etc.?
-
-#T ExtractSubMatrix ?
-
-#T MutableCopyMat ?
-
-#############################################################################
-##
-#O  CopySubMatrix( <src>, <dst>, <srows>, <drows>, <scols>, <dcols> )
-##
-##  <#GAPDoc Label="CopySubMatrix">
-##  <ManSection>
-##  <Oper Name="CopySubMatrix" Arg='src, dst, srows, drows, scols, dcols'/>
-##
-##  <Description>
-##  returns nothing. Does <C><A>dst</A>{<A>drows</A>}{<A>dcols</A>} := <A>src</A>{<A>srows</A>}{<A>scols</A>}</C>
-##  without creating an intermediate object and thus - at least in
-##  special cases - much more efficiently. For certain objects like
-##  compressed vectors this might be significantly more efficient if
-##  <A>scols</A> and <A>dcols</A> are ranges with increment 1.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-#T DeclareOperation( "CopySubMatrix", [IsMatrixObj,IsMatrixObj,
-#T                                    IsList,IsList,IsList,IsList] );
-
-############################################################################
-# New element access for matrices
-############################################################################
+    Julia.Nemo.rank );
 
 InstallMethod( MatElm,
     [ "IsNemoMatrixObj", "IsPosInt", "IsPosInt" ],
     function( nemomat, i, j )
-      return JuliaPointer( nemomat )[ i, j ];
+    local C;
+
+    C:= ContextGAPNemo( FamilyObj( nemomat ) );
+    return C!.ElementWrapped( C, JuliaPointer( nemomat )[ i, j ] );
     end );
 
 InstallMethod( \[\],
     [ "IsNemoMatrixObj", "IsPosInt", "IsPosInt" ],
     function( nemomat, i, j )
-      return JuliaPointer( nemomat )[ i, j ];
+    local C;
+
+    C:= ContextGAPNemo( FamilyObj( nemomat ) );
+    return C!.ElementWrapped( C, JuliaPointer( nemomat )[ i, j ] );
     end );
-
-#T InstallMethod( SetMatElm,
-#T     [ "IsNemoMatrixObj", "IsPosInt", "IsPosInt", "IsObject" ],
-#T     function( nemomat, i, j, obj )
-#T ...
-#T     end );
-#T four argument []:= needed?
-
-
-############################################################################
-# Arithmetical operations:
-############################################################################
-
-# The following binary arithmetical operations are possible for matrices
-# over the same BaseDomain with fitting dimensions:
-#    +, *, -
-# The following are also allowed for different dimensions:
-#    <, =
-# Note1: It is not guaranteed that sorting is done lexicographically!
-# Note2: If sorting is not done lexicographically then the objects
-#        in that representation cannot be lists!
 
 InstallMethod( \^,
     [ "IsNemoMatrixObj", "IsPosInt" ], NEMO_RANK_SHIFT,
-                                       # beat the generic method
     function( nemomat, n )
-    local power, type;
+    local C, power;
 
-    power:= Julia.Base.\^( JuliaPointer( nemomat ), n );
-    type:= ContextGAPNemo( FamilyObj( nemomat ) )!.MatrixType;
-    return ObjectifyWithAttributes( rec(), type,
-               JuliaPointer, power,
-               BaseDomain, BaseDomain( nemomat ),
-               NumberRows, NumberRows( nemomat ),
-               NumberColumns, NumberColumns( nemomat ) );
+    C:= ContextGAPNemo( FamilyObj( nemomat ) );
+    power:= C!.MatrixWrapped( C, Julia.Base.\^( nemomat, n ) );
+    SetNumberRows( power, NumberRows( nemomat ) );
+    SetNumberColumns( power, NumberColumns( nemomat ) );
+    return power;
     end );
 
 
-# The following unary arithmetical operations are possible for matrices:
-#    AdditiveInverseImmutable, AdditiveInverseMutable,
-#    AdditiveInverseSameMutability, ZeroImmutable, ZeroMutable,
-#    ZeroSameMutability, IsZero, Characteristic
+InstallOtherMethod( IsZero,
+    [ "IsNemoObject" ],
+    Julia.Base.iszero );
+
+InstallMethod( Characteristic,
+    [ "IsNemoObject" ], NEMO_RANK_SHIFT,
+#T TODO: Is the GAP library method of rank 2 really reasonable?
+#T       (At least remove one of the two methods that ask the family.)
+    function( obj )
+    local R;
+
+    R:= ContextGAPNemo( FamilyObj( obj ) )!.JuliaDomain;
+    if JuliaTypeInfo( R ) = "Nemo.NmodRing" then
+      # We need this for matrix groups over residue class rings.
+      # Nemo does not support it.
+      return JuliaToGAP( IsInt,
+                 Julia.Base.getfield( R, JuliaSymbol( "n" ) ) );
+    else
+      return JuliaToGAP( IsInt, Julia.Nemo.characteristic( R ) );
+    fi;
+    end );
+
 
 InstallMethod( ZeroSameMutability,
     [ "IsNemoMatrixObj" ],
     function( nemomat )
-    local zero, type;
+    local C, nr, nc, zero;
 
-    zero:= Julia.Base.zero( JuliaPointer( nemomat ) );
-    type:= ContextGAPNemo( FamilyObj( nemomat ) )!.MatrixType;
-    return ObjectifyWithAttributes( rec(), type,
-               JuliaPointer, zero,
-               BaseDomain, BaseDomain( nemomat ),
-               NumberRows, NumberRows( nemomat ),
-               NumberColumns, NumberColumns( nemomat ) );
+    C:= ContextGAPNemo( FamilyObj( nemomat ) );
+    nr:= NumberRows( nemomat );
+    nc:= NumberColumns( nemomat );
+    zero:= C!.MatrixWrapped( C,
+               Julia.Nemo.zero_matrix( C!.JuliaDomain, nr, nc ) );
+    SetNumberRows( zero, nr );
+    SetNumberColumns( zero, nc );
+    return zero;
     end );
 
 
-# The following unary arithmetical operations are possible for non-empty
-# square matrices (inversion returns fail if not invertible):
-#    OneMutable, OneImmutable, OneSameMutability,
-#    InverseMutable, InverseImmutable, InverseSameMutability, IsOne,
+InstallOtherMethod( IsOne,
+    [ "IsNemoObject" ],
+    Julia.Base.isone );
 
-# Problem: How about inverses of integer matrices that exist as
-# elements of rationals matrix?
+InstallOtherMethod( OneSameMutability,
+     [ "IsNemoMatrixObj" ],
+    function( nemomat )
+    local C, nr, nc, one;
 
-InstallOtherMethod( OneMutable,
-     [ "IsNemoMatrixObj" ], NEMO_RANK_SHIFT,
-     x -> NemoElement( x, Julia.Base.one( JuliaPointer( x ) ) ) );
+    C:= ContextGAPNemo( FamilyObj( nemomat ) );
+    nr:= NumberRows( nemomat );
+    nc:= NumberColumns( nemomat );
+    if nr <> nc then
+      Error( "<nemomat> is not square" );
+    fi;
+    one:= C!.MatrixWrapped( C,
+              Julia.Nemo.identity_matrix( C!.JuliaDomain, nr ) );
+    SetNumberRows( one, nr );
+    SetNumberColumns( one, nc );
+    return one;
+    end );
 
 InstallOtherMethod( InverseMutable,
      [ "IsNemoMatrixObj" ], NEMO_RANK_SHIFT,
-#    x -> NemoElement( x, Julia.Base.inv( JuliaPointer( x ) ) ) );
+#    x -> NemoElement( x, Julia.Base.inv( x ) ) );
+#T Remove the code below as soon as it becomes obsolete.
+#T (The critical case is inversion of 'Nemo.nmod_mat' objects.)
      function( x )
      local ptr, res, modulus, m, s, arr, i, j, entry;
 
@@ -832,10 +875,11 @@ InstallOtherMethod( InverseMutable,
        # Perhaps the object is invertible:
        # Take a preimage over the integers, invert over the rationals,
        # compute the reductions of the entries (numerators and denominators).
-       modulus:= Julia.Nemo.fmpz( Size( ContextGAPNemo( FamilyObj( x ) )!.GAPDomain ) );
-       res:= Julia.Nemo.lift( JuliaPointer( x ) );
+       modulus:= Julia.Nemo.fmpz(
+                     Size( ContextGAPNemo( FamilyObj( x ) )!.GAPDomain ) );
+       res:= Julia.Nemo.lift( x );
        m:= NumberRows( x );
-#T note that res:= Julia.Nemo.matrix( Julia.Nemo.QQ, m, m, res ); does not work!
+#T 'res:= Julia.Nemo.matrix( Julia.Nemo.QQ, m, m, res );' does not work
        s:= Julia.Nemo.MatrixSpace( Julia.Nemo.QQ, m, m );
        res:= s( res );
        res:= Julia.Base.inv( res );
@@ -844,178 +888,141 @@ InstallOtherMethod( InverseMutable,
          for j in [ 1 .. m ] do
            entry:= res[i,j];
            Add( arr, Julia.Nemo.numerator( entry )
-                     * Julia.Base.invmod( Julia.Nemo.denominator( entry ), modulus ) );
+                     * Julia.Base.invmod( Julia.Nemo.denominator( entry ),
+                                          modulus ) );
          od;
        od;
        arr:= Julia.Base.convert( JuliaEvalString( "Array{Nemo.fmpz,1}" ),
                                  GAPToJulia( arr ) );
        res:= Julia.Nemo.parent( ptr )( arr );
      fi;
+
      return NemoElement( x, res );
      end );
 
 InstallMethod( TraceMat,
     [ "IsNemoMatrixObj" ],
-    nemomat -> ObjectifyWithAttributes( rec(),
-        ContextGAPNemo( FamilyObj( nemomat ) )!.ElementType,
-        JuliaPointer, Julia.LinearAlgebra.tr( JuliaPointer( nemomat ) ) ) );
+    function( nemomat )
+    local C;
+
+    C:= ContextGAPNemo( FamilyObj( nemomat ) );
+    return C!.ElementWrapped( C, Julia.LinearAlgebra.tr( nemomat ) );
+    end );
 
 InstallOtherMethod( DeterminantMat,
     [ "IsNemoMatrixObj" ],
-    nemomat -> ObjectifyWithAttributes( rec(),
-        ContextGAPNemo( FamilyObj( nemomat ) )!.ElementType,
-        JuliaPointer, Julia.Nemo.det( JuliaPointer( nemomat ) ) ) );
+    function( nemomat )
+    local C;
 
+    C:= ContextGAPNemo( FamilyObj( nemomat ) );
+    return C!.ElementWrapped( C, Julia.Nemo.det( nemomat ) );
+    end );
 
-############################################################################
-# Rule:
-# Operations not sensibly defined return fail and do not trigger an error:
-# In particular this holds for:
-# One for non-square matrices.
-# Inverse for non-square matrices
-# Inverse for square, non-invertible matrices.
-#
-# An exception are properties:
-# IsOne for non-square matrices returns false.
-#
-# To detect errors more easily:
-# Matrix/vector and matrix/matrix product run into errors if not defined
-# mathematically (like for example a 1x2 - matrix times itself.
-############################################################################
-
-############################################################################
-# The "representation-preserving" contructor methods:
-############################################################################
 
 InstallMethod( ZeroMatrix,
     [ "IsInt", "IsInt", "IsNemoMatrixObj" ],
     function( m, n, nemomat )
-    local R, zero, type;
+    local C, zero;
 
-    R:= BaseDomain( nemomat );
-    zero:= Julia.Base.zero( Julia.Nemo.MatrixSpace( JuliaPointer( R ), m, n ) );
-    type:= ContextGAPNemo( FamilyObj( nemomat ) )!.MatrixType;
-    return ObjectifyWithAttributes( rec(), type,
-               JuliaPointer, zero,
-               BaseDomain, R,
-               NumberRows, m,
-               NumberColumns, n );
+    C:= ContextGAPNemo( FamilyObj( nemomat ) );
+    zero:= C!.MatrixWrapped( C,
+               Julia.Nemo.zero_matrix( C!.JuliaDomain, m, n ) );
+    SetNumberRows( zero, m );
+    SetNumberColumns( zero, n );
+    return zero;
     end );
 
+# Assume that 'R' is a GAP ring, not a Nemo ring.
 InstallMethod( NewZeroMatrix,
     [ "IsNemoMatrixObj", "IsRing", "IsInt", "IsInt" ],
-    function( nemomat, R, m, n )
-    local zero, type;
+    function( filt, R, m, n )
+    local C, zero;
 
-    zero:= Julia.Base.zero( Julia.Nemo.MatrixSpace( JuliaPointer( R ), m, n ) );
-    type:= ContextGAPNemo( FamilyObj( R ) )!.MatrixType;
-    return ObjectifyWithAttributes( rec(), type,
-               JuliaPointer, zero,
-               BaseDomain, R,
-               NumberRows, m,
-               NumberColumns, n );
+    C:= ContextGAPNemo( R );
+    zero:= C!.MatrixWrapped( C,
+               Julia.Nemo.zero_matrix( C!.JuliaDomain, m, n ) );
+    SetNumberRows( zero, m );
+    SetNumberColumns( zero, n );
+    return zero;
     end );
 
-# DeclareOperation( "IdentityMatrix", [IsInt,IsMatrixObj] );
-# # Returns a new mutable identity matrix in the same rep as the given one with
-# # possibly different dimensions.
-# 
-# DeclareConstructor( "NewIdentityMatrix", [IsMatrixObj,IsSemiring,IsInt]);
-# # Returns a new fully mutable identity matrix over the base domain in the
-# # 2nd argument. The integer is the number of rows and columns.
-# 
-# DeclareOperation( "CompanionMatrix", [IsUnivariatePolynomial,IsMatrixObj] );
-# # Returns the companion matrix of the first argument in the representation
-# # of the second argument. Uses row-convention. The polynomial must be
-# # monic and its coefficients must lie in the BaseDomain of the matrix.
-# 
-# DeclareConstructor( "NewCompanionMatrix",
-#   [IsMatrixObj, IsUnivariatePolynomial, IsSemiring] );
-# # The constructor variant of <Ref Oper="CompanionMatrix"/>.
-# 
-# # The following are already declared in the library:
-# # Eventually here will be the right place to do this.
-# 
-# DeclareOperation( "Matrix", [IsList,IsInt,IsMatrixObj]);
-# # Creates a new matrix in the same representation as the fourth argument
-# # but with entries from list, the second argument is the number of
-# # columns. The first argument can be:
-# #  - a plain list of vectors of the correct row length in a representation
-# #          fitting to the matrix rep.
-# #  - a plain list of plain lists where each sublist has the length of the rows
-# #  - a plain list with length rows*cols with matrix entries given row-wise
-# # If the first argument is empty, then the number of rows is zero.
-# # Otherwise the first entry decides which case is given.
-# # The outer list is guaranteed to be copied, however, the entries of that
-# # list (the rows) need not be copied.
-# # The following convenience versions exist:
-# # With two arguments the first must not be empty and must not be a flat
-# # list. Then the number of rows is deduced from the length of the first
-# # argument and the number of columns is deduced from the length of the
-# # element of the first argument (done with a generic method):
-# DeclareOperation( "Matrix", [IsList,IsMatrixObj] );
-# 
-# # Note that it is not possible to generate a matrix via "Matrix" without
-# # a template matrix object. Use the constructor methods instead:
-# 
-# InstallMethod( NewMatrix,
-#     [ IsNemoMatrixObj, IsRing, IsInt, IsList ],
-#     function( filter, R, n, rows )
-# ...
-#     end );
-# 
-# DeclareConstructor( "NewMatrix", [IsMatrixObj, IsSemiring, IsInt, IsList] );
-# # Constructs a new fully mutable matrix. The first argument has to be a filter
-# # indicating the representation. The second the base domain, the third
-# # the row length and the last a list containing either row vectors
-# # of the right length or lists with base domain elements.
-# # The last argument is guaranteed not to be changed!
-# # If the last argument already contains row vectors, they are copied.
-# 
-# DeclareOperation( "ConstructingFilter", [IsMatrixObj] );
-# 
-# DeclareOperation( "CompatibleVector", [IsMatrixObj] );
-# 
-# DeclareOperation( "ChangedBaseDomain", [IsMatrixObj,IsSemiring] );
-# # Changes the base domain. A copy of the matrix in the first argument is
-# # created, which comes in a "similar" representation but over the new
-# # base domain that is given in the second argument.
-# 
-# DeclareGlobalFunction( "MakeMatrix" );
-# # A convenience function for users to choose some appropriate representation
-# # and guess the base domain if not supplied as second argument.
-# # This is not guaranteed to be efficient and should never be used
-# # in library or package code.
-# 
-# 
-# ############################################################################
-# # Some things that fit nowhere else:
-# ############################################################################
-# 
-# DeclareOperation( "Randomize", [IsMatrixObj and IsMutable] );
-# DeclareOperation( "Randomize", [IsMatrixObj and IsMutable,IsRandomSource] );
-# # Changes the mutable argument in place, every entry is replaced
-# # by a random element from BaseDomain.
-# # The second version will come when we have random sources.
-# 
-# DeclareAttribute( "TransposedMatImmutable", IsMatrixObj );
-# DeclareOperation( "TransposedMatMutable", [IsMatrixObj] );
-# 
-# DeclareOperation( "IsDiagonalMat", [IsMatrixObj] );
-# 
-# DeclareOperation( "IsUpperTriangularMat", [IsMatrixObj] );
-# DeclareOperation( "IsLowerTriangularMat", [IsMatrixObj] );
-# 
-# DeclareOperation( "KroneckerProduct", [IsMatrixObj,IsMatrixObj] );
-# # The result is fully mutable.
-# 
-# DeclareOperation( "Unfold", [IsMatrixObj, IsVectorObj] );
-# # Concatenates all rows of a matrix to one single vector in the same
-# # representation as the given template vector. Usually this must
-# # be compatible with the representation of the matrix given.
-# DeclareOperation( "Fold", [IsVectorObj, IsPosInt, IsMatrixObj] );
-# # Cuts the row vector into pieces of length the second argument
-# # and forms a matrix out of the pieces in the same representation
-# # as the third argument. The length of the vector must be a multiple
-# # of the second argument.
+InstallMethod( IdentityMatrix,
+    [ "IsInt", "IsNemoMatrixObj" ],
+    function( n, nemomat )
+    local C, id;
+
+    C:= ContextGAPNemo( FamilyObj( nemomat ) );
+    id:= C!.MatrixWrapped( C,
+             Julia.Nemo.identity_matrix( C!.JuliaDomain, n ) );
+    SetNumberRows( id, n );
+    SetNumberColumns( id, n );
+    return id;
+    end );
+
+# Assume that 'R' is a GAP ring, not a Nemo ring.
+InstallMethod( NewIdentityMatrix,
+    [ "IsNemoMatrixObj", "IsRing", "IsInt" ],
+    function( filt, R, n )
+    local C, id;
+
+    C:= ContextGAPNemo( R );
+    id:= C!.MatrixWrapped( C,
+             Julia.Nemo.identity_matrix( C!.JuliaDomain, n ) );
+    SetNumberRows( id, n );
+    SetNumberColumns( id, n );
+    return id;
+    end );
+
+InstallOtherMethod( CompanionMatrix,
+    [ "IsNemoPolynomial", "IsNemoMatrixObj" ],
+#T TODO: check compatibility?
+    function( nemopol, nemomat )
+    local C;
+
+    C:= ContextGAPNemo( FamilyObj( nemomat ) );
+    return C!.MatrixWrapped( C,
+               Julia.GAPNemoExperimental.CompanionMatrix( nemopol ) );
+    end );
+
+InstallMethod( TransposedMat,
+    [ "IsNemoMatrixObj" ], NEMO_RANK_SHIFT,
+    function( nemomat )
+    local C;
+
+    C:= ContextGAPNemo( FamilyObj( nemomat ) );
+    return C!.MatrixWrapped( C, Julia.Nemo.transpose( nemomat ) );
+    end );
+
+InstallMethod( KroneckerProduct,
+    IsIdenticalObj,
+    [ "IsNemoMatrixObj", "IsNemoMatrixObj" ], NEMO_RANK_SHIFT,
+    function( nemomat1, nemomat2 )
+    local C;
+
+    C:= ContextGAPNemo( FamilyObj( nemomat1 ) );
+    return C!.MatrixWrapped( C, Julia.Nemo.kronecker_product( nemomat1,
+                                                              nemomat2 ) );
+    end );
+
+InstallMethod( Unfold,
+    IsCollsElms,
+    [ "IsNemoMatrixObj", "IsNemoVectorObj" ],
+    function( nemomat, nemovec )
+    local C;
+
+    C:= ContextGAPNemo( FamilyObj( nemomat ) );
+    return C!.VectorWrapped( C,
+               Julia.GAPNemoExperimental.unfoldedNemoMatrix( nemomat ) );
+    end );
+
+InstallMethod( Fold,
+#T IsElmsXColls,
+    [ "IsNemoVectorObj", "IsPosInt", "IsNemoMatrixObj" ],
+    function( nemovec, ncols, nemomat )
+    local C;
+
+    C:= ContextGAPNemo( FamilyObj( nemovec ) );
+    return C!.MatrixWrapped( C,
+               Julia.GAPNemoExperimental.foldedNemoVector( nemovec, ncols ) );
+    end );
 

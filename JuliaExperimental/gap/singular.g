@@ -51,7 +51,7 @@ InstallMethod( ContextGAPSingular,
     type:= IsSingularField and IsAttributeStoringRep and
            IsCommutative and IsAssociative;
 
-    return NewContextGAPSingular( rec(
+    return NewContextGAPJulia( "Singular", rec(
       Name:= "<context for Rationals>",
 
       GAPDomain:= R,
@@ -64,45 +64,56 @@ InstallMethod( ContextGAPSingular,
 
       ElementType:= efam!.elementType,
 
-      ElementGAPToSingular:= function( C, obj )
+      ElementGAPToJulia:= function( C, obj )
         return Julia.Base.\/\/( 
                    Julia.Singular.n_Q( NumeratorRat( obj ) ),
                    Julia.Singular.n_Q( DenominatorRat( obj ) ) );
       end,
 
-      ElementSingularToGAP:= function( C, obj )
+      ElementJuliaToGAP:= function( C, obj )
         if HasJuliaPointer( obj ) then
           obj:= JuliaPointer( obj );
         fi;
-#T hack: for rationals, carry back from Julia/Singular via string;
+#T hack: for rationals, carry back from Singular.jl via string;
         return EvalString( JuliaToGAP( IsString, Julia.Base.string( obj ) ) );
+      end,
+
+      ElementWrapped:= function( C, obj )
+        return ObjectifyWithAttributes( rec(), C!.ElementType,
+                   JuliaPointer,  obj );
       end,
 
       VectorType:= efam!.vectorType,
 
-      VectorGAPToSingular:= function( C, vec )
+      VectorGAPToJulia:= function( C, vec )
         return Julia.Singular.matrix( C!.JuliaDomainPointer, 1, Length( vec ),
-                   GAPToJulia( List( vec, x -> C!.ElementGAPToSingular( C, x ) ) ) );
+                   GAPToJulia( List( vec, x -> C!.ElementGAPToJulia( C, x ) ) ) );
       end,
 
-      VectorSingularToGAP:= function( C, vec )
+      VectorJuliaToGAP:= function( C, vec )
         if HasJuliaPointer( vec ) then
           vec:= JuliaPointer( vec );
         fi;
         return List( [ 1 .. Julia.Singular.cols( vec ) ],
-                     j -> C!.ElementSingularToGAP( C, vec[ 1, j ] ) );
+                     j -> C!.ElementJuliaToGAP( C, vec[ 1, j ] ) );
+      end,
+
+      VectorWrapped:= function( C, mat )
+        return ObjectifyWithAttributes( rec(), C!.VectorType,
+                   JuliaPointer, mat,
+                   BaseDomain, C!.GAPDomain );
       end,
 
       MatrixType:= efam!.matrixType,
 
-      MatrixGAPToSingular:= function( C, mat )
+      MatrixGAPToJulia:= function( C, mat )
         return Julia.Singular.matrix( C!.JuliaDomainPointer,
                    NumberRows( mat ), NumberColumns( mat ),
                    GAPToJulia( List( Concatenation( mat ),
-                                     x -> C!.ElementGAPToSingular( C, x ) ) ) );
+                                     x -> C!.ElementGAPToJulia( C, x ) ) ) );
       end,
 
-      MatrixSingularToGAP:= function( C, mat )
+      MatrixJuliaToGAP:= function( C, mat )
         local n;
 
         if HasJuliaPointer( mat ) then
@@ -111,7 +122,13 @@ InstallMethod( ContextGAPSingular,
         n:= Julia.Singular.cols( mat );
         return List( [ 1 .. Julia.Singular.rows( mat ) ],
                      i -> List( [ 1 .. n ],
-                                j -> C!.ElementSingularToGAP( C, mat[ i, j ] ) ) );
+                                j -> C!.ElementJuliaToGAP( C, mat[ i, j ] ) ) );
+      end,
+
+      MatrixWrapped:= function( C, mat )
+        return ObjectifyWithAttributes( rec(), C!.MatrixType,
+                   JuliaPointer, mat,
+                   BaseDomain, C!.GAPDomain );
       end,
     ) );
     end );
@@ -126,27 +143,26 @@ InstallMethod( ContextGAPSingular,
 ##  The options <C>ordering1</C>, <C>ordering2</C>, <degree_bound</C> are
 ##  supported,
 ##  where the values of the former two options may be one of
-##  <C>"lex"</C> (or <C>lp</C>),
-##  <C>"revlex"</C> (or <C>rp</C>),
-##  <C>"neglex"</C> (or <C>ls</C>),
-##  <C>"negrevlex"</C> (or <C>rs</C>),
-##  <C>"degrevlex"</C> (or <C>dp</C>),
-##  <C>"deglex"</C> (or <C>Dp</C>),
-##  <C>"negdegrevlex"</C> (or <C>ds</C>),
-##  <C>"negdeglex"</C> (or <C>Ds</C>),
-##  <C>"comp1max"</C> (or <C>c</C>),
-##  <C>"comp1min"</C> (or <C>C</C>),
+##  <C>"lex"</C> (or <C>"lp"</C>),
+##  <C>"revlex"</C> (or <C>"rp"</C>),
+##  <C>"neglex"</C> (or <C>"ls"</C>),
+##  <C>"negrevlex"</C> (or <C>"rs"</C>),
+##  <C>"degrevlex"</C> (or <C>"dp"</C>),
+##  <C>"deglex"</C> (or <C>"Dp"</C>),
+##  <C>"negdegrevlex"</C> (or <C>"ds"</C>),
+##  <C>"negdeglex"</C> (or <C>"Ds"</C>),
+##  <C>"comp1max"</C> (or <C>"c"</C>),
+##  <C>"comp1min"</C> (or <C>"C"</C>),
 ##  and the values for the last option may be a positive integer.
 ##
-#T see "~/.julia/v0.6/Singular/test/poly/PolyRing-test.jl" for variants!!!
-#T update this comment!
+#T see "~/.julia/packages/Singular/.../test/poly/PolyRing-test.jl" for variants
 ##
 InstallMethod( ContextGAPSingular,
     [ "IsPolynomialRing and IsAttributeStoringRep" ],
     function( R )
     local F, FContext, indetnames, names, available_orderings, ordering,
-          ordering2, degree_bound, dict, juliaRing, efam, collfam, indets,
-          type;
+          ordering2, degree_bound, dict, juliaRing, efam, collfam, type,
+          juliaDomain, indets;
 
     # No check of the ring is necessary.
     F:= LeftActingDomain( R );
@@ -159,8 +175,7 @@ InstallMethod( ContextGAPSingular,
                                   GAPToJulia( indetnames ) );
     fi;
 
-    # See '.julia/v0.6/Singular/src/Singular.jl'.
-#T update the comment!
+    # See '.julia/packages/Singular/.../src/Singular.jl'.
     available_orderings:= rec(
         lex:= "lex", lp:= "lex",
         revlex:= "revlex", rp:= "revlex",
@@ -210,17 +225,46 @@ InstallMethod( ContextGAPSingular,
 
     # Create the GAP wrappers.
     # Create a new family.
-    # Note that elements from two Singular polynomial rings cannot be compared,
+    # Note that elements from two Singular polynomial rings cannot be compared.
     efam:= NewFamily( "Singular_PolynomialsFamily", IsSingularObject, IsScalar );
-#   SetIsUFDFamily( efam, true );
-#T ?
     collfam:= CollectionsFamily( efam );
+
+    type:= IsSingularPolynomialRing and IsAttributeStoringRep and IsFreeLeftModule
+           and IsFLMLORWithOne
+           and HasIsFinite and HasIsFiniteDimensional;
+    if HasIsField( F ) and IsField( F ) then
+      type:= type and IsAlgebraWithOne;
+    fi;
+    if HasIsAssociative( F ) and IsAssociative( F ) then
+      type:= type and IsAssociative;
+    fi;
+    if HasIsCommutative( F ) and IsCommutative( F ) then
+      type:= type and IsCommutative;
+    fi;
+    if Length( indetnames ) = 1 then
+      type:= type and IsUnivariatePolynomialRing;
+    fi;
+    if IsRationals( F ) and Length( indetnames ) = 1 then
+      type:= type and IsEuclideanRing and IsRationalsPolynomialRing;
+    fi;
+    juliaDomain:= ObjectifyWithAttributes( rec(), NewType( collfam, type ),
+                      JuliaPointer, juliaRing[1],
+                      LeftActingDomain, FContext!.JuliaDomain,
+                      CoefficientsRing, FContext!.JuliaDomain,
+                      Size, infinity,
+                      Name, "Singular_PolynomialRing" );
+
+    # Store a back reference to the polynomial ring in the type data,
+    # such that each polynomial can access is;
+    # functions like 'DefaultRing' will use this.
     efam!.elementType:= NewType( efam,
-        IsSingularPolynomial and IsAttributeStoringRep );
+        IsSingularPolynomial and IsAttributeStoringRep, juliaDomain );
     efam!.vectorType:= NewType( collfam,
-        IsVectorObj and IsSingularObject and IsAttributeStoringRep );
+        IsVectorObj and IsSingularObject and IsAttributeStoringRep,
+        juliaDomain );
     efam!.matrixType:= NewType( CollectionsFamily( collfam ),
-        IsMatrixObj and IsSingularRingElement and IsAttributeStoringRep );
+        IsMatrixObj and IsSingularRingElement and IsAttributeStoringRep,
+        juliaDomain );
 
     # Store the GAP list of wrapped Julia indeterminates.
     if Length( indetnames ) = 1 then
@@ -234,51 +278,27 @@ InstallMethod( ContextGAPSingular,
                    x -> ObjectifyWithAttributes( rec(),
                             efam!.elementType,
                             JuliaPointer, x ) );
-
+    SetIndeterminatesOfPolynomialRing( juliaDomain, indets );
+    SetGeneratorsOfLeftOperatorRingWithOne( juliaDomain, indets );
     SetZero( efam, ObjectifyWithAttributes( rec(),
                             efam!.elementType,
                             JuliaPointer, juliaRing[1]( 0 ) ) );
     SetOne( efam, ObjectifyWithAttributes( rec(),
                             efam!.elementType,
                             JuliaPointer, juliaRing[1]( 1 ) ) );
-    type:= IsSingularPolynomialRing and IsAttributeStoringRep and IsFreeLeftModule
-           and IsFLMLORWithOne
-           and HasIsFinite and HasIsFiniteDimensional;
-    if HasIsField( F ) and IsField( F ) then
-      type:= type and IsAlgebraWithOne;
-    fi;
-    if HasIsAssociative( F ) and IsAssociative( F ) then
-      type:= type and IsAssociative;
-    fi;
-    if HasIsCommutative( F ) and IsCommutative( F ) then
-      type:= type and IsCommutative;
-    fi;
-    if Length( indets ) = 1 then
-      type:= type and IsUnivariatePolynomialRing;
-    fi;
-    if IsRationals( F ) and Length( indets ) = 1 then
-      type:= type and IsEuclideanRing and IsRationalsPolynomialRing;
-    fi;
 
-    return NewContextGAPSingular( rec(
+    return NewContextGAPJulia( "Singular", rec(
       Name:= Concatenation( "<context for pol. ring over ", String( F ),
                             ", with ", String( Length( indets ) ),
                             " indeterminates>" ),
 
       GAPDomain:= R,
 
-      JuliaDomain:= ObjectifyWithAttributes( rec(), NewType( collfam, type ),
-                      JuliaPointer, juliaRing[1],
-                      LeftActingDomain, FContext!.JuliaDomain,
-                      CoefficientsRing, FContext!.JuliaDomain,
-                      IndeterminatesOfPolynomialRing, indets,
-                      GeneratorsOfLeftOperatorRingWithOne, indets,
-                      Size, infinity,
-                      Name, "Singular_PolynomialRing" ),
+      JuliaDomain:= juliaDomain,
 
       ElementType:= efam!.elementType,
 
-      ElementGAPToSingular:= function( C, obj )
+      ElementGAPToJulia:= function( C, obj )
         local FContext, indets, pol, one, i, mon, v, j;
 
         FContext:= ContextGAPSingular( LeftActingDomain( C!.GAPDomain ) );
@@ -297,13 +317,13 @@ InstallMethod( ContextGAPSingular,
             mon:= mon * indets[ v[j] ]^v[ j+1 ];
           od;
           pol:= pol +
-                FContext!.ElementGAPToSingular( FContext, obj[ 2*i ] ) * mon;
+                FContext!.ElementGAPToJulia( FContext, obj[ 2*i ] ) * mon;
         od;
 
         return pol;
       end,
 
-      ElementSingularToGAP:= function( C, obj )
+      ElementJuliaToGAP:= function( C, obj )
         local descr, FC, coeffs, exps, n, i, mon, v, j;
 
         if HasJuliaPointer( obj ) then
@@ -332,31 +352,42 @@ InstallMethod( ContextGAPSingular,
                    ElementsFamily( FamilyObj( LeftActingDomain( C!.GAPDomain ) ) ), descr );
       end,
 
-      VectorType:= efam!.vectorType,
-
-      VectorGAPToSingular:= function( C, vec )
-        return Julia.Singular.matrix( C!.JuliaDomainPointer, 1, Length( vec ),
-                   GAPToJulia( List( vec, x -> C!.ElementGAPToSingular( C, x ) ) ) );
+      ElementWrapped:= function( C, obj )
+        return ObjectifyWithAttributes( rec(), C!.ElementType,
+                   JuliaPointer,  obj );
       end,
 
-      VectorSingularToGAP:= function( C, vec )
+      VectorType:= efam!.vectorType,
+
+      VectorGAPToJulia:= function( C, vec )
+        return Julia.Singular.matrix( C!.JuliaDomainPointer, 1, Length( vec ),
+                   GAPToJulia( List( vec, x -> C!.ElementGAPToJulia( C, x ) ) ) );
+      end,
+
+      VectorJuliaToGAP:= function( C, vec )
         if HasJuliaPointer( vec ) then
           vec:= JuliaPointer( vec );
         fi;
         return List( [ 1 .. Julia.Singular.cols( vec ) ],
-                     j -> C!.ElementSingularToGAP( C, vec[ 1, j ] ) );
+                     j -> C!.ElementJuliaToGAP( C, vec[ 1, j ] ) );
+      end,
+
+      VectorWrapped:= function( C, mat )
+        return ObjectifyWithAttributes( rec(), C!.VectorType,
+                   JuliaPointer, mat,
+                   BaseDomain, C!.GAPDomain );
       end,
 
       MatrixType:= efam!.matrixType,
 
-      MatrixGAPToSingular:= function( C, mat )
+      MatrixGAPToJulia:= function( C, mat )
         return Julia.Singular.matrix( C!.JuliaDomainPointer,
                    NumberRows( mat ), NumberColumns( mat ),
                    GAPToJulia( List( Concatenation( mat ),
-                                     x -> C!.ElementGAPToSingular( C, x ) ) ) );
+                                     x -> C!.ElementGAPToJulia( C, x ) ) ) );
       end,
 
-      MatrixSingularToGAP:= function( C, mat )
+      MatrixJuliaToGAP:= function( C, mat )
         local n;
 
         if HasJuliaPointer( mat ) then
@@ -365,7 +396,13 @@ InstallMethod( ContextGAPSingular,
         n:= Julia.Singular.cols( mat );
         return List( [ 1 .. Julia.Singular.rows( mat ) ],
                      i -> List( [ 1 .. n ],
-                                j -> C!.ElementSingularToGAP( C, mat[ i, j ] ) ) );
+                                j -> C!.ElementJuliaToGAP( C, mat[ i, j ] ) ) );
+      end,
+
+      MatrixWrapped:= function( C, mat )
+        return ObjectifyWithAttributes( rec(), C!.MatrixType,
+                   JuliaPointer, mat,
+                   BaseDomain, C!.GAPDomain );
       end,
     ) );
     end );
@@ -413,27 +450,23 @@ ElementsFamily( FamilyObj( Singular_QQ ) )!.MatrixType:= NewType(
 #T this does not hold for ideals (they need attribute information)
 ##
 BindGlobal( "SingularElement", function( template, jpointer )
-    local type, result;
+    local C, result;
 
-    if IsDomain( template ) then
-#T needed?
-      type:= ContextGAPSingular( FamilyObj( template ) )!.ElementType;
-    elif IsVectorObj( template ) then
-      type:= ContextGAPSingular( FamilyObj( template ) )!.VectorType;
+    C:= ContextGAPSingular( FamilyObj( template ) );
+    if IsVectorObj( template ) then
+      result:= C!.VectorWrapped( C, jpointer );
     elif IsMatrixObj( template ) then
-      type:= ContextGAPSingular( FamilyObj( template ) )!.MatrixType;
+      result:= C!.MatrixWrapped( C, jpointer );
     else
-      type:= ContextGAPSingular( FamilyObj( template ) )!.ElementType;
+      result:= C!.ElementWrapped( C, jpointer );
     fi;
 
-    result:= ObjectifyWithAttributes( rec(), type, JuliaPointer, jpointer );
     if HasParent( template ) then
       SetParent( result, Parent( template ) );
     fi;
 
     return result;
 end );
-
 
 
 #############################################################################
@@ -458,149 +491,12 @@ InstallMethod( PrintObj,
     end );
 
 
-#############################################################################
-##
-#F  SingularPolynomialRing( <R>, <names> )
-##
-##  The options <C>ordering1</C>, <C>ordering2</C>, <degree_bound</C> are
-##  supported,
-##  where the values of the former two options may be one of
-##  <C>"lex"</C> (or <C>lp</C>),
-##  <C>"revlex"</C> (or <C>rp</C>),
-##  <C>"neglex"</C> (or <C>ls</C>),
-##  <C>"negrevlex"</C> (or <C>rs</C>),
-##  <C>"degrevlex"</C> (or <C>dp</C>),
-##  <C>"deglex"</C> (or <C>Dp</C>),
-##  <C>"negdegrevlex"</C> (or <C>ds</C>),
-##  <C>"negdeglex"</C> (or <C>Ds</C>),
-##  <C>"comp1max"</C> (or <C>c</C>),
-##  <C>"comp1min"</C> (or <C>C</C>),
-##  and the values for the last option may be a positive integer.
-
-#T see "~/.julia/v0.6/Singular/test/poly/PolyRing-test.jl" for variants!!!
-
-BindGlobal( "SingularPolynomialRing", function( R, names )
-    local filter, available_orderings, ordering, ordering2, degree_bound,
-          dict, juliaobj, efam, indets;
-
-    filter:= IsSingularPolynomialRing and IsAttributeStoringRep
-           and IsFreeLeftModule and IsFLMLORWithOne;
-
-    # Check the arguments.
-    if IsIdenticalObj( R, Integers ) or IsIdenticalObj( R, Singular_ZZ ) then
-      R:= Singular_ZZ;
-      filter:= filter and IsCommutative and IsAssociative
-               and IsSingularObject;
-    elif IsIdenticalObj( R, Rationals ) or IsIdenticalObj( R, Singular_QQ ) then
-      R:= Singular_QQ;
-      filter:= filter and IsAlgebraWithOne
-               and IsCommutative and IsAssociative
-               and IsRationalsPolynomialRing
-               and IsSingularObject;
-    elif not HasJuliaPointer( R ) then
-#T admit also *finite* field in GAP (-> IsFiniteFieldPolynomialRing)
-#T admit algebraic extensions (-> IsAlgebraicExtensionPolynomialRing)
-#T admit GAP's abelian number fields (-> IsAbelianNumberFieldPolynomialRing)
-      Error( "usage: ..." );
-    fi;
-    if not ( IsList( names ) and ForAll( names, IsString ) ) then
-      Error( "<names> must be a list of strings" );
-    fi;
-
-    # See '.julia/v0.6/Singular/src/Singular.jl'.
-    available_orderings:= rec(
-        lex:= "lex", lp:= "lex",
-        revlex:= "revlex", rp:= "revlex",
-        neglex:= "neglex", ls:= "neglex",
-        negrevlex:= "negrevlex", rs:= "negrevlex",
-        degrevlex:= "degrevlex", dp:= "degrevlex",
-        negdegrevlex:= "negdegrevlex", ds:= "negdegrevlex",
-        deglex:= "deglex", Dp:= "deglex",
-        comp1max:= "comp1max", c:= "comp1max",
-        comp1min:= "comp1min", C:= "comp1min",
-    );
-
-    # Check global options.
-    ordering:= ValueOption( "ordering" );
-    if ordering = fail then
-      ordering:= "degrevlex";
-    fi;
-    if not IsBound( available_orderings.( ordering ) ) then
-      Error( ordering, " is not admissible for ordering" );
-    fi;
-    ordering:= available_orderings.( ordering );
-
-    ordering2:= ValueOption( "ordering2" );
-    if ordering2 = fail then
-      ordering2:= "comp1min";
-    fi;
-    if not IsBound( available_orderings.( ordering2 ) ) then
-      Error( ordering2, " is not admissible for ordering2" );
-    fi;
-    ordering2:= available_orderings.( ordering2 );
-
-    degree_bound:= ValueOption( "degree_bound" );
-    if degree_bound = fail then
-      degree_bound:= 0;
-    fi;
-
-    # Convert the names list from "Array{Any,1}" to "Array{String,1}".
-    names:= Julia.Base.convert( JuliaEvalString( "Array{String,1}" ),
-                                GAPToJulia( names ) );
-
-    # Create the julia objects.
-    # If we would be able to deal with keyword arguments
-    # then wrapping would not be needed here.
-    dict:= GAPToJulia( rec( ring:= JuliaPointer( R ),
-                          indeterminates:= names,
-                          cached:= true,
-                          ordering:= JuliaSymbol( ordering ),
-                          ordering2:= JuliaSymbol( ordering2 ),
-                          degree_bound:= degree_bound ) );
-    juliaobj:= Julia.GAPSingularModule.SingularPolynomialRingWrapper( dict );
-
-    # Create the GAP wrapper.
-    # Note that elements from two Singular polynomial rings cannot be compared,
-    # so we create always a new family.
-#T Is this a good idea?
-#T In Singular.jl, the ring constructor uses a cache.
-    efam:= NewFamily( "Singular_PolynomialsFamily", IsSingularObject, IsScalar );
-
-    # Create the object and set attributes.
-    R:= ObjectifyWithAttributes( rec(),
-            NewType( CollectionsFamily( efam ), filter ),
-            JuliaPointer, juliaobj[1],
-            LeftActingDomain, R,
-            IsFinite, false,
-            IsFiniteDimensional, false,
-            Size, infinity,
-            CoefficientsRing, R );
-#T set also one and zero?
-
-    # Store a back reference to the (GAP) polynomial ring in the type,
-    # such that each polynomial can access is;
-    # functions like 'DefaultRing' will need this.
-    efam!.ElementType:= NewType( efam,
-        IsPolynomial and IsSingularObject and IsAttributeStoringRep, R );
-
-    # Store the GAP list of wrapped Julia indeterminates.
-    indets:= List( JuliaToGAP( IsList, juliaobj[2] ),
-                   x -> SingularElement( R, x ) );
-    SetIndeterminatesOfPolynomialRing( R, indets );
-    SetGeneratorsOfLeftOperatorRingWithOne( R, indets );
-
-    return R;
-end );
-
-
 InstallOtherMethod( \in,
     IsElmsColls,
     [ "IsSingularPolynomial", "IsSingularPolynomialRing" ],
     function( elm, R )
 
     if not IsIdenticalObj( R, DataType( TypeObj( elm ) ) ) then
-!
-#T This is not correct!
       return false;
     fi;
 
@@ -616,7 +512,6 @@ InstallOtherMethod( IsSubset,
 
     for elm in elms do
       if not IsIdenticalObj( R, DataType( TypeObj( elm ) ) ) then
-#T This may be not correct.
         return false;
       fi;
     od;
@@ -752,10 +647,10 @@ BindGlobal( "GroebnerBasisIdeal", function( I )
 ##  methods for Singular's polynomials and polynomial rings
 ##
 InstallOtherMethod( Zero, [ "IsSingularObject" ], 200,
-    F -> SingularElement( F, Julia.Base.zero( JuliaPointer( F ) ) ) );
+    F -> SingularElement( F, Julia.Base.zero( F ) ) );
 
 InstallOtherMethod( One, [ "IsSingularObject" ], 200,
-    F -> SingularElement( F, Julia.Base.one( JuliaPointer( F ) ) ) );
+    F -> SingularElement( F, Julia.Base.one( F ) ) );
 
 #T avoid 'One' for an ideal?
 
@@ -768,6 +663,8 @@ InstallOtherMethod( One, [ "IsSingularObject" ], 200,
 ##  thus we have to increase the ranks of our methods.
 ##
 
+SINGULAR_RANK_SHIFT:= 100;
+
 
 ##############################################################################
 ##
@@ -775,7 +672,7 @@ InstallOtherMethod( One, [ "IsSingularObject" ], 200,
 ##
 InstallOtherMethod( Degree,
     [ "IsSingularPolynomial" ],
-    pol -> Julia.Singular.degree( JuliaPointer( pol ) ) );
+    Julia.Singular.degree );
 
 
 InstallOtherMethod( ViewString,
@@ -783,100 +680,83 @@ InstallOtherMethod( ViewString,
     x -> Concatenation( "<", ViewString( JuliaPointer( x ) ), ">" ) );
 
 InstallOtherMethod( \=,
-    [ "IsSingularObject", "IsSingularObject" ], 100,
-    function( x, y )
-      return Julia.Base.\=\=( JuliaPointer( x ), JuliaPointer( y ) );
-    end );
+    [ "IsSingularObject", "IsSingularObject" ], SINGULAR_RANK_SHIFT,
+    Julia.Base.\=\= );
 
 #T 'Singular.jl' does not define 'isless' methods for polynomials.
 # InstallOtherMethod( \<,
 #     [ "IsSingularObject", "IsSingularObject" ],
 #     function( x, y )
-#       return Julia.Base.isless( JuliaPointer( x ), JuliaPointer( y ) ) );
+#       return Julia.Base.isless( x, y ) );
 #     end );
 
 InstallOtherMethod( \+,
-    [ "IsSingularObject", "IsSingularObject" ], 100,
+    [ "IsSingularObject", "IsSingularObject" ], SINGULAR_RANK_SHIFT,
     function( x, y )
-      return SingularElement( x,
-                 Julia.Base.\+( JuliaPointer( x ), JuliaPointer( y ) ) );
+      return SingularElement( x, Julia.Base.\+( x, y ) );
     end );
 
 InstallOtherMethod( \+,
-    [ "IsSingularObject", "IsInt" ], 100,
+    [ "IsSingularObject", "IsInt" ], SINGULAR_RANK_SHIFT,
     function( x, y )
-      return SingularElement( x,
-                 Julia.Base.\+( JuliaPointer( x ), y ) );
+      return SingularElement( x, Julia.Base.\+( x, y ) );
     end );
 
 InstallOtherMethod( \+,
-    [ "IsInt", "IsSingularObject" ], 100,
+    [ "IsInt", "IsSingularObject" ], SINGULAR_RANK_SHIFT,
     function( x, y )
-      return SingularElement( y,
-                 Julia.Base.\+( x, JuliaPointer( y ) ) );
+      return SingularElement( y, Julia.Base.\+( x, y ) );
     end );
 
 InstallOtherMethod( AdditiveInverse,
-    [ "IsSingularObject" ], 100,
-    x -> SingularElement( x, Julia.Base.\-( JuliaPointer( x ) ) ) );
+    [ "IsSingularObject" ], SINGULAR_RANK_SHIFT,
+    x -> SingularElement( x, Julia.Base.\-( x ) ) );
 
 InstallOtherMethod( \-,
-    [ "IsSingularObject", "IsSingularObject" ], 100,
+    [ "IsSingularObject", "IsSingularObject" ], SINGULAR_RANK_SHIFT,
     function( x, y )
-      return SingularElement( x,
-                 Julia.Base.\-( JuliaPointer( x ), JuliaPointer( y ) ) );
-    end );
-
-InstallOtherMethod( \-,
-    [ "IsSingularObject", "IsInt" ], 100,
-    function( x, y )
-      return SingularElement( x,
-                 Julia.Base.\-( JuliaPointer( x ), y ) );
+      return SingularElement( x, Julia.Base.\-( x, y ) );
     end );
 
 InstallOtherMethod( \-,
-    [ "IsInt", "IsSingularObject" ], 100,
+    [ "IsSingularObject", "IsInt" ], SINGULAR_RANK_SHIFT,
     function( x, y )
-      return SingularElement( y,
-                 Julia.Base.\-( x, JuliaPointer( y ) ) );
+      return SingularElement( x, Julia.Base.\-( x, y ) );
+    end );
+
+InstallOtherMethod( \-,
+    [ "IsInt", "IsSingularObject" ], SINGULAR_RANK_SHIFT,
+    function( x, y )
+      return SingularElement( y, Julia.Base.\-( x, y ) );
     end );
 
 InstallOtherMethod( \*,
-    [ "IsSingularObject", "IsSingularObject" ], 100,
+    [ "IsSingularObject", "IsSingularObject" ], SINGULAR_RANK_SHIFT,
     function( x, y )
-      return SingularElement( x,
-                 Julia.Base.\*( JuliaPointer( x ), JuliaPointer( y ) ) );
+      return SingularElement( x, Julia.Base.\*( x, y ) );
     end );
 
 InstallOtherMethod( \*,
-    [ "IsSingularObject", "IsInt" ], 100,
+    [ "IsSingularObject", "IsInt" ], SINGULAR_RANK_SHIFT,
     function( x, y )
-      return SingularElement( x,
-                 Julia.Base.\*( JuliaPointer( x ), y ) );
+      return SingularElement( x, Julia.Base.\*( x, y ) );
     end );
 
 InstallOtherMethod( \*,
-    [ "IsInt", "IsSingularObject" ], 100,
+    [ "IsInt", "IsSingularObject" ], SINGULAR_RANK_SHIFT,
     function( x, y )
-      return SingularElement( y,
-                 Julia.Base.\*( x, JuliaPointer( y ) ) );
+      return SingularElement( y, Julia.Base.\*( x, y ) );
     end );
 
 InstallOtherMethod( \/,
-    [ "IsSingularObject", "IsInt" ], 100,
+    [ "IsSingularObject", "IsInt" ], SINGULAR_RANK_SHIFT,
     function( x, y )
-      return SingularElement( x,
-                 Julia.Singular.divexact( JuliaPointer( x ), y ) );
+      return SingularElement( x, Julia.Singular.divexact( x, y ) );
     end );
 
 InstallOtherMethod( \^,
-    [ "IsSingularObject", "IsPosInt" ], 100,
+    [ "IsSingularObject", "IsPosInt" ], SINGULAR_RANK_SHIFT,
     function( x, n )
-      return SingularElement( x, Julia.Base.\^( JuliaPointer( x ), n ) );
+      return SingularElement( x, Julia.Base.\^( x, n ) );
     end );
-
-
-##############################################################################
-##
-#E
 

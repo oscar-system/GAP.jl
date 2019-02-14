@@ -2,8 +2,6 @@
 ##
 ##  realcyc.g
 ##
-##  The Julia utilities are implemented in 'julia/realcyc.jl'.
-##
 
 
 ##############################################################################
@@ -35,7 +33,6 @@ BindGlobal( "IsPositiveRealPartCyclotomic", function( cyc )
     fi;
 
     if ForAll( coeffs, IsSmallIntRep ) then
-#T needed?
       coeffs:= GAPToJulia( coeffs );
     else
       coeffs:= JuliaArrayOfFmpz( coeffs );
@@ -48,9 +45,4 @@ BindGlobal( "IsPositiveRealPartCyclotomic", function( cyc )
 
     return res[1];
 end );
-
-
-##############################################################################
-##
-#E
 
