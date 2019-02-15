@@ -22,7 +22,7 @@ function unpackedNemoMatrixFmpz( nemomat::Nemo.fmpz_mat )
 
     # Turn the 2-dim. array into a 1-dim. array of 1-dim. arrays
     # of small integers (which can then be unboxed with 'JuliaToGAP').
-    return NestedArrayFromMatrix( mat )
+    return Main.GAPUtilsExperimental.NestedArrayFromMatrix( mat )
 end
 
 end
