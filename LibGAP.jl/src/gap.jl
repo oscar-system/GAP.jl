@@ -31,9 +31,14 @@ Base.getindex(x::MPtr, i::Int64, j::Int64) = GAP.Globals.ELM_LIST(x, i, j)
 Base.setindex!(x::MPtr, v::Any, i::Int64, j::Int64) = GAP.Globals.ASS_LIST(x, i, j, v)
 
 # records
-RNamObj(f::Symbol) = GAP.Globals.RNamObj(MakeString(string(f)))
+RNamObj(f::Union{Symbol,Int64,AbstractString}) = GAP.Globals.RNamObj(MakeString(string(f)))
+# note: we don't use Union{Symbol,Int64,AbstractString} below to avoid
+# ambiguity between these methods and method `getproperty(x, f::Symbol)`
+# from Julia's Base module
 Base.getproperty(x::MPtr, f::Symbol) = GAP.Globals.ELM_REC(x, RNamObj(f))
+Base.getproperty(x::MPtr, f::Union{AbstractString,Int64}) = GAP.Globals.ELM_REC(x, RNamObj(f))
 Base.setproperty!(x::MPtr, f::Symbol, v) = GAP.Globals.ASS_REC(x, RNamObj(f), v)
+Base.setproperty!(x::MPtr, f::Union{AbstractString,Int64}, v) = GAP.Globals.ASS_REC(x, RNamObj(f), v)
 
 #
 Base.zero(x::GAPInputType_internal) = GAP.Globals.ZERO(x)
