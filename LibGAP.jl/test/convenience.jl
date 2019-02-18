@@ -80,4 +80,8 @@ end
     @test record.one == 1
     record.two = 2
     @test record.two == 2
+
+    sym5 = GAP.Globals.SymmetricGroup(5)
+    @test sym5.:1 === GAP.Globals.GeneratorsOfGroup(sym5)[1]
+    @test sym5.:1 === sym5."1"
 end
