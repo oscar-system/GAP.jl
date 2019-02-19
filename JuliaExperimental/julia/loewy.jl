@@ -350,48 +350,75 @@ function DivisorsInt( n::Int )
     return sort( divs( 1, 1 ) )
 end;
 
-
-raw"""
->   V( m, n, s )
-> Enumerate the set `V(m,n,s)` of all vectors of length `n`
-> with entries in the set { 0, 1, 2, ... `m` }
-> and coefficient sum `s`,
-> such that a largest entry is in the first position.
-> 
-> \[
->    V(m,n,s) = \bigcup_{0 \leq a \leq \min\{ m, s \}}
->                   \{ [a,v]; v \in V(m,n-1,s-a) \}
-> \]
 """
-# replace this by an iterator, we just want to run over the elements!
-function Vinner( m::Int, n::Int, s::Int )
-    local result, a
+>   VectorIterator( m, n, s )
+> Iterate over all vectors of length `n`
+> with entries in the set { 0, 1, 2, ... `m` }
+> and coefficient sum `s`.
+> The vectors are enumerated in lexicographical order.
+> (The functions change the vectors in place,
+> just collecting the results makes no sense.)
+"""
+mutable struct VectorIterator
+    m::Int
+    n::Int
+    s::Int
+end
 
-    if s == 0
-      return [ zeros( Int, n ) ]
-    elseif n == 0 || m*n < s
-      return []
+# Auxiliary function for the iterator:
+# Distribute `s` to the first `n` positions in the array `v`
+# such that as many initial entries are `m`.
+function VectorIterator_ResetPrefix( v::Array{Int,1}, m::Int, n::Int, s::Int )
+    local rest::Int, i::Int, j::Int
+
+    rest = s
+    i = 1
+    while m < rest
+      v[i] = m
+      rest = rest - m
+      i = i + 1
+    end
+    v[i] = rest
+    for j in (i+1):n
+      v[j] = 0
     end
 
-    result = []
-    for a in 0:min( m, s )
-      append!( result, map( v -> append!( [ a ], v ),
-                            Vinner( m, n-1, s-a ) ) )
+    return v
+end
+
+# Initialize the iterator.
+function Base.iterate( vi::VectorIterator )
+    local next::Array{Int,1}
+
+    if vi.s > vi.m * vi.n
+      # The iterator is empty.
+      return
     end
-    return result
-end;
+    next = VectorIterator_ResetPrefix( zeros( Int, vi.n ), vi.m, vi.n, vi.s )
+    return ( next, next )
+end
 
-function V( m::Int, n::Int, s::Int )
-    local result, a
+# Define the iteration step.
+# Note that `state` is changed in place.
+function Base.iterate( vi::VectorIterator, state::Array{Int,1} )
+    local sum::Int, i::Int
 
-    result = []
-    for a in 1:m
-      append!( result, map( v -> append!( [ a ], v ),
-                            Vinner( a, n-1, s-a ) ) )
+    # Find the first position with a nonzero value
+    # such that the value on the right is smaller than m.
+    sum = -1
+    for i in 1:(vi.n-1)
+      sum = sum + state[i]
+      if state[i] != 0 && state[ i+1 ] < vi.m
+        state[i] = state[i] - 1
+        state[i+1] = state[i+1] + 1
+        VectorIterator_ResetPrefix( state, vi.m, i, sum )
+        return ( state, state )
+      end
     end
-    return result
-end;
 
+    # There is no such position, we are done.
+    return
+end
 
 """
     MinimalDegreeCheap( q::Int, n::Int, e )
@@ -471,19 +498,21 @@ end;
 function MinimalDegreeHard( q::Int, n::Int, e::T ) where {T<:Integer}
     local powers, m, v
 
-    powers = map( i -> powermod( q, i, e ), 0:(n-1) )
+    powers = map( i -> powermod( q, i, e ), 1:(n-1) )
     m = 3
 
     while true
-      for v in V( m, n, m )
-        if mod( sum( v .* powers ), e ) == 0
+      for a in 1:m
+        for v in VectorIterator( a, n-1, m-a )
+          if mod( a + sum( v .* powers ), e ) == 0
 # is there no dot( v, powers ) anymore in Julia 1.0??
 # ('.*' needs same length of its operands)
-          if ! haskey( MinimalDegreeCache, e )
-            MinimalDegreeCache[e] = Dict()
+            if ! haskey( MinimalDegreeCache, e )
+              MinimalDegreeCache[e] = Dict()
+            end
+            MinimalDegreeCache[e][q] = m
+            return m
           end
-          MinimalDegreeCache[e][q] = m
-          return m
         end
       end
       m = m + 1
@@ -718,9 +747,12 @@ function test_this_module()
       ok = false
     end
 
-    # V( m, n, s )
-    if LoewyStructure.V( 3, 3, 4 ) !=
-       [ [ 2, 0, 2 ], [ 2, 1, 1 ], [ 2, 2, 0 ], [ 3, 0, 1 ], [ 3, 1, 0 ] ]
+    # VectorIterator( m, n, s )
+    n = 0
+    for i in VectorIterator( 2, 5, 7 )
+      n = n + 1
+    end
+    if n != 30
       ok = false
     end
 
