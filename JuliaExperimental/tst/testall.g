@@ -31,7 +31,8 @@ if fail in files then
   files:= Filtered( files, IsString );
 fi;
 
-TestDirectory( files, rec(exitGAP := true));
+TestDirectory( files, rec(exitGAP := true,
+                          testOptions := rec(compareFunction := "uptowhitespace") ) );
 
 FORCE_QUIT_GAP(1);
 
