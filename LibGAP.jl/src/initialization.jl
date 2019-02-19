@@ -2,7 +2,7 @@ module GAP
 
 
 """
-    GapFEE
+    FFE
 
 > Wraps a pointer to a GAP FFE immediate object
 > This type is defined in the JuliaInterface C code.
