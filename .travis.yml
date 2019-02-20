@@ -1,8 +1,11 @@
-language: c
+language: julia
+julia:
+  - 1.1
+  - nightly
+
 env:
  global:
-   - DONT_FETCH_GAP_JULIA_PKG=yes
-   - JULIAROOT=$TRAVIS_BUILD_DIR/julia
+   - JULIAROOT=$TRAVIS_HOME/julia
    - GAPROOT=$TRAVIS_BUILD_DIR/gap
    - MAKEFLAGS="-j4"
    - JULIA_TRACK_COVERAGE=yes
@@ -25,14 +28,16 @@ before_script:
   - printenv | sort
   - git show --pretty=fuller -s
   - mkdir -p coverage
-  - etc/install_julia_gap.sh
+  #- etc/install_julia_gap.sh
+  - git clone --depth=1 https://github.com/gap-system/gap
+  - ( cd gap && ./autogen.sh && ./configure --with-gc=julia && make -j4 && make bootstrap-pkg-minimal )
   - ln -s $TRAVIS_BUILD_DIR/JuliaInterface $GAPROOT/pkg/
   - ln -s $TRAVIS_BUILD_DIR/JuliaExperimental $GAPROOT/pkg/
   - ln -s $TRAVIS_BUILD_DIR/LibGAP.jl $GAPROOT/pkg/
   - etc/travis_build.sh
 
 script:
-  - ${JULIAROOT}/bin/julia -e 'import Pkg ; Pkg.add("Nemo")'
+  - julia -e 'using Pkg; Pkg.add("Nemo")'
   - etc/travis_test.sh
     # delete coverage files for packages, so that they do not get cached
   - find $HOME/.julia/packages/ -name "*.jl.*.cov" -exec rm -f {} \;
@@ -40,5 +45,5 @@ script:
 after_script:
   - cd $TRAVIS_BUILD_DIR
   - $GAPROOT/gap -A --quitonbreak --norepl etc/gather_coverage.g
-  - ${JULIAROOT}/bin/julia etc/gather_coverage.jl
+  - julia etc/gather_coverage.jl
   - bash <(curl -s https://codecov.io/bash)
