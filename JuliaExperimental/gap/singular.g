@@ -94,7 +94,7 @@ InstallMethod( ContextGAPSingular,
         if HasJuliaPointer( vec ) then
           vec:= JuliaPointer( vec );
         fi;
-        return List( [ 1 .. Julia.Singular.cols( vec ) ],
+        return List( [ 1 .. Julia.Singular.ncols( vec ) ],
                      j -> C!.ElementJuliaToGAP( C, vec[ 1, j ] ) );
       end,
 
@@ -119,8 +119,8 @@ InstallMethod( ContextGAPSingular,
         if HasJuliaPointer( mat ) then
           mat:= JuliaPointer( mat );
         fi;
-        n:= Julia.Singular.cols( mat );
-        return List( [ 1 .. Julia.Singular.rows( mat ) ],
+        n:= Julia.Singular.ncols( mat );
+        return List( [ 1 .. Julia.Singular.nrows( mat ) ],
                      i -> List( [ 1 .. n ],
                                 j -> C!.ElementJuliaToGAP( C, mat[ i, j ] ) ) );
       end,
@@ -368,7 +368,7 @@ InstallMethod( ContextGAPSingular,
         if HasJuliaPointer( vec ) then
           vec:= JuliaPointer( vec );
         fi;
-        return List( [ 1 .. Julia.Singular.cols( vec ) ],
+        return List( [ 1 .. Julia.Singular.ncols( vec ) ],
                      j -> C!.ElementJuliaToGAP( C, vec[ 1, j ] ) );
       end,
 
@@ -393,8 +393,8 @@ InstallMethod( ContextGAPSingular,
         if HasJuliaPointer( mat ) then
           mat:= JuliaPointer( mat );
         fi;
-        n:= Julia.Singular.cols( mat );
-        return List( [ 1 .. Julia.Singular.rows( mat ) ],
+        n:= Julia.Singular.ncols( mat );
+        return List( [ 1 .. Julia.Singular.nrows( mat ) ],
                      i -> List( [ 1 .. n ],
                                 j -> C!.ElementJuliaToGAP( C, mat[ i, j ] ) ) );
       end,
