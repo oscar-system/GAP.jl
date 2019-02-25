@@ -2,3 +2,4 @@
 /gap/
 /gh-pages/
 /LibGAP.jl/test/runtests_dir.jl
+/Manifest.toml
