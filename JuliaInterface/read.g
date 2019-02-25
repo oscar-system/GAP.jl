@@ -6,17 +6,17 @@
 ReadPackage( "JuliaInterface", "gap/JuliaInterface.gi");
 ReadPackage( "JuliaInterface", "gap/BindCFunction.gi" );
 
-dirs:= DirectoriesPackageLibrary( "JuliaInterface", "julia" );
+dirs_julia := DirectoriesPackageLibrary( "JuliaInterface", "julia" );
 
-JuliaIncludeFile( Filename( dirs, "gaptypes.jl" ) );
+JuliaIncludeFile( Filename( dirs_julia, "gaptypes.jl" ) );
 
-dirs:= DirectoriesPackageLibrary( "JuliaInterface", "../LibGAP.jl/src" );
+dirs_libgap := DirectoriesPackageLibrary( "JuliaInterface", "../LibGAP.jl/src" );
 
 if not IsBound( JULIAINTERNAL_LOADED_FROM_JULIA ) then
-    JuliaEvalString( Concatenation( "Base.include( Main,\"", Filename( dirs, "initialization.jl" ), "\")" ) );
+    JuliaEvalString( Concatenation( "Base.include( Main,\"", Filename( dirs_libgap, "initialization.jl" ), "\")" ) );
 fi;
 
-JuliaEvalString( Concatenation( "Base.include( Main.GAP,\"", Filename( dirs, "libgap.jl" ), "\")" ) );
+JuliaEvalString( Concatenation( "Base.include( Main.GAP,\"", Filename( dirs_julia, "libgap.jl" ), "\")" ) );
 
 _JULIAINTERFACE_INTERNAL_INIT();
 
