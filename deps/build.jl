@@ -8,15 +8,24 @@ if haskey(ENV,"GAP_ROOT")
     install_gap = false
 end
 
-## Install GAP
+## Find julia binary
 
+julia_binary = missing
+
+if haskey(ENV,"JULIA_BINARY")
+    julia_binary = ENV["JULIA_BINARY"]
+else
+    julia_binary = Sys.BINDIR
+end
+
+## Install GAP
 if install_gap
     run(`git clone https://github.com/gap-system/gap`)
     cd(gap_root)
     run(`./autogen.sh`)
-    run(`./configure --with-gc=julia --with-julia=$(ENV["_"])`)
+    run(`./configure --with-gc=julia --with-julia=$(julia_binary)`)
     run(`make`)
-    if ! haskey(ENV,"GAP_INSTALL_PACKAGES") && ENV["GAP_INSTALL_PACKAGES"] != "no"
+    if ! haskey(ENV,"GAP_INSTALL_PACKAGES") || ENV["GAP_INSTALL_PACKAGES"] != "no"
         run(`make bootstrap-pkg-full`)
         cd("pkg")
         run(`../bin/BuildPackages.sh`)
@@ -28,7 +37,7 @@ end
 gap_executable = abspath(joinpath(gap_root,"gap"))
 
 ## Compile JuliaInterface/Experimental
-cd(abspath(joinpath(@__DIR__,"..","pkg")))
+cd(abspath(joinpath(@__DIR__, "..", "pkg", "GAPJulia" )))
 run(`./configure $gap_root`)
 run(`make`)
 
