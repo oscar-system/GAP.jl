@@ -42,6 +42,3 @@ for package in $packages; do
 done
 
 echo ".PHONY: all" >> Makefile
-
-sed -e "s|@GAPJULIA_DIR@|${SCRIPTDIR}|g" -e "s|@GAPPATH@|${GAPPATH}|g" ../../runtests_dir.jl.in > ../../LibGAP.jl/test/runtests_dir.jl
-
