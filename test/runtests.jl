@@ -1,6 +1,6 @@
 using Test
 
-using GAPJulia
+using GAP
 
 include("basics.jl")
 include("convenience.jl")
