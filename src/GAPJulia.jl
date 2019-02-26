@@ -1,5 +1,6 @@
 module GAP
 
+include(abspath(joinpath(@__DIR__,"..","deps.jl")))
 
 """
     FFE
@@ -90,10 +91,14 @@ run_it = function(gapdir::String)
     initialize( [ ""
                        , "-l", sysinfo["GAP_LIB_DIR"]
                        , "-T", "-r", "-A", "--nointeract"
+                       , "-l", "$(NEW_GAP_ROOT);"
 #                      , "-m", "512m" ], [""] )
                        , "-m", "1000m" ], [""] )
     gap_is_initialized = true
 end
 
+function __init__()
+    run_it(GAP_ROOT)
+end
 
 end
