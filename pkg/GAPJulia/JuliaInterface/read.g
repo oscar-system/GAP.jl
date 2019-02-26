@@ -10,10 +10,10 @@ dirs_julia := DirectoriesPackageLibrary( "JuliaInterface", "julia" );
 
 JuliaIncludeFile( Filename( dirs_julia, "gaptypes.jl" ) );
 
-dirs_libgap := DirectoriesPackageLibrary( "JuliaInterface", "../LibGAP.jl/src" );
+dirs_libgap := DirectoriesPackageLibrary( "JuliaInterface", "../../../src" );
 
 if not IsBound( JULIAINTERNAL_LOADED_FROM_JULIA ) then
-    JuliaEvalString( Concatenation( "Base.include( Main,\"", Filename( dirs_libgap, "initialization.jl" ), "\")" ) );
+    JuliaEvalString( Concatenation( "Base.include( Main,\"", Filename( dirs_libgap, "GAPJulia.jl" ), "\")" ) );
 fi;
 
 JuliaEvalString( Concatenation( "Base.include( Main.GAP,\"", Filename( dirs_julia, "libgap.jl" ), "\")" ) );

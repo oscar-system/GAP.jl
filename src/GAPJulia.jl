@@ -1,6 +1,6 @@
 module GAP
 
-include(abspath(joinpath(@__DIR__,"..","deps.jl")))
+include(abspath(joinpath(@__DIR__,"..","deps","deps.jl")))
 
 """
     FFE
