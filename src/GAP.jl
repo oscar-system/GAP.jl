@@ -99,11 +99,10 @@ end
 
 function __init__()
     gap_module = @__MODULE__
-    Main.eval(:(__JULIAGAPMODULE = $gap_module))
-    if ! isdefined(Main,:__IS_LOADED_FROM_GAP) || Main.__IS_LOADED_FROM_GAP != true
+    Base.MainInclude.eval(:(__JULIAGAPMODULE = $gap_module))
+    if ! isdefined(Main, :__IS_LOADED_FROM_GAP) || Main.__IS_LOADED_FROM_GAP != true
         run_it(GAP_ROOT)
     end
-    Main.eval(:(__JULIAGAPMODULE = nothing))
 end
 
 end
