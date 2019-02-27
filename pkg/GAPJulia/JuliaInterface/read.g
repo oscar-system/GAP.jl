@@ -16,7 +16,7 @@ if not IsBound( JULIAINTERNAL_LOADED_FROM_JULIA ) then
     JuliaEvalString( Concatenation( "Base.include( Main,\"", Filename( dirs_libgap, "GAP.jl" ), "\")" ) );
 fi;
 
-JuliaEvalString( Concatenation( "Base.include( Main.GAP,\"", Filename( dirs_julia, "libgap.jl" ), "\")" ) );
+JuliaEvalString( Concatenation( "__JULIAGAPMODULE.include( \"", Filename( dirs_julia, "libgap.jl" ), "\")" ) );
 
 _JULIAINTERFACE_INTERNAL_INIT();
 

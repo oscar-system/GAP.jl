@@ -98,7 +98,10 @@ run_it = function(gapdir::String)
 end
 
 function __init__()
+    gap_module = @__MODULE__
+    Main.eval(:(__JULIAGAPMODULE = $gap_module))
     run_it(GAP_ROOT)
+    Main.eval(:(__JULIAGAPMODULE = nothing))
 end
 
 end
