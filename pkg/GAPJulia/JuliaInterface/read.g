@@ -20,6 +20,8 @@ JuliaEvalString( Concatenation( "__JULIAGAPMODULE.include( \"", Filename( dirs_j
 
 _JULIAINTERFACE_INTERNAL_INIT();
 
+Julia!.storage.GAP := _WrapJuliaModule("GAP",_JuliaGetGlobalVariable("__JULIAGAPMODULE"));
+
 ReadPackage( "JuliaInterface", "gap/adapter.gi");
 ReadPackage( "JuliaInterface", "gap/calls.gi");
 ReadPackage( "JuliaInterface", "gap/convert.gi");

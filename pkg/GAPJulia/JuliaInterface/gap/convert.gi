@@ -140,4 +140,4 @@ end);
 #
 #
 
-InstallGlobalFunction("GAPToJulia", Julia.GAP.gap_to_julia);
+InstallGlobalFunction("GAPToJulia", JuliaFunction( "gap_to_julia", "__JULIAGAPMODULE" ) );
