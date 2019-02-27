@@ -38,9 +38,9 @@ function julia_to_gap(x::Rational{T}) where T <: Integer
     numer_julia = numerator(x)
     if denom_julia == 0
         if numer_julia >= 0
-            return GAP.Globals.infinity
+            return Globals.infinity
         else
-            return -GAP.Globals.infinity
+            return -Globals.infinity
         end
     end
     numer = julia_to_gap(numer_julia)
@@ -109,7 +109,7 @@ function julia_to_gap(obj::Dict{T,S}, recursive::Val{Recursive}=Val(false), recu
         recursion_dict[obj] = record
     end
     for (x,y) in obj
-        x = GAP.Globals.RNamObj(MakeString(string(x)))
+        x = Globals.RNamObj(MakeString(string(x)))
         if Recursive
 #=
             # It would be much nicer to write this, but we cannot in Julia 1.x, see
@@ -124,7 +124,7 @@ function julia_to_gap(obj::Dict{T,S}, recursive::Val{Recursive}=Val(false), recu
                 y = recursion_dict[y] = julia_to_gap(y, recursive, recursion_dict)
             end
         end
-        GAP.Globals.ASS_REC(record, x, y)
+        Globals.ASS_REC(record, x, y)
     end
 
     return record

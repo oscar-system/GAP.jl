@@ -1,7 +1,7 @@
 import Base: convert, getindex, setindex!, length, show
 
-const True = GAP.Globals.ReturnTrue()
-const False = GAP.Globals.ReturnFalse()
+const True = Globals.ReturnTrue()
+const False = Globals.ReturnFalse()
 
 const GAPInputType_internal = Union{MPtr,FFE}
 const GAPInputType = Union{GAPInputType_internal,Int64,Bool}
@@ -9,41 +9,41 @@ const GAPInputType = Union{GAPInputType_internal,Int64,Bool}
 const Obj = Union{GAPInputType,Nothing}
 
 function Base.show( io::IO, obj::Union{MPtr,FFE} )
-    str = GAP.Globals.String( obj )
+    str = Globals.String( obj )
     stri = CSTR_STRING( str )
     print(io,"GAP: $stri")
 end
 
 function Base.string( obj::Union{MPtr,FFE} )
-    str = GAP.Globals.String( obj )
+    str = Globals.String( obj )
     return CSTR_STRING( str )
 end
 
 ## implement indexing interface
-Base.getindex(x::MPtr, i::Int64) = GAP.Globals.ELM_LIST(x, i)
-Base.setindex!(x::MPtr, v::Any, i::Int64 ) = GAP.Globals.ASS_LIST( x, i, v )
-Base.length(x::MPtr) = GAP.Globals.Length(x)
+Base.getindex(x::MPtr, i::Int64) = Globals.ELM_LIST(x, i)
+Base.setindex!(x::MPtr, v::Any, i::Int64 ) = Globals.ASS_LIST( x, i, v )
+Base.length(x::MPtr) = Globals.Length(x)
 Base.firstindex(x::MPtr) = 1
-Base.lastindex(x::MPtr) = GAP.Globals.Length(x)
+Base.lastindex(x::MPtr) = Globals.Length(x)
 
 # matrix
-Base.getindex(x::MPtr, i::Int64, j::Int64) = GAP.Globals.ELM_LIST(x, i, j)
-Base.setindex!(x::MPtr, v::Any, i::Int64, j::Int64) = GAP.Globals.ASS_LIST(x, i, j, v)
+Base.getindex(x::MPtr, i::Int64, j::Int64) = Globals.ELM_LIST(x, i, j)
+Base.setindex!(x::MPtr, v::Any, i::Int64, j::Int64) = Globals.ASS_LIST(x, i, j, v)
 
 # records
-RNamObj(f::Union{Symbol,Int64,AbstractString}) = GAP.Globals.RNamObj(MakeString(string(f)))
+RNamObj(f::Union{Symbol,Int64,AbstractString}) = Globals.RNamObj(MakeString(string(f)))
 # note: we don't use Union{Symbol,Int64,AbstractString} below to avoid
 # ambiguity between these methods and method `getproperty(x, f::Symbol)`
 # from Julia's Base module
-Base.getproperty(x::MPtr, f::Symbol) = GAP.Globals.ELM_REC(x, RNamObj(f))
-Base.getproperty(x::MPtr, f::Union{AbstractString,Int64}) = GAP.Globals.ELM_REC(x, RNamObj(f))
-Base.setproperty!(x::MPtr, f::Symbol, v) = GAP.Globals.ASS_REC(x, RNamObj(f), v)
-Base.setproperty!(x::MPtr, f::Union{AbstractString,Int64}, v) = GAP.Globals.ASS_REC(x, RNamObj(f), v)
+Base.getproperty(x::MPtr, f::Symbol) = Globals.ELM_REC(x, RNamObj(f))
+Base.getproperty(x::MPtr, f::Union{AbstractString,Int64}) = Globals.ELM_REC(x, RNamObj(f))
+Base.setproperty!(x::MPtr, f::Symbol, v) = Globals.ASS_REC(x, RNamObj(f), v)
+Base.setproperty!(x::MPtr, f::Union{AbstractString,Int64}, v) = Globals.ASS_REC(x, RNamObj(f), v)
 
 #
-Base.zero(x::GAPInputType_internal) = GAP.Globals.ZERO(x)
-Base.one(x::GAPInputType_internal) = GAP.Globals.ONE(x)
-Base.:-(x::GAPInputType_internal) = GAP.Globals.AINV(x)
+Base.zero(x::GAPInputType_internal) = Globals.ZERO(x)
+Base.one(x::GAPInputType_internal) = Globals.ONE(x)
+Base.:-(x::GAPInputType_internal) = Globals.AINV(x)
 
 #
 typecombinations = ((:GAPInputType_internal,:GAPInputType_internal),
@@ -64,7 +64,7 @@ function_combinations = ((:+,:SUM),
 for (left, right) in typecombinations
     for (funcJ, funcC) in function_combinations
         @eval begin
-            Base.$(funcJ)(x::$left,y::$right) = GAP.Globals.$(funcC)(x,y)
+            Base.$(funcJ)(x::$left,y::$right) = Globals.$(funcC)(x,y)
         end
     end
 end
