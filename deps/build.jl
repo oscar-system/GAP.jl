@@ -35,6 +35,8 @@ if install_gap
         run(`make bootstrap-pkg-full`)
         cd("pkg")
         run(`../bin/BuildPackages.sh`)
+    elseif haskey(ENV,"GAP_INSTALL_PACKAGES") && ENV["GAP_INSTALL_PACKAGES"] == "minimal"
+        run(`make bootstrap-pkg-minimal`)
     else
         run(`mkdir pkg`)
     end
