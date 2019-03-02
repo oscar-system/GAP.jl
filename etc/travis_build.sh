@@ -2,9 +2,9 @@
 
 set -e
 
-cd $GAPROOT/pkg
+cd $GAP_ROOT/pkg
 
 git clone https://github.com/gap-packages/io
 git clone https://github.com/gap-packages/profiling
 
-$GAPROOT/bin/BuildPackages.sh --with-gaproot=$GAPROOT io profiling
+$GAP_ROOT/bin/BuildPackages.sh --with-gaproot=$GAP_ROOT io profiling
