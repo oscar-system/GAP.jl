@@ -31,7 +31,7 @@ if install_gap
     run(`./autogen.sh`)
     run(`./configure --with-gc=julia --with-julia=$(julia_binary)`)
     run(`make`)
-    if ! haskey(ENV,"GAP_INSTALL_PACKAGES") || ENV["GAP_INSTALL_PACKAGES"] != "no"
+    if ! haskey(ENV,"GAP_INSTALL_PACKAGES") || ENV["GAP_INSTALL_PACKAGES"] == "yes" 
         run(`make bootstrap-pkg-full`)
         cd("pkg")
         run(`../bin/BuildPackages.sh`)
