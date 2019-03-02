@@ -5,17 +5,18 @@
 #
 ReadPackage( "JuliaInterface", "gap/JuliaInterface.gi");
 ReadPackage( "JuliaInterface", "gap/BindCFunction.gi" );
+ReadPackage( "JuliaInterface", "gap/generated_path.gi" );
+
+dirs_gap_jl := Directory( _JULIAINTERFACE_JULIA_MODULE_SOURCES );
+
+if not IsBound( JULIAINTERNAL_LOADED_FROM_JULIA ) then
+    JuliaEvalString( "__IS_LOADED_FROM_GAP = true");
+    JuliaEvalString( Concatenation( "Base.MainInclude.include( \"", Filename( dirs_gap_jl, "GAP.jl" ), "\")" ) );
+fi;
 
 dirs_julia := DirectoriesPackageLibrary( "JuliaInterface", "julia" );
 
 JuliaIncludeFile( Filename( dirs_julia, "gaptypes.jl" ) );
-
-dirs_libgap := DirectoriesPackageLibrary( "JuliaInterface", "../../../src" );
-
-if not IsBound( JULIAINTERNAL_LOADED_FROM_JULIA ) then
-    JuliaEvalString( "__IS_LOADED_FROM_GAP = true");
-    JuliaEvalString( Concatenation( "Base.MainInclude.include( \"", Filename( dirs_libgap, "GAP.jl" ), "\")" ) );
-fi;
 
 JuliaEvalString( Concatenation( "__JULIAGAPMODULE.include( \"", Filename( dirs_julia, "libgap.jl" ), "\")" ) );
 

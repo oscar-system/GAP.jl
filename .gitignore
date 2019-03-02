@@ -5,3 +5,4 @@
 /Manifest.toml
 /deps/gap/*
 /deps/deps.jl
+/pkg/GAPJulia/JuliaInterface/gap/generated_path.gi
