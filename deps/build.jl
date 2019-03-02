@@ -1,6 +1,11 @@
 # Builds a GAP, and attaches JuliaInterface
 
-gap_root = abspath(joinpath(@__DIR__,"gap"))
+import Pkg
+
+## We install GAP in the .julia directory, not in the package
+julia_folder_path = Pkg.depots1()
+
+gap_root = abspath(joinpath(julia_folder_path,"gap"))
 install_gap = true
 
 if haskey(ENV,"GAP_ROOT")
@@ -20,6 +25,7 @@ end
 
 ## Install GAP
 if install_gap
+    cd(julia_folder_path)
     run(`git clone https://github.com/gap-system/gap`)
     cd(gap_root)
     run(`./autogen.sh`)
