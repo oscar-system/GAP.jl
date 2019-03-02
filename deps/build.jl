@@ -2,8 +2,7 @@
 
 import Pkg
 
-## We install GAP in the .julia directory, not in the package
-julia_folder_path = Pkg.depots1()
+julia_folder_path = abspath(joinpath(@__DIR__,".."))
 
 gap_root = abspath(joinpath(julia_folder_path,"gap"))
 install_gap = true
@@ -62,3 +61,21 @@ GAP_ADDITIONAL_ROOT = "$new_gap_root"
 open(abspath(joinpath(@__DIR__,"deps.jl")),"w") do outputfile
     print(outputfile,deps_string)
 end
+
+## Create custom gap.sh
+
+gap_sh_string="""
+#!/bin/sh
+
+exec "$(gap_root)/gap" -l "$(new_gap_root);$(gap_root)" "\$@"
+"""
+ 
+gap_sh_path = abspath(joinpath(new_gap_root,"gap.sh"))
+open(gap_sh_path,"w") do outputfile
+    print(outputfile,gap_sh_string)
+end
+
+cd(new_gap_root)
+run(`chmod +x gap.sh`)
+julia_gap_sh_link = abspath(joinpath(Pkg.depots1(),"gap"))
+run(`ln -snf $gap_sh_path $julia_gap_sh_link`)
