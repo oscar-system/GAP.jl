@@ -101,7 +101,7 @@ function __init__()
     gap_module = @__MODULE__
     Base.MainInclude.eval(:(__JULIAGAPMODULE = $gap_module))
     if ! isdefined(Main, :__IS_LOADED_FROM_GAP) || Main.__IS_LOADED_FROM_GAP != true
-        run_it(GAP_ROOT,error_handler_func)
+        run_it(GAPROOT,error_handler_func)
     end
 end
 

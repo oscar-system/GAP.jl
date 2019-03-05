@@ -7,8 +7,8 @@ julia_folder_path = abspath(joinpath(@__DIR__,".."))
 gap_root = abspath(joinpath(julia_folder_path,"gap"))
 install_gap = true
 
-if haskey(ENV,"GAP_ROOT")
-    gap_root = ENV["GAP_ROOT"]
+if haskey(ENV,"GAPROOT")
+    gap_root = ENV["GAPROOT"]
     install_gap = false
 end
 
@@ -52,7 +52,7 @@ new_gap_root = abspath(joinpath(@__DIR__,".."))
 
 ## Write deps.jl file containing the necessary paths
 deps_string ="""
-GAP_ROOT = "$gap_root"
+GAPROOT = "$gap_root"
 GAP_EXECUTABLE = "$gap_executable"
 GAP_ADDITIONAL_ROOT = "$new_gap_root"
 

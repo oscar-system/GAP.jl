@@ -3,7 +3,7 @@ env:
  global:
    - DONT_FETCH_GAP_JULIA_PKG=yes
    - JULIAROOT=$TRAVIS_BUILD_DIR/julia
-   - GAP_ROOT=$TRAVIS_BUILD_DIR/gap
+   - GAPROOT=$TRAVIS_BUILD_DIR/gap
    - MAKEFLAGS="-j4"
    - JULIA_TRACK_COVERAGE=yes
 
