@@ -26,7 +26,7 @@ before_script:
   - git show --pretty=fuller -s
   - mkdir -p coverage
   - etc/install_julia_gap.sh
-  - ${JULIAROOT}/bin/julia -e 'import Pkg ; Pkg.develop(Pkg.PackageSpec(url="$(ENV["TRAVIS_BUILD_DIR"])")) ; Pkg.build("GAP")'
+  - ${JULIAROOT}/bin/julia -e 'import Pkg ; Pkg.build()'
   - etc/travis_build.sh
 
 script:
