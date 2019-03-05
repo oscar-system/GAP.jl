@@ -9,8 +9,6 @@ using Libdl
 
 import Base: length, convert
 
-# using Main.ForeignGAP: MPtr
-
 const MPtr = Main.ForeignGAP.MPtr
 
 
