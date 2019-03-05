@@ -3,6 +3,6 @@
 /gh-pages/
 /LibGAP.jl/test/runtests_dir.jl
 /Manifest.toml
-/deps/gap/*
+/deps/gap/
 /deps/deps.jl
 /pkg/GAPJulia/JuliaInterface/gap/generated_path.gi
