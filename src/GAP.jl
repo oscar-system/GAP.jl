@@ -44,7 +44,7 @@ end
 
 const pkgdir = realpath(dirname(@__FILE__))
 
-function initialize( argv::Array{String,1}, env::Array{String,1},error_handler_func::Ptr{Nothing} )
+function initialize( argv::Array{String,1}, env::Array{String,1}, error_handler_func::Ptr{Nothing} )
     gap_library = Libdl.dlopen("libgap", Libdl.RTLD_GLOBAL)
     ccall( Libdl.dlsym(gap_library, :GAP_Initialize)
            , Cvoid
@@ -79,7 +79,7 @@ end
 
 gap_is_initialized = false
 
-run_it = function(gapdir::String,error_handler_func::Ptr{Nothing})
+run_it = function(gapdir::String, error_handler_func::Ptr{Nothing})
     global sysinfo, gap_is_initialized
     if gap_is_initialized
         error("GAP already initialized")
@@ -101,7 +101,7 @@ function __init__()
     gap_module = @__MODULE__
     Base.MainInclude.eval(:(__JULIAGAPMODULE = $gap_module))
     if ! isdefined(Main, :__IS_LOADED_FROM_GAP) || Main.__IS_LOADED_FROM_GAP != true
-        run_it(GAPROOT,error_handler_func)
+        run_it(GAPROOT, error_handler_func)
     end
 end
 
