@@ -41,13 +41,13 @@ cd(abspath(joinpath(@__DIR__, "..", "pkg", "GAPJulia" )))
 run(`./configure $gap_root`)
 run(`make`)
 
-new_gap_root = abspath(joinpath(@__DIR__,".."))
+extra_gap_root = abspath(joinpath(@__DIR__,".."))
 
 ## Write deps.jl file containing the necessary paths
 deps_string ="""
 GAPROOT = "$gap_root"
 GAP_EXECUTABLE = "$gap_executable"
-GAP_ADDITIONAL_ROOT = "$new_gap_root"
+EXTRA_GAP_ROOT = "$extra_gap_root"
 
 """
 
@@ -60,15 +60,15 @@ end
 gap_sh_string="""
 #!/bin/sh
 
-exec "$(gap_root)/gap" -l "$(new_gap_root);$(gap_root)" "\$@"
+exec "$(gap_root)/gap" -l "$(extra_gap_root);$(gap_root)" "\$@"
 """
  
-gap_sh_path = abspath(joinpath(new_gap_root,"gap.sh"))
+gap_sh_path = abspath(joinpath(extra_gap_root,"gap.sh"))
 open(gap_sh_path,"w") do outputfile
     print(outputfile,gap_sh_string)
 end
 
-cd(new_gap_root)
+cd(extra_gap_root)
 run(`chmod +x gap.sh`)
 julia_gap_sh_link = abspath(joinpath(Pkg.depots1(),"gap"))
 run(`ln -snf $gap_sh_path $julia_gap_sh_link`)
