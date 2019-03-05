@@ -13,14 +13,7 @@ if haskey(ENV,"GAPROOT")
 end
 
 ## Find julia binary
-
-julia_binary = missing
-
-if haskey(ENV,"JULIA_BINARY")
-    julia_binary = ENV["JULIA_BINARY"]
-else
-    julia_binary = Sys.BINDIR
-end
+julia_binary = julia_binary = get(ENV, "JULIA_BINARY", Sys.BINDIR)
 
 ## Install GAP
 if install_gap
