@@ -10,7 +10,7 @@ ReadPackage( "JuliaInterface", "gap/generated_path.gi" );
 dirs_gap_jl := Directory( _JULIAINTERFACE_JULIA_MODULE_SOURCES );
 
 if not IsBound( JULIAINTERNAL_LOADED_FROM_JULIA ) then
-    JuliaEvalString( "__IS_LOADED_FROM_GAP = true");
+    JuliaEvalString( "__IS_LOADED_FROM_GAP = true" );
     JuliaEvalString( Concatenation( "Base.MainInclude.include( \"", Filename( dirs_gap_jl, "GAP.jl" ), "\")" ) );
 fi;
 
@@ -22,7 +22,7 @@ JuliaEvalString( Concatenation( "__JULIAGAPMODULE.include( \"", Filename( dirs_j
 
 _JULIAINTERFACE_INTERNAL_INIT();
 
-Julia!.storage.GAP := _WrapJuliaModule("GAP",_JuliaGetGlobalVariable("__JULIAGAPMODULE"));
+Julia!.storage.GAP := _WrapJuliaModule( "GAP", _JuliaGetGlobalVariable( "__JULIAGAPMODULE" ) );
 
 ReadPackage( "JuliaInterface", "gap/adapter.gi");
 ReadPackage( "JuliaInterface", "gap/calls.gi");
