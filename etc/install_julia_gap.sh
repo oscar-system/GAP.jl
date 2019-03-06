@@ -5,15 +5,17 @@ set -e
 main_dir=${PWD}
 
 # Download and install Julia
-wget https://julialangnightlies-s3.julialang.org/bin/linux/x64/julia-latest-linux64.tar.gz
-mkdir julia 
-tar xf julia-latest-linux64.tar.gz -C julia --strip-components 1
+if [[ $DONT_FETCH_JULIA != yes ]]; then
+    wget https://julialangnightlies-s3.julialang.org/bin/linux/x64/julia-latest-linux64.tar.gz
+    mkdir julia
+    tar xf julia-latest-linux64.tar.gz -C julia --strip-components 1
+fi
 
 # Download and install GAP
 git clone --depth=1 https://github.com/gap-system/gap
 cd gap
 ./autogen.sh
-./configure --with-gc=julia --with-julia=${main_dir}/julia/
+./configure --with-gc=julia --with-julia=$(which julia)
 make -j4
 make libgap.la
 make bootstrap-pkg-minimal
