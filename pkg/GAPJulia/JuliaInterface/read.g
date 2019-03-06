@@ -11,7 +11,7 @@ dirs_gap_jl := Directory( _JULIAINTERFACE_JULIA_MODULE_SOURCES );
 
 if not IsBound( JULIAINTERNAL_LOADED_FROM_JULIA ) then
     JuliaEvalString( "__IS_LOADED_FROM_GAP = true" );
-    JuliaEvalString( Concatenation( "Base.MainInclude.include( \"", Filename( dirs_gap_jl, "GAP.jl" ), "\")" ) );
+    JuliaEvalString( "Base.MainInclude.include(Base.find_package(\"GAP\"))" );
 fi;
 
 dirs_julia := DirectoriesPackageLibrary( "JuliaInterface", "julia" );

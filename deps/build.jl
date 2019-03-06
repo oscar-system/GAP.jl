@@ -74,13 +74,3 @@ cd(extra_gap_root)
 run(`chmod +x gap.sh`)
 julia_gap_sh_link = abspath(joinpath(Pkg.depots1(), "gap"))
 run(`ln -snf $gap_sh_path $julia_gap_sh_link`)
-
-julia_module_source_folder = abspath(joinpath(@__DIR__, "..", "src"))
-gap_folder_string= """
-BindGlobal("_JULIAINTERFACE_JULIA_MODULE_SOURCES", "$julia_module_source_folder");
-
-"""
-
-open(abspath(joinpath(@__DIR__, "..", "pkg", "GAPJulia", "JuliaInterface", "gap", "generated_path.gi")), "w") do outputfile
-    print(outputfile,gap_folder_string)
-end
