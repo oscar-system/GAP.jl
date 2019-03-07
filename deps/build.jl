@@ -8,7 +8,7 @@ julia_folder_path = abspath(joinpath(@__DIR__, ".."))
 gap_root = abspath(joinpath(julia_folder_path, "gap"))
 install_gap = true
 
-if haskey(ENV,"GAPROOT")
+if haskey(ENV, "GAPROOT")
     gap_root = ENV["GAPROOT"]
     install_gap = false
 end
