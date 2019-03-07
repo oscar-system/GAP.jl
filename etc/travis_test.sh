@@ -30,7 +30,7 @@ cd ..
 
 #
 pwd
-julia --project="$JULIA_PROJECT" --code-coverage --inline=no -e 'using Pkg ; Pkg.test("GAP")' || AnyFailures=Yes
+julia --code-coverage --inline=no -e 'using Pkg ; Pkg.test("GAP")' || AnyFailures=Yes
 cd ..
 
 if [ ${AnyFailures} = Yes ]
