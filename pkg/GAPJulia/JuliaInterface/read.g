@@ -5,9 +5,6 @@
 #
 ReadPackage( "JuliaInterface", "gap/JuliaInterface.gi");
 ReadPackage( "JuliaInterface", "gap/BindCFunction.gi" );
-ReadPackage( "JuliaInterface", "gap/generated_path.gi" );
-
-dirs_gap_jl := Directory( _JULIAINTERFACE_JULIA_MODULE_SOURCES );
 
 if not IsBound( JULIAINTERNAL_LOADED_FROM_JULIA ) then
     JuliaEvalString( "__IS_LOADED_FROM_GAP = true" );
