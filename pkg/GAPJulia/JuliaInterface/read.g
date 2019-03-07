@@ -6,8 +6,8 @@
 ReadPackage( "JuliaInterface", "gap/JuliaInterface.gi");
 ReadPackage( "JuliaInterface", "gap/BindCFunction.gi" );
 
-if not IsBound( JULIAINTERNAL_LOADED_FROM_JULIA ) then
-    JuliaEvalString( "__IS_LOADED_FROM_GAP = true" );
+if not IsBound( __JULIAINTERNAL_LOADED_FROM_JULIA ) then
+    JuliaEvalString( "__GAPINTERNAL_LOADED_FROM_GAP = true" );
     JuliaEvalString( "Base.MainInclude.include(Base.find_package(\"GAP\"))" );
 fi;
 
@@ -19,6 +19,8 @@ JuliaEvalString( Concatenation( "__JULIAGAPMODULE.include( \"", Filename( dirs_j
 
 _JULIAINTERFACE_INTERNAL_INIT();
 
+## The GAP module is also bound to the variable __JULIAGAPMODULE,
+## to prevent Name clashes when accessing it before it is completely initialized.
 Julia!.storage.GAP := _WrapJuliaModule( "GAP", _JuliaGetGlobalVariable( "__JULIAGAPMODULE" ) );
 
 ReadPackage( "JuliaInterface", "gap/adapter.gi");

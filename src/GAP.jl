@@ -57,7 +57,7 @@ function initialize( argv::Array{String,1}, env::Array{String,1}, error_handler_
     ccall( Libdl.dlsym(gap_library, :GAP_EvalString)
            , Ptr{Cvoid}
            , (Ptr{UInt8},)
-           , "BindGlobal(\"JULIAINTERNAL_LOADED_FROM_JULIA\", true );" )
+           , "BindGlobal(\"__JULIAINTERNAL_LOADED_FROM_JULIA\", true );" )
     ccall( Libdl.dlsym(gap_library, :GAP_EvalString)
            , Ptr{Cvoid}
            , (Ptr{UInt8},)
@@ -98,9 +98,13 @@ end
 
 function __init__()
     error_handler_func = @cfunction(error_handler, Cvoid, ())
+
+    ## We temporarily assign this module to the name __JULIAGAPMODULE
+    ## to not bind GAP in the Main namespace, as this causes a warning when
+    ## the module is loaded.
     gap_module = @__MODULE__
     Base.MainInclude.eval(:(__JULIAGAPMODULE = $gap_module))
-    if ! isdefined(Main, :__IS_LOADED_FROM_GAP) || Main.__IS_LOADED_FROM_GAP != true
+    if ! isdefined(Main, :__GAPINTERNAL_LOADED_FROM_GAP) || Main.__GAPINTERNAL_LOADED_FROM_GAP != true
         run_it(GAPROOT, error_handler_func)
     end
 end
