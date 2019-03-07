@@ -49,7 +49,7 @@ extra_gap_root = abspath(joinpath(@__DIR__, ".."))
 deps_string = """
 GAPROOT = "$gap_root"
 GAP_EXECUTABLE = "$gap_executable"
-EXTRA_GAP_ROOT = "$extra_gap_root"
+EXTRA_GAPROOT = "$extra_gap_root"
 
 """
 

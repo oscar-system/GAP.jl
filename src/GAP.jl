@@ -90,7 +90,7 @@ run_it = function(gapdir::String, error_handler_func::Ptr{Nothing})
     initialize( [ ""
                        , "-l", sysinfo["GAP_LIB_DIR"]
                        , "-T", "-r", "-A", "--nointeract"
-                       , "-l", "$(EXTRA_GAP_ROOT);"
+                       , "-l", "$(EXTRA_GAPROOT);"
 #                      , "-m", "512m" ], [""] )
                        , "-m", "1000m" ], [""], error_handler_func )
     gap_is_initialized = true
