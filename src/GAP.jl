@@ -1,6 +1,6 @@
 module GAP
 
-include(abspath(joinpath(@__DIR__,"..","deps","deps.jl")))
+include(abspath(joinpath(@__DIR__, "..", "deps", "deps.jl")))
 
 """
     FFE
@@ -97,7 +97,7 @@ run_it = function(gapdir::String, error_handler_func::Ptr{Nothing})
 end
 
 function __init__()
-    error_handler_func = @cfunction(error_handler,Cvoid,())
+    error_handler_func = @cfunction(error_handler, Cvoid, ())
     gap_module = @__MODULE__
     Base.MainInclude.eval(:(__JULIAGAPMODULE = $gap_module))
     if ! isdefined(Main, :__IS_LOADED_FROM_GAP) || Main.__IS_LOADED_FROM_GAP != true
