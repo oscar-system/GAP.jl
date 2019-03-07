@@ -10,7 +10,7 @@ AnyFailures=No
 # check code formatting
 find . -name '*.c' -exec clang-format -i {} \;
 find . -name '*.h' -exec clang-format -i {} \;
-git diff --exit-code -- '*.c' '*.h' # detect if there are any diffs
+git diff --exit-code -- . # detect if there are any diffs
 
 
 
