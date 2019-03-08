@@ -5,7 +5,7 @@
 
 #include <src/compiled.h>    // GAP headers
 
-// This function is used by LibGAP.jl
+// This function is used by GAP.jl
 jl_value_t * julia_gap(Obj obj)
 {
     if (obj == 0) {
@@ -48,7 +48,7 @@ jl_value_t * julia_gap(Obj obj)
     return (jl_value_t *)obj;
 }
 
-// This function is used by LibGAP.jl
+// This function is used by GAP.jl
 Obj gap_julia(jl_value_t * julia_obj)
 {
     if (jl_typeis(julia_obj, jl_int64_type)) {

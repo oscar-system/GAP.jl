@@ -15,7 +15,7 @@ typedef struct {
 
 // Helper used to call GAP functions from Julia.
 //
-// This function is used by LibGAP.jl
+// This function is used by GAP.jl
 jl_value_t * call_gap_func(Obj func, jl_value_t * args)
 {
     if (!jl_is_tuple(args))
