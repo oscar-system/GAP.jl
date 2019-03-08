@@ -32,8 +32,14 @@ if install_gap
         cd("pkg")
         run(`../bin/BuildPackages.sh`)
     end
-    if get(ENV, "GAP_INSTALL_PACKAGES", "no") == "minimal"
+    if get(ENV, "GAP_INSTALL_PACKAGES", "no") == "minimal" || get(ENV, "GAP_INSTALL_PACKAGES", "no") == "debug"
         run(`make bootstrap-pkg-minimal`)
+    end
+    if get(ENV, "GAP_INSTALL_PACKAGES", "no") == "debug"
+        cd("pkg")
+        run(`git clone https://github.com/gap-packages/io`)
+        run(`git clone https://github.com/gap-packages/profiling`)
+        run(`../bin/BuildPackages.sh --with-gaproot=$(gap_root) io profiling`)
     end
 end
 
