@@ -20,7 +20,7 @@ JuliaEvalString( Concatenation( "__JULIAGAPMODULE.include( \"", Filename( dirs_j
 _JULIAINTERFACE_INTERNAL_INIT();
 
 ## The GAP module is also bound to the variable __JULIAGAPMODULE,
-## to prevent Name clashes when accessing it before it is completely initialized.
+## to prevent name clashes when accessing it before it is completely initialized.
 Julia!.storage.GAP := _WrapJuliaModule( "GAP", _JuliaGetGlobalVariable( "__JULIAGAPMODULE" ) );
 
 ReadPackage( "JuliaInterface", "gap/adapter.gi");
