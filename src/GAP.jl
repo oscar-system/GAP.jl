@@ -1,5 +1,6 @@
 module GAP
 
+include(abspath(joinpath(@__DIR__, "..", "deps", "deps.jl")))
 
 """
     FFE
@@ -40,11 +41,10 @@ function error_handler()
     error("Error thrown by GAP")
 end
 
-error_handler_func = @cfunction(error_handler,Cvoid,())
 
 const pkgdir = realpath(dirname(@__FILE__))
 
-function initialize( argv::Array{String,1}, env::Array{String,1} )
+function initialize( argv::Array{String,1}, env::Array{String,1}, error_handler_func::Ptr{Nothing} )
     gap_library = Libdl.dlopen("libgap", Libdl.RTLD_GLOBAL)
     ccall( Libdl.dlsym(gap_library, :GAP_Initialize)
            , Cvoid
@@ -57,7 +57,7 @@ function initialize( argv::Array{String,1}, env::Array{String,1} )
     ccall( Libdl.dlsym(gap_library, :GAP_EvalString)
            , Ptr{Cvoid}
            , (Ptr{UInt8},)
-           , "BindGlobal(\"JULIAINTERNAL_LOADED_FROM_JULIA\", true );" )
+           , "BindGlobal(\"__JULIAINTERNAL_LOADED_FROM_JULIA\", true );" )
     ccall( Libdl.dlsym(gap_library, :GAP_EvalString)
            , Ptr{Cvoid}
            , (Ptr{UInt8},)
@@ -79,7 +79,7 @@ end
 
 gap_is_initialized = false
 
-run_it = function(gapdir::String)
+run_it = function(gapdir::String, error_handler_func::Ptr{Nothing})
     global sysinfo, gap_is_initialized
     if gap_is_initialized
         error("GAP already initialized")
@@ -90,10 +90,23 @@ run_it = function(gapdir::String)
     initialize( [ ""
                        , "-l", sysinfo["GAP_LIB_DIR"]
                        , "-T", "-r", "-A", "--nointeract"
+                       , "-l", "$(EXTRA_GAPROOT);"
 #                      , "-m", "512m" ], [""] )
-                       , "-m", "1000m" ], [""] )
+                       , "-m", "1000m" ], [""], error_handler_func )
     gap_is_initialized = true
 end
 
+function __init__()
+    error_handler_func = @cfunction(error_handler, Cvoid, ())
+
+    ## We temporarily assign this module to the name __JULIAGAPMODULE
+    ## to not bind GAP in the Main namespace, as this causes a warning when
+    ## the module is loaded.
+    gap_module = @__MODULE__
+    Base.MainInclude.eval(:(__JULIAGAPMODULE = $gap_module))
+    if ! isdefined(Main, :__GAPINTERNAL_LOADED_FROM_GAP) || Main.__GAPINTERNAL_LOADED_FROM_GAP != true
+        run_it(GAPROOT, error_handler_func)
+    end
+end
 
 end

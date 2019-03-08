@@ -55,7 +55,7 @@ jl_module_t * get_module_from_string(char * name)
 // Therefore we do not call in InitKernel, but in the `read.g` file.
 Obj Func_JULIAINTERFACE_INTERNAL_INIT(Obj self)
 {
-    jl_module_t * gap_module = get_module_from_string("GAP");
+    jl_module_t * gap_module = get_module_from_string("__JULIAGAPMODULE");
     JULIA_GAPFFE_type =
         (jl_datatype_t *)jl_get_global(gap_module, jl_symbol("FFE"));
     if (!JULIA_GAPFFE_type)

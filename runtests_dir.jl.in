@@ -1,3 +1,0 @@
-INIT_FILE = joinpath("@GAPJULIA_DIR@","LibGAP.jl","src","initialization.jl")
-
-GAPPATH = "@GAPPATH@"
