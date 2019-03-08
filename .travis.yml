@@ -4,10 +4,14 @@ julia:
   - nightly
 
 env:
- global:
-   - GAPROOT=$TRAVIS_BUILD_DIR/gap
-   - MAKEFLAGS="-j4"
-   - JULIA_TRACK_COVERAGE=yes
+  - GAP=$HOME/.julia/gap.sh
+    GAP_INSTALL_PACKAGES=debug
+    MAKEFLAGS="-j4"
+    JULIA_TRACK_COVERAGE=yes
+  - GAPROOT=$TRAVIS_BUILD_DIR/gap
+    GAP=$TRAVIS_BUILD_DIR/gap/gap
+    MAKEFLAGS="-j4"
+    JULIA_TRACK_COVERAGE=yes
 
 cache:
     directories:
@@ -28,11 +32,11 @@ before_script:
   - printenv | sort
   - git show --pretty=fuller -s
   - mkdir -p coverage
-  - etc/travis_install_gap.sh
+  - if [[ -v GAPROOT ]]; then etc/travis_install_gap.sh; fi
     ## Add the package so we can use it later
   - julia -e 'import Pkg ; Pkg.add(Pkg.PackageSpec(url=pwd()))'
   - julia -e 'import Pkg ; Pkg.add("Nemo")'
-  - etc/travis_build.sh
+  - if [[ -v GAPROOT ]]; then etc/travis_build.sh; fi
 
 script:
   - etc/travis_test.sh
@@ -41,6 +45,6 @@ script:
 
 after_script:
   - cd $TRAVIS_BUILD_DIR
-  - $GAPROOT/gap -A --quitonbreak --norepl etc/gather_coverage.g
+  - $GAP -A --quitonbreak --norepl etc/gather_coverage.g
   - julia etc/gather_coverage.jl
   - bash <(curl -s https://codecov.io/bash)
