@@ -130,5 +130,7 @@ function julia_to_gap(obj::Dict{T,S}, recursive::Val{Recursive}=Val(false), recu
     return record
 end
 
+julia_to_gap(func::Function) = NewJuliaFunc(func)
+
 
 ## TODO: BitArray <-> blist; ranges; ...
