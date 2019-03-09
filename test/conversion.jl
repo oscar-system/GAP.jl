@@ -226,4 +226,12 @@ end
     xx = GAP.EvalString( "[1,,1]" )
     @test GAP.julia_to_gap([1,nothing,1]) == xx
 
+    ## Test function conversion
+    return_first(args...) = args[1]
+    return_first_gap = GAP.julia_to_gap(return_first)
+    @test GAP.Globals.IsFunction(return_first) == false
+    @test GAP.Globals.IsFunction(return_first_gap) == true
+    list = GAP.EvalString("[1,2,3]")
+    @test GAP.Globals.List(list,return_first_gap) == list
+
 end
