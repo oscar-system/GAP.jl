@@ -4,18 +4,16 @@ julia:
   - nightly
 
 env:
-  - GAP=$HOME/.julia/gap.sh
-    GAP_INSTALL_PACKAGES=debug
-    MAKEFLAGS="-j4"
-    JULIA_TRACK_COVERAGE=yes
-    CFLAGS+=--coverage
-    LDFLAGS+=--coverage
-  - GAPROOT=$TRAVIS_BUILD_DIR/gap
-    GAP=$TRAVIS_BUILD_DIR/gap/gap
-    MAKEFLAGS="-j4"
-    JULIA_TRACK_COVERAGE=yes
-    CFLAGS+=--coverage
-    LDFLAGS+=--coverage
+  global:
+    - MAKEFLAGS="-j4"
+    - JULIA_TRACK_COVERAGE=yes
+    - CFLAGS=--coverage
+    - LDFLAGS=--coverage
+  matrix:
+    - GAP=$HOME/.julia/gap.sh
+      GAP_INSTALL_PACKAGES=debug
+    - GAPROOT=$TRAVIS_BUILD_DIR/gap
+      GAP=$TRAVIS_BUILD_DIR/gap/gap
 
 cache:
     directories:
