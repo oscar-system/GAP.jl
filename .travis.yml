@@ -8,10 +8,14 @@ env:
     GAP_INSTALL_PACKAGES=debug
     MAKEFLAGS="-j4"
     JULIA_TRACK_COVERAGE=yes
+    CFLAGS+=--coverage
+    LDFLAGS+=--coverage
   - GAPROOT=$TRAVIS_BUILD_DIR/gap
     GAP=$TRAVIS_BUILD_DIR/gap/gap
     MAKEFLAGS="-j4"
     JULIA_TRACK_COVERAGE=yes
+    CFLAGS+=--coverage
+    LDFLAGS+=--coverage
 
 cache:
     directories:
