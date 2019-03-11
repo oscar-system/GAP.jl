@@ -232,6 +232,6 @@ end
     @test GAP.Globals.IsFunction(return_first) == false
     @test GAP.Globals.IsFunction(return_first_gap) == true
     list = GAP.EvalString("[1,2,3]")
-    @test GAP.Globals.List(list,return_first_gap) == list
+    @test GAP.Globals.List(list, return_first_gap) == list
 
 end
