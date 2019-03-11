@@ -43,6 +43,10 @@ before_script:
 
 script:
   - etc/travis_test.sh
+  # delete coverage files for GAP C files, to avoid clash with our .c files
+  # such as calls.c
+  - rm -f $HOME/.julia/packages/GAP/*/gap/obj/src/.libs/*.gc* # gcno, gcda
+  - rm -f $TRAVIS_BUILD_DIR/gap/obj/src/.libs/*.gc*  # gcno, gcda
 
 after_script:
   - cd $TRAVIS_BUILD_DIR
