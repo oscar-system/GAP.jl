@@ -8,7 +8,7 @@ if fail = LoadPackage("AutoDoc", ">= 2014.03.27") then
 fi;
 
 AutoDoc(rec(
-    autodoc := true,
+    autodoc := rec( files := [ "doc/conversion.autodoc" ] ),
     scaffold := rec(
         entities := rec(
             Julia := "<Package>Julia</Package>"

@@ -1,0 +1,140 @@
+@Chapter Rules for conversion between GAP and Julia objects
+
+This document describes the data conversions implemented by `GAPJulia`, as well as the underlying principles guiding this.
+
+Data conversion is a delicate matter. On the one hand, it seems crucial for any interface between any two systems (but note that this is in fact often not quite true, more on that later). It is also highly useful for interactive experiments with the interface, and can be quite useful for automated regression tests. On the other hand, conversions can add a major overhead, both in terms of extra CPU usage as well as extra storage requirements.
+
+As a consequence, an otherwise well-written interface can be rendered effectively unusable by insisting on perform costly data conversions on any invocations; but equally so by not providing any needed conversions. The guiding principles we describe next are meant to help us steer away of these pitfalls.
+
+
+@Section Guiding principles
+
+**1. Avoid conversions, use wrapper objects instead.**
+
+Naively, one may think that in order to use GAPJulia from e.g. GAP, one has to convert all data to a format usable by Julia, then call Julia functions on that data, and finally convert it back; rinse and repeat. While this is certainly sometimes so, in many cases, things are a bit different: Some initial (usually very small) data may need to be converted. But afterwards, the output of one Julia function is used as input of the next, and so on. Converting the data to GAP format and back then is needlessly wasteful. It is much better to not perform any conversion here. Instead, we create special "wrapper" objects on the GAP side, which wraps a given Julia object without converting it. This operation is thus very cheap, both in terms of performance and in memory usage. Such a wrapped object can then be transparently used as input for Julia functions.
+
+On the GAP C kernel level, the internal functions used for this are `NewJuliaObj`, `IS_JULIA_OBJ`, `GET_JULIA_OBJ`. On the GAP language level, this is `IsJuliaObject`. On the Julia side, there is usually no need for a wrapper, as (thanks to the shared garbage collector), as *most* GAP objects are valid Julia objects of type `Main.ForeignGAP.MPtr`. The exception to that rule are immediate GAP objects, more on that in the next section.
+
+**2. Perform automatic conversions only if absolutely necessary; or if unambiguous and free.**
+
+Any conversion which the user cannot prevent, and which has some cost or choice involved, is a problem in waiting: the added overhead may turn an otherwise reasonable computation into one infeasible (think about a conversion triggered a couple million times); or can add extra complications (say if the user has to come up with a careful plan to detect and undo the conversion).
+
+Thus, automatic conversions should only be performed if they are absolutely necessary; or if they are unambiguous and free.
+
+**3. Provide explicit conversion functions for as many data types as possible.**
+
+While user's should not be forced into conversions, it nevertheless should be possible to perform sensible conversions. The simpler it is to do so, the easier it is to use the interface.
+
+**4. Conversion round trip fidelity.**
+
+If an object is converted from Julia to GAP and back to Julia (or conversely, from GAP to Julia and back to GAP), then ideally the result should be at least equal and of equal type to the original value. At the very least, the automatic conversions should follow this principle.
+
+This is of course not always possible, due to mismatches in existing types, but we strive to get as close as possible.
+
+
+@Section Automatic (implicit) conversions
+
+GAP has a notion of "immediate" objects: these are objects which are stored inside the "pointer" referencing them. GAP uses this to store small integers (also known as immediate integers, or intobj), and elements of small finite fields (FFEs). Since these are not valid pointers, they cannot be treated like  other GAP objects (which are simply Julia objects of type `Main.ForeignGAP.MPtr`). Instead, a conversion is unavoidable (at least when they are passed as stand-alone arguments to a function).
+
+To this end, `GAPJulia` converts GAP immediate integers into Julia `Int64` objects, and vice versa. But note that GAP immediate integers on a 64 bit system can only store 61 bits, so not all `Int64` can be converted into intobjs; those are therefore wrapped like any other Julia object. Other Julia integer types, like e.g. `UInt64`, `Int32`, etc. are also wrapped by default, to ensure conversion round trips do not arbitrary change object types.
+
+All automatic conversions and wrapping are handled on the C functions `julia_gap` and `gap_julia` in `JuliaInterface`.
+
+The following conversions are performed by `julia_gap` (conversion from `Obj` to `jl_value_t*`)
+
+* `NULL` -> `jl_nothing`
+* Immediate integer -> `Int64`
+* Immediate FFE -> `GapFFE` Julia type
+* GAP `true` -> Julia `true`
+* GAP `false` -> Julia `false`
+* Julia object wrapper -> Julia object
+* Julia function wrapper -> Julia function
+* Other GAP objects -> `ForeignGAP.MPtr`
+
+
+The following conversions are performed by `gap_julia` (conversion from `jl_value_t*` to `Obj`)
+
+* `Int64` -> Immediate integer (when it fits) or Julia object wrapper
+* `GapFFE` -> Immediate FFE
+* Julia `true` -> GAP `true`
+* Julia `false` -> GAP `false`
+* `ForeignGAP.MPtr` -> `Obj`
+* Other Julia objects -> Julia object wrapper
+
+@Subsection Notes on automatic conversion
+
+* Why is the default manual conversion not applied
+    * If default manual conversion is applied automatically, one needs to be able to deactivate it for performance. But his cannot be made in a sensible way. Explicit conversation when needed is less error prune and more explicit.
+
+@Section Manual (explicit) conversions
+
+Manual conversion in Julia is done via the `gap_to_julia` or `julia_to_gap` functions. In GAP, conversion is done vial the `GAPTOJulia` and `JuliaToGAP` functions.
+
+@Subsection `gap_to_julia`, `GAPToJulia`
+
+The `gap_to_julia`, and its GAP counterpart `GAPToJulia` functions are completely implemented in Julia.
+
+In GAP, the two signatures
+
+* `GAPToJulia([IsJuliaObj,IsObject])`
+* `GAPToJulia([IsObject])`
+
+call, after [implicit conversion]() of the `IsObject`, call the Julia counterparts (described below).
+
+In Julia, the function `gap_to_julia` has two possible signatures
+
+* `gap_to_julia(::Type{T},obj)`
+* `gap_to_julia(obj)`
+
+For the first one, an specific type `T` to which the GAP object `obj` should be converted is given, and if a conversion is implemented, a Julia object of Type `T` is returned, otherwise an `ArgumentError` is thrown. For the following types `T`, the conversion is implemented:
+
+**TODO**
+
+The second signature chooses a sensible conversion, based on the GAP "Type" of `obj`. This might include checking various filters of `obj` and will be, in almost all cases, slower than the typed version. The following defualt conversions have been choosen:
+
+`Int64` -> `Int64`
+`Bool`  -> `Bool`
+`GapFFE`->  `GapFFE`
+`MPtr` and `IsInt`  ->    `BigInt`
+`MPtr` and `IsRat`  ->    `Rational{BigInt}`
+`MPtr` and `IsChar` ->    `Cuchar`
+`MPtr` and `IsString` ->  `AbstractString`
+`MPtr` and `IsList` ->    `Array{Any,1}`
+`MPtr` and `IsRecord` ->  `Dict{Symbol,Any}`
+
+@Subsection `julia_to_gap`
+
+The `julia_to_gap` function is also completely implemented in `Julia`.   It accepts a single argument, and then, depending on its type, attempts various conversions, as described in the following list:
+
+
+|               Julia type              | GAP filter |    comment     |
+| ------------------------------------- | ---------- | -------------- |
+| `Int64`, `MPtr`, `GapFFE`, and `Bool` |            | no change, rely on the automatic conversion |
+| Other integers (including `BigInt`)   | `IsInt`    | integers       |
+| `Rational{T}`                         | `IsRat`    | rationals      |
+| `Float16`, `Float32`, `Float64`       | `IsFloat`  | machine floats |
+| `AbstractString`                      | `IsString` | strings        |
+| Symbols                               | `IsString` | strings        |
+| `Array{T,1}`                          | `IsList`   | plain lists    |
+| Tuples                                | `IsList`   | plain lists    |
+| `Dict{String,T}`, `Dict{Symbol,T}`    | `IsRecord` | records        |
+| `Array{Bool,1}`                       | `IsBlist`  | boolean lists  |
+| Ranges                                | `IsRange`  | ranges         |
+
+Note that `Array{Bool,1}` includes `BitArray{1}`.
+
+@Subsection `JuliaToGAP`
+
+On the GAP side, `JuliaToGAP` is a GAP constructor taking two arguments: a GAP filter, and an object to be converted. Various methods for this constructor then take care of input validation and the actual conversion, usually by delegating to `julia_to_gap`. The exceptions are for those types which are taken care of the automatic conversion. All in all, The following filters are accepted, the accepted inputs are then as described in the preceeding table:
+
+* `IsInt`
+* `IsRat`
+* `IsFFE`
+* `IsFloat`
+* `IsBool`
+* `IsChar`
+* `IsRecord`
+* `IsList`
+* `IsRange` TODO
+* `IsBlist` TODO
+* `IsString`
