@@ -39,11 +39,13 @@ before_script:
   - julia -e 'import Pkg ; Pkg.add(Pkg.PackageSpec(url=pwd()))'
   - julia -e 'import Pkg ; Pkg.add("Nemo")'
   - julia -e 'import Pkg ; Pkg.add("Primes")'
+  - julia -e 'import Nemo'
   - if test -n "$GAPROOT" ; then etc/travis_build.sh; fi
 
 script:
   - printenv | sort
   - unset JULIA_PROJECT
+  - julia -e 'import Nemo'
   - etc/travis_test.sh
     # delete coverage files for packages, so that they do not get cached
   - find $HOME/.julia/packages/ -name "*.jl.*.cov" -exec rm -f {} \;
