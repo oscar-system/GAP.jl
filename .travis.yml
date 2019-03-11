@@ -42,11 +42,15 @@ before_script:
   - if test -n "$GAPROOT" ; then etc/travis_build.sh; fi
 
 script:
+  - printenv | sort
+  - unset JULIA_PROJECT
   - etc/travis_test.sh
     # delete coverage files for packages, so that they do not get cached
   - find $HOME/.julia/packages/ -name "*.jl.*.cov" -exec rm -f {} \;
 
 after_script:
+  - printenv | sort
+  - unset JULIA_PROJECT
   - cd $TRAVIS_BUILD_DIR
   - $GAP -A --quitonbreak --norepl etc/gather_coverage.g
   - julia etc/gather_coverage.jl
