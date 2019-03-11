@@ -30,7 +30,7 @@ cd ..
 
 #
 pwd
-julia --code-coverage --inline=no -e 'using Pkg ; Pkg.test("GAP")' || AnyFailures=Yes
+julia -e 'using Pkg ; Pkg.test("GAP"; coverage=true)' || AnyFailures=Yes
 cd ..
 
 if [ ${AnyFailures} = Yes ]
