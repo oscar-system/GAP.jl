@@ -27,15 +27,15 @@ if install_gap
     run(`./autogen.sh`)
     run(`./configure --with-gc=julia --with-julia=$(julia_binary)`)
     run(`make -j$(Sys.CPU_THREADS)`)
-    if get(ENV, "GAP_INSTALL_PACKAGES", "no") == "yes"
+    gap_install_packages =  get(ENV, "GAP_INSTALL_PACKAGES", "yes")
+    if gap_install_packages == "yes"
         run(`make bootstrap-pkg-full`)
         cd("pkg")
         run(`../bin/BuildPackages.sh`)
-    end
-    if get(ENV, "GAP_INSTALL_PACKAGES", "no") == "minimal" || get(ENV, "GAP_INSTALL_PACKAGES", "no") == "debug"
+    elseif gap_install_packages == "minimal"
         run(`make bootstrap-pkg-minimal`)
-    end
-    if get(ENV, "GAP_INSTALL_PACKAGES", "no") == "debug"
+    elseif gap_install_packages == "debug"
+        run(`make bootstrap-pkg-minimal`)
         cd("pkg")
         run(`git clone https://github.com/gap-packages/io`)
         run(`git clone https://github.com/gap-packages/profiling`)
