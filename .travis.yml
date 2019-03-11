@@ -7,8 +7,6 @@ env:
   global:
     - MAKEFLAGS="-j4"
     - JULIA_TRACK_COVERAGE=yes
-    - CFLAGS=--coverage
-    - LDFLAGS=--coverage
   matrix:
     - GAP=$HOME/.julia/gap.sh
       GAP_INSTALL_PACKAGES=debug
@@ -34,9 +32,12 @@ before_script:
   - printenv | sort
   - git show --pretty=fuller -s
   - mkdir -p coverage
+  - export CFLAGS=--coverage; export LDFLAGS=--coverage
   - if [[ -v GAPROOT ]]; then etc/travis_install_gap.sh; fi
     ## Add the package so we can use it later
   - julia -e 'import Pkg ; Pkg.add(Pkg.PackageSpec(url=pwd()))'
+    ## Unset coverage to prevent Nemo C parts to be build with coverage
+  - unset CFLAGS; unset LDFLAGS
   - julia -e 'import Pkg ; Pkg.add("Nemo")'
 
 script:
