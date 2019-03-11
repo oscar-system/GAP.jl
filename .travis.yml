@@ -34,11 +34,11 @@ before_script:
   - printenv | sort
   - git show --pretty=fuller -s
   - mkdir -p coverage
-  - if [[ -v GAPROOT ]]; then etc/travis_install_gap.sh; fi
+  - [[ -v GAPROOT ]] && etc/travis_install_gap.sh
     ## Add the package so we can use it later
   - julia -e 'import Pkg ; Pkg.add(Pkg.PackageSpec(url=pwd()))'
   - julia -e 'import Pkg ; Pkg.add("Nemo")'
-  - if [[ -v GAPROOT ]]; then etc/travis_build.sh; fi
+  - [[ -v GAPROOT ]] && etc/travis_build.sh
 
 script:
   - etc/travis_test.sh
