@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.com/oscar-system/GAPJulia.svg?branch=master)](https://travis-ci.com/oscar-system/GAPJulia)
-[![Code Coverage](https://codecov.io/github/oscar-system/GAPJulia/coverage.svg?branch=master&token=)](https://codecov.io/gh/oscar-system/GAPJulia)
+[![Build Status](https://travis-ci.com/oscar-system/GAP.jl.svg?branch=master)](https://travis-ci.com/oscar-system/GAP.jl)
+[![Code Coverage](https://codecov.io/github/oscar-system/GAP.jl/coverage.svg?branch=master&token=)](https://codecov.io/gh/oscar-system/GAP.jl)
 
 # GAP.jl Julia module
 
@@ -10,7 +10,7 @@ This repository contains the GAP.jl Julia module as well as the GAP packages `Ju
 
 To install this module in Julia, use
 ```
-] add https://github.com/oscar-system/GAPJulia
+] add https://github.com/oscar-system/GAP.jl
 ```
 
 ## General Disclaimer

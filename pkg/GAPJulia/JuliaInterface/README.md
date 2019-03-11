@@ -29,13 +29,12 @@ This software is licensed under the LGPL, version 3, or any later version.
 - Clone or download this repository into the GAP package folder `<gap_package_folder>`, which
   is usually `<path_to_gaproot>/pkg`. You can download the package via
   ```
-  git clone https://github.com/oscar-system/GAPJulia <path_to_gaproot>/pkg/GAPJulia
+  git clone https://github.com/oscar-system/GAP.jl <path_to_gaproot>/pkg/GAP.jl
   ```
 - Configure and compile JuliaInterface via
   ```
   cd <path_to_gaproot>/pkg/GAPJulia/JuliaInterface
-  ./autogen.sh
-  ./configure --with-gaproot=<path_to_gaproot> --with-julia=<path_to_julia>/usr
+  ./configure <path_to_gaproot>
   make
   ```
 
@@ -45,7 +44,7 @@ It is possible to link JuliaInterface against the official Julia binary
 which one can download from <https://julialang.org/downloads/>.
 To do so, run configure as follows:
 
-  ./configure --with-julia=/PATH/TO/Julia*.app/Contents/Resources/julia
+    ./configure --with-julia=/PATH/TO/Julia*.app/Contents/Resources/julia
 
 ## Usage
 
