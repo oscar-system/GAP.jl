@@ -42,11 +42,11 @@ before_script:
 
 script:
   - etc/travis_test.sh
-    # delete coverage files for packages, so that they do not get cached
-  - find $HOME/.julia/packages/ -name "*.jl.*.cov" -exec rm -f {} \;
 
 after_script:
   - cd $TRAVIS_BUILD_DIR
   - $GAP -A --quitonbreak --norepl etc/gather_coverage.g
   - julia etc/gather_coverage.jl
   - bash <(curl -s https://codecov.io/bash)
+    # delete coverage files for packages, so that they do not get cached
+  - find $HOME/.julia/packages/ -name "*.jl.*.cov" -exec rm -f {} \;
