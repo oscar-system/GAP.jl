@@ -9,3 +9,10 @@ cd gap
 ./configure --with-gc=julia --with-julia
 make -j4
 make bootstrap-pkg-minimal
+
+cd pkg
+
+git clone https://github.com/gap-packages/io
+git clone https://github.com/gap-packages/profiling
+
+$GAPROOT/bin/BuildPackages.sh --with-gaproot=$GAPROOT io profiling
