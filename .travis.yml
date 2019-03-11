@@ -38,6 +38,7 @@ before_script:
     ## Add the package so we can use it later
   - julia -e 'import Pkg ; Pkg.add(Pkg.PackageSpec(url=pwd()))'
   - julia -e 'import Pkg ; Pkg.add("Nemo")'
+  - julia -e 'import Pkg ; Pkg.add("Primes")'
   - if test -n "$GAPROOT" ; then etc/travis_build.sh; fi
 
 script:
