@@ -97,14 +97,6 @@ function ElmList(x::MPtr,position)
     return GET_FROM_GAP(o)
 end
 
-function NewJuliaFunc(x::Function)
-    o = ccall( :NewJuliaFunc,
-               MPtr,
-               (Any,),
-               x )
-    return o
-end
-
 """
     (func::MPtr)(args...)
 
