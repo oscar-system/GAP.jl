@@ -122,16 +122,17 @@ gap> CompanionMatrix( npol, nmat );
 [0 0 0 1 0]
 [0 0 0 0 1]
 [-1 0 -4 -2 -1]>>
-gap> nconcat:= Unfold( nmat, nv );
-<<Julia: [1 1//2*a 0 1]>>
-gap> Fold( nconcat, 1, nmat );
-<<Julia: [1]
-[1//2*a]
-[0]
-[1]>>
-gap> nmat = Fold( nconcat, 2, nmat );
-true
 
+# gap> nconcat:= Unfold( nmat, nv );
+# <<Julia: [1 1//2*a 0 1]>>
+# gap> Fold( nconcat, 1, nmat );
+# <<Julia: [1]
+# [1//2*a]
+# [0]
+# [1]>>
+# gap> nmat = Fold( nconcat, 2, nmat );
+# true
+#
 ## multivariate Flint polynomial rings
 gap> R:= PolynomialRing( Rationals, [ "x", "y" ] );;
 gap> indets:= IndeterminatesOfPolynomialRing( R );;
