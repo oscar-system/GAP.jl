@@ -1004,25 +1004,25 @@ InstallMethod( KroneckerProduct,
                                                               nemomat2 ) );
     end );
 
-InstallMethod( Unfold,
-    IsCollsElms,
-    [ "IsNemoMatrixObj", "IsNemoVectorObj" ],
-    function( nemomat, nemovec )
-    local C;
-
-    C:= ContextGAPNemo( FamilyObj( nemomat ) );
-    return C!.VectorWrapped( C,
-               Julia.GAPNemoExperimental.unfoldedNemoMatrix( nemomat ) );
-    end );
-
-InstallMethod( Fold,
-#T IsElmsXColls,
-    [ "IsNemoVectorObj", "IsPosInt", "IsNemoMatrixObj" ],
-    function( nemovec, ncols, nemomat )
-    local C;
-
-    C:= ContextGAPNemo( FamilyObj( nemovec ) );
-    return C!.MatrixWrapped( C,
-               Julia.GAPNemoExperimental.foldedNemoVector( nemovec, ncols ) );
-    end );
+# InstallMethod( Unfold,
+#     IsCollsElms,
+#     [ "IsNemoMatrixObj", "IsNemoVectorObj" ],
+#     function( nemomat, nemovec )
+#     local C;
+# 
+#     C:= ContextGAPNemo( FamilyObj( nemomat ) );
+#     return C!.VectorWrapped( C,
+#                Julia.GAPNemoExperimental.unfoldedNemoMatrix( nemomat ) );
+#     end );
+# 
+# InstallMethod( Fold,
+# #T IsElmsXColls,
+#     [ "IsNemoVectorObj", "IsPosInt", "IsNemoMatrixObj" ],
+#     function( nemovec, ncols, nemomat )
+#     local C;
+# 
+#     C:= ContextGAPNemo( FamilyObj( nemovec ) );
+#     return C!.MatrixWrapped( C,
+#                Julia.GAPNemoExperimental.foldedNemoVector( nemovec, ncols ) );
+#     end );
 
