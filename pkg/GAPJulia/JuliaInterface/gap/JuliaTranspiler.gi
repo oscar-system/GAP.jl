@@ -12,7 +12,7 @@ DeclareGlobalVariable( "_JULIAINTERFACE_TRANSPILER_REC" );
 
 BindGlobal( "DISPATCH_EXPRESSION",
   function( record )
-    if IsList( record ) then
+    if IsList( record ) and not IsString( record ) then
         return _JULIAINTERFACE_TRANSPILER_REC.list( record );
     fi;
     if not IsRecord( record ) then
@@ -122,6 +122,24 @@ BindGlobal( "TRANSPILE_IF", function( node )
 
 end );
 
+BindGlobal( "TRANSPILE_REC", function( node )
+    local pairs, function_for_key;
+
+    pairs := node.keyvalue;
+    function_for_key := function( key )
+        if IsString( key ) then
+            return GAPToJulia( JuliaEvalString( "Symbol" ), key );
+        else
+            return key;
+        fi;
+    end;
+
+    pairs := List( pairs, i -> CREATE_EXPRESSION2( "call", "=>", function_for_key( i.key ), i.value ) );
+
+    return CallFuncList( CREATE_EXPRESSION2, Concatenation( [ "call", "Dict" ], pairs ) );
+
+end );
+
 
 InstallValue( _JULIAINTERFACE_TRANSPILER_REC, rec( 
 
@@ -215,6 +233,8 @@ InstallValue( _JULIAINTERFACE_TRANSPILER_REC, rec(
     # T_CHAR_EXPR
     # T_PERM_EXPR
     # T_LIST_EXPR
+
+    T_REC_EXPR := TRANSPILE_REC,
 
     T_RANGE_EXPR := TRANSPILE_RANGE,
 

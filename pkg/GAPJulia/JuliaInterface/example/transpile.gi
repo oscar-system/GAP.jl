@@ -19,7 +19,7 @@ end;
 bubble_sort_jl := TRANSPILE_FUNC( bubble_sort );
 bubble_sort_jl := Julia.Base.eval( bubble_sort_jl );
 
-length := 5000;
+length := 10000;
 
 xx := List( [ 1 .. length ], i -> RandomList( [ 1 .. length ] ) );;
 xx_jl := GAPToJulia( JuliaEvalString( "Vector{Int64}"), xx );;
