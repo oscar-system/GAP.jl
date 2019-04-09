@@ -120,6 +120,11 @@
     @test GAP.gap_to_julia(Array{Union{Nothing,Int64},1},xx) == Union{Nothing,Int64}[1,nothing,1]
     @test GAP.gap_to_julia(Array{Union{Int64,Nothing},1},xx) == Union{Nothing,Int64}[1,nothing,1]
 
+    ## GAP lists with Julia objects
+    xx = GAP.julia_to_gap([(1,)])
+    yy = GAP.gap_to_julia(Array{Tuple{Int64},1},xx)
+    @test [ (1,) ] == yy
+    @test typeof(yy) == Array{Tuple{Int64},1}
 
 end
 

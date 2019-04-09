@@ -9,11 +9,30 @@ The parameter `recursion_dict` is meant to preseve egality
 of converted objects and should never be given by the user.
 """
 
+## Default for conversion:
+## Base case for conversion (least specialized method): Allow converting any
+## Julia object x to type T, provided that the type of x is a subtype of T;
+## otherwise, explicitly reject the conversion.
+## As an example why this is useful, suppose you have a GAP list x (i.e., an
+## object of type MPtr) containing a bunch of Julia tuples. Then this method
+## enables conversion of that list to a Julia array of type Array{Tuple,1},
+## like this:
+##    gap_to_julia(Array{Tuple{Int64},1},xx)
+## This works because first the gap_to_julia method with signature
+## (::Type{Array{T,1}}, :: MPtr) is invoked, with T = Tuple{Int64}; this then
+## invokes gap_to_julia recursively with signature (::Tuple{Int64},::Any),
+## which ends up selecting the method below.
+function gap_to_julia(t::T, x::Any) where T <: Type
+    if ! (typeof(x) <: t)
+        throw(MethodError("Wrong type: expected " * string(t) * ","))
+    end
+    return x
+end
+
 ## Default
-gap_to_julia(::Type{GAPInputType},x::GAPInputType) = x
 gap_to_julia(::Type{Any},         x::GAPInputType) = gap_to_julia(x)
 gap_to_julia(::Type{Any},         x::Any         ) = x
-gap_to_julia(::Any,               x::Nothing     ) = nothing
+gap_to_julia(::T,                 x::Nothing     ) where T <: Type = nothing
 gap_to_julia(::Type{Any},         x::Nothing     ) = nothing
 
 ## Integers
