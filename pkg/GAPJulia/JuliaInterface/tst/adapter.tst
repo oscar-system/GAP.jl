@@ -104,7 +104,7 @@ gap> m[3];
 gap> m[1,2];
 2
 gap> m[1,2] := 42;
-Error, Matrix Assignment: <mat> must be a mutable matrix
+Error, Matrix Assignment: <mat> must be a mutable matrix (not a JuliaObject)
 
 #
 # access to fields and properties
