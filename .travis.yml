@@ -17,6 +17,8 @@ env:
 cache:
     directories:
      - /home/travis/.julia/
+before_cache:
+  - rm -rf /home/travis/.julia/packages/GAP
 
 addons:
   apt_packages:
