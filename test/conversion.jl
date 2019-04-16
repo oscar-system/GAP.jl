@@ -75,6 +75,15 @@
     n = GAP.julia_to_gap(big(2)^100)
     @test_throws ArgumentError GAP.gap_to_julia(Array{Int64,1},n)
     @test_throws ArgumentError GAP.gap_to_julia(Array{BigInt,1},n)
+    n = GAP.EvalString("[[1,2],[3,4]]")
+    @test GAP.gap_to_julia(Array{Int64,2},n) == [1 2; 3 4]
+    xt = [ (1,) (2,) ; (3,) (4,) ]
+    n = GAP.julia_to_gap( xt, Val(false) )
+    @test GAP.gap_to_julia(Array{Tuple{Int64},2}, n) == xt
+    n = GAP.julia_to_gap(big(2)^100)
+    @test_throws ArgumentError GAP.gap_to_julia(Array{Int64,2}, n)
+    n = GAP.EvalString("[[1,2],[,4]]")
+    @test GAP.gap_to_julia(Array{Union{Int64,Nothing},2},n) == [1 2; nothing 4]
 
     ## Tuples
     @test GAP.gap_to_julia(Tuple{Int64,Any,Int32},x) == Tuple{Int64,Any,Int32}([1,2,3])
@@ -180,6 +189,8 @@ end
     @test GAP.julia_to_gap([1,"foo",BigInt(2)],Val(true)) == x
     x = GAP.EvalString("[1,JuliaEvalString(\"\\\"foo\\\"\"),2]")
     @test GAP.julia_to_gap([1,"foo",BigInt(2)]) == x
+    x = GAP.EvalString("[[1,2],[3,4]]")
+    @test GAP.julia_to_gap([ 1 2 ; 3 4 ]) == x
     
     ## Tuples
     x = GAP.EvalString("[1,\"foo\",2]")

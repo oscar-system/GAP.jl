@@ -94,6 +94,22 @@ function julia_to_gap(obj::Array{T,1}, recursive::Val{Recursive}=Val(false), rec
     return ret_val
 end
 
+## Convert two dimensional arrays
+function julia_to_gap(obj::Array{T,2}, recursive::Val{Recursive}=Val(false), recursion_dict = IdDict()) where Recursive where T
+    (rows,cols) = size(obj)
+    if haskey(recursion_dict, obj)
+        return recursion_dict[obj]
+    end
+    ret_val = NewPlist(rows)
+    if Recursive
+        recursion_dict[obj] = ret_val
+    end
+    for i in 1:rows
+        ret_val[i] = julia_to_gap(obj[i,:],recursive,recursion_dict)
+    end
+    return ret_val
+end
+
 ## Tuples
 function julia_to_gap(obj::Tuple, recursive::Val{Recursive}=Val(false), recursion_dict = IdDict()) where Recursive
     array = collect(Any, obj)

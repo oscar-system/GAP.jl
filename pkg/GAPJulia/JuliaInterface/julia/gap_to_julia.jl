@@ -202,6 +202,56 @@ function gap_to_julia( ::Type{Array{Union{Nothing,T},1}}, obj :: MPtr, recursion
     return new_array
 end
 
+function gap_to_julia( ::Type{Array{T,2}}, obj :: MPtr, recursion_dict = IdDict() ) where T
+    if ! Globals.IsList( obj )
+        throw(ArgumentError("<obj> is not a list"))
+    end
+    if haskey(recursion_dict, obj)
+        return recursion_dict[obj]
+    end
+    len_list_outer = length(obj)
+    len_list_inner = len_list_outer == 0 ? 0 : length(obj[1])
+    new_array = Array{T,2}( undef, len_list_outer, len_list_inner )
+    recursion_dict[obj] = new_array
+    for i in 1:len_list_outer
+        for j in 1:len_list_inner
+            current_obj = ElmList(ElmList(obj,i), j)
+            if haskey(recursion_dict,current_obj)
+                new_array[ i, j ] = recursion_dict[current_obj]
+            else
+                new_array[ i, j ] = gap_to_julia(T,current_obj,recursion_dict)
+                recursion_dict[current_obj] = new_array[ i, j ]
+            end
+        end
+    end
+    return new_array
+end
+
+function gap_to_julia( ::Type{Array{Union{Nothing,T},2}}, obj :: MPtr, recursion_dict = IdDict() ) where T
+    if ! Globals.IsList( obj )
+        throw(ArgumentError("<obj> is not a list"))
+    end
+    if haskey(recursion_dict, obj)
+        return recursion_dict[obj]
+    end
+    len_list_outer = length(obj)
+    len_list_inner = len_list_outer == 0 ? 0 : length(obj[1])
+    new_array = Array{Union{Nothing,T},2}( undef, len_list_outer, len_list_inner )
+    recursion_dict[obj] = new_array
+    for i in 1:len_list_outer
+        for j in 1:len_list_inner
+            current_obj = ElmList(ElmList(obj,i), j)
+            if haskey(recursion_dict,current_obj)
+                new_array[ i, j ] = recursion_dict[current_obj]
+            else
+                new_array[ i, j ] = gap_to_julia(Union{Nothing,T},current_obj,recursion_dict)
+                recursion_dict[current_obj] = new_array[ i, j ]
+            end
+        end
+    end
+    return new_array
+end
+
 ## Tuples
 function gap_to_julia( ::Type{T}, obj::MPtr, recursion_dict = IdDict() ) where T <: Tuple
     if ! Globals.IsList(obj)
