@@ -8,6 +8,7 @@
 #include "convert.h"
 
 #include <src/compiled.h>    // GAP headers
+#include <src/julia_gc.h>
 
 #include <julia_gcext.h>
 
@@ -329,6 +330,15 @@ static Obj FuncJuliaGetFieldOfObject(Obj self, Obj super_obj, Obj field_name)
     return gap_julia(field_value);
 }
 
+// Mark the Julia pointer inside the GAP JuliaObj
+static void MarkJuliaObject(Bag bag)
+{
+#ifdef DEBUG_MASTERPOINTERS
+    MarkJuliaObjSafe((void *)GET_JULIA_OBJ(bag));
+#else
+    MarkJuliaObj((void *)GET_JULIA_OBJ(bag));
+#endif
+}
 
 // Table of functions to export
 static StructGVarFunc GVarFuncs[] = {
@@ -365,7 +375,7 @@ static Int InitKernel(StructInitInfo * module)
 
     T_JULIA_OBJ = RegisterPackageTNUM("JuliaObject", JuliaObjectTypeFunc);
 
-    InitMarkFuncBags(T_JULIA_OBJ, &MarkOneSubBags);
+    InitMarkFuncBags(T_JULIA_OBJ, &MarkJuliaObject);
 
     CopyObjFuncs[T_JULIA_OBJ] = &JuliaObjCopyFunc;
     CleanObjFuncs[T_JULIA_OBJ] = &JuliaObjCleanFunc;
