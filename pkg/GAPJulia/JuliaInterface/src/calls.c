@@ -9,7 +9,7 @@ static Obj DoCallJuliaFunc0Arg(Obj func);
 
 typedef struct {
     FuncBag f;
-    void *  juliaFunc;
+    Obj     juliaFunc;
 } JuliaFuncBag;
 
 
@@ -87,7 +87,8 @@ inline Int IS_JULIA_FUNC(Obj obj)
 inline jl_function_t * GET_JULIA_FUNC(Obj func)
 {
     GAP_ASSERT(IS_JULIA_FUNC(func));
-    return ((const JuliaFuncBag *)CONST_ADDR_OBJ(func))->juliaFunc;
+    return (jl_function_t *)GET_JULIA_OBJ(
+        ((const JuliaFuncBag *)CONST_ADDR_OBJ(func))->juliaFunc);
 }
 
 static ALWAYS_INLINE Obj DoCallJuliaFunc(Obj func, const int narg, Obj * a)
@@ -202,7 +203,7 @@ Obj NewJuliaFunc(jl_function_t * function)
     SET_HDLR_FUNC(func, 7, DoCallJuliaFuncXArg);
 
     // store the the Julia function pointer
-    ((JuliaFuncBag *)ADDR_OBJ(func))->juliaFunc = function;
+    ((JuliaFuncBag *)ADDR_OBJ(func))->juliaFunc = NewJuliaObj(function);
 
     // add a function body so that we can store some meta data about the
     // origin of this function, for slightly more helpful printing of the
@@ -223,8 +224,8 @@ Obj NewJuliaFunc(jl_function_t * function)
 
 static inline ObjFunc get_c_function_pointer(Obj func)
 {
-    void * ptr = ((const JuliaFuncBag *)CONST_ADDR_OBJ(func))->juliaFunc;
-    return jl_unbox_voidpointer((jl_value_t *)ptr);
+    Obj ptr = ((const JuliaFuncBag *)CONST_ADDR_OBJ(func))->juliaFunc;
+    return jl_unbox_voidpointer(GET_JULIA_OBJ(ptr));
 }
 
 static Obj DoCallJuliaCFunc0Arg(Obj func)
@@ -338,7 +339,7 @@ Obj NewJuliaCFunc(void * function, Obj arg_names)
     // store function pointer in the bag; since it gets marked by the GC, we
     // store it as a valid julia obj (i.e., void ptr).
     ((JuliaFuncBag *)ADDR_OBJ(func))->juliaFunc =
-        jl_box_voidpointer(function);
+        NewJuliaObj(jl_box_voidpointer(function));
 
     return func;
 }
