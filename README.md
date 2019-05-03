@@ -3,8 +3,10 @@
 
 # GAP.jl Julia module
 
-This repository contains the GAP.jl Julia module as well as the GAP packages `JuliaInterface` and `JuliaExperimental` developed for the GAP-Julia integration as part of the
-[OSCAR project](http://oscar.computeralgebra.de).
+This repository contains the [GAP.jl](src/GAP.jl) Julia module, as well as the GAP packages
+[`JuliaInterface`](pkg/GAPJulia/JuliaInterface) and [`JuliaExperimental`](pkg/GAPJulia/JuliaExperimental)
+developed for the [GAP](https://www.gap-system.org/)-[Julia](https://julialang.org/) integration
+as part of the [OSCAR project](http://oscar.computeralgebra.de).
 
 ## Install
 
