@@ -24,6 +24,19 @@ function ValueGlobalVariable( name :: String )
     return GET_FROM_GAP(gvar)
 end
 
+function CanAssignGlobalVariable(name::String)
+    ccall(:GAP_CanAssignGlobalVariable, Bool,
+             (Ptr{UInt8},), name)
+end
+
+function AssignGlobalVariable(name::String, value::MPtr)
+    if ! CanAssignGlobalVariable(name)
+        error("cannot assing to $name in GAP")
+    end
+    ccall(:GAP_AssignGlobalVariable, Cvoid,
+             (Ptr{UInt8}, MPtr), name, value)
+end
+
 function MakeString( val::String )::MPtr
     string = ccall( :GAP_MakeString, MPtr,
                     ( Ptr{UInt8}, ),
