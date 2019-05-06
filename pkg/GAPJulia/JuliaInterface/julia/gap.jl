@@ -157,3 +157,16 @@ end
 
 export LoadPackageAndExposeGlobals
 
+function Display(x::MPtr)
+    ## FIXME: Get rid of this horrible hack
+    ##        once GAP offers a consistent
+    ##        DisplayString function
+    local_var = "julia_gap_display_tmp"
+    AssignGlobalVariable(local_var,x)
+    xx = EvalStringEx("Display($local_var);")[1]
+    if xx[1] == true
+        println(GAP.gap_to_julia(AbstractString, xx[5]))
+    else
+        error("variable was not correctly evaluated")
+    end
+end
