@@ -154,3 +154,38 @@ end
 
 export LoadPackageAndExposeGlobals
 
+macro gap_scope(tuple...)
+    if length(tuple) != 2
+        throw(ArgumentError("must have two arguments"))
+    end
+
+    rand_module = Symbol( "mockmodule"*string( rand( UInt64 ) ) )
+    
+    module_name = tuple[1]
+    eval_expr = tuple[2]
+    
+    Base.MainInclude.eval(:(module $(rand_module) using Main.$(module_name) end))
+    mockmodule = Base.MainInclude.eval(:($(rand_module)))
+
+    real_module = Base.MainInclude.eval(:($module_name))
+
+    for i in names(real_module,all=true)
+        if ( !isdefined(mockmodule,i)) && isdefined(real_module, i)
+            Base.invokelatest( mockmodule.eval, :($(i) = Main.$(module_name).$(i) ) ) 
+        end
+    end
+
+    nameslist = names(mockmodule,all=true)
+
+    Base.invokelatest( mockmodule.eval, tuple[2] )
+
+    for i in names(mockmodule,all=true)
+        if (! (i in nameslist)) && isdefined(mockmodule, i)
+            Base.MainInclude.eval(:($(i) = $(rand_module).$(i)))
+            Base.invokelatest( mockmodule.eval, :( $(i) = nothing ) )
+        end
+    end
+
+end
+
+export @gap_scope
