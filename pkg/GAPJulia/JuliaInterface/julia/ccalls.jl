@@ -125,10 +125,22 @@ end
 > There is no argument number checking here, all checks on the arguments
 > are done by GAP itself.
 """
-(func::MPtr)(args...) = call_gap_func(func,args...)
+(func::MPtr)(args...; kwargs...) = call_gap_func(func,args...; kwargs...)
 
-function call_gap_func(func::MPtr,args...)
-    return ccall(:call_gap_func, Any, (MPtr, Any), func, args)
+function call_gap_func(func::MPtr,args...; kwargs...)
+    global Globals
+    options = false
+    if length(kwargs) > 0
+        kwargs_dict = Dict(kwargs)
+        kwargs_rec = julia_to_gap(kwargs_dict)
+        Globals.PushOptions(kwargs_rec)
+        options = true
+    end
+    result = ccall(:call_gap_func, Any, (MPtr, Any), func, args)
+    if options
+        Globals.PopOptions()
+    end
+    return result
 end
 
 struct GlobalsType
