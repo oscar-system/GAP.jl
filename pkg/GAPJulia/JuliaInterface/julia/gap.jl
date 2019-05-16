@@ -170,3 +170,17 @@ function Display(x::MPtr)
         error("variable was not correctly evaluated")
     end
 end
+
+"""
+    macro g_str
+
+Allows to create a GAP string by typing g"content".
+
+    julia> g"foo"
+    GAP: "foo"
+"""
+macro g_str(str)
+    return julia_to_gap(str)
+end
+
+export @g_str
