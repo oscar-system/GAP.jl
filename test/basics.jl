@@ -50,4 +50,13 @@ end
 
     @test GAP.Globals.IdFunc(2^62) isa Int64
 
+    x = GAP.Globals.Indeterminate(GAP.Globals.Rationals)
+    f = x^4+1
+    i1 = GAP.Globals.IdealDecompositionsOfPolynomial(f)
+    i2 = GAP.Globals.IdealDecompositionsOfPolynomial(f, onlyone = true)
+    @test i1 != i2
+    @test GAP.Globals.Length(GAP.Globals.OptionsStack) == 0
+    @test_throws ErrorException GAP.Globals.Error(onlyone = true)
+    @test GAP.Globals.Length(GAP.Globals.OptionsStack) == 0
+
 end
