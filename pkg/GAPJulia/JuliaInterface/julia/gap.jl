@@ -44,6 +44,8 @@ Base.setproperty!(x::MPtr, f::Union{AbstractString,Int64}, v) = Globals.ASS_REC(
 Base.zero(x::GAPInputType_internal) = Globals.ZERO(x)
 Base.one(x::GAPInputType_internal) = Globals.ONE(x)
 Base.:-(x::GAPInputType_internal) = Globals.AINV(x)
+Base.:*(x::GAP.MPtr,y::String) = x*GAP.julia_to_gap(y)
+Base.getindex(x::GAP.MPtr,y::String) = Globals.ELM_LIST(x,GAP.julia_to_gap(y))
 
 #
 typecombinations = ((:GAPInputType_internal,:GAPInputType_internal),
