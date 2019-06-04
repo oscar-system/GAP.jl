@@ -12,7 +12,7 @@ of input data, by converting egal data to identical objects in GAP.
 
 
 ## Default
-julia_to_gap(x::MPtr) = x
+julia_to_gap(x::GapObj) = x
 julia_to_gap(x::FFE) = x
 julia_to_gap(x::Bool) = x
 

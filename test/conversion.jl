@@ -213,7 +213,7 @@ end
     yy = [l,l]
     # ... recursive conversion
     conv = GAP.julia_to_gap(yy, Val(true))
-    @test isa(conv[1], GAP.MPtr)
+    @test conv[1] isa GAP.GapObj
     @test conv[1] === conv[2]
     # ... non-recursive conversion
     conv = GAP.julia_to_gap(yy, Val(false))

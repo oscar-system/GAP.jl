@@ -17,6 +17,12 @@ import Base: length, convert, finalize
 
 import Libdl
 
+import GAPTypes: GapObj
+
+export GapObj
+
+const Obj = Union{GapObj,FFE,Int64,Bool,Nothing}
+
 sysinfo = missing
 
 function read_sysinfo_gap(dir::String)
@@ -108,6 +114,20 @@ function __init__()
     if ! isdefined(Main, :__GAPINTERNAL_LOADED_FROM_GAP) || Main.__GAPINTERNAL_LOADED_FROM_GAP != true
         run_it(GAPROOT, error_handler_func)
     end
+
+    ## FIXME: Hack because abstract types cannot be endowed with methods in Julia 1.1.
+    ## With Julia 1.2, this will be possible and this hack could then be replaced with the
+    ## corresponding function call in in ccalls.jl (func::GapObj)(...)
+    MPtr = Base.MainInclude.eval(:(ForeignGAP.MPtr))
+    Base.MainInclude.eval(:(
+        (func::$MPtr)(args...; kwargs...) = GAP.call_gap_func(func, args...; kwargs...)
+    ))
 end
+
+include( "ccalls.jl" )
+include( "gap2.jl" )
+include( "macros.jl" )
+include( "gap_to_julia.jl" )
+include( "julia_to_gap.jl" )
 
 end
