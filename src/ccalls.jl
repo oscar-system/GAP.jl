@@ -42,21 +42,21 @@ function AssignGlobalVariable(name::String, value::Any)
              (Ptr{UInt8}, Ptr{Cvoid}), name, tmp)
 end
 
-function MakeString( val::String )::MPtr
+function MakeString( val::String )::GapObj
     string = ccall( :GAP_MakeString, Any,
                     ( Ptr{UInt8}, ),
                     val )
     return string
 end
 
-function CSTR_STRING( val::MPtr )::String
+function CSTR_STRING( val::GapObj )::String
     char_ptr = ccall( :GAP_CSTR_STRING, Ptr{UInt8},
                       ( Any, ),
                       val )
     return deepcopy(unsafe_string(char_ptr))
 end
 
-function UNSAFE_CSTR_STRING( val::MPtr )::Array{UInt8,1}
+function UNSAFE_CSTR_STRING( val::GapObj )::Array{UInt8,1}
     string_len = Int64( ccall( :GAP_LenString, Cuint,
                                ( Any, ),
                                val ) )
@@ -91,7 +91,7 @@ function NEW_MACFLOAT(x::Float64)
     return o
 end
 
-function ValueMacFloat(x::MPtr)
+function ValueMacFloat(x::GapObj)
     o = ccall( :GAP_ValueMacFloat,
                Cdouble,
                (Any,),
@@ -107,7 +107,7 @@ function CharWithValue(x::Cuchar)
     return o
 end
 
-function ElmList(x::MPtr,position)
+function ElmList(x::GapObj,position)
     o = ccall( :GAP_ElmList,
                Ptr{Cvoid},
                (Any,Culong),
@@ -124,15 +124,18 @@ function NewJuliaFunc(x::Function)
 end
 
 """
-    (func::MPtr)(args...)
+    (func::GapObj)(args...)
 
-> This function makes it possible to call MPtr objects as functions.
+> This function makes it possible to call GapObjs as functions.
 > There is no argument number checking here, all checks on the arguments
 > are done by GAP itself.
 """
-(func::MPtr)(args...; kwargs...) = call_gap_func(func, args...; kwargs...)
+# # The (func::GapObj) function (commented out below) needs to be instantiated for `MPtr` 
+# # and is therefore moved to the init function
+# (func::GapObj)(args...; kwargs...) where T <: GapObj = call_gap_func(func, args...; kwargs...)
 
-function call_gap_func(func::MPtr, args...; kwargs...)
+
+function call_gap_func(func::GapObj, args...; kwargs...)
     global Globals
     options = false
     if length(kwargs) > 0

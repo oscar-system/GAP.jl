@@ -15,8 +15,6 @@ dirs_julia := DirectoriesPackageLibrary( "JuliaInterface", "julia" );
 
 JuliaIncludeFile( Filename( dirs_julia, "gaptypes.jl" ) );
 
-JuliaEvalString( Concatenation( "__JULIAGAPMODULE.include( \"", Filename( dirs_julia, "libgap.jl" ), "\")" ) );
-
 _JULIAINTERFACE_INTERNAL_INIT();
 
 ## The GAP module is also bound to the variable __JULIAGAPMODULE,

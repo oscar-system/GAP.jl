@@ -1,53 +1,53 @@
 import Base: convert, getindex, setindex!, length, show
 
-function Base.show( io::IO, obj::Union{MPtr,FFE} )
+function Base.show( io::IO, obj::Union{GapObj,FFE} )
     str = Globals.String( obj )
     stri = CSTR_STRING( str )
     print(io,"GAP: $stri")
 end
 
-function Base.string( obj::Union{MPtr,FFE} )
+function Base.string( obj::Union{GapObj,FFE} )
     str = Globals.String( obj )
     return CSTR_STRING( str )
 end
 
 ## implement indexing interface
-Base.getindex(x::MPtr, i::Int64) = Globals.ELM_LIST(x, i)
-Base.setindex!(x::MPtr, v::Any, i::Int64 ) = Globals.ASS_LIST( x, i, v )
-Base.length(x::MPtr) = Globals.Length(x)
-Base.firstindex(x::MPtr) = 1
-Base.lastindex(x::MPtr) = Globals.Length(x)
+Base.getindex(x::GapObj, i::Int64) = Globals.ELM_LIST(x, i)
+Base.setindex!(x::GapObj, v::Any, i::Int64 ) = Globals.ASS_LIST( x, i, v )
+Base.length(x::GapObj) = Globals.Length(x)
+Base.firstindex(x::GapObj) = 1
+Base.lastindex(x::GapObj) = Globals.Length(x)
 
 # matrix
-Base.getindex(x::MPtr, i::Int64, j::Int64) = Globals.ELM_LIST(x, i, j)
-Base.setindex!(x::MPtr, v::Any, i::Int64, j::Int64) = Globals.ASS_LIST(x, i, j, v)
+Base.getindex(x::GapObj, i::Int64, j::Int64) = Globals.ELM_LIST(x, i, j)
+Base.setindex!(x::GapObj, v::Any, i::Int64, j::Int64) = Globals.ASS_LIST(x, i, j, v)
 
 # records
 RNamObj(f::Union{Symbol,Int64,AbstractString}) = Globals.RNamObj(MakeString(string(f)))
 # note: we don't use Union{Symbol,Int64,AbstractString} below to avoid
 # ambiguity between these methods and method `getproperty(x, f::Symbol)`
 # from Julia's Base module
-Base.getproperty(x::MPtr, f::Symbol) = Globals.ELM_REC(x, RNamObj(f))
-Base.getproperty(x::MPtr, f::Union{AbstractString,Int64}) = Globals.ELM_REC(x, RNamObj(f))
-Base.setproperty!(x::MPtr, f::Symbol, v) = Globals.ASS_REC(x, RNamObj(f), v)
-Base.setproperty!(x::MPtr, f::Union{AbstractString,Int64}, v) = Globals.ASS_REC(x, RNamObj(f), v)
+Base.getproperty(x::GapObj, f::Symbol) = Globals.ELM_REC(x, RNamObj(f))
+Base.getproperty(x::GapObj, f::Union{AbstractString,Int64}) = Globals.ELM_REC(x, RNamObj(f))
+Base.setproperty!(x::GapObj, f::Symbol, v) = Globals.ASS_REC(x, RNamObj(f), v)
+Base.setproperty!(x::GapObj, f::Union{AbstractString,Int64}, v) = Globals.ASS_REC(x, RNamObj(f), v)
 
 #
-Base.zero(x::Union{MPtr,FFE}) = Globals.ZERO(x)
-Base.one(x::Union{MPtr,FFE}) = Globals.ONE(x)
-Base.:-(x::Union{MPtr,FFE}) = Globals.AINV(x)
+Base.zero(x::Union{GapObj,FFE}) = Globals.ZERO(x)
+Base.one(x::Union{GapObj,FFE}) = Globals.ONE(x)
+Base.:-(x::Union{GapObj,FFE}) = Globals.AINV(x)
 
 #
-typecombinations = ((:MPtr,:MPtr),
+typecombinations = ((:GapObj,:GapObj),
                     (:FFE,:FFE),
-                    (:MPtr,:FFE),
-                    (:FFE,:MPtr),
-                    (:MPtr,:Int64),
-                    (:Int64,:MPtr),
+                    (:GapObj,:FFE),
+                    (:FFE,:GapObj),
+                    (:GapObj,:Int64),
+                    (:Int64,:GapObj),
                     (:FFE,:Int64),
                     (:Int64,:FFE),
-                    (:MPtr,:Bool),
-                    (:Bool,:MPtr),
+                    (:GapObj,:Bool),
+                    (:Bool,:GapObj),
                     (:FFE,:Bool),
                     (:Bool,:FFE))
 function_combinations = ((:+,:SUM),
@@ -131,7 +131,7 @@ end
 
 export LoadPackageAndExposeGlobals
 
-function Display(x::MPtr)
+function Display(x::GapObj)
     ## FIXME: Get rid of this horrible hack
     ##        once GAP offers a consistent
     ##        DisplayString function
