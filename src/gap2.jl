@@ -1,7 +1,7 @@
 import Base: convert, getindex, setindex!, length, show
 
 function Base.show( io::IO, obj::Union{GapObj,FFE} )
-    str = Globals.String( obj )
+    str = Globals.StringView( obj )
     stri = CSTR_STRING( str )
     print(io,"GAP: $stri")
 end
