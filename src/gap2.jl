@@ -149,3 +149,8 @@ function Display(x::GapObj)
         error("variable was not correctly evaluated")
     end
 end
+
+function show_GAP_help( topic::String, onlyexact::Bool=false )
+    print( GAP.gap_to_julia( GAP.Globals.HelpString(
+           GAP.julia_to_gap( topic ), onlyexact ) ) )
+end
