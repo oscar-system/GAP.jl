@@ -12,12 +12,14 @@ of input data, by converting egal data to identical objects in GAP.
 
 
 ## Default
-julia_to_gap(x::GAPInputType) = x
+julia_to_gap(x::MPtr) = x
+julia_to_gap(x::FFE) = x
+julia_to_gap(x::Bool) = x
 
 
 ## Integers
 julia_to_gap(x::Int128) = MakeObjInt(BigInt(x)) # FIXME: inefficient hack
-#julia_to_gap(x::Int64)  = x
+julia_to_gap(x::Int64)  = x
 julia_to_gap(x::Int32)  = Int64(x)
 julia_to_gap(x::Int16)  = Int64(x)
 julia_to_gap(x::Int8)   = Int64(x)

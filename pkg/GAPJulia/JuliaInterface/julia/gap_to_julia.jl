@@ -30,10 +30,10 @@ function gap_to_julia(t::T, x::Any) where T <: Type
 end
 
 ## Default
-gap_to_julia(::Type{Any},         x::GAPInputType) = gap_to_julia(x)
-gap_to_julia(::Type{Any},         x::Any         ) = x
-gap_to_julia(::T,                 x::Nothing     ) where T <: Type = nothing
-gap_to_julia(::Type{Any},         x::Nothing     ) = nothing
+gap_to_julia(::Type{Any}, x::MPtr) = gap_to_julia(x)
+gap_to_julia(::Type{Any}, x::Any) = x
+gap_to_julia(::T,         x::Nothing) where T <: Type = nothing
+gap_to_julia(::Type{Any}, x::Nothing) = nothing
 
 ## Integers
 gap_to_julia(::Type{Int128} ,x::Int64) = trunc(Int128 ,x)
