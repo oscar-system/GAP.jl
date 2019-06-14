@@ -1,7 +1,8 @@
 @testset "conversion from GAP" begin
 
     ## Defaults
-    @test GAP.gap_to_julia(GAP.GAPInputType, true )
+    @test GAP.gap_to_julia(Any, true ) == true
+    @test GAP.gap_to_julia(GAP.Obj, true ) == true
     @test GAP.gap_to_julia(Any, "foo" ) == "foo"
     
     ## Integers

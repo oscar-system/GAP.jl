@@ -3,10 +3,7 @@ import Base: convert, getindex, setindex!, length, show
 const True = Globals.ReturnTrue()
 const False = Globals.ReturnFalse()
 
-const GAPInputType_internal = Union{MPtr,FFE}
-const GAPInputType = Union{GAPInputType_internal,Int64,Bool}
-
-const Obj = Union{GAPInputType,Nothing}
+const Obj = Union{MPtr,FFE,Int64,Bool,Nothing}
 
 function Base.show( io::IO, obj::Union{MPtr,FFE} )
     str = Globals.String( obj )
@@ -41,16 +38,23 @@ Base.setproperty!(x::MPtr, f::Symbol, v) = Globals.ASS_REC(x, RNamObj(f), v)
 Base.setproperty!(x::MPtr, f::Union{AbstractString,Int64}, v) = Globals.ASS_REC(x, RNamObj(f), v)
 
 #
-Base.zero(x::GAPInputType_internal) = Globals.ZERO(x)
-Base.one(x::GAPInputType_internal) = Globals.ONE(x)
-Base.:-(x::GAPInputType_internal) = Globals.AINV(x)
+Base.zero(x::Union{MPtr,FFE}) = Globals.ZERO(x)
+Base.one(x::Union{MPtr,FFE}) = Globals.ONE(x)
+Base.:-(x::Union{MPtr,FFE}) = Globals.AINV(x)
 
 #
-typecombinations = ((:GAPInputType_internal,:GAPInputType_internal),
-                    (:GAPInputType_internal,:Int64),
-                    (:Int64,:GAPInputType_internal),
-                    (:GAPInputType_internal,:Bool),
-                    (:Bool,:GAPInputType_internal))
+typecombinations = ((:MPtr,:MPtr),
+                    (:FFE,:FFE),
+                    (:MPtr,:FFE),
+                    (:FFE,:MPtr),
+                    (:MPtr,:Int64),
+                    (:Int64,:MPtr),
+                    (:FFE,:Int64),
+                    (:Int64,:FFE),
+                    (:MPtr,:Bool),
+                    (:Bool,:MPtr),
+                    (:FFE,:Bool),
+                    (:Bool,:FFE))
 function_combinations = ((:+,:SUM),
                          (:-,:DIFF),
                          (:*,:PROD),
