@@ -19,8 +19,9 @@ gap> mat:= [ [ o, a/2 ], [ z, o ] ];
 gap> nmat:= GAPToNemo( c, mat );
 <<Julia: [1 1//2*a]
 [0 1]>>
-gap> JuliaTypeInfo( JuliaPointer( nmat ) );
-"AbstractAlgebra.Generic.Mat{Nemo.nf_elem}"
+
+#gap> JuliaTypeInfo( JuliaPointer( nmat ) );
+#"AbstractAlgebra.Generic.Mat{Nemo.nf_elem}"
 gap> PrintObj( nmat );  Print( "\n" );
 [1 1//2*a]
 [0 1]
