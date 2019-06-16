@@ -15,10 +15,6 @@
     @test x[1] == 1
     @test length(x) == 1
 
-    @test GAP.True
-    @test ! GAP.False
-
-
     xx = GAP.julia_to_gap([1,2,3])
     @test_throws ErrorException xx[4]
 
