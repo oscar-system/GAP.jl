@@ -59,13 +59,13 @@ function gap_to_julia(::Type{BigInt}, x::MPtr)
     end
     ## get size of GAP BigInt (in limbs), multiply
     ## by 64 to get bits
-    size_limbs = ccall(:GAP_SizeInt,Cint,(MPtr,),x)
+    size_limbs = ccall(:GAP_SizeInt,Cint,(Any,),x)
     size = abs(size_limbs * sizeof(UInt) * 8)
     ## allocate new GMP
     new_bigint = Base.GMP.MPZ.realloc2(size)
     new_bigint.size = size_limbs
     ## Get limb address ptr
-    addr = ccall(:GAP_AddrInt,Ptr{UInt},(MPtr,),x)
+    addr = ccall(:GAP_AddrInt,Ptr{UInt},(Any,),x)
     ## Copy limbs
     unsafe_copyto!( new_bigint.d, addr, abs(size_limbs) )
     return new_bigint
