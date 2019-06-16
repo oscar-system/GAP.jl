@@ -6,7 +6,7 @@ using Coverage
 import JSON
 
 # gather coverage
-data = Codecov.process_folder(ENV["GAPJL_DIR"])
+data = Codecov.process_folder(pwd())
 data_dict = Codecov.to_json(data)
 
 # write it to a file for the upload script
