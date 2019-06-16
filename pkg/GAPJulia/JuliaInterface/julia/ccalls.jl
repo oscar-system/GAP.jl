@@ -7,7 +7,7 @@ function GET_FROM_GAP(ptr::Ptr{Cvoid})::Any
 end
 
 function EvalStringEx( cmd :: String )
-    res = ccall( :GAP_EvalString, MPtr, 
+    res = ccall( :GAP_EvalString, Any, 
                  (Ptr{UInt8},),
                  cmd );
     return res
@@ -34,11 +34,11 @@ function AssignGlobalVariable(name::String, value::MPtr)
         error("cannot assing to $name in GAP")
     end
     ccall(:GAP_AssignGlobalVariable, Cvoid,
-             (Ptr{UInt8}, MPtr), name, value)
+             (Ptr{UInt8}, Any), name, value)
 end
 
 function MakeString( val::String )::MPtr
-    string = ccall( :GAP_MakeString, MPtr,
+    string = ccall( :GAP_MakeString, Any,
                     ( Ptr{UInt8}, ),
                     val )
     return string
@@ -46,17 +46,17 @@ end
 
 function CSTR_STRING( val::MPtr )::String
     char_ptr = ccall( :GAP_CSTR_STRING, Ptr{UInt8},
-                      ( MPtr, ),
+                      ( Any, ),
                       val )
     return deepcopy(unsafe_string(char_ptr))
 end
 
 function UNSAFE_CSTR_STRING( val::MPtr )::Array{UInt8,1}
     string_len = Int64( ccall( :GAP_LenString, Cuint,
-                               ( MPtr, ),
+                               ( Any, ),
                                val ) )
     char_ptr = ccall( :GAP_CSTR_STRING, Ptr{UInt8},
-                      ( MPtr, ),
+                      ( Any, ),
                       val )
     return unsafe_wrap( Array{UInt8,1}, char_ptr, string_len )
 end
@@ -64,7 +64,7 @@ end
 
 function NewPlist(length :: Int64)
     o = ccall( :GAP_NewPlist,
-               MPtr,
+               Any,
                (Int64,),
                length )
     return o
@@ -80,7 +80,7 @@ end
 
 function NEW_MACFLOAT(x::Float64)
     o = ccall( :NEW_MACFLOAT,
-               MPtr,
+               Any,
                (Cdouble,),
                x )
     return o
@@ -89,14 +89,14 @@ end
 function ValueMacFloat(x::MPtr)
     o = ccall( :GAP_ValueMacFloat,
                Cdouble,
-               (MPtr,),
+               (Any,),
                x )
     return o
 end
 
 function CharWithValue(x::Cuchar)
     o = ccall( :GAP_CharWithValue,
-               MPtr,
+               Any,
                (Cuchar,),
                x )
     return o
@@ -105,14 +105,14 @@ end
 function ElmList(x::MPtr,position)
     o = ccall( :GAP_ElmList,
                Ptr{Cvoid},
-               (MPtr,Culong),
+               (Any,Culong),
                x,Culong(position))
     return GET_FROM_GAP(o)
 end
 
 function NewJuliaFunc(x::Function)
     o = ccall( :NewJuliaFunc,
-               MPtr,
+               Any,
                (Any,),
                x )
     return o
@@ -138,7 +138,7 @@ function call_gap_func(func::MPtr, args...; kwargs...)
     end
     result = nothing
     try
-        result = ccall(:call_gap_func, Any, (MPtr, Any), func, args)
+        result = ccall(:call_gap_func, Any, (Any, Any), func, args)
     catch e
         if options
             Globals.ResetOptionsStack()
