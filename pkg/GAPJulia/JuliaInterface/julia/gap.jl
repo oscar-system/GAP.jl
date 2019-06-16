@@ -1,8 +1,5 @@
 import Base: convert, getindex, setindex!, length, show
 
-const True = Globals.ReturnTrue()
-const False = Globals.ReturnFalse()
-
 const Obj = Union{MPtr,FFE,Int64,Bool,Nothing}
 
 function Base.show( io::IO, obj::Union{MPtr,FFE} )
