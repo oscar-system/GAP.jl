@@ -19,9 +19,9 @@ import Libdl
 
 sysinfo = missing
 
-read_sysinfo_gap = function(dir::String)
+function read_sysinfo_gap(dir::String)
     d = missing
-    open(dir * "/sysinfo.gap") do file
+    open(joinpath(dir, "sysinfo.gap")) do file
         d = Dict{String,String}()
         for ln in eachline(file)
             if length(ln) == 0 || ln[1] == '#'
@@ -85,8 +85,9 @@ run_it = function(gapdir::String, error_handler_func::Ptr{Nothing})
         error("GAP already initialized")
     end
     sysinfo = read_sysinfo_gap(gapdir)
-    println("Adding path ", gapdir * "/.libs", " to DL_LOAD_PATH")
-    push!( Libdl.DL_LOAD_PATH, gapdir * "/.libs" )
+    gapdir = joinpath(gapdir, ".libs")
+    println("Adding path ", gapdir, " to DL_LOAD_PATH")
+    push!( Libdl.DL_LOAD_PATH, gapdir )
     initialize( [ ""
                        , "-l", sysinfo["GAP_LIB_DIR"]
                        , "-T", "-r", "-A", "--nointeract"
