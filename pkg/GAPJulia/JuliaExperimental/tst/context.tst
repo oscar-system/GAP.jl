@@ -126,15 +126,17 @@ gap> NemoToGAP( c, pol );
 x_1^3+x_1+1
 gap> vec:= GAPToNemo( c, [ x+1, x-1 ] );
 <<Julia: [x_1+1 x_1-1]>>
-gap> JuliaTypeInfo( JuliaPointer( vec ) );
-"AbstractAlgebra.Generic.Mat{Nemo.fmpq_poly}"
+
+#gap> JuliaTypeInfo( JuliaPointer( vec ) );
+#"AbstractAlgebra.Generic.Mat{Nemo.fmpq_poly}"
 gap> NemoToGAP( c, vec );
 [ x_1+1, x_1-1 ]
 gap> mat:= GAPToNemo( c, [ [ x, x+1 ], [ 2*x, x^2+1] ] );
 <<Julia: [x_1 x_1+1]
 [2*x_1 x_1^2+1]>>
-gap> JuliaTypeInfo( JuliaPointer( mat ) );
-"AbstractAlgebra.Generic.Mat{Nemo.fmpq_poly}"
+
+#gap> JuliaTypeInfo( JuliaPointer( mat ) );
+#"AbstractAlgebra.Generic.Mat{Nemo.fmpq_poly}"
 gap> NemoToGAP( c, mat );
 [ [ x_1, x_1+1 ], [ 2*x_1, x_1^2+1 ] ]
 
@@ -161,15 +163,17 @@ gap> NemoToGAP( c, elm );
 a
 gap> vec:= GAPToNemo( c, [ a+1, a-1 ] );
 <<Julia: [a+1 a-1]>>
-gap> JuliaTypeInfo( JuliaPointer( vec ) );
-"AbstractAlgebra.Generic.Mat{Nemo.nf_elem}"
+
+#gap> JuliaTypeInfo( JuliaPointer( vec ) );
+#"AbstractAlgebra.Generic.Mat{Nemo.nf_elem}"
 gap> NemoToGAP( c, vec );
 [ a+1, a-1 ]
 gap> mat:= GAPToNemo( c, [ [ a, a+1 ], [ 2*a, a^2+1] ] );
 <<Julia: [a a+1]
 [2*a 0]>>
-gap> JuliaTypeInfo( JuliaPointer( mat ) );
-"AbstractAlgebra.Generic.Mat{Nemo.nf_elem}"
+
+#gap> JuliaTypeInfo( JuliaPointer( mat ) );
+#"AbstractAlgebra.Generic.Mat{Nemo.nf_elem}"
 gap> NemoToGAP( c, mat );
 [ [ a, a+1 ], [ 2*a, !0 ] ]
 
