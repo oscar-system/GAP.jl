@@ -5,4 +5,4 @@ using GAP
 include("basics.jl")
 include("convenience.jl")
 include("conversion.jl")
-include("compat.jl")
+include("macros.jl")
