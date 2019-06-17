@@ -23,6 +23,18 @@
     str = GAP.gap_to_julia(AbstractString, GAP.ValueGlobalVariable("IdentifierLetters"));
     @test str == "0123456789@ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz"
 
+    @test GAP.CanAssignGlobalVariable("Read") == false
+    @test GAP.CanAssignGlobalVariable("foobar")
+
+    GAP.AssignGlobalVariable("foobar", 42)
+    @test GAP.ValueGlobalVariable("foobar") == 42
+
+    GAP.AssignGlobalVariable("foobar", false)
+    @test GAP.ValueGlobalVariable("foobar") == false
+
+    GAP.AssignGlobalVariable("foobar", "julia_string")
+    @test GAP.ValueGlobalVariable("foobar") == "julia_string"
+
     @test string(GAP.Globals) == "\"table of global GAP objects\""
 
     @test string(GAP.julia_to_gap("x")) == "x"

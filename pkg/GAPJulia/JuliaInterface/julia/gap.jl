@@ -1,7 +1,5 @@
 import Base: convert, getindex, setindex!, length, show
 
-const Obj = Union{MPtr,FFE,Int64,Bool,Nothing}
-
 function Base.show( io::IO, obj::Union{MPtr,FFE} )
     str = Globals.String( obj )
     stri = CSTR_STRING( str )
