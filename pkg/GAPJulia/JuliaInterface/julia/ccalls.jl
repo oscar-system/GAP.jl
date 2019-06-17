@@ -2,7 +2,7 @@
 
 import Base: getproperty, propertynames
 
-function GET_FROM_GAP(ptr::Ptr{Cvoid})::Any
+function RAW_GAP_TO_JULIA(ptr::Ptr{Cvoid})::Any
     return ccall(:julia_gap,Any,(Ptr{Cvoid},),ptr)
 end
 
@@ -21,7 +21,7 @@ end
 function ValueGlobalVariable( name :: String )
     gvar = ccall( :GAP_ValueGlobalVariable, Ptr{Cvoid},
                       (Ptr{UInt8},),name)
-    return GET_FROM_GAP(gvar)
+    return RAW_GAP_TO_JULIA(gvar)
 end
 
 function CanAssignGlobalVariable(name::String)
@@ -75,7 +75,7 @@ function MakeObjInt(x::BigInt)
                Ptr{Cvoid},
                (Ptr{UInt64},Cint),
                x.d, x.size )
-    return GET_FROM_GAP( o )
+    return RAW_GAP_TO_JULIA( o )
 end
 
 function NEW_MACFLOAT(x::Float64)
@@ -107,7 +107,7 @@ function ElmList(x::MPtr,position)
                Ptr{Cvoid},
                (Any,Culong),
                x,Culong(position))
-    return GET_FROM_GAP(o)
+    return RAW_GAP_TO_JULIA(o)
 end
 
 function NewJuliaFunc(x::Function)
@@ -168,7 +168,7 @@ function getproperty(funcobj::GlobalsType, name::Symbol)
     end
 
     v = ccall(:ValGVar, Ptr{Cvoid}, (Cuint,), gvar)
-    v = GET_FROM_GAP(v)
+    v = RAW_GAP_TO_JULIA(v)
     if v == nothing
         error("GAP variable ", name, " not bound")
     end
@@ -177,6 +177,6 @@ end
 
 function propertynames(funcobj::GlobalsType,private)
     list = Globals.NamesGVars()
-    list_converted = gap_to_julia( Array{Symbol,1}, list )
+    list_converted = RAW_GAP_TO_JULIA( Array{Symbol,1}, list )
     return tuple(list_converted...)
 end
