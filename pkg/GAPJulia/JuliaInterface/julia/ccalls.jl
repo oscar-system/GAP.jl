@@ -180,7 +180,3 @@ function propertynames(funcobj::GlobalsType,private)
     list_converted = gap_to_julia( Array{Symbol,1}, list )
     return tuple(list_converted...)
 end
-
-# For backwards compatibility
-# TODO: remove this again
-GAPFuncs = Globals
