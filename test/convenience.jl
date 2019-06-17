@@ -85,3 +85,21 @@ end
     @test sym5.:1 === GAP.Globals.GeneratorsOfGroup(sym5)[1]
     @test sym5.:1 === sym5."1"
 end
+
+## Need to be created outside of test
+module test3 
+    SymmetricGroup = 5
+end
+
+@testset "LoadPackageAndExposeGlobals" begin
+
+    LoadPackageAndExposeGlobals("GAPDoc", "test1")
+    @test isdefined(test1, :SymmetricGroup) == false
+
+    LoadPackageAndExposeGlobals("GAPDoc", "test2", all_globals = true)
+    @test isdefined(test2, :SymmetricGroup) == true
+
+    LoadPackageAndExposeGlobals("GAPDoc", test3, all_globals = true)
+    @test test3.SymmetricGroup == 5
+
+end
