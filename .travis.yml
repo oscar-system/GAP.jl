@@ -31,7 +31,7 @@ before_script:
   - export CFLAGS=--coverage; export LDFLAGS=--coverage
   - if [[ -v GAPROOT ]]; then etc/travis_install_gap.sh; fi
     ## Add the package so we can use it later
-  - julia -e 'import Pkg ; Pkg.instantiate(); Pkg.build(); Pkg.develop(Pkg.PackageSpec(url=pwd()))'
+  - julia -e 'import Pkg ; Pkg.develop(Pkg.PackageSpec(url=pwd())) ; Pkg.build()'
     ## Unset coverage to prevent Nemo C parts to be built with coverage
   - unset CFLAGS; unset LDFLAGS
   - julia -e 'import Pkg ; Pkg.add("Nemo")'
