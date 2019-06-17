@@ -51,6 +51,9 @@ after_script:
   - bash <(curl -s https://codecov.io/bash)
 
 notifications:
-  slack: oscar-system:YdfRQxe8n9BvxtJdNgpZ1cpt
-    on_success: change # default: always
-    on_failure: always # default: always
+  slack:
+    on_pull_requests: false
+    on_success: change
+    on_failure: always
+    rooms:
+      secure: Kx+tvM3v5FD8LdHjAG+Hr6bSiSXybn47Fz7NZwMUarroxDySOAtIZdcOMxXA7tzIZKLI5rImz3jJSx2gxyGhacKNAmo7ouEfVsrOl7XBuKHrzFjliULx55uaERX+ACkDOD4keWngE/5t67PKcEfOxONKFUd8wIg17Y/8ULdtE0IKh+T5vLWgIHEBuw6LEdLjEUyPBjwdcCIdg9h5fIpAE8N2zrqDgdAF4L8u4h2GJOm3xHgjowRtp742MDi1dtCrqAQU2BpzWw7z1M+R6BofAPKmG1Sx0yLkiyr93eDCNDTBRaXC4jeFEiufWCY64Iqd9R79Gi/tFlkXJ4MGFMAFzcQzQbNkqGrPwSLKJemM0G4WJpCIH0ygs1SXTClzl40sVa61ARhTA9h6rk3GNM38w3z4/KRcefY4c2MFETZ+bB67Nt70f7/oGjBYSMwFW7xKF7S8/Uv5+OV6/P4S17KyHIta3OZ5fCH7uT+3NMPcRmIKwFo+SENVNqgmq8LKYB9kpnCWvBJqnNnkG4R4rvlvtE7pLmOAr+umxhxToLu3KpP3SKbTGmPzJkmmXv9b623qn3PGE5JdIh1YnYtjpRswru2lWG1BE0vbLfLSr9NmDODsrlceJkn+/TqDHDHM3FBegv+J45YG/OO0TqAGvZ8SVJwNX4asq/l0IRUDwyIsuDo=
