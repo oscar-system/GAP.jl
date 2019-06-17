@@ -14,5 +14,6 @@ const MPtr = Main.ForeignGAP.MPtr
 
 include( "ccalls.jl" )
 include( "gap.jl" )
+include( "macros.jl" )
 include( "gap_to_julia.jl" )
 include( "julia_to_gap.jl" )
