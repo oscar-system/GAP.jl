@@ -11,6 +11,8 @@ import Base: length, convert
 
 const MPtr = Main.ForeignGAP.MPtr
 
+const Obj = Union{MPtr,FFE,Int64,Bool,Nothing}
+
 
 include( "ccalls.jl" )
 include( "gap.jl" )

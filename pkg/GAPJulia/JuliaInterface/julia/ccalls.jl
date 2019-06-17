@@ -6,6 +6,10 @@ function RAW_GAP_TO_JULIA(ptr::Ptr{Cvoid})::Any
     return ccall(:julia_gap,Any,(Ptr{Cvoid},),ptr)
 end
 
+function RAW_JULIA_TO_GAP(val::Any)::Ptr{Cvoid}
+    return ccall(:gap_julia,Ptr{Cvoid},(Any,),val)
+end
+
 function EvalStringEx( cmd :: String )
     res = ccall( :GAP_EvalString, Any, 
                  (Ptr{UInt8},),
@@ -29,12 +33,13 @@ function CanAssignGlobalVariable(name::String)
              (Ptr{UInt8},), name)
 end
 
-function AssignGlobalVariable(name::String, value::MPtr)
+function AssignGlobalVariable(name::String, value::Obj)
     if ! CanAssignGlobalVariable(name)
         error("cannot assing to $name in GAP")
     end
+    tmp = RAW_JULIA_TO_GAP(value)
     ccall(:GAP_AssignGlobalVariable, Cvoid,
-             (Ptr{UInt8}, Any), name, value)
+             (Ptr{UInt8}, Ptr{Cvoid}), name, tmp)
 end
 
 function MakeString( val::String )::MPtr
