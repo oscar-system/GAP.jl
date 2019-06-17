@@ -49,3 +49,8 @@ after_script:
   - rm -rf gap # delete GAP if present, to avoid collecting its coverage data
   - julia etc/gather_coverage.jl
   - bash <(curl -s https://codecov.io/bash)
+
+notifications:
+  slack: oscar-system:YdfRQxe8n9BvxtJdNgpZ1cpt
+    on_success: change # default: always
+    on_failure: always # default: always
