@@ -29,6 +29,10 @@ branches:
 before_script:
   - unset JULIA_PROJECT
   - printenv | sort
+  - which gcc
+  - which g++
+  - which cc
+  - which c++
   - git show --pretty=fuller -s
   - mkdir -p coverage
   - export CFLAGS=--coverage; export LDFLAGS=--coverage
