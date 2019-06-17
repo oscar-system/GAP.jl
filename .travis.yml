@@ -46,5 +46,6 @@ script:
 after_script:
   - cd $TRAVIS_BUILD_DIR
   - $GAP -A --quitonbreak --norepl etc/gather_coverage.g
+  - rm -rf gap # delete GAP if present, to avoid collecting its coverage data
   - julia etc/gather_coverage.jl
   - bash <(curl -s https://codecov.io/bash)
