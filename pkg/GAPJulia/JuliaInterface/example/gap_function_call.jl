@@ -1,5 +1,5 @@
 function IsPrimeInt(a)
-    return GAP.GAPFuncs.IsPrimeInt(a)
+    return GAP.Globals.IsPrimeInt(a)
 end
 
 function Power2(a)

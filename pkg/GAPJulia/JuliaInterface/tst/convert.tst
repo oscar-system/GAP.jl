@@ -166,7 +166,7 @@ gap> list2:= JuliaToGAP( IsList, list );
 [ 1, <Julia: parse>, 3 ]
 
 ##
-gap> xx := JuliaEvalString("GAP.GAPFuncs.PROD(2^59,2^59)");;
+gap> xx := JuliaEvalString("GAP.Globals.PROD(2^59,2^59)");;
 gap> JuliaToGAP( IsInt, xx );
 332306998946228968225951765070086144
 
