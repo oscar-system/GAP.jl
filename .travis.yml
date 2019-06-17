@@ -3,10 +3,13 @@ julia:
   - 1.1
   - nightly
 
+cache: ccache
+
 env:
   global:
     - MAKEFLAGS="-j4"
     - JULIA_TRACK_COVERAGE=yes
+    - PATH="/usr/lib/ccache:$PATH"
   matrix:
     - GAP=$HOME/.julia/gap.sh
       GAP_INSTALL_PACKAGES=debug
