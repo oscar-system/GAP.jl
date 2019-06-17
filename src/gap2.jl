@@ -71,7 +71,7 @@ end
 
 """
     LoadPackageAndExposeGlobals(package::String, mod::String; all_globals::Bool = false)
-    LoadPackageAndExposeGlobals(package::String, mod::Module = Main; all_globals::Bool = false)
+    LoadPackageAndExposeGlobals(package::String, mod::Module = Main; all_globals::Bool = false, overwrite::Bool = false)
 
 `LoadPackageAndExposeGlobals` loads `package` into GAP via `LoadPackage`,
 and stores all newly defined GAP globals as globals in the module `mod`. If `mod` is
@@ -85,6 +85,9 @@ If you load the package `CAP` via
 you can use CAP commands via
 
     CAP.PreCompose( a, b )
+
+If `overwrite` is true, Symbols already in the `Main` module will be overloaded.
+Be aware that this flag only works in `Main`.
 
 """
 function LoadPackageAndExposeGlobals(package::String, mod::String; all_globals::Bool = false)
@@ -103,7 +106,7 @@ function LoadPackageAndExposeGlobals(package::String, mod::String; all_globals::
     Base.invokelatest(LoadPackageAndExposeGlobals, package, mod_mod; all_globals = all_globals)
 end
 
-function LoadPackageAndExposeGlobals(package::String, mod::Module; all_globals::Bool = false)
+function LoadPackageAndExposeGlobals(package::String, mod::Module; all_globals::Bool = false, overwrite::Bool = false)
     current_gvar_list = nothing
     if !all_globals
         current_gvar_list = Globals.ShallowCopy(Globals.NamesGVars())
@@ -120,11 +123,13 @@ function LoadPackageAndExposeGlobals(package::String, mod::Module; all_globals::
     end
     new_symbols = gap_to_julia(Array{Symbol,1},new_gvar_list)
     for sym in new_symbols
-        try
-            mod.eval(:(
-                $(sym)=GAP.Globals.$(sym)
-            ))
-        catch
+        if overwrite || ! isdefined(mod,sym)
+            try
+                mod.eval(:(
+                    $(sym)=GAP.Globals.$(sym)
+                ))
+            catch
+            end
         end
     end
 end
