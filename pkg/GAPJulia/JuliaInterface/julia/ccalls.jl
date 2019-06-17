@@ -33,7 +33,7 @@ function CanAssignGlobalVariable(name::String)
              (Ptr{UInt8},), name)
 end
 
-function AssignGlobalVariable(name::String, value::Obj)
+function AssignGlobalVariable(name::String, value::Any)
     if ! CanAssignGlobalVariable(name)
         error("cannot assing to $name in GAP")
     end
@@ -182,6 +182,6 @@ end
 
 function propertynames(funcobj::GlobalsType,private)
     list = Globals.NamesGVars()
-    list_converted = RAW_GAP_TO_JULIA( Array{Symbol,1}, list )
+    list_converted = gap_to_julia( Array{Symbol,1}, list )
     return tuple(list_converted...)
 end
