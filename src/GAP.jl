@@ -129,5 +129,6 @@ include( "gap2.jl" )
 include( "macros.jl" )
 include( "gap_to_julia.jl" )
 include( "julia_to_gap.jl" )
+include( "utils.jl" )
 
 end
