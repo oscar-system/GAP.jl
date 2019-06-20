@@ -161,7 +161,7 @@ InstallGlobalFunction( ImportJuliaModuleIntoGAP,
     fi;
 
     current_module := Julia.(name);
-    julia_list_func := JuliaFunction( "get_symbols_in_module", "GAPUtils" );
+    julia_list_func := JuliaFunction( "get_symbols_in_module", "GAP" );
     list := JuliaToGAP( IsList, julia_list_func( JuliaPointer( current_module ) ), true );
     for i in list do
         \.( current_module, RNamObj( i ) );

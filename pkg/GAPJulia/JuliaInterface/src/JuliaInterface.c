@@ -51,8 +51,7 @@ jl_module_t * get_module_from_string(char * name)
     return (jl_module_t *)module_value;
 }
 
-// This function needs to be called after the `gaptypes.jl`
-// file is loaded into Julia and the GAP module is present.
+// This function needs to be called after GAP.jl is loaded into julia.
 // Therefore we do not call in InitKernel, but in the `read.g` file.
 Obj Func_JULIAINTERFACE_INTERNAL_INIT(Obj self)
 {

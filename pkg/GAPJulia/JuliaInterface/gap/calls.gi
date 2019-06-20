@@ -23,7 +23,7 @@ InstallGlobalFunction( CallJuliaFunctionWithCatch,
     local res;
 
     args := GAPToJulia( _JL_Array_GAPObj_1, args );
-    res:= Julia.GAPUtils.call_with_catch( julia_obj, args );
+    res:= Julia.GAP.call_with_catch( julia_obj, args );
     if res[1] then
       return rec( ok:= true, value:= res[2] );
     else

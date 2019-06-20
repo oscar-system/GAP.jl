@@ -1,17 +1,7 @@
-#############################################################################
-##
-##  JuliaInterface package
-##
-##  Copyright 2017
-##    Thomas Breuer, RWTH Aachen University
-##    Sebastian Gutsche, Siegen University
-##
-#############################################################################
-
-module GAPUtils
-
 import REPL.REPLCompletions: completions
 import Base: show
+
+## These two functions are used on the GAP side.
 
 """
     get_symbols_in_module(module_t::Module) :: Array{Symbol,1}
@@ -44,9 +34,3 @@ function call_with_catch( juliafunc, arguments )
       return ( false, string( e ) )
     end
 end
-
-export call_with_catch
-
-end
-
-#########################################################################
