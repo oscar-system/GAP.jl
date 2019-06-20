@@ -23,11 +23,18 @@ julia_binary = get(ENV, "JULIA_BINARY", Sys.BINDIR)
 if install_gap
     println("Installing GAP ...")
     cd(extra_gap_root)
-    ## TODO: We currently use the GAP master branch.
-    ##       Once all issues of using GAP with the julia
-    ##       GC are resolved, we switch to a stable version.
-    run(`git clone --depth=1 https://github.com/gap-system/gap`)
-    cd("gap")
+    ## check if gap already exists
+    if isdir("gap")
+        ### Update the GAP clone
+        cd("gap")
+        run(`git pull --depth=1 origin master`)
+    else
+        ## TODO: We currently use the GAP master branch.
+        ##       Once all issues of using GAP with the julia
+        ##       GC are resolved, we switch to a stable version.
+        run(`git clone --depth=1 https://github.com/gap-system/gap`)
+        cd("gap")
+    end
     run(`./autogen.sh`)
     run(`./configure --with-gc=julia --with-julia=$(julia_binary)`)
     run(`make -j$(Sys.CPU_THREADS)`)
