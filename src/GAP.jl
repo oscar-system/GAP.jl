@@ -120,7 +120,7 @@ function __init__()
     ## corresponding function call in in ccalls.jl (func::GapObj)(...)
     MPtr = Base.MainInclude.eval(:(ForeignGAP.MPtr))
     Base.MainInclude.eval(:(
-        (func::$MPtr)(args...; kwargs...) = GAP.call_gap_func(func, args...; kwargs...)
+        (func::$MPtr)(args...; kwargs...) = $(GAP.call_gap_func)(func, args...; kwargs...)
     ))
 end
 
