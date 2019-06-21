@@ -516,10 +516,7 @@ InstallGlobalFunction( HELP_String, function( str, onlyexact... )
           ":' ..." ) ],
           HELP_String( Concatenation(origstr, ":") )[2] ) ];
     else
-     # seems unnecessary, since some message is already printed in all
-     # cases above (?):
-     # Print( "Help: Sorry, could not find a match for '", origstr, "'.\n");
-      return [ false ];
+      return match;
     fi;
   fi;
 end);
