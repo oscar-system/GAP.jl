@@ -35,6 +35,8 @@ BindGlobal( "HELP_DESC_CHAPTERS", function(book)
   else
     HELP_LAST.BOOK := book;
     HELP_LAST.MATCH := 1;
+    # The second entry can be a string or a list of strings
+    # or a record with the components 'lines' and 'start'.
     return [ true, HELP_BOOK_HANDLER.(info.handler).ShowChapters(info) ];
   fi;
 end);
@@ -52,6 +54,8 @@ BindGlobal( "HELP_DESC_SECTIONS", function(book)
   else
     HELP_LAST.BOOK := book;
     HELP_LAST.MATCH := 1;
+    # The second entry can be a string or a list of strings
+    # or a record with the components 'lines' and 'start'.
     return [ true, HELP_BOOK_HANDLER.(info.handler).ShowSections(info) ];
   fi;
 end);
@@ -65,7 +69,7 @@ end);
 ##
 BindGlobal( "HELP_DESC_MATCH", function(match)
   local book, entrynr, viewer, hv, pos, type, data,
-        firstline, nextentrynr, nextdata, lastline, lines;
+        nextn, nextentry, firstline, lastline, lines;
 
   book := HELP_BOOK_INFO(match[1]);
   entrynr := match[2];
@@ -89,16 +93,23 @@ BindGlobal( "HELP_DESC_MATCH", function(match)
     # get the data via appropriate handler
     data := HELP_BOOK_HANDLER.(book.handler).HelpData(book, entrynr, type);
     if data <> fail then
+      # Find the end of the subsection in question.
+      # This is defined either by the start of the next subsection
+      # of the same section, or by the start of the next section or chapter.
+      nextn:= book.entries[ entrynr ][3] + [ 0, 0, 1 ];
+      nextentry:= PositionProperty( book.entries, x -> x[3] = nextn );
+      if nextentry = fail then
+        nextn:= nextn + [ 0, 1, -nextn[3] ];
+        nextentry:= PositionProperty( book.entries, x -> x[3] = nextn );
+      fi;
       firstline:= data.start;
-      nextentrynr:= entrynr;
-      repeat
-        nextentrynr:= nextentrynr + 1;
-        nextdata:= HELP_BOOK_HANDLER.(book.handler).HelpData(book, nextentrynr, type);
-      until nextdata.start <> firstline or nextdata.lines <> data.lines;
-      if nextdata.lines = data.lines then
-        lastline:= nextdata.start - 1;
-      else
+      if nextentry = fail then
         lastline:= fail;
+      else
+        # Just taking 'book.entries[ nextentry ][4]' as the startline
+        # would not be correct.
+        lastline:= HELP_BOOK_HANDLER.( book.handler ).HelpData( book,
+                       nextentry, type ).start - 1;
       fi;
       break;
     fi;
@@ -120,7 +131,7 @@ BindGlobal( "HELP_DESC_MATCH", function(match)
     fi;
     return [ true, lines{ [ firstline .. lastline ] } ];
   else
-    return [ false ];
+    return [ false, [] ];
   fi;
 end);
 
@@ -131,13 +142,13 @@ end);
 BindGlobal( "HELP_DESC_PREV_CHAPTER", function( arg )
   local   info,  match;
   if HELP_LAST.BOOK = 0 then
-    return [ true, "Help: no history so far." ];
+    return [ true, [ "Help: no history so far." ] ];
   fi;
   info := HELP_BOOK_INFO(HELP_LAST.BOOK);
   match := HELP_BOOK_HANDLER.(info.handler).MatchPrevChap(info, 
                    HELP_LAST.MATCH);
   if match[2] = fail then
-    return [ true, "Help:  no match found." ];
+    return [ true, [ "Help:  no match found." ] ];
   else
     HELP_LAST.MATCH := match[2];
     return HELP_DESC_MATCH( match );
@@ -206,9 +217,9 @@ end);
 
 #############################################################################
 ##
-#F  HELP_DESC_WELCOME( <book> ) . . . . . . . . . . . .  show welcome message
+#F  HELP_DESC_WELCOME() . . . . . . . . . . . . . . . .  show welcome message
 ##
-BindGlobal( "HELP_DESC_WELCOME", function( book )
+BindGlobal( "HELP_DESC_WELCOME", function()
     return [ true, [
 "    Welcome to GAP 4\n",
 " Try '?tutorial: The Help system' (without quotes) for an introduction to",
@@ -356,21 +367,24 @@ BindGlobal( "HELP_DESC_FROM_LAST_TOPICS", function(nr)
   if nr = 0 or Length(HELP_LAST.TOPICS) < nr then
     return [ false, [ "Help:  No such topic." ] ];
   fi;
-  return [ true, HELP_DESC_MATCH(HELP_LAST.TOPICS[nr]) ];
+  return [ true, HELP_DESC_MATCH(HELP_LAST.TOPICS[nr])[2] ];
 end);
 
 
 #############################################################################
 ##  
-#F  HELP_String( <string>[, <onlyexact>] ) . . . . .  deal with a help request
+#F  HELP_String( <string>, <onlyexact> ) . . . . . . deal with a help request
 ##  
+##  The return value is a list.
+##  Each of its entries is either a list of strings
+##  or a record with the components 'lines' (a string or a list of strings)
+##  and 'start' (the position of the first line to show).
+##
 DeclareGlobalFunction( "HELP_String" );
 
-InstallGlobalFunction( HELP_String, function( str, onlyexact... )
+InstallGlobalFunction( HELP_String, function( str, onlyexact )
   local origstr, nwostr, p, book, books, move, add,
         match;
-
-  onlyexact:= ( Length( onlyexact ) = 1 and onlyexact[1] = true );
 
   origstr := ShallowCopy(str);
   nwostr := NormalizedWhitespace(origstr);
@@ -391,7 +405,7 @@ InstallGlobalFunction( HELP_String, function( str, onlyexact... )
   # we check if `book' MATCH_BEGINs some of the available books
   books := Filtered(HELP_KNOWN_BOOKS[1], bn-> MATCH_BEGIN(bn, book));
   if Length(book) > 0 and Length(books) = 0 then
-    return [ true, [ "Help: None of the available books matches (try: '?books')." ] ];
+    return [ [ "Help: None of the available books matches (try: '?books')." ] ];
   fi;
   
   # function to add a topic to the ring
@@ -407,19 +421,19 @@ InstallGlobalFunction( HELP_String, function( str, onlyexact... )
   # if the topic is empty show the last shown one again 
   if  book = "" and str = ""  then
        if HELP_LAST.BOOK = 0 then
-         return HELP_String( "Tutorial: Help" );
+         return HELP_String( "Tutorial: Help", onlyexact );
        else
-         return HELP_DESC_MATCH( [HELP_LAST.BOOK, HELP_LAST.MATCH] );
+         return [ HELP_DESC_MATCH( [HELP_LAST.BOOK, HELP_LAST.MATCH] )[2] ];
        fi;
 
   # if topic is "&" show last topic again, but with next viewer in viewer
   # list, or with last viewer again if there is no next one
   elif book = "" and str = "&" and Length(nwostr) = 1 then
        if HELP_LAST.BOOK = 0 then
-         return HELP_String("Tutorial: Help");
+         return HELP_String( "Tutorial: Help", onlyexact );
        else
          HELP_LAST.NEXT_VIEWER := true;
-         return HELP_DESC_MATCH( [HELP_LAST.BOOK, HELP_LAST.MATCH] );
+         return [ HELP_DESC_MATCH( [HELP_LAST.BOOK, HELP_LAST.MATCH] )[2] ];
        fi;
   
   # if the topic is '-' we are interested in the previous search again
@@ -439,31 +453,31 @@ InstallGlobalFunction( HELP_String, function( str, onlyexact... )
   
   # number means topic from HELP_LAST.TOPICS list
   if book = "" and ForAll(str, a-> a in "0123456789") then
-      return HELP_DESC_FROM_LAST_TOPICS(Int(str));
+      return [ HELP_DESC_FROM_LAST_TOPICS(Int(str))[2] ];
     
   # if the topic is '<' we are interested in the one before 'LastTopic'
   elif book = "" and str = "<" and Length(nwostr) = 1  then
-      return HELP_DESC_PREV();
+      return [ HELP_DESC_PREV()[2] ];
 
   # if the topic is '>' we are interested in the one after 'LastTopic'
   elif book = "" and str = ">" and Length(nwostr) = 1  then
-      return HELP_DESC_NEXT();
+      return [ HELP_DESC_NEXT()[2] ];
 
   # if the topic is '<<' we are interested in the previous chapter intro
   elif book = "" and str = "<<"  then
-      return HELP_DESC_PREV_CHAPTER();
+      return [ HELP_DESC_PREV_CHAPTER()[2] ];
 
   # if the topic is '>>' we are interested in the next chapter intro
   elif book = "" and str = ">>"  then
-      return HELP_DESC_NEXT_CHAPTER();
+      return [ HELP_DESC_NEXT_CHAPTER()[2] ];
 
   # if the subject is 'Welcome to GAP' display a welcome message
   elif book = "" and str = "welcome to gap"  then
-      str:= HELP_DESC_WELCOME( book );
+      str:= HELP_DESC_WELCOME();
       if str[1] = true then
           add( books, "Welcome to GAP" );
       fi;
-      return str;
+      return [ str[2] ];
 
   # if the topic is 'books' display the table of books
   elif book = "" and str = "books"  then
@@ -471,7 +485,7 @@ InstallGlobalFunction( HELP_String, function( str, onlyexact... )
       if str[1] = true then
           add( books, "books" );
       fi;
-      return str;
+      return [ str[2] ];
 
   # if the topic is 'chapters' display the table of chapters
   elif str = "chapters"  or str = "contents" or book <> "" and str = "" then
@@ -479,7 +493,7 @@ InstallGlobalFunction( HELP_String, function( str, onlyexact... )
       if ForAll( str, b -> b[1] = true ) then
         add( books, "chapters" );
       fi;
-      return [ true, Concatenation( List( str, x -> x[2] ) ) ];
+      return List( str, x -> x[2] );
 
   # if the topic is 'sections' display the table of sections
   elif str = "sections"  then
@@ -487,7 +501,7 @@ InstallGlobalFunction( HELP_String, function( str, onlyexact... )
       if ForAll( str, b -> b[1] = true ) then
         add(books, "sections");
       fi;
-      return [ true, Concatenation( List( str, x -> x[2] ) ) ];
+      return List( str, x -> x[2] );
 
   # if the topic is '?<string>' search the index for any entries for
   # which <string> is a substring (as opposed to an abbreviation)
@@ -498,25 +512,25 @@ InstallGlobalFunction( HELP_String, function( str, onlyexact... )
       if match[1] = true then
           add( books, str );
       fi;
-      return match;
+      return [ match[2] ];
 
   # search for this topic
   else
     match:= HELP_DESC_MATCHES( books, str, true, onlyexact );
     if match[1] = true then
       add( books, str );
-      return match;
+      return [ match[2] ];
     elif origstr in NAMES_SYSTEM_GVARS then
-      return [ true, [ Concatenation( "Help: '", origstr, "' is currently undocumented." ),
+      return [ [ Concatenation( "Help: '", origstr, "' is currently undocumented." ),
                "      For details, try ?Undocumented Variables" ] ];
     elif book = "" and 
                  ForAny(HELP_KNOWN_BOOKS[1], bk -> MATCH_BEGIN(bk, str)) then
-      return [ true, Concatenation( [ Concatenation(
+      return Concatenation( [ [ Concatenation(
           "Help: Are you looking for a certain book? (Trying '?", origstr, 
-          ":' ..." ) ],
-          HELP_String( Concatenation(origstr, ":") )[2] ) ];
+          ":' ...)" ) ] ],
+          HELP_String( Concatenation( origstr, ":" ), onlyexact ) );
     else
-      return match;
+      return [ match[2] ];
     fi;
   fi;
 end);
@@ -524,10 +538,31 @@ end);
 
 #############################################################################
 ##  
-#F  HelpString( <topic>, <onlyexact> )
+#F  HelpString( <topic>[, <onlyexact>] )
 ##
-BindGlobal( "HelpString", function( topic, onlyexact )
-    return JoinStringsWithSeparator( HELP_String( topic, onlyexact )[2], "\n" );
+BindGlobal( "HelpString", function( topic, onlyexact... )
+    local res, entry, lines;
+
+    onlyexact:= ( Length( onlyexact ) = 1 and onlyexact[1] = true );
+
+    res:= "";
+    for entry in HELP_String( topic, onlyexact ) do
+      if IsRecord( entry ) then
+        lines:= entry.lines;
+        if IsString( lines ) then
+          lines:= SplitString( lines, "\n" );
+        fi;
+        Append( res, JoinStringsWithSeparator(
+            lines{ [ entry.start .. Length( lines ) ] },
+            "\n" ) );
+      elif IsList( entry ) and ForAll( entry, IsString ) then
+        Append( res, JoinStringsWithSeparator( entry, "\n" ) );
+      else
+        Error( "<entry> must be a record or a list of strings" );
+      fi;
+    od;
+
+    return res;
 end );
 
 

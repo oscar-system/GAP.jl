@@ -1,9 +1,29 @@
 @testset "help" begin
-    @test isa( GAP.GAP_help_string( "IsObject" ), String )
-    @test isa( GAP.GAP_help_string( "IsObject", true ), String )
-    @test isa( GAP.GAP_help_string( "unknow" ), String )
-    @test isa( GAP.GAP_help_string( "unknow", true ), String )
-    @test isa( GAP.GAP_help_string( "something for which no match is found" ), String )
-    @test isa( GAP.GAP_help_string( "something for which no match is found", true ), String )
+    function test_gap_help( topic::String )
+      return isa( GAP.GAP_help_string( topic ), String ) &&
+             isa( GAP.GAP_help_string( topic, true ), String )
+    end
+
+    @test test_gap_help( "" )
+    @test test_gap_help( "&" )
+    @test test_gap_help( "-" )
+    @test test_gap_help( "+" )
+    @test test_gap_help( "<" )
+    @test test_gap_help( "<<" )
+    @test test_gap_help( ">" )
+    @test test_gap_help( ">>" )
+    @test test_gap_help( "welcome to gap" )
+
+    @test test_gap_help( "?determinant" )
+
+    @test test_gap_help( "books" )
+    @test test_gap_help( "tut:chapters" )
+    @test test_gap_help( "tut:sections" )
+
+    @test test_gap_help( "isobject" )
+    @test test_gap_help( "tut:isobject" )
+    @test test_gap_help( "ref:isobject" )
+    @test test_gap_help( "unknow" )
+    @test test_gap_help( "something for which no match is found" )
 end
 
