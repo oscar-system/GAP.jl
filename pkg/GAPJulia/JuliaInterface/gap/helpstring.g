@@ -96,20 +96,30 @@ BindGlobal( "HELP_DESC_MATCH", function(match)
       # Find the end of the subsection in question.
       # This is defined either by the start of the next subsection
       # of the same section, or by the start of the next section or chapter.
-      nextn:= book.entries[ entrynr ][3] + [ 0, 0, 1 ];
+      nextn:= book.entries[ entrynr ][3] + [ ,, 1 ];
       nextentry:= PositionProperty( book.entries, x -> x[3] = nextn );
       if nextentry = fail then
-        nextn:= nextn + [ 0, 1, -nextn[3] ];
+        nextn:= nextn + [ , 1, -nextn[3] ];
         nextentry:= PositionProperty( book.entries, x -> x[3] = nextn );
       fi;
-      firstline:= data.start;
+      if IsBound( data.start ) then
+        firstline:= data.start;
+      else
+        # Perhaps the '.txt' file is not available.
+        firstline:= 1;
+      fi;
       if nextentry = fail then
         lastline:= fail;
       else
         # Just taking 'book.entries[ nextentry ][4]' as the startline
         # would not be correct.
         lastline:= HELP_BOOK_HANDLER.( book.handler ).HelpData( book,
-                       nextentry, type ).start - 1;
+                       nextentry, type );
+        if IsBound( lastline.start ) then
+          lastline:= lastline.start - 1;
+        else
+          lastline:= fail;
+        fi;
       fi;
       break;
     fi;
@@ -323,25 +333,31 @@ BindGlobal( "HELP_DESC_MATCHES", function( books, topic, frombegin, onlyexact...
   if 0 = Length(match) and 0 = Length(exact)  then
     return [ false, [ "Help: no matching entry found" ] ];
     
-  # one exact or together one topic found
-  elif 1 = Length(exact) or (0 = Length(exact) and 1 = Length(match)) then
-    if Length(exact) = 0 then exact := match; fi;
-    i := exact[1];
-    str := Concatenation("Help: Showing `", i[1].bookname,": ", 
-                         StripEscapeSequences( i[1].entries[i[2]][1] ), "'");
-    # to avoid line breaking when str contains escape sequences:
-    n := 0;
-    lines:= [];
-    while n < Length(str) do
-      Add( lines, str{[n+1..Minimum(Length(str), 
-                                    n + QuoInt(SizeScreen()[1] ,2))]} );
-      n := n + QuoInt(SizeScreen()[1] ,2);
-    od;
-    return [ true, Concatenation( lines, HELP_DESC_MATCH(i)[2] ) ];
-
-  # more than one topic found, show all entries
+#   # one exact or together one topic found
+#   elif 1 = Length(exact) or (0 = Length(exact) and 1 = Length(match)) then
+#     if Length(exact) = 0 then exact := match; fi;
+#     i := exact[1];
+#     str := Concatenation("Help: Showing `", i[1].bookname,": ", 
+#                          StripEscapeSequences( i[1].entries[i[2]][1] ), "'");
+#     # to avoid line breaking when str contains escape sequences:
+#     n := 0;
+#     lines:= [];
+#     while n < Length(str) do
+#       Add( lines, str{[n+1..Minimum(Length(str), 
+#                                     n + QuoInt(SizeScreen()[1] ,2))]} );
+#       n := n + QuoInt(SizeScreen()[1] ,2);
+#     od;
+#     return [ true, Concatenation( lines, HELP_DESC_MATCH(i)[2] ) ];
+# 
+#   # more than one topic found, show all entries
   else
-    lines := [ "Help: several entries match this topic", "" ];
+    if 1 = Length(exact) or (0 = Length(exact) and 1 = Length(match)) then
+      # one topic found
+      lines:= [];
+    else
+      # more than one topic found, show all entries
+      lines := [ "Help: several entries match this topic", "" ];
+    fi;
     sep:= [ "", RepeatedUTF8String( "─", SizeScreen()[1] ), "" ];
     HELP_LAST.TOPICS:=[];
     # show exact matches first
@@ -541,7 +557,7 @@ end);
 #F  HelpString( <topic>[, <onlyexact>] )
 ##
 BindGlobal( "HelpString", function( topic, onlyexact... )
-    local res, entry, lines;
+    local res, entry, lines, start;
 
     onlyexact:= ( Length( onlyexact ) = 1 and onlyexact[1] = true );
 
@@ -552,8 +568,13 @@ BindGlobal( "HelpString", function( topic, onlyexact... )
         if IsString( lines ) then
           lines:= SplitString( lines, "\n" );
         fi;
+        if IsBound( entry.start ) then
+          start:= entry.start;
+        else
+          start:= 1;
+        fi;
         Append( res, JoinStringsWithSeparator(
-            lines{ [ entry.start .. Length( lines ) ] },
+            lines{ [ start .. Length( lines ) ] },
             "\n" ) );
       elif IsList( entry ) and ForAll( entry, IsString ) then
         Append( res, JoinStringsWithSeparator( entry, "\n" ) );
