@@ -27,12 +27,12 @@ if install_gap
     if isdir("gap")
         ### Update the GAP clone
         cd("gap")
-        run(`git pull --depth=1 origin master`)
+        run(`git pull origin master`)
     else
         ## TODO: We currently use the GAP master branch.
         ##       Once all issues of using GAP with the julia
         ##       GC are resolved, we switch to a stable version.
-        run(`git clone --depth=1 https://github.com/gap-system/gap`)
+        run(`git clone https://github.com/gap-system/gap`)
         cd("gap")
     end
     run(`./autogen.sh`)
