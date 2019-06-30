@@ -62,6 +62,7 @@ if install_gap
         cd("pkg")
         run(`git clone https://github.com/gap-packages/io`)
         run(`git clone https://github.com/gap-packages/profiling`)
+        run(`git clone https://github.com/gap-packages/AutoDoc`)
         run(`../bin/BuildPackages.sh --with-gaproot=$(gap_root) io profiling`)
     end
 end
