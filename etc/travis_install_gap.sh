@@ -14,5 +14,6 @@ cd pkg
 
 git clone https://github.com/gap-packages/io
 git clone https://github.com/gap-packages/profiling
+git clone https://github.com/gap-packages/AutoDoc
 
 $GAPROOT/bin/BuildPackages.sh --with-gaproot=$GAPROOT io profiling
