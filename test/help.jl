@@ -15,6 +15,8 @@
     @test test_gap_help( "welcome to gap" )
 
     @test test_gap_help( "?determinant" )
+    @test test_gap_help( "?IsJuliaWrapper" )
+    println(GAP.GAP_help_string( "?IsJuliaWrapper" ))
 
     @test test_gap_help( "books" )
     @test test_gap_help( "tut:chapters" )
