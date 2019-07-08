@@ -146,13 +146,7 @@ function gap_to_julia( ::Type{Array{Obj,1}}, obj :: GapObj , recursion_dict = Id
     new_array = Array{Any,1}( undef, len_list)
     recursion_dict[obj] = new_array
     for i in 1:len_list
-        current_obj = ElmList(obj,i)  # returns 'nothing' for holes in the list
-        if haskey(recursion_dict,current_obj)
-            new_array[ i ] = recursion_dict[current_obj]
-        else
-            new_array[ i ] = current_obj
-            recursion_dict[ current_obj ] = new_array[ i ]
-        end
+        new_array[i] = ElmList(obj, i)  # returns 'nothing' for holes in the list
     end
     return new_array
 end
@@ -168,40 +162,15 @@ function gap_to_julia( ::Type{Array{T,1}}, obj :: GapObj, recursion_dict = IdDic
     new_array = Array{T,1}( undef, len_list)
     recursion_dict[obj] = new_array
     for i in 1:len_list
-        current_obj = ElmList(obj,i)
-        if haskey(recursion_dict,current_obj)
-            new_array[ i ] = recursion_dict[current_obj]
-        else
-            new_array[ i ] = gap_to_julia(T,current_obj,recursion_dict)
-            recursion_dict[ current_obj ] = new_array[ i ]
+        current_obj = ElmList(obj, i)
+        new_array[i] = get!(recursion_dict, current_obj) do
+            gap_to_julia(T, current_obj, recursion_dict)
         end
     end
     return new_array
 end
 
-## Special case for conversion of lists with holes; these are converted into 'nothing'
-function gap_to_julia( ::Type{Array{Union{Nothing,T},1}}, obj :: GapObj, recursion_dict = IdDict() ) where T
-    if ! Globals.IsList( obj )
-        throw(ArgumentError("<obj> is not a list"))
-    end
-    if haskey(recursion_dict,obj)
-        return recursion_dict[obj]
-    end
-    len_list = length(obj)
-    new_array = Array{Union{Nothing,T},1}( undef, len_list)
-    recursion_dict[obj] = new_array
-    for i in 1:len_list
-        current_obj = ElmList(obj,i)
-        if haskey(recursion_dict,current_obj)
-            new_array[ i ] = recursion_dict[current_obj]
-        else
-            new_array[ i ] = gap_to_julia(T,current_obj,recursion_dict)
-            recursion_dict[ current_obj ] = new_array[ i ]
-        end
-    end
-    return new_array
-end
-
+## Matrix / list-of-lists
 function gap_to_julia( ::Type{Array{T,2}}, obj :: GapObj, recursion_dict = IdDict() ) where T
     if ! Globals.IsList( obj )
         throw(ArgumentError("<obj> is not a list"))
@@ -215,37 +184,9 @@ function gap_to_julia( ::Type{Array{T,2}}, obj :: GapObj, recursion_dict = IdDic
     recursion_dict[obj] = new_array
     for i in 1:len_list_outer
         for j in 1:len_list_inner
-            current_obj = ElmList(ElmList(obj,i), j)
-            if haskey(recursion_dict,current_obj)
-                new_array[ i, j ] = recursion_dict[current_obj]
-            else
-                new_array[ i, j ] = gap_to_julia(T,current_obj,recursion_dict)
-                recursion_dict[current_obj] = new_array[ i, j ]
-            end
-        end
-    end
-    return new_array
-end
-
-function gap_to_julia( ::Type{Array{Union{Nothing,T},2}}, obj :: GapObj, recursion_dict = IdDict() ) where T
-    if ! Globals.IsList( obj )
-        throw(ArgumentError("<obj> is not a list"))
-    end
-    if haskey(recursion_dict, obj)
-        return recursion_dict[obj]
-    end
-    len_list_outer = length(obj)
-    len_list_inner = len_list_outer == 0 ? 0 : length(obj[1])
-    new_array = Array{Union{Nothing,T},2}( undef, len_list_outer, len_list_inner )
-    recursion_dict[obj] = new_array
-    for i in 1:len_list_outer
-        for j in 1:len_list_inner
-            current_obj = ElmList(ElmList(obj,i), j)
-            if haskey(recursion_dict,current_obj)
-                new_array[ i, j ] = recursion_dict[current_obj]
-            else
-                new_array[ i, j ] = gap_to_julia(Union{Nothing,T},current_obj,recursion_dict)
-                recursion_dict[current_obj] = new_array[ i, j ]
+            current_obj = ElmList(ElmList(obj, i), j)
+            new_array[i, j] = get!(recursion_dict, current_obj) do
+                gap_to_julia(T,current_obj, recursion_dict)
             end
         end
     end
@@ -278,14 +219,10 @@ function gap_to_julia( ::Type{Dict{Symbol,T}}, obj :: GapObj, recursion_dict = I
     names_list = gap_to_julia(Array{Symbol,1},names)
     dict = Dict{Symbol,T}()
     recursion_dict[obj] = dict
-    for i in names_list
-        current_obj = getproperty(obj,i)
-        if haskey(recursion_dict,current_obj)
-            dict[ i ] = recursion_dict[current_obj]
-        else
-            translated_obj = gap_to_julia(T,current_obj,recursion_dict)
-            dict[ i ] = translated_obj
-            recursion_dict[ current_obj ] = translated_obj
+    for key in names_list
+        current_obj = getproperty(obj, key)
+        dict[key] = get!(recursion_dict, current_obj) do
+            gap_to_julia(T, current_obj, recursion_dict)
         end
     end
     return dict
