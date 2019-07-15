@@ -55,19 +55,39 @@ InstallOtherMethod( \[\]\:\=,
 #
 # "matrices" / lists of lists
 #
+#TODO:  Remove the installations for '\[\]' and '\[\]\:\='
+#       as soon as a released GAP version supports '\[\,\]' and '\[\,\]\:\='.
+if IsBound( \[\,\] ) then
+InstallOtherMethod( \[\,\],
+    [ "IsJuliaObject", "IsPosInt and IsSmallIntRep",
+                       "IsPosInt and IsSmallIntRep" ],
+    function( obj, i, j )
+      return Julia.Base.getindex( obj, i, j );
+    end );
+else
 InstallOtherMethod( \[\],
     [ "IsJuliaObject", "IsPosInt and IsSmallIntRep",
                        "IsPosInt and IsSmallIntRep" ],
     function( obj, i, j )
       return Julia.Base.getindex( obj, i, j );
     end );
+fi;
 
+if IsBound( \[\,\]\:\= ) then
+InstallOtherMethod( \[\,\]\:\=,
+    [ "IsJuliaObject", "IsPosInt and IsSmallIntRep",
+                       "IsPosInt and IsSmallIntRep", "IsObject" ],
+    function( obj, i, j, val )
+      return Julia.Base.setindex\!( obj, val, i, j );
+    end );
+else
 InstallOtherMethod( \[\]\:\=,
     [ "IsJuliaObject", "IsPosInt and IsSmallIntRep",
                        "IsPosInt and IsSmallIntRep", "IsObject" ],
     function( obj, i, j, val )
       return Julia.Base.setindex\!( obj, val, i, j );
     end );
+fi;
 
 #
 # access to fields and properties
