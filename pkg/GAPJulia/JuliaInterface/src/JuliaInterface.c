@@ -145,8 +145,10 @@ Obj NewJuliaObj(jl_value_t * v)
 {
     if (is_gapobj(v))
         return (Obj)v;
+    JL_GC_PUSH1(&v);
     Obj o = NewBag(T_JULIA_OBJ, 1 * sizeof(Obj));
     SET_JULIA_OBJ(o, v);
+    JL_GC_POP();
     return o;
 }
 
