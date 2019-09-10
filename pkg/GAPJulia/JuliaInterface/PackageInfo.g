@@ -10,8 +10,9 @@ SetPackageInfo( rec(
 
 PackageName := "JuliaInterface",
 Subtitle := "Test interface to julia",
-Version := "0.2",
-Date := "09/05/2017", # dd/mm/yyyy format
+Version := "0.2.1",
+Date := "10/09/2019", # dd/mm/yyyy format
+License := "GPL-2.0-or-later",
 
 Persons := [
   rec(
@@ -78,7 +79,7 @@ PackageDoc := [ rec(
 ) ],
 
 Dependencies := rec(
-  GAP := ">= 4.10",    # need support for the component 'BannerFunction'
+  GAP := ">= 4.10.2",    # need support for the component 'BannerFunction'
   NeededOtherPackages := [ ],
   SuggestedOtherPackages := [ ],
   ExternalConditions := [ ],
