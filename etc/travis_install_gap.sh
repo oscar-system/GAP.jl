@@ -3,7 +3,7 @@
 set -e
 
 # Download and install GAP
-git clone --depth=1 https://github.com/gap-system/gap
+git clone --depth=1 -b stable-4.11 https://github.com/gap-system/gap
 cd gap
 ./autogen.sh
 ./configure --with-gc=julia --with-julia

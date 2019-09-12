@@ -22,17 +22,17 @@ julia_binary = get(ENV, "JULIA_BINARY", Sys.BINDIR)
 ## Install GAP
 if install_gap
     println("Installing GAP ...")
+    gap_branch = "stable-4.11"
     cd(extra_gap_root)
     ## check if gap already exists
     if isdir("gap")
         ### Update the GAP clone
         cd("gap")
-        run(`git pull origin master`)
+        run(`git fetch origin`)
+        run(`git checkout $(gap_branch)`)
+        run(`git pull origin $(gap_branch)`)
     else
-        ## TODO: We currently use the GAP master branch.
-        ##       Once all issues of using GAP with the julia
-        ##       GC are resolved, we switch to a stable version.
-        run(`git clone https://github.com/gap-system/gap`)
+        run(`git clone -b $(gap_branch) https://github.com/gap-system/gap`)
         cd("gap")
     end
     run(`./autogen.sh`)
