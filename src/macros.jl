@@ -1,3 +1,5 @@
+## convenience macros
+
 """
     @gap <obj>
     @gap(<obj>)
