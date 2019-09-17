@@ -46,11 +46,9 @@ function LoadPackageAndExposeGlobals(package::String, mod::Module; all_globals::
     if load_package == Globals.fail
         error("cannot load package $package")
     end
-    new_gvar_list = nothing
-    if all_globals
-        new_gvar_list = Globals.NamesGVars()
-    else
-        new_gvar_list = Globals.Difference(Globals.NamesGVars(),current_gvar_list)
+    new_gvar_list = Globals.NamesGVars()
+    if !all_globals
+        new_gvar_list = Globals.Difference(new_gvar_list, current_gvar_list)
     end
     new_symbols = gap_to_julia(Array{Symbol,1},new_gvar_list)
     for sym in new_symbols
