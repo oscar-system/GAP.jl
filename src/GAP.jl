@@ -125,6 +125,7 @@ function __init__()
 end
 
 include( "ccalls.jl" )
+include( "adapter.jl" )
 include( "gap2.jl" )
 include( "macros.jl" )
 include( "gap_to_julia.jl" )
