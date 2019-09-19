@@ -17,6 +17,7 @@ import Base: length, convert, finalize
 
 import Libdl
 
+import GAPTypes
 import GAPTypes: GapObj
 
 export GapObj
@@ -111,6 +112,8 @@ function __init__()
     ## the module is loaded.
     gap_module = @__MODULE__
     Base.MainInclude.eval(:(__JULIAGAPMODULE = $gap_module))
+    Base.MainInclude.eval(:(__GapObj_TYPE_VAR = $(gap_module.GAPTypes.GapObj)))
+    Base.MainInclude.eval(:(__GapObj_MODULE_VAR = $(gap_module.GAPTypes)))
     if ! isdefined(Main, :__GAPINTERNAL_LOADED_FROM_GAP) || Main.__GAPINTERNAL_LOADED_FROM_GAP != true
         run_it(GAPROOT, error_handler_func)
     end
