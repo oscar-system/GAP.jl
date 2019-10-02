@@ -60,6 +60,11 @@ after_script:
   - bash <(curl -s https://codecov.io/bash)
 
 notifications:
+  email:
+    recipients:
+      - max@quendi.de
+    on_success: never # default: change
+    on_failure: always # default: always
   slack:
     on_pull_requests: false
     on_success: change
