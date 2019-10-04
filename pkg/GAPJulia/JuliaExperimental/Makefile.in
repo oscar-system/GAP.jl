@@ -1,117 +1,14 @@
 #
 # Makefile rules for the JuliaExperimental package
 #
-# This requires GNU make (just as the main GAP does).
-#
-MODULE_NAME = JuliaExperimental
+KEXT_NAME = JuliaExperimental
+KEXT_SOURCES = src/JuliaExperimental.c
 
-SOURCES = src/JuliaExperimental.c
+KEXT_CFLAGS += -I../JuliaInterface/src/
+KEXT_CFLAGS += -g
+KEXT_LDFLAGS += @JULIA_LDFLAGS@
+KEXT_LDFLAGS += @JULIA_LIBS@
 
-CFLAGS += -I../JuliaInterface/src/
-CFLAGS += -g
-LDFLAGS += @JULIA_LDFLAGS@
-LDFLAGS += @JULIA_LIBS@
-
-########################################################################
-# Do not edit below unless you know what you're doing
-########################################################################
-
-########################################################################
-# Some variables that come from GAP via our configure script
-########################################################################
+# include shared GAP package build system
 GAPPATH = @GAPPATH@
-GAPARCH = @GAPARCH@
-
-BINARCHDIR = bin/$(GAPARCH)
-GAPINSTALLIB = $(BINARCHDIR)/$(MODULE_NAME).so
-
-MKDIR_P = /bin/mkdir -p
-
-GAP = $(GAPPATH)/gap
-GAC = $(GAPPATH)/gac
-
-all: $(GAPINSTALLIB)
-.PHONY: all
-
-########################################################################
-# Object files
-# For each file FOO.c in SOURCES, add gen/FOO.lo to OBJS; similar
-# for .cc files
-########################################################################
-OBJS = $(patsubst %.cc,gen/%.lo,$(patsubst %.c,gen/%.lo,$(SOURCES)))
-
-########################################################################
-# Quiet rules.
-#
-# Replace regular output with quiet messages, unless V is set,
-# e.g. "make V=1"
-########################################################################
-ifneq ($(findstring $(MAKEFLAGS),s),s)
-ifndef V
-QUIET_GAC     = @echo "   GAC     $< => $@";
-LIBTOOL          += --silent
-endif
-endif
-
-########################################################################
-# Rules for automatic header dependency tracking.
-# This is based on the GAP build system.
-########################################################################
-
-# List of all (potential) dependency directories, derived from OBJS
-# and SOURCES (the latter for generated sources, which may also involve
-# dependency tracking)
-DEPDIRS = $(sort $(dir $(SOURCES) $(OBJS)))
-ALL_DEP_FILES = $(wildcard $(addsuffix /*.d,$(DEPDIRS)))
-
-# Include the dependency tracking files.
--include $(ALL_DEP_FILES)
-
-# Mark *.d files as PHONY. This stops make from trying to
-# recreate them (which it can't), and in particular from looking for potential
-# source files. This can save quite a bit of disk access time.
-.PHONY: $(ALL_DEP_FILES)
-
-# The following flags instruct the compiler to enable advanced
-# dependency tracking. Supported by GCC 3 and newer; clang; Intel C
-# compiler; and more.
-DEPFLAGS = -MQ "$@" -MMD -MP -MF $(@D)/$(*F).d
-
-# build rule for C code
-gen/%.lo: %.c Makefile
-	$(QUIET_GAC)$(GAC) -d -p "$(DEPFLAGS)" -p "$(CFLAGS)" -c $< -o $@
-
-# build rule for C++ code
-gen/%.lo: %.cc Makefile
-	$(QUIET_GAC)$(GAC) -d -p "$(DEPFLAGS)" -p "$(CXXFLAGS)" -c $< -o $@
-
-# build rule for linking all object files together into a kernel extension
-$(GAPINSTALLIB): $(OBJS)
-	@$(MKDIR_P) $(BINARCHDIR)
-	$(QUIET_GAC)$(GAC) -d -p "$(DEPFLAGS)" -P "$(LDFLAGS)" $(OBJS) -o $@
-
-clean:
-	rm -rf $(BINARCHDIR)
-	rm -rf gen
-
-distclean:
-	rm -rf bin gen Makefile
-	(cd doc && ./clean)
-
-doc: default
-	$(GAP) makedoc.g
-
-check: default
-	$(GAP) tst/testall.g
-
-Makefile: configure Makefile.in $(GAPPATH)/sysinfo.gap
-	./configure "$(GAPPATH)"
-
-.PHONY: default clean distclean doc check
-
-########################################################################
-# Makefile debugging trick:
-# call print-VARIABLE to see the runtime value of any variable
-########################################################################
-print-%:
-	@echo '$*=$($*)'
+include Makefile.gappkg
