@@ -94,7 +94,6 @@ end );
 
 
 InstallGlobalFunction( JuliaSymbolsInModule,
-                       [ IsJuliaModule ],
   module -> RecNames( module!.storage ) );
 
 InstallValue( Julia, _WrapJuliaModule( "Main", _JuliaGetGlobalVariable( "Main" ) ) );
