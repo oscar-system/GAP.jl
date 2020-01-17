@@ -24,17 +24,9 @@ if install_gap
     println("Installing GAP ...")
     gap_branch = "stable-4.11"
     cd(extra_gap_root)
-    ## check if gap already exists
-    if isdir("gap")
-        ### Update the GAP clone
-        cd("gap")
-        run(`git fetch origin`)
-        run(`git checkout $(gap_branch)`)
-        run(`git pull origin $(gap_branch)`)
-    else
-        run(`git clone -b $(gap_branch) https://github.com/gap-system/gap`)
-        cd("gap")
-    end
+    run(`rm -rf gap`)
+    run(`git clone --depth=1 -b $(gap_branch) https://github.com/gap-system/gap`)
+    cd("gap")
     run(`./autogen.sh`)
     run(`./configure --with-gc=julia --with-julia=$(julia_binary)`)
     run(`make -j$(Sys.CPU_THREADS)`)
@@ -54,6 +46,10 @@ if install_gap
     if gap_install_packages == "yes"
         run(`make bootstrap-pkg-full`)
         cd("pkg")
+        # eliminate a few big packages that take long to compile
+        pkgs = Base.Filesystem.readdir()
+        pkgs = Base.filter(x -> startswith(x, r"Normaliz|semigroups|simpcomp"), pkgs)
+        run(`rm -rf $pkgs`)
         run(`../bin/BuildPackages.sh`)
     elseif gap_install_packages == "minimal"
         run(`make bootstrap-pkg-minimal`)
