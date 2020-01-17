@@ -11,10 +11,8 @@ env:
     - JULIA_TRACK_COVERAGE=yes
     - PATH="/usr/lib/ccache:$PATH"
   matrix:
-    - GAP=$HOME/.julia/gap.sh
-      GAP_INSTALL_PACKAGES=debug
+    - GAP_INSTALL_PACKAGES=debug
     - GAPROOT=$TRAVIS_BUILD_DIR/gap
-      GAP=$TRAVIS_BUILD_DIR/gap/gap
 
 addons:
   apt_packages:
@@ -26,34 +24,42 @@ branches:
   only:
     - master
 
-before_script:
-  - unset JULIA_PROJECT
-  - printenv | sort
-  - which gcc
-  - which g++
-  - which cc
-  - which c++
-  - git show --pretty=fuller -s
-  - mkdir -p coverage
-  - export CFLAGS=--coverage; export LDFLAGS=--coverage
+install:
+  # install some optional dependencies for our tests
+  - JULIA_PROJECT= julia -e 'import Pkg ; Pkg.add("Nemo")'
+  - JULIA_PROJECT= julia -e 'import Pkg ; Pkg.add("Primes")'
+  - JULIA_PROJECT= julia -e 'import Pkg ; Pkg.add("LinearAlgebra")'
+  - JULIA_PROJECT= julia -e 'import Pkg ; Pkg.add("Singular")'
+  # install GAP "manually" if requested
   - if [[ -v GAPROOT ]]; then etc/travis_install_gap.sh; fi
-    ## Add the package so we can use it later
-  - julia -e 'import Pkg ; Pkg.develop(Pkg.PackageSpec(url=pwd())) ; Pkg.build()'
-    ## Unset coverage to prevent Nemo C parts to be built with coverage
-  - unset CFLAGS; unset LDFLAGS
-  - julia -e 'import Pkg ; Pkg.add("Nemo")'
+
+before_script:
+  # check code formatting
+  - git ls-files | egrep '\.[ch]$' | xargs clang-format -i
+  - git diff --exit-code -- .   # detect if there are any diffs
 
 script:
+  # enable coverage tracking in our C code
+  - mkdir -p coverage
+  - export CFLAGS=--coverage; export LDFLAGS=--coverage
+  # Build package and run Julia specific tests
+  - julia -e 'using Pkg ; Pkg.build(; verbose = true) ; Pkg.test(coverage=true)'
+  - pkgpath=$(julia -e 'print(abspath(joinpath(dirname(Base.find_package("GAP")), "..")))');
+  # Run GAP specific tests
+  - export GAP="$pkgpath/gap.sh -A --quitonbreak --norepl"
   - etc/travis_test.sh
-  # delete coverage files for GAP C files, to avoid clash with our .c files
-  # such as calls.c
-  - rm -f $HOME/.julia/packages/GAP/*/gap/obj/src/.libs/*.gc* # gcno, gcda
-  - rm -f $TRAVIS_BUILD_DIR/gap/obj/src/.libs/*.gc*  # gcno, gcda
+  # delete *.gcno and *.gcda coverage files for GAP C files, to avoid clash
+  # with our .c files such as calls.c
+  - if [[ -v GAPROOT ]]; then
+      rm -f $GAPROOT/obj/src/.libs/*.gc* ;
+    else
+      rm -f $pkgpath/gap/obj/src/.libs/*.gc* ;
+    fi
 
 after_script:
   - cd $TRAVIS_BUILD_DIR
-  - $GAP -A --quitonbreak --norepl etc/gather_coverage.g
-  - rm -rf gap # delete GAP if present, to avoid collecting its coverage data
+  - $GAP etc/gather_coverage.g
+  - rm -rf gap  # delete GAP if present, to avoid collecting its coverage data
   - julia etc/gather_coverage.jl
   - bash <(curl -s https://codecov.io/bash)
 
@@ -61,8 +67,8 @@ notifications:
   email:
     recipients:
       - max@quendi.de
-    on_success: never # default: change
-    on_failure: always # default: always
+    on_success: never   # default: change
+    on_failure: always  # default: always
   slack:
     on_pull_requests: false
     on_success: change
