@@ -109,5 +109,3 @@ end
 
 cd(extra_gap_root)
 run(`chmod +x gap.sh`)
-julia_gap_sh_link = abspath(joinpath(Pkg.depots1(), "gap"))
-run(`ln -snf $gap_sh_path $julia_gap_sh_link`)

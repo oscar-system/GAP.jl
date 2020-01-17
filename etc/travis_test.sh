@@ -5,18 +5,6 @@ set -x
 
 AnyFailures=No
 
-# check code formatting
-find . -name '*.c' -exec clang-format -i {} \;
-find . -name '*.h' -exec clang-format -i {} \;
-git diff --exit-code -- . # detect if there are any diffs
-
-#
-GAP="${HOME}/.julia/gap -A --quitonbreak --norepl"
-
-#
-pwd
-julia -e 'using Pkg ; Pkg.test("GAP"; coverage=true)' || AnyFailures=Yes
-
 #
 cd ${TRAVIS_BUILD_DIR}/pkg/GAPJulia/JuliaInterface
 pwd
