@@ -38,6 +38,9 @@ if install_gap
     run(`./autogen.sh`)
     run(`./configure --with-gc=julia --with-julia=$(julia_binary)`)
     run(`make -j$(Sys.CPU_THREADS)`)
+    cd("doc")
+    run(`make_doc nopdf`)
+    cd("..")
     ## FIXME: Hack to make GAPTypes available in the global package environment:
     ## For a moment, we set the Julia load path to the actual depot, i.e.,
     ## the env GAP.jl is installed to, to install GAPTypes.jl globally.
