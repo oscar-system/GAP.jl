@@ -15,6 +15,7 @@
     @test test_gap_help( "welcome to gap" )
 
     @test test_gap_help( "?determinant" )
+    @test test_gap_help( "?PermList" )
     @test test_gap_help( "?IsJuliaWrapper" )
     println(GAP.GAP_help_string( "?IsJuliaWrapper" ))
 

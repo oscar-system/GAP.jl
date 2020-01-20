@@ -96,11 +96,22 @@ BindGlobal( "HELP_DESC_MATCH", function(match)
       # Find the end of the subsection in question.
       # This is defined either by the start of the next subsection
       # of the same section, or by the start of the next section or chapter.
-      nextn:= book.entries[ entrynr ][3] + [ ,, 1 ];
-      nextentry:= PositionProperty( book.entries, x -> x[3] = nextn );
-      if nextentry = fail then
-        nextn:= nextn + [ , 1, -nextn[3] ];
+      nextentry:= fail;
+      if book.handler = "GapDocGAP" then
+        # This happens for most packages.
+        nextn:= book.entries[ entrynr ][3] + [ ,, 1 ];
         nextentry:= PositionProperty( book.entries, x -> x[3] = nextn );
+        if nextentry = fail then
+          nextn:= nextn + [ , 1, -nextn[3] ];
+          nextentry:= PositionProperty( book.entries, x -> x[3] = nextn );
+        fi;
+      elif book.handler = "default" then
+        # There are still several packages with this handler.
+        if entrynr < Length( book.entries )
+           and book.entries[ entrynr ][3] = "F"
+           and book.entries[ entrynr+1 ][3] = "F" then
+          nextentry:= entrynr+1;
+        fi;
       fi;
       if IsBound( data.start ) then
         firstline:= data.start;
@@ -466,7 +477,7 @@ InstallGlobalFunction( HELP_String, function( str, onlyexact )
       str  := HELP_TOPIC_RING[HELP_RING_IDX+1];
       move := true;
   fi;
-  
+
   # number means topic from HELP_LAST.TOPICS list
   if book = "" and ForAll(str, a-> a in "0123456789") then
       return [ HELP_DESC_FROM_LAST_TOPICS(Int(str))[2] ];
