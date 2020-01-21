@@ -51,16 +51,25 @@ if install_gap
         pkgs = Base.filter(x -> startswith(x, r"Normaliz|semigroups|simpcomp"), pkgs)
         run(`rm -rf $pkgs`)
         run(`../bin/BuildPackages.sh`)
+        cd("..")
     elseif gap_install_packages == "minimal"
         run(`make bootstrap-pkg-minimal`)
+        cd("pkg")
+        run(`git clone https://github.com/frankluebeck/GAPDoc`) # HACK to workaround outdated packages-required-stable-4.11.tar.gz
+        cd("..")
     elseif gap_install_packages == "debug"
         run(`make bootstrap-pkg-minimal`)
         cd("pkg")
+        run(`git clone https://github.com/frankluebeck/GAPDoc`) # HACK to workaround outdated packages-required-stable-4.11.tar.gz
         run(`git clone https://github.com/gap-packages/io`)
         run(`git clone https://github.com/gap-packages/profiling`)
         run(`git clone https://github.com/gap-packages/AutoDoc`)
         run(`../bin/BuildPackages.sh io profiling`)
+        cd("..")
     end
+    # build the GAP manual so that the help system works (must be done
+    # after GAP packages are installed)
+    run(`make html`)
 end
 
 gap_executable = abspath(joinpath(gap_root, "gap"))
