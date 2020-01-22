@@ -24,7 +24,8 @@ of converted objects and should never be given by the user.
 ## which ends up selecting the method below.
 function gap_to_julia(t::T, x::Any) where T <: Type
     if ! (typeof(x) <: t)
-        throw(MethodError("Wrong type: expected " * string(t) * ","))
+        throw(ErrorException("Don't know how to convert value of type " *
+            string(typeof(x)) * " to type " * string(t)))
     end
     return x
 end
