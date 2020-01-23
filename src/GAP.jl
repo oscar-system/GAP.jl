@@ -79,10 +79,19 @@ function initialize( argv::Array{String,1}, env::Array{String,1}, error_handler_
 end
 
 function finalize( )
-    ccall( (:GAP_finalize, "libgap")
-           , Cvoid
-           , () )
+    ccall( (:GAP_finalize, "libgap"), Cvoid, () )
 end
+
+function register_GapObj()
+    # TODO: for now we try to stay compatible with older GAP versions that
+    # don't have GAP_register_GapObj yet, but we should remove this ASAP
+    try
+        ccall( :GAP_register_GapObj, Cvoid, (Any, ), GapObj )
+    catch
+        # silently ignore for now
+    end
+end
+
 
 gap_is_initialized = false
 
@@ -106,14 +115,19 @@ end
 function __init__()
     error_handler_func = @cfunction(error_handler, Cvoid, ())
 
-    ## We temporarily assign this module to the name __JULIAGAPMODULE
-    ## to not bind GAP in the Main namespace, as this causes a warning when
-    ## the module is loaded.
+    ## Older versions of GAP need a pointer to the GAP.jl module during
+    ## initialization, but at this point Main.GAP is not yet bound. So instead
+    ## we assign this module to the name __JULIAGAPMODULE.
+    ## TODO: Newer versions of GAP won't need this; we should get rid of
+    ## __JULIAGAPMODULE as soon as we can.
     gap_module = @__MODULE__
     Base.MainInclude.eval(:(__JULIAGAPMODULE = $gap_module))
+
+    # TODO: try to get rid of __GAPINTERNAL_LOADED_FROM_GAP, too
     if ! isdefined(Main, :__GAPINTERNAL_LOADED_FROM_GAP) || Main.__GAPINTERNAL_LOADED_FROM_GAP != true
         run_it(GAPROOT, error_handler_func)
     end
+    register_GapObj()
 
     ## FIXME: Hack because abstract types cannot be endowed with methods in Julia 1.1.
     ## With Julia 1.2, this will be possible and this hack could then be replaced with the
