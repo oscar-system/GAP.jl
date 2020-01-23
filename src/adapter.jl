@@ -15,8 +15,22 @@ function Base.string( obj::Union{GapObj,FFE} )
 end
 
 ## implement indexing interface
-Base.getindex(x::GapObj, i::Int64) = Globals.ELM_LIST(x, i)
-Base.setindex!(x::GapObj, v::Any, i::Int64 ) = Globals.ASS_LIST( x, i, v )
+Base.getindex(x::GapObj, i::Integer) = Globals.ELM_LIST(x, Int(i))
+Base.setindex!(x::GapObj, v, i::Integer) = Globals.ASS_LIST( x, Int(i), v)
+
+function Base.iterate(x::GapObj)
+    Globals.IsList(x) || throw(ArgumentError("GAP object is not iterable:\n $x"))
+    len = length(x)
+    iszero(len) && return nothing
+    return x[1], (1, len)
+end
+function Base.iterate(x::GapObj, state)
+    s, len = state
+    s == len && return nothing
+    return x[s+1], (s+1, len)
+end
+
+Base.eltype(x::GapObj) = Any # guess_eltype(x)
 Base.length(x::GapObj) = Globals.Length(x)
 Base.firstindex(x::GapObj) = 1
 Base.lastindex(x::GapObj) = Globals.Length(x)
