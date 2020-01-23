@@ -22,10 +22,10 @@ julia_binary = get(ENV, "JULIA_BINARY", Sys.BINDIR)
 ## Install GAP
 if install_gap
     println("Installing GAP ...")
-    gap_branch = "stable-4.11"
+    gap_branch = "mh/julia-no-GAPTypes"
     cd(extra_gap_root)
     run(`rm -rf gap`)
-    run(`git clone --depth=1 -b $(gap_branch) https://github.com/gap-system/gap`)
+    run(`git clone --depth=1 -b $(gap_branch) https://github.com/fingolfin/gap`)
     cd("gap")
     run(`./autogen.sh`)
     run(`./configure --with-gc=julia --with-julia=$(julia_binary)`)
