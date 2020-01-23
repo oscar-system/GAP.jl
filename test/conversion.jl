@@ -126,7 +126,7 @@
     xx = GAP.EvalString( "[1,,1]" )
     @test GAP.gap_to_julia(xx) == Any[1,nothing,1]
     @test GAP.gap_to_julia(Array{Any,1},xx) == Any[1,nothing,1]
-    @test_throws ErrorException GAP.gap_to_julia(Array{Int64,1},xx)
+    @test_throws MethodError GAP.gap_to_julia(Array{Int64,1},xx)
     @test GAP.gap_to_julia(Array{Union{Nothing,Int64},1},xx) == Union{Nothing,Int64}[1,nothing,1]
     @test GAP.gap_to_julia(Array{Union{Int64,Nothing},1},xx) == Union{Nothing,Int64}[1,nothing,1]
 
