@@ -3,8 +3,6 @@
 #include "calls.h"
 #include "JuliaInterface.h"
 
-#include <src/compiled.h>    // GAP headers
-
 // This function is used by GAP.jl
 jl_value_t * julia_gap(Obj obj)
 {

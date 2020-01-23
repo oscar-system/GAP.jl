@@ -2,7 +2,6 @@
 #include "convert.h"
 #include "JuliaInterface.h"
 
-#include <src/compiled.h>    // GAP headers
 
 static Obj DoCallJuliaFunc0Arg(Obj func);
 

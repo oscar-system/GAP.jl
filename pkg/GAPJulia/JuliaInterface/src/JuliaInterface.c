@@ -1,5 +1,5 @@
 /*
- * JuliaInterface: Test interface to julia
+ * JuliaInterface: Interface to julia
  */
 
 #include "JuliaInterface.h"
@@ -7,7 +7,6 @@
 #include "calls.h"
 #include "convert.h"
 
-#include <src/compiled.h>    // GAP headers
 #include <src/julia_gc.h>
 
 #include <julia_gcext.h>

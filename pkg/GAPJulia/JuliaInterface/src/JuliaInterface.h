@@ -1,6 +1,7 @@
 #ifndef JULIAINTERFACE_H_
 #define JULIAINTERFACE_H_
 
+#include <src/compiled.h>    // GAP headers
 #include <julia.h>
 #include <libgap-api.h>
 
