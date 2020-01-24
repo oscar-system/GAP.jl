@@ -1,5 +1,8 @@
 module GAP
 
+# In order to locate the GAP installation, 'deps/build.jl' generate a file
+# 'deps/deps.jl' for us which sets the variable GAPROOT. We read this file
+# here.
 include(abspath(joinpath(@__DIR__, "..", "deps", "deps.jl")))
 
 """
@@ -48,9 +51,6 @@ function error_handler()
     error("Error thrown by GAP")
 end
 
-
-const pkgdir = realpath(dirname(@__FILE__))
-
 function initialize( argv::Array{String,1}, env::Array{String,1}, error_handler_func::Ptr{Nothing} )
     gap_library = Libdl.dlopen("libgap", Libdl.RTLD_GLOBAL)
     ccall( Libdl.dlsym(gap_library, :GAP_Initialize)
@@ -95,11 +95,10 @@ run_it = function(gapdir::String, error_handler_func::Ptr{Nothing})
     gapdir = joinpath(gapdir, ".libs")
     println("Adding path ", gapdir, " to DL_LOAD_PATH")
     push!( Libdl.DL_LOAD_PATH, gapdir )
+    gaproots = abspath(joinpath(@__DIR__, "..")) * ";" * sysinfo["GAP_LIB_DIR"]
     initialize( [ ""
-                       , "-l", sysinfo["GAP_LIB_DIR"]
+                       , "-l", gaproots
                        , "-T", "-r", "-A", "--nointeract"
-                       , "-l", "$(EXTRA_GAPROOT);"
-#                      , "-m", "512m" ], [""] )
                        , "-m", "1000m" ], [""], error_handler_func )
     gap_is_initialized = true
 end
