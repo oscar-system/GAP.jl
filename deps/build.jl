@@ -80,9 +80,6 @@ println("Generating deps.jl ...")
 
 deps_string = """
 GAPROOT = "$gap_root"
-GAP_EXECUTABLE = "$gap_executable"
-EXTRA_GAPROOT = "$extra_gap_root"
-
 """
 
 path = abspath(joinpath(@__DIR__, "deps.jl"))
