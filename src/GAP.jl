@@ -20,8 +20,7 @@ import Base: length, convert, finalize
 
 import Libdl
 
-import GAPTypes
-import GAPTypes: GapObj
+abstract type GapObj end
 
 export GapObj
 
