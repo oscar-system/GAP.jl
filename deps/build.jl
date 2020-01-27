@@ -30,18 +30,7 @@ if install_gap
     run(`./autogen.sh`)
     run(`./configure --with-gc=julia --with-julia=$(julia_binary)`)
     run(`make -j$(Sys.CPU_THREADS)`)
-    ## FIXME: Hack to make GAPTypes available in the global package environment:
-    ## For a moment, we set the Julia load path to the actual depot, i.e.,
-    ## the env GAP.jl is installed to, to install GAPTypes.jl globally.
-    ## Since the package manager usually sets the load paths, 
-    ## JULIA_LOAD_PATH should always be set when this script is
-    ## executed. However, just setting this environment variable
-    ## just for the configure currently does not work.
-    julia_load_path_save = ENV["JULIA_LOAD_PATH"]
-    pop!( ENV, "JULIA_LOAD_PATH" )
-    julia_executable = joinpath(julia_binary, "julia")
-    run(`$(julia_executable) -e 'import Pkg; Pkg.add("GAPTypes")'`)
-    ENV["JULIA_LOAD_PATH"] = julia_load_path_save
+
     gap_install_packages =  get(ENV, "GAP_INSTALL_PACKAGES", "yes")
     if gap_install_packages == "yes"
         run(`make bootstrap-pkg-full`)
