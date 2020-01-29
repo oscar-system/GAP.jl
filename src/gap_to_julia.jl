@@ -64,7 +64,7 @@ function Base.BigInt(x::GapObj)
 end
 
 function Base.big(obj::GapObj) # very much type unstable
-    Globals.IsFloat(obj) && return BigFloat(Float64(obj))
+    Globals.IsIEEE754FloatRep(obj) && return BigFloat(Float64(obj))
     Globals.IsInt(obj) && return BigInt(obj)
     Globals.IsRat(obj) && return Rational{BigInt}(obj)
     throw(ConversionError(obj, "any of BigFloat, BigInt or Rational{BigInt}"))
