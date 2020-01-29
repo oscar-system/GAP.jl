@@ -37,7 +37,7 @@ function Base.Int64(obj::GapObj)
 end
 
 function Base.Float64(obj::GapObj)
-    Globals.IsFloat(obj) && return ValueMacFloat(obj)::Float64
+    Globals.IsIEEE754FloatRep(obj) && return ValueMacFloat(obj)::Float64
     throw(ConversionError(obj, Float64))
 end
 
