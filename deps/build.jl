@@ -37,7 +37,7 @@ if install_gap
         cd("pkg")
         # eliminate a few big packages that take long to compile
         pkgs = Base.Filesystem.readdir()
-        pkgs = Base.filter(x -> startswith(x, r"Normaliz|semigroups|simpcomp"), pkgs)
+        pkgs = Base.filter(x -> occursin(r"^(Normaliz|semigroups|simpcomp)", x), pkgs)
         run(`rm -rf $pkgs`)
         run(`../bin/BuildPackages.sh`)
     elseif gap_install_packages == "minimal"
