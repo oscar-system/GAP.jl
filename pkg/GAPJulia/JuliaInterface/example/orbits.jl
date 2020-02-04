@@ -5,7 +5,7 @@ function bahn( element, generators, action )
         for g in generators
             c = action(b, g)
             x = get(dict, c, nothing)
-            if x == nothing
+            if x === nothing
                 push!( orb, c )
                 dict[c] = length(orb)
             end
