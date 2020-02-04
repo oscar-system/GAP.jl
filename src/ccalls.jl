@@ -177,7 +177,7 @@ function getproperty(funcobj::GlobalsType, name::Symbol)
 
     v = ccall(:ValGVar, Ptr{Cvoid}, (Cuint,), gvar)
     v = RAW_GAP_TO_JULIA(v)
-    if v == nothing
+    if v === nothing
         error("GAP variable ", name, " not bound")
     end
     return v
