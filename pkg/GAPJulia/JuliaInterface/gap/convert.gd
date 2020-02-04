@@ -142,7 +142,7 @@
 #!  <List>
 #!  <Item>
 #!    <C>Int64</C> to immediate integer when it fits,
-#!    otherwise to &Julia; object wrapper,
+#!    otherwise to a &GAP; large integer,
 #!  </Item>
 #!  <Item>
 #!    <C>GapFFE</C> to immediate FFE,
