@@ -185,6 +185,21 @@ end
     @test GAP.julia_to_gap(Int16(1))  == 1
     @test GAP.julia_to_gap(Int8(1))   == 1
 
+    ## Int64 corner cases
+    @test GAP.julia_to_gap(-2^60  )  === -2^60
+    @test GAP.julia_to_gap( 2^60-1)  ===  2^60 - 1
+
+    @test GAP.Globals.IsInt(GAP.julia_to_gap(-2^60-1))
+    @test GAP.Globals.IsInt(GAP.julia_to_gap( 2^60))
+
+    @test GAP.Globals.IsInt(GAP.julia_to_gap(-2^63-1))
+    @test GAP.Globals.IsInt(GAP.julia_to_gap(-2^63))
+    @test GAP.Globals.IsInt(GAP.julia_to_gap( 2^63-1))
+    @test GAP.Globals.IsInt(GAP.julia_to_gap( 2^63))
+
+    # see issue https://github.com/oscar-system/GAP.jl/issues/332
+    @test 2^60 * GAP.Globals.Factorial(20) == GAP.EvalString("2^60 * Factorial(20)")
+
     ## Unsigned integers
     @test GAP.julia_to_gap(UInt128(1)) == 1
     @test GAP.julia_to_gap(UInt64(1))  == 1

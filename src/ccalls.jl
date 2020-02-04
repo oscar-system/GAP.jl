@@ -75,14 +75,6 @@ function NewPlist(length :: Int64)
     return o
 end
 
-function MakeObjInt(x::BigInt)
-    o = ccall( :MakeObjInt,
-               Ptr{Cvoid},
-               (Ptr{UInt64},Cint),
-               x.d, x.size )
-    return RAW_GAP_TO_JULIA( o )
-end
-
 function NEW_MACFLOAT(x::Float64)
     o = ccall( :NEW_MACFLOAT,
                Any,
