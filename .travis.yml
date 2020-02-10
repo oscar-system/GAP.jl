@@ -43,7 +43,8 @@ script:
   - mkdir -p coverage
   - export CFLAGS=--coverage; export LDFLAGS=--coverage
   # Build package and run Julia specific tests
-  - julia -e 'using Pkg ; Pkg.build(; verbose = true) ; Pkg.test(coverage=true)'
+  - julia --color=yes -e 'using Pkg ; Pkg.build(; verbose = true)'
+  - julia --color=yes -e 'using Pkg ; Pkg.test(coverage=true)'
   - pkgpath=$(julia -e 'print(abspath(joinpath(dirname(Base.find_package("GAP")), "..")))');
   # Run GAP specific tests
   - export GAP="$pkgpath/gap.sh -A --quitonbreak --norepl"
@@ -60,7 +61,7 @@ after_script:
   - cd $TRAVIS_BUILD_DIR
   - $GAP etc/gather_coverage.g
   - rm -rf gap  # delete GAP if present, to avoid collecting its coverage data
-  - julia etc/gather_coverage.jl
+  - julia --color=yes etc/gather_coverage.jl
   - bash <(curl -s https://codecov.io/bash)
 
 jobs:
@@ -69,8 +70,8 @@ jobs:
        julia: 1.1
        os: linux
        script:
-         - julia --project=docs/ -e 'using Pkg; Pkg.instantiate(); Pkg.add(PackageSpec(path=pwd()))'
-         - julia --project=docs/ docs/make.jl
+         - julia --color=yes --project=docs/ -e 'using Pkg; Pkg.instantiate(); Pkg.add(PackageSpec(path=pwd()))'
+         - julia --color=yes --project=docs/ docs/make.jl
        after_success: skip
        name: "HTML"
 
