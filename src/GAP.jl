@@ -106,7 +106,7 @@ run_it = function(gapdir::String, error_handler_func::Ptr{Nothing})
     gaproots = abspath(joinpath(@__DIR__, "..")) * ";" * sysinfo["GAP_LIB_DIR"]
     initialize( [ ""
                        , "-l", gaproots
-                       , "-T", "-r", "-A", "--nointeract"
+                       , "-T", "-A", "--nointeract"
                        , "-m", "1000m" ], [""], error_handler_func )
     gap_is_initialized = true
 end
