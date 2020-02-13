@@ -131,10 +131,15 @@ function run_it(gapdir::String, error_handler_func::Ptr{Nothing})
     end
     sysinfo = read_sysinfo_gap(gapdir)
     gaproots = abspath(joinpath(@__DIR__, "..")) * ";" * sysinfo["GAP_LIB_DIR"]
-    initialize( gapdir, [ ""
+    cmdline_options = [ ""
                        , "-l", gaproots
                        , "-T", "-A", "--nointeract"
-                       , "-m", "1000m" ], [""], error_handler_func )
+                       , "-m", "1000m" ]
+    if get( ENV, "GAP_SHOW_BANNER", "false" ) != "true"
+      # Do not show the main GAP banner by default.
+      push!( cmdline_options, "-b" )
+    end
+    initialize( gapdir, cmdline_options, [""], error_handler_func )
     gap_is_initialized = true
 end
 
@@ -162,6 +167,18 @@ function __init__()
     Base.MainInclude.eval(:(
         (func::$MPtr)(args...; kwargs...) = $(GAP.call_gap_func)(func, args...; kwargs...)
     ))
+
+    if ! haskey( ENV, "GAP_SHOW_BANNER" ) || ENV[ "GAP_SHOW_BANNER" ] != "true"
+      # Show package banners by default when LoadPackage is called.
+      Base.MainInclude.eval(:(
+        begin
+          record = $gap_module.Globals.GAPInfo
+          record.CommandLineOptions = $gap_module.Globals.ShallowCopy( record.CommandLineOptions )
+          record.CommandLineOptions.b = false
+          $gap_module.Globals.MakeImmutable( record.CommandLineOptions )
+        end
+      ))
+    end
 end
 
 include( "ccalls.jl" )
