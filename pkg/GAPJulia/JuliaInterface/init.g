@@ -5,25 +5,26 @@
 #
 
 ##
-##  If the value is <K>true</K> then the file <F>~/.juliarc.jl</F>
+##  If the value is <K>true</K> then the file
+##  <F>~/.julia/config/startup.jl</F>
 ##  gets imported into &Julia; after startup.
 ##  If the value is a nonempty string that is the name of a directory
-##  then the <F>.juliarc.jl</F> file in this directory gets imported into
+##  then the <F>startup.jl</F> file in this directory gets imported into
 ##  &Julia;.
-##  Otherwise no <F>.juliarc.jl</F> file will be imported automatically,
-##  since <C>libjulia</C> does not import such a file.
+##  Otherwise no <F>startup.jl</F> file will be imported automatically,
+##  since apparently <C>libjulia</C> does not import such a file.
 ##
 DeclareUserPreference( rec(
     package:= "JuliaInterface",
-    name:= "IncludeJuliarcFile",
+    name:= "IncludeJuliaStartupFile",
     description:= [
-      "If the value is 'true' then the file '~/.juliarc.jl'",
+      "If the value is 'true' then the file '~/.julia/config/startup.jl'",
       "gets imported into Julia after startup.",
       "If the value is a nonempty string that is the name of a directory",
-      "then the '.juliarc.jl' file in this directory gets imported into",
+      "then the 'startup.jl' file in this directory gets imported into",
       "Julia.",
-      "Otherwise no '.juliarc.jl' file will be imported automatically,",
-      "since 'libjulia' does not import such a file.",
+      "Otherwise no 'startup.jl' file will be imported automatically,",
+      "since apparently 'libjulia' does not import such a file.",
     ],
     default:= "",
     ) );
@@ -39,16 +40,16 @@ Unbind(_PATH_SO);
 
 
 ##
-##  Import the 'juliarc.jl' file if wanted.
+##  Import the 'startup.jl' file if wanted.
 ##
 CallFuncList( function()
-    local dotjuliarcdir, filename, res;
+    local dir, filename, res;
 
-    dotjuliarcdir:= UserPreference( "JuliaInterface", "IncludeJuliarcFile" );
-    if dotjuliarcdir = true then
-      filename:= Filename( DirectoryHome(), ".juliarc.jl" );
-    elif IsString( dotjuliarcdir ) and dotjuliarcdir <> "" then
-      filename:= Filename( Directory( dotjuliarcdir ), ".juliarc.jl" );
+    dir:= UserPreference( "JuliaInterface", "IncludeJuliaStartupFile" );
+    if dir = true then
+      filename:= Filename( DirectoryHome(), ".julia/config/startup.jl" );
+    elif IsString( dir ) and dir <> "" then
+      filename:= Filename( Directory( dir ), "startup.jl" );
     else
       return;
     fi;
