@@ -4,7 +4,7 @@
     @test GAP.gap_to_julia(Any, true ) == true
     @test GAP.gap_to_julia(GAP.Obj, true ) == true
     @test GAP.gap_to_julia(Any, "foo" ) == "foo"
-    
+
     ## Integers
     @test GAP.gap_to_julia(Int128,1) == Int128(1)
     @test GAP.gap_to_julia(Int64 ,1) == Int64(1)
@@ -55,6 +55,14 @@
     @test_throws ArgumentError GAP.gap_to_julia(Cuchar,x)
 
     ## Strings & Symbols
+    x = GAP.EvalString("[]")
+    @test GAP.Globals.IsString( x ) == true
+    @test GAP.Globals.IsStringRep( x ) == false
+    @test GAP.gap_to_julia(String,x) == ""
+    x = GAP.EvalString("[ 'a', 'b', 'c' ]")
+    @test GAP.Globals.IsString( x ) == true
+    @test GAP.Globals.IsStringRep( x ) == false
+    @test GAP.gap_to_julia(String,x) == "abc"
     x = GAP.EvalString("\"foo\"")
     @test GAP.gap_to_julia(String,x) == "foo"
     @test GAP.gap_to_julia(AbstractString,x) == "foo"
@@ -86,11 +94,38 @@
     n = GAP.EvalString("[[1,2],[,4]]")
     @test GAP.gap_to_julia(Array{Union{Int64,Nothing},2},n) == [1 2; nothing 4]
 
+    ## BitArrays
+    x = GAP.EvalString( "[ true, false, false, true ]" )
+    @test GAP.gap_to_julia( BitArray{1}, x ) == [ true, false, false, true ]
+    x = GAP.EvalString( "[ 1, 0, 0, 1 ]" )
+    @test_throws ArgumentError GAP.gap_to_julia( BitArray{1}, x )
+
     ## Tuples
+    x = GAP.julia_to_gap([1,2,3])
     @test GAP.gap_to_julia(Tuple{Int64,Any,Int32},x) == Tuple{Int64,Any,Int32}([1,2,3])
     n = GAP.julia_to_gap(big(2)^100)
     @test_throws ArgumentError GAP.gap_to_julia(Tuple{Int64,Any,Int32},n)
-    
+
+    ## Ranges
+    r = GAP.EvalString( "[]" )
+    @test GAP.gap_to_julia( UnitRange{Int64}, r ) == 1:0
+    @test GAP.gap_to_julia( StepRange{Int64,Int64}, r ) == 1:1:0
+    r = GAP.EvalString( "[ 1 ]" )
+    @test GAP.gap_to_julia( UnitRange{Int64}, r ) == 1:1
+    @test GAP.gap_to_julia( StepRange{Int64,Int64}, r ) == 1:1:1
+    r = GAP.EvalString( "[ 4 .. 13 ]" )
+    @test GAP.gap_to_julia( UnitRange{Int64}, r ) == 4:13
+    @test GAP.gap_to_julia( StepRange{Int64,Int64}, r ) == 4:1:13
+    r = GAP.EvalString( "[ 1, 4 .. 10 ]" )
+    @test_throws ArgumentError GAP.gap_to_julia( UnitRange{Int64}, r )
+    @test GAP.gap_to_julia( StepRange{Int64,Int64}, r ) == 1:3:10
+    r = GAP.EvalString( "[ 1, 2, 4 ]" )
+    @test_throws ArgumentError GAP.gap_to_julia( UnitRange{Int64}, r )
+    @test_throws ArgumentError GAP.gap_to_julia( StepRange{Int64,Int64}, r )
+    r = GAP.EvalString( "rec()" )
+    @test_throws ArgumentError GAP.gap_to_julia( UnitRange{Int64}, r )
+    @test_throws ArgumentError GAP.gap_to_julia( StepRange{Int64,Int64}, r )
+
     ## Dictionaries
     x = GAP.EvalString(" rec( foo := 1, bar := \"foo\" )" )
     y = Dict{Symbol,Any}( :foo => 1, :bar => "foo" )
@@ -142,7 +177,7 @@ end
 
     ## Defaults
     @test GAP.julia_to_gap( true )
-    
+
     ## Integers
     @test GAP.julia_to_gap(Int128(1)) == 1
     @test GAP.julia_to_gap(Int64(1))  == 1
@@ -192,13 +227,33 @@ end
     @test GAP.julia_to_gap([1,"foo",BigInt(2)]) == x
     x = GAP.EvalString("[[1,2],[3,4]]")
     @test GAP.julia_to_gap([ 1 2 ; 3 4 ]) == x
-    
+
+    ## BitArrays
+    x = GAP.EvalString("BlistList([1,2],[1])")
+    y = GAP.julia_to_gap([true,false])
+    @test y == x
+    @test GAP.gap_to_julia( GAP.Globals.TNAM_OBJ( y ) ) == "list (boolean)"
+
     ## Tuples
     x = GAP.EvalString("[1,\"foo\",2]")
     @test GAP.julia_to_gap((1,"foo",2),Val(true)) == x
     x = GAP.EvalString("[1,JuliaEvalString(\"\\\"foo\\\"\"),2]")
     @test GAP.julia_to_gap((1,"foo",2)) == x
-    
+
+    ## Ranges
+    r = GAP.EvalString( "[]" )
+    @test GAP.julia_to_gap( 1:0 ) == r
+    @test GAP.julia_to_gap( 1:1:0 ) == r
+    r = GAP.EvalString( "[ 1 ]" )
+    @test GAP.julia_to_gap( 1:1 ) == r
+    @test GAP.julia_to_gap( 1:1:1 ) == r
+    r = GAP.EvalString( "[ 4 .. 13 ]" )
+    @test GAP.julia_to_gap( 4:13 ) == r
+    @test GAP.julia_to_gap( 4:1:13 ) == r
+    r = GAP.EvalString( "[ 1, 4 .. 10 ]" )
+    @test GAP.julia_to_gap( 1:3:10 ) == r
+    @test_throws ErrorException GAP.julia_to_gap( 1:2^62 )
+
     ## Dictionaries
     x = GAP.EvalString(" rec( foo := 1, bar := \"foo\" )" )
     # ... recursive conversion

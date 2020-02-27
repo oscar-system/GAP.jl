@@ -65,7 +65,7 @@ julia_to_gap(x::Symbol) = MakeString(string(x))
 ## Generic caller for optional arguments
 julia_to_gap(obj::Any, recursive, recursion_dict ) = julia_to_gap(obj)
 
-## Arrays
+## Arrays (including BitArray{1})
 function julia_to_gap(obj::Array{T,1}, recursive::Val{Recursive}=Val(false), recursion_dict = IdDict()) where Recursive where T
     len = length(obj)
     ret_val = NewPlist(len)
@@ -118,6 +118,19 @@ function julia_to_gap(obj::Tuple, recursive::Val{Recursive}=Val(false), recursio
     return julia_to_gap(array, recursive, recursion_dict)
 end
 
+## Ranges
+# FIXME: eventually check that the values are valid for GAP ranges
+function julia_to_gap( range::UnitRange{T} ) where T <: Integer
+    return EvalString( "[" * string( range.start ) *
+                       ".." * string( range.stop ) * "]" )
+end
+
+function julia_to_gap( range::StepRange{T1,T2} ) where { T1 <: Integer,T2 <: Integer }
+    return EvalString( "[" * string( range.start ) *
+                       "," * string( range.start + range.step ) *
+                       ".." * string( range.stop ) * "]" )
+end
+
 ## Dictionaries
 function julia_to_gap(obj::Dict{T,S}, recursive::Val{Recursive}=Val(false), recursion_dict = IdDict()) where Recursive where S where T <: Union{Symbol,AbstractString}
 
@@ -150,5 +163,3 @@ end
 
 julia_to_gap(func::Function) = NewJuliaFunc(func)
 
-
-## TODO: BitArray <-> blist; ranges; ...
