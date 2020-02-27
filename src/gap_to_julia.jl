@@ -103,6 +103,13 @@ gap_to_julia( ::Type{Float16}, obj::GapObj)  = Float16(gap_to_julia(Float64,obj)
 gap_to_julia( ::Type{BigFloat}, obj::GapObj) = BigFloat(gap_to_julia(Float64,obj))
 
 ## Chars
+function gap_to_julia( ::Type{Char}, obj::GapObj)
+    if ! Globals.IsChar( obj )
+        throw(ArgumentError("argument is not a character object"))
+    end
+    return Char( Globals.INT_CHAR(obj ) )
+end
+
 function gap_to_julia( ::Type{Cuchar}, obj::GapObj)
     if ! Globals.IsChar( obj )
         throw(ArgumentError("argument is not a character object"))
@@ -112,10 +119,13 @@ end
 
 ## Strings and symbols
 function gap_to_julia(::Type{String},obj::GapObj)
-    if ! Globals.IsStringRep(obj)
+    if Globals.IsStringRep(obj)
+        return CSTR_STRING(obj)
+    elseif Globals.IsString(obj)
+        return CSTR_STRING( Globals.CopyToStringRep( obj ) )
+    else
         throw(ArgumentError("<obj> is not a string"))
     end
-    return CSTR_STRING(obj)
 end
 gap_to_julia(::Type{AbstractString},obj::GapObj) = gap_to_julia(String,obj)
 gap_to_julia(::Type{Symbol},obj::GapObj) = Symbol(gap_to_julia(String,obj))
@@ -133,6 +143,19 @@ function gap_to_julia( ::Type{Array{UInt8,1}}, obj :: GapObj )
     else
         throw(ArgumentError("<obj> is not a list"))
     end
+end
+
+## BitArrays
+function gap_to_julia( ::Type{BitArray{1}}, obj :: GapObj )
+    if ! Globals.IsBlist( obj )
+        throw(ArgumentError("<obj> is not a boolean list"))
+    end
+    len = Globals.Length( obj )
+    result = BitArray( undef, len )
+    for i in 1:len
+      result[i] = obj[i]
+    end
+    return result
 end
 
 ## Arrays
@@ -208,6 +231,43 @@ function gap_to_julia( ::Type{T}, obj::GapObj, recursion_dict = IdDict() ) where
     return T(list)
 end
 
+## Ranges
+function gap_to_julia( ::Type{T}, obj::GapObj ) where T <: UnitRange
+    if ! Globals.IsRange( obj )
+        throw(ArgumentError("first argument is not a range"))
+    end
+    len = Globals.Length( obj )
+    if len == 0
+      # construct an empty UnitRange object
+      result = 1:0
+    elseif len == 1
+      result = obj[1]:obj[1]
+    elseif obj[2] != obj[1] + 1
+      throw(ArgumentError("step width of first argument is not 1"))
+    else
+      result = obj[1]:obj[len]
+    end
+
+    return T( result )
+end
+
+function gap_to_julia( ::Type{T}, obj::GapObj ) where T <: StepRange
+    if ! Globals.IsRange( obj )
+        throw(ArgumentError("first argument is not a range"))
+    end
+    len = Globals.Length( obj )
+    if len == 0
+      # construct an empty StepRange object
+      result = 1:1:0
+    elseif len == 1
+      result = obj[1]:1:obj[1]
+    else
+      result = obj[1]:(obj[2]-obj[1]):obj[len]
+    end
+
+    return T( result )
+end
+
 ## Dictionaries
 function gap_to_julia( ::Type{Dict{Symbol,T}}, obj :: GapObj, recursion_dict = IdDict() ) where T
     if ! Globals.IsRecord( obj )
@@ -229,8 +289,6 @@ function gap_to_julia( ::Type{Dict{Symbol,T}}, obj :: GapObj, recursion_dict = I
     return dict
 end
 
-## TODO: BitArray <-> blist; ranges; ...
-
 ## Generic conversions
 
 gap_to_julia(x::Any)  = x
@@ -243,9 +301,18 @@ function gap_to_julia(x::GapObj)
     elseif Globals.IsFloat(x)
         return gap_to_julia(Float64,x)
     elseif Globals.IsChar(x)
+#T why Cuchar not Char?
         return gap_to_julia(Cuchar,x)
-    elseif Globals.IsString(x)
+    elseif Globals.IsStringRep(x)
+        # Do not choose this conversion for other lists in 'IsString'.
         return gap_to_julia(AbstractString,x)
+    elseif Globals.IsRangeRep(x)
+        # Do not choose this conversion for other lists in 'IsRange'.
+        # Note that the entries are always small GAP integers.
+        return gap_to_julia(StepRange{Int64,Int64},x)
+    elseif Globals.IsBlistRep(x)
+        # Do not choose this conversion for other lists in 'IsBlist'.
+        return gap_to_julia(BitArray{1},x)
     elseif Globals.IsList(x)
         return gap_to_julia(Array{Union{Any,Nothing},1},x)
     elseif Globals.IsRecord(x)
