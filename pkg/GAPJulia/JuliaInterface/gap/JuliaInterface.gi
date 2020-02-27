@@ -43,7 +43,7 @@ BindGlobal( "_WrapJuliaModule",
 end );
 
 InstallMethod( \.,
-              [ IsJuliaModule, IsPosInt ],
+              [ "IsJuliaModule", "IsPosInt" ],
   function( module, rnum )
     local rnam, global_variable;
 
@@ -70,14 +70,14 @@ InstallMethod( \.,
 end );
 
 InstallMethod( \.\:\=,
-               [ IsJuliaModule, IsPosInt, IsObject ],
+               [ "IsJuliaModule", "IsPosInt", "IsObject" ],
   function( module, rnum, obj )
     Error( "Manual assignment to module is not allowed" );
 end );
 
 
 InstallMethod( IsBound\.,
-               [ IsJuliaModule, IsPosInt ],
+               [ "IsJuliaModule", "IsPosInt" ],
   function( module, rnum )
     if IsBound\.( module!.storage, rnum ) then
         return true;
@@ -87,7 +87,7 @@ end );
 
 
 InstallMethod( Unbind\.,
-               [ IsJuliaModule, IsPosInt ],
+               [ "IsJuliaModule", "IsPosInt" ],
   function( module, rnum )
     Unbind\.( module!.storage, rnum );
 end );
@@ -123,7 +123,7 @@ function( filename )
 end );
 
 InstallMethod( ViewString,
-               [ IsJuliaObject ],
+               [ "IsJuliaObject" ],
 
   function( julia_obj )
     return Concatenation( "<Julia: ", String( julia_obj ), ">" );
@@ -131,7 +131,7 @@ InstallMethod( ViewString,
 end );
 
 InstallMethod( String,
-               [ IsJuliaObject ],
+               [ "IsJuliaObject" ],
 
   function( julia_obj )
     return JuliaToGAP( IsString, Julia.Base.repr( julia_obj ) );
