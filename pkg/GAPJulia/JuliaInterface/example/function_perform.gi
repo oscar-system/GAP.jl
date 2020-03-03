@@ -5,11 +5,11 @@ dirs:= DirectoriesPackageLibrary( "JuliaInterface", "example" );
 JuliaIncludeFile( Filename( dirs, "function_perform.jl" ) );
 
 typed_func := JuliaFunction("typed_func", "GapFunctionPerform");
-typed_funcNoConv := _JuliaFunctionByModule("typed_func", "GapFunctionPerform", false);
+typed_funcNoConv := _JuliaFunctionByModule("typed_func", "GapFunctionPerform");
 typed_funcC := JuliaBindCFunction( "GapFunctionPerform.typed_func", ["a", "b"] );
 
 untyped_func := JuliaFunction("untyped_func");
-untyped_funcNoConv := _JuliaFunction("untyped_func", false);
+untyped_funcNoConv := _JuliaFunction("untyped_func");
 untyped_funcC := JuliaBindCFunction( "untyped_func", ["a", "b"] );
 
 GASMAN("collect"); ListX([1..10^5], [1..10], {i,j} -> i);; time;
