@@ -5,7 +5,7 @@ makedocs(
          sitename = "GAP.jl",
          modules = [GAP],
          clean = true,
-         doctest = true,
+         doctest = false,
          strict = false,
          checkdocs = :none,
          pages    = [
@@ -13,7 +13,7 @@ makedocs(
          ]
 )
 
-deploydocs(
-   repo   = "github.com/oscar-system/GAP.jl.git",
-   target = "build",
-)
+#deploydocs(
+#   repo   = "github.com/oscar-system/GAP.jl.git",
+#   target = "build",
+#)

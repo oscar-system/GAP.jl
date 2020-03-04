@@ -159,7 +159,7 @@ function gap_to_julia( ::Type{BitArray{1}}, obj :: GapObj )
 end
 
 ## Arrays
-function gap_to_julia( ::Type{Array{Obj,1}}, obj :: GapObj , recursion_dict = IdDict() )
+function gap_to_julia( ::Type{Array{Obj,1}}, obj :: GapObj, recursion_dict = IdDict() )
     if ! Globals.IsList( obj )
         throw(ArgumentError("<obj> is not a list"))
     end

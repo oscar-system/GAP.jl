@@ -18,6 +18,8 @@ gap> zero := Zero(N);
 <Julia: 0>
 gap> one := One(N);
 <Julia: 1>
+gap> JuliaToGAP( IsInt, Zero(N) );
+0
 
 #
 gap> -N;

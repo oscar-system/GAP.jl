@@ -19,7 +19,6 @@ you can use CAP commands via
 
 If `overwrite` is true, Symbols already in the `Main` module will be overloaded.
 Be aware that this flag only works in `Main`.
-
 """
 function LoadPackageAndExposeGlobals(package::String, mod::String; all_globals::Bool = false)
     mod_sym = Symbol(mod)
@@ -41,6 +40,7 @@ function LoadPackageAndExposeGlobals(package::String, mod::Module; all_globals::
     current_gvar_list = nothing
     if !all_globals
         current_gvar_list = Globals.ShallowCopy(Globals.NamesGVars())
+#T Why ShallowCopy? NamesGVars always creates a new list.
     end
     load_package = EvalString("LoadPackage(\"$package\")")
     if load_package == Globals.fail

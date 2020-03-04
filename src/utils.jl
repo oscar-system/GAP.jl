@@ -6,7 +6,8 @@ import Base: show
 """
     get_symbols_in_module(module_t::Module) :: Array{Symbol,1}
 
-> Returns all symbols in the module `module_t`.
+Return all symbols in the module `module_t`.
+This is used in the GAP function `ImportJuliaModuleIntoGAP`.
 """
 function get_symbols_in_module(module_t)
     module_name = string(nameof(module_t))
@@ -20,11 +21,11 @@ end
 """
     call_with_catch( juliafunc, arguments )
 
-> Returns a tuple `( ok, val )`
-> where `ok` is either `true`, meaning that calling the function `juliafunc`
-> with `arguments` returns the value `val`,
-> or `false`, meaning that the function call runs into an error;
-> in the latter case, `val` is set to the string of the error message.
+Return a tuple `( ok, val )`
+where `ok` is either `true`, meaning that calling the function `juliafunc`
+with `arguments` returns the value `val`,
+or `false`, meaning that the function call runs into an error;
+in the latter case, `val` is set to the string of the error message.
 """
 function call_with_catch( juliafunc, arguments )
     try

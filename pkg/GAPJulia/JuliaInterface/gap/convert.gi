@@ -14,7 +14,12 @@ function(filter, obj)
 end);
 
 # handle immediate integers as well
-InstallMethod(JuliaToGAP, ["IsInt", "IsInt"],
+InstallMethod(JuliaToGAP, ["IsInt", "IsInt and IsSmallIntRep"],
+function(filter, obj)
+    return obj;
+end);
+
+InstallMethod(JuliaToGAP, ["IsRat", "IsInt and IsSmallIntRep"],
 function(filter, obj)
     return obj;
 end);
