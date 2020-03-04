@@ -1,5 +1,5 @@
 #
-# JuliaInterface: Test interface to julia
+# JuliaInterface: Interface to Julia
 #
 # This file contains package meta data. For additional information on
 # the meaning and correct usage of these fields, please consult the
@@ -9,7 +9,7 @@
 SetPackageInfo( rec(
 
 PackageName := "JuliaInterface",
-Subtitle := "Test interface to julia",
+Subtitle := "Interface to Julia",
 Version := "0.2.6",
 Date := "04/02/2020", # dd/mm/yyyy format
 License := "GPL-2.0-or-later",
@@ -75,11 +75,11 @@ PackageDoc := [ rec(
   HTMLStart := "doc/chap0.html",
   PDFFile   := "doc/manual.pdf",
   SixFile   := "doc/manual.six",
-  LongTitle := "Test interface to julia",
+  LongTitle := "Interface to &Julia;",
 ) ],
 
 Dependencies := rec(
-  GAP := ">= 4.11",    # need support for the component 'BannerFunction'
+  GAP := ">= 4.11",    # need compatible code in GAP's src/julia_gc.c
   NeededOtherPackages := [ ],
   SuggestedOtherPackages := [ ],
   ExternalConditions := [ ],

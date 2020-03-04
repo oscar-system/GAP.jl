@@ -1,7 +1,7 @@
 
 #############################################################################
 ##
-##  Install methods for 'IsJuliaObj' objects.
+##  Install methods for 'IsJuliaObject' objects.
 ##
 
 InstallOtherMethod( AdditiveInverseOp,

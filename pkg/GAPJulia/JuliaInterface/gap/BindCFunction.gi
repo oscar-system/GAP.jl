@@ -24,7 +24,7 @@ InstallGlobalFunction( JuliaBindCFunction,
         arg_names := List( arg_names, Immutable );
         MakeImmutable( arg_names );
     else
-        ErrorNoReturn( "second argument must be a string or a a list of strings" );
+        ErrorNoReturn( "second argument must be a string or a list of strings" );
     fi;
 
     nr_args := Length( arg_names );

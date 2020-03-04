@@ -1,3 +1,8 @@
+
+##
+##  When Julia loads GAP.jl, the module GAP is not yet available here;
+##  we have to use __JULIAGAPMODULE instead.
+##
 BindGlobal("_JL_Array_GAPObj_1", JuliaEvalString("Array{__JULIAGAPMODULE.Obj,1}"));
 
 ##

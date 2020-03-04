@@ -62,7 +62,7 @@ Error, JuliaSymbol: <name> must be a string
 gap> JuliaModule("Base");
 <Julia: Base>
 gap> JuliaModule("This_Module_Does_Not_Exist");
-Error, JuliaModule: Module <name> does not exists, did you import it?
+Error, JuliaModule: Module <name> does not exist, did you import it?
 gap> JuliaModule(1);
 Error, JuliaModule: <name> must be a string
 gap> JuliaModule( "sqrt" );
