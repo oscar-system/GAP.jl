@@ -196,7 +196,7 @@ InstallGlobalFunction( JuliaModule,
         Error( "JuliaModule: <name> must be a string" );
     fi;
     if not IsBound( Julia.(name) ) then
-        Error( "JuliaModule: Module <name> does not exists, did you import it?" );
+        Error( "JuliaModule: Module <name> does not exist, did you import it?" );
     fi;
     if not IsJuliaModule( Julia.(name) ) then
         Error( "JuliaModule: <name> is not a module" );

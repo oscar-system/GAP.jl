@@ -4,7 +4,7 @@
 ##
 #############################################################################
 
-# convert Julia Integer subtypes like Int8, Int16, ... UInt64, BigInt
+# convert Julia Integer subtypes like Int8, Int16, ... UInt128, BigInt
 InstallMethod(JuliaToGAP, ["IsInt", "IsJuliaObject"],
 function(filter, obj)
     if Julia.isa(obj, Julia.Base.Integer) then
@@ -53,9 +53,14 @@ end);
 
 InstallMethod(JuliaToGAP, ["IsChar", "IsJuliaObject"],
 function(filter, obj)
-    # TODO: support Julia Int8 and UInt8, but *not* Char (which is a 32bit type)
-    # convert to GAP using CHAR_SINT resp. CHAR_INT
-    Error("TODO: convert to GAP char");
+    if Julia.isa(obj, Julia.Base.Char) then
+        return Julia.GAP.julia_to_gap(obj);
+    elif Julia.isa(obj, Julia.Base.Int8) or
+         Julia.isa(obj, Julia.Base.UInt8) then
+        return CharInt( Julia.GAP.julia_to_gap(obj) );
+    fi;
+
+    Error("<obj> must be a Julia Char or Int8 or UInt8");
 end);
 
 BindGlobal("_JL_Dict_Symbol", JuliaEvalString("Dict{Symbol}"));
@@ -128,11 +133,11 @@ end);
 
 InstallMethod(JuliaToGAP, ["IsString", "IsJuliaObject"],
 function(filter, obj)
-    # TODO: also accept Symbol?
-    if Julia.isa(obj, Julia.Base.AbstractString) then
+    if Julia.isa(obj, Julia.Base.AbstractString) or
+       Julia.isa(obj, Julia.Base.Symbol) then
         return Julia.GAP.julia_to_gap(obj);
     fi;
-    Error("<obj> must be a Julia string");
+    Error("<obj> must be a Julia string or symbol");
 end);
 
 
