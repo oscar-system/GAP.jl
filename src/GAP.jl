@@ -46,8 +46,23 @@ function read_sysinfo_gap(dir::String)
     return d
 end
 
+function reset_GAP_ERROR_OUTPUT()
+    GAP.Globals.CloseStream(GAP.Globals.ERROR_OUTPUT)
+    GAP.EvalString("_JULIAINTERFACE_ERROR_OUTPUT:= \"\";")
+    GAP.Globals.MakeReadWriteGlobal(GAP.julia_to_gap("ERROR_OUTPUT"))
+    GAP.EvalString("ERROR_OUTPUT:= OutputTextString( _JULIAINTERFACE_ERROR_OUTPUT, true );")
+    GAP.Globals.MakeReadOnlyGlobal(GAP.julia_to_gap("ERROR_OUTPUT"))
+end
+
 function error_handler()
+# FIXME: Remove this condition as soon as version 1.1 is no longer tested
+if v"1.2" <= VERSION
+    str = GAP.gap_to_julia(GAP.Globals._JULIAINTERFACE_ERROR_OUTPUT)
+    reset_GAP_ERROR_OUTPUT()
+    error("Error thrown by GAP: ", str)
+else
     error("Error thrown by GAP")
+end
 end
 
 function initialize( argv::Array{String,1}, env::Array{String,1}, error_handler_func::Ptr{Nothing} )
@@ -75,6 +90,27 @@ function initialize( argv::Array{String,1}, env::Array{String,1}, error_handler_
     if loadpackage_return == Libdl.dlsym(gap_library, :GAP_Fail )
         throw(ErrorException( "JuliaInterface could not be loaded" ))
     end
+
+    # Redirect error messages, in order not to print them to the screen.
+# FIXME: Remove this condition as soon as version 1.1 is no longer tested
+if v"1.2" <= VERSION
+    ccall( Libdl.dlsym(gap_library, :GAP_EvalString)
+           , Ptr{Cvoid}
+           , (Ptr{UInt8},)
+           , "_JULIAINTERFACE_ERROR_OUTPUT:= \"\";" )
+    ccall( Libdl.dlsym(gap_library, :GAP_EvalString)
+           , Ptr{Cvoid}
+           , (Ptr{UInt8},)
+           , "MakeReadWriteGlobal( \"ERROR_OUTPUT\" );" )
+    ccall( Libdl.dlsym(gap_library, :GAP_EvalString)
+           , Ptr{Cvoid}
+           , (Ptr{UInt8},)
+           , "ERROR_OUTPUT:= OutputTextString( _JULIAINTERFACE_ERROR_OUTPUT, true );" )
+    ccall( Libdl.dlsym(gap_library, :GAP_EvalString)
+           , Ptr{Cvoid}
+           , (Ptr{UInt8},)
+           , "MakeReadOnlyGlobal( \"ERROR_OUTPUT\" );" )
+end
 end
 
 function finalize( )
