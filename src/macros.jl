@@ -35,7 +35,7 @@ julia> @gap (1,2,3)
 GAP: (1,2,3)
 
 julia> @gap (1,2)(3,4)
-Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+ERROR: LoadError: Error thrown by GAP: Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 [...]
 
 julia> @gap [ 1,, 2 ]
