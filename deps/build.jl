@@ -31,8 +31,9 @@ if install_gap
     run(`./configure --with-gc=julia --with-julia=$(julia_binary)`)
     run(`make -j$(Sys.CPU_THREADS)`)
 
-    gap_install_packages =  get(ENV, "GAP_INSTALL_PACKAGES", "yes")
+    gap_install_packages =  get(ENV, "GAP_INSTALL_PACKAGES", "full-but-no-build")
     if gap_install_packages == "yes"
+        # download all packages and build most
         run(`make bootstrap-pkg-full`)
         cd("pkg")
         # eliminate a few big packages that take long to compile
@@ -40,9 +41,14 @@ if install_gap
         pkgs = Base.filter(x -> occursin(r"^(Normaliz|semigroups|simpcomp)", x), pkgs)
         run(`rm -rf $pkgs`)
         run(`../bin/BuildPackages.sh`)
+    elseif gap_install_packages == "full-but-no-build"
+        # download all packages, but don't attempt to build any
+        run(`make bootstrap-pkg-full`)
     elseif gap_install_packages == "minimal"
+        # download minimal set of packages
         run(`make bootstrap-pkg-minimal`)
     elseif gap_install_packages == "debug"
+        # download minimal set of packages plus a few packages needed for testing GAP.jl
         run(`make bootstrap-pkg-minimal`)
         cd("pkg")
         run(`git clone https://github.com/gap-packages/io`)
