@@ -132,7 +132,7 @@ void SET_JULIA_OBJ(Obj o, jl_value_t * p)
 
 jl_value_t * GET_JULIA_OBJ(Obj o)
 {
-    return (jl_value_t *)(ADDR_OBJ(o)[0]);
+    return (jl_value_t *)(CONST_ADDR_OBJ(o)[0]);
 }
 
 static Obj JuliaObjectTypeFunc(Obj o)
