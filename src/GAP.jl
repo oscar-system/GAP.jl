@@ -47,22 +47,19 @@ function read_sysinfo_gap(dir::String)
 end
 
 function reset_GAP_ERROR_OUTPUT()
-    GAP.Globals.CloseStream(GAP.Globals.ERROR_OUTPUT)
-    GAP.EvalString("_JULIAINTERFACE_ERROR_OUTPUT:= \"\";")
-    GAP.Globals.MakeReadWriteGlobal(GAP.julia_to_gap("ERROR_OUTPUT"))
-    GAP.EvalString("ERROR_OUTPUT:= OutputTextString( _JULIAINTERFACE_ERROR_OUTPUT, true );")
-    GAP.Globals.MakeReadOnlyGlobal(GAP.julia_to_gap("ERROR_OUTPUT"))
+    Globals.CloseStream(Globals.ERROR_OUTPUT)
+    EvalString("_JULIAINTERFACE_ERROR_OUTPUT:= \"\";")
+    Globals.MakeReadWriteGlobal(julia_to_gap("ERROR_OUTPUT"))
+    EvalString("ERROR_OUTPUT:= OutputTextString( _JULIAINTERFACE_ERROR_OUTPUT, true );")
+    Globals.MakeReadOnlyGlobal(julia_to_gap("ERROR_OUTPUT"))
 end
 
 function error_handler()
-# FIXME: Remove this condition as soon as version 1.1 is no longer tested
-if v"1.2" <= VERSION
-    str = GAP.gap_to_julia(GAP.Globals._JULIAINTERFACE_ERROR_OUTPUT)
-    reset_GAP_ERROR_OUTPUT()
+    str = gap_to_julia(Globals._JULIAINTERFACE_ERROR_OUTPUT)
+# FIXME: As soon as Julia 1.1 need not be supported anymore,
+#        remove Base.invokelatest.
+    Base.invokelatest(reset_GAP_ERROR_OUTPUT)
     error("Error thrown by GAP: ", str)
-else
-    error("Error thrown by GAP")
-end
 end
 
 function initialize( argv::Array{String,1}, env::Array{String,1}, error_handler_func::Ptr{Nothing} )
@@ -92,8 +89,6 @@ function initialize( argv::Array{String,1}, env::Array{String,1}, error_handler_
     end
 
     # Redirect error messages, in order not to print them to the screen.
-# FIXME: Remove this condition as soon as version 1.1 is no longer tested
-if v"1.2" <= VERSION
     ccall( Libdl.dlsym(gap_library, :GAP_EvalString)
            , Ptr{Cvoid}
            , (Ptr{UInt8},)
@@ -110,7 +105,6 @@ if v"1.2" <= VERSION
            , Ptr{Cvoid}
            , (Ptr{UInt8},)
            , "MakeReadOnlyGlobal( \"ERROR_OUTPUT\" );" )
-end
 end
 
 function finalize( )
