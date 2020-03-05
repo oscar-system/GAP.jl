@@ -62,8 +62,9 @@ function error_handler()
     error("Error thrown by GAP: ", str)
 end
 
-function initialize( argv::Array{String,1}, env::Array{String,1}, error_handler_func::Ptr{Nothing} )
-    gap_library = Libdl.dlopen("libgap", Libdl.RTLD_GLOBAL)
+function initialize( gapdir::String, argv::Array{String,1}, env::Array{String,1}, error_handler_func::Ptr{Nothing} )
+    lib = joinpath(gapdir, ".libs", "libgap")
+    gap_library = Libdl.dlopen(lib, Libdl.RTLD_GLOBAL)
     ccall( Libdl.dlsym(gap_library, :GAP_Initialize)
            , Cvoid
            , (Int32, Ptr{Ptr{UInt8}},Ptr{Cvoid},Ptr{Cvoid},Cuint)
@@ -76,14 +77,10 @@ function initialize( argv::Array{String,1}, env::Array{String,1}, error_handler_
            , Ptr{Cvoid}
            , (Ptr{UInt8},)
            , "BindGlobal(\"__JULIAINTERNAL_LOADED_FROM_JULIA\", true );" )
-    ccall( Libdl.dlsym(gap_library, :GAP_EvalString)
-           , Ptr{Cvoid}
-           , (Ptr{UInt8},)
-           , "_JULIAINTERNAL_JULIAINTERFACE_LOADED := LoadPackage(\"JuliaInterface\");" )
     loadpackage_return = ccall( Libdl.dlsym(gap_library, :GAP_EvalString)
            , Ptr{Cvoid}
            , (Ptr{UInt8},)
-           , "_JULIAINTERNAL_JULIAINTERFACE_LOADED;" )
+           , "LoadPackage(\"JuliaInterface\");" )
     if loadpackage_return == Libdl.dlsym(gap_library, :GAP_Fail )
         throw(ErrorException( "JuliaInterface could not be loaded" ))
     end
@@ -130,11 +127,8 @@ run_it = function(gapdir::String, error_handler_func::Ptr{Nothing})
         error("GAP already initialized")
     end
     sysinfo = read_sysinfo_gap(gapdir)
-    gapdir = joinpath(gapdir, ".libs")
-    println("Adding path ", gapdir, " to DL_LOAD_PATH")
-    push!( Libdl.DL_LOAD_PATH, gapdir )
     gaproots = abspath(joinpath(@__DIR__, "..")) * ";" * sysinfo["GAP_LIB_DIR"]
-    initialize( [ ""
+    initialize( gapdir, [ ""
                        , "-l", gaproots
                        , "-T", "-A", "--nointeract"
                        , "-m", "1000m" ], [""], error_handler_func )
