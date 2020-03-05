@@ -6,7 +6,8 @@ import Base: show
 """
     get_symbols_in_module(module_t::Module) :: Array{Symbol,1}
 
-> Returns all symbols in the module `module_t`.
+Return all symbols in the module `module_t`.
+This is used in the GAP function `ImportJuliaModuleIntoGAP`.
 """
 function get_symbols_in_module(module_t)
     module_name = string(nameof(module_t))
@@ -20,11 +21,21 @@ end
 """
     call_with_catch( juliafunc, arguments )
 
-> Returns a tuple `( ok, val )`
-> where `ok` is either `true`, meaning that calling the function `juliafunc`
-> with `arguments` returns the value `val`,
-> or `false`, meaning that the function call runs into an error;
-> in the latter case, `val` is set to the string of the error message.
+Return a tuple `( ok, val )`
+where `ok` is either `true`, meaning that calling the function `juliafunc`
+with `arguments` returns the value `val`,
+or `false`, meaning that the function call runs into an error;
+in the latter case, `val` is set to the string of the error message.
+
+# Examples
+```jldoctest
+julia> GAP.call_with_catch( sqrt, 2 )
+(true, 1.4142135623730951)
+
+julia> GAP.call_with_catch( sqrt, -2 )
+(false, "DomainError(-2.0, \\"sqrt will only return a complex result if called with a complex argument. Try sqrt(Complex(x)).\\")")
+
+```
 """
 function call_with_catch( juliafunc, arguments )
     try
