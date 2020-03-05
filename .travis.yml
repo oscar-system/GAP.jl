@@ -26,6 +26,7 @@ branches:
 
 install:
   # install some optional dependencies for our tests
+  - JULIA_PROJECT= julia -e 'import Pkg ; Pkg.add("Documenter")'
   - JULIA_PROJECT= julia -e 'import Pkg ; Pkg.add("Nemo")'
   - JULIA_PROJECT= julia -e 'import Pkg ; Pkg.add("Primes")'
   - JULIA_PROJECT= julia -e 'import Pkg ; Pkg.add("LinearAlgebra")'
