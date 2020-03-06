@@ -11,7 +11,7 @@ env:
     - MAKEFLAGS="-j4"
     - JULIA_TRACK_COVERAGE=yes
     - PATH="/usr/lib/ccache:$PATH"
-    - GAP_INSTALL_PACKAGES=debug
+    - GAP_BUILD_PACKAGES=debug
 
 addons:
   apt_packages:

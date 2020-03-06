@@ -32,15 +32,15 @@ if install_gap
     run(`./configure --with-gc=julia --with-julia=$(julia_binary)`)
     run(`make -j$(Sys.CPU_THREADS)`)
 
-    gap_install_packages =  get(ENV, "GAP_INSTALL_PACKAGES", "yes")
-    if gap_install_packages == "yes"
+    gap_build_packages =  get(ENV, "GAP_BUILD_PACKAGES", "no")
+    if gap_build_packages == "yes"
         cd("pkg")
         # eliminate a few big packages that take long to compile
         pkgs = Base.Filesystem.readdir()
         pkgs = Base.filter(x -> occursin(r"^(Normaliz|semigroups|simpcomp)", x), pkgs)
         run(`rm -rf $pkgs`)
         run(`../bin/BuildPackages.sh`)
-    elseif gap_install_packages == "debug"
+    elseif gap_build_packages == "debug"
         cd("pkg")
         pkgs = Base.Filesystem.readdir()
         pkgs = Base.filter(x -> occursin(r"^(io|profiling)", x), pkgs)
