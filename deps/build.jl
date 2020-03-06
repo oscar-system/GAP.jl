@@ -3,8 +3,10 @@
 
 import Pkg
 
+gap_version = v"4.11.0"
+
 extra_gap_root = abspath(joinpath(@__DIR__, ".."))
-gap_root = abspath(joinpath(extra_gap_root, "gap"))
+gap_root = abspath(joinpath(extra_gap_root, "gap-$(gap_version)"))
 install_gap = true
 
 if haskey(ENV, "GAPROOT")
@@ -22,37 +24,29 @@ julia_binary = get(ENV, "JULIA_BINARY", Sys.BINDIR)
 ## Install GAP
 if install_gap
     println("Installing GAP ...")
-    gap_branch = "stable-4.11"
     cd(extra_gap_root)
-    run(`rm -rf gap`)
-    run(`git clone --depth=1 -b $(gap_branch) https://github.com/gap-system/gap`)
-    cd("gap")
-    run(`./autogen.sh`)
+    run(`rm -rf gap-$(gap_version)`)
+    filename = download("https://www.gap-system.org/pub/gap/gap-4.$(gap_version.minor)/tar.bz2/gap-$(gap_version).tar.bz2")
+    run(`tar xjf $(filename)`)
+    cd("gap-$(gap_version)")
     run(`./configure --with-gc=julia --with-julia=$(julia_binary)`)
     run(`make -j$(Sys.CPU_THREADS)`)
 
     gap_install_packages =  get(ENV, "GAP_INSTALL_PACKAGES", "yes")
     if gap_install_packages == "yes"
-        run(`make bootstrap-pkg-full`)
         cd("pkg")
         # eliminate a few big packages that take long to compile
         pkgs = Base.Filesystem.readdir()
         pkgs = Base.filter(x -> occursin(r"^(Normaliz|semigroups|simpcomp)", x), pkgs)
         run(`rm -rf $pkgs`)
         run(`../bin/BuildPackages.sh`)
-    elseif gap_install_packages == "minimal"
-        run(`make bootstrap-pkg-minimal`)
     elseif gap_install_packages == "debug"
-        run(`make bootstrap-pkg-minimal`)
         cd("pkg")
-        run(`git clone https://github.com/gap-packages/io`)
-        run(`git clone https://github.com/gap-packages/profiling`)
-        run(`git clone https://github.com/gap-packages/AutoDoc`)
-        run(`../bin/BuildPackages.sh io profiling`)
+        pkgs = Base.Filesystem.readdir()
+        pkgs = Base.filter(x -> occursin(r"^(io|profiling)", x), pkgs)
+        run(`../bin/BuildPackages.sh $pkgs`)
     end
 end
-
-gap_executable = abspath(joinpath(gap_root, "gap"))
 
 ##
 ## Compile JuliaInterface/Experimental
@@ -60,7 +54,7 @@ gap_executable = abspath(joinpath(gap_root, "gap"))
 println("Compiling JuliaInterface and JuliaExperimental ...")
 cd(abspath(joinpath(@__DIR__, "..", "pkg", "GAPJulia" )))
 run(`./configure $gap_root`)
-run(`make`)
+run(`make -j$(Sys.CPU_THREADS)`)
 
 ##
 ## Write deps.jl file containing the necessary paths
