@@ -3,17 +3,14 @@
 set -e
 
 # Download and install GAP
-git clone --depth=1 -b stable-4.11 https://github.com/gap-system/gap
-cd gap
-./autogen.sh
+GAP_VERSION_SERIES=4.11
+GAP_VERSION=4.11.0
+wget https://www.gap-system.org/pub/gap/gap-${GAP_VERSION_SERIES}/tar.bz2/gap-${GAP_VERSION}.tar.bz2
+tar xf gap-${GAP_VERSION}.tar.bz2
+cd gap-${GAP_VERSION}
 ./configure --with-gc=julia --with-julia
 make -j4
-make bootstrap-pkg-minimal
 
+# build a few packages
 cd pkg
-
-git clone https://github.com/gap-packages/io
-git clone https://github.com/gap-packages/profiling
-git clone https://github.com/gap-packages/AutoDoc
-
-$GAPROOT/bin/BuildPackages.sh --with-gaproot=$GAPROOT io profiling
+$GAPROOT/bin/BuildPackages.sh --with-gaproot=$GAPROOT io* profiling*

@@ -69,7 +69,7 @@ jobs:
      # test with external GAP
      - julia: 1.1
        os: linux
-       env: GAPROOT=$TRAVIS_BUILD_DIR/gap
+       env: GAPROOT=$TRAVIS_BUILD_DIR/gap-4.11.0
 
      - stage: "Documentation"
        julia: 1.1
