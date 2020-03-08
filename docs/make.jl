@@ -1,5 +1,7 @@
 using Documenter, GAP
 
+DocMeta.setdocmeta!( GAP, :DocTestSetup, :( using GAP ); recursive = true )
+
 makedocs(
          format   = Documenter.HTML(),
          sitename = "GAP.jl",
