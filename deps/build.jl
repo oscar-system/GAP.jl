@@ -26,7 +26,10 @@ if install_gap
     println("Installing GAP ...")
     cd(extra_gap_root)
     run(`rm -rf gap-$(gap_version)`)
-    filename = download("https://www.gap-system.org/pub/gap/gap-4.$(gap_version.minor)/tar.bz2/gap-$(gap_version).tar.bz2")
+    # TODO: gap-system.org availability is flaky, which often breaks CI builds; so use
+    # github mirror instead, which is more reliable, albeit somewhat slower
+    #filename = download("https://www.gap-system.org/pub/gap/gap-4.$(gap_version.minor)/tar.bz2/gap-$(gap_version).tar.bz2")
+    filename = download("https://github.com/gap-system/gap/releases/download/v$(gap_version)/gap-$(gap_version).tar.bz2")
     run(`tar xjf $(filename)`)
     cd("gap-$(gap_version)")
     run(`./configure --with-gc=julia --with-julia=$(julia_binary)`)
