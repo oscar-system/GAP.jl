@@ -8,21 +8,20 @@ object of type `type`.
 The parameter `recursion_dict` is meant to preseve egality
 of converted objects and should never be given by the user.
 """
-
-## Default for conversion:
-## Base case for conversion (least specialized method): Allow converting any
-## Julia object x to type T, provided that the type of x is a subtype of T;
-## otherwise, explicitly reject the conversion.
-## As an example why this is useful, suppose you have a GAP list x (i.e., an
-## object of type GapObj) containing a bunch of Julia tuples. Then this method
-## enables conversion of that list to a Julia array of type Array{Tuple,1},
-## like this:
-##    gap_to_julia(Array{Tuple{Int64},1},xx)
-## This works because first the gap_to_julia method with signature
-## (::Type{Array{T,1}}, :: GapObj) is invoked, with T = Tuple{Int64}; this then
-## invokes gap_to_julia recursively with signature (::Tuple{Int64},::Any),
-## which ends up selecting the method below.
 function gap_to_julia(t::T, x::Any) where T <: Type
+    ## Default for conversion:
+    ## Base case for conversion (least specialized method): Allow converting any
+    ## Julia object x to type T, provided that the type of x is a subtype of T;
+    ## otherwise, explicitly reject the conversion.
+    ## As an example why this is useful, suppose you have a GAP list x (i.e., an
+    ## object of type GapObj) containing a bunch of Julia tuples. Then this method
+    ## enables conversion of that list to a Julia array of type Array{Tuple,1},
+    ## like this:
+    ##    gap_to_julia(Array{Tuple{Int64},1},xx)
+    ## This works because first the gap_to_julia method with signature
+    ## (::Type{Array{T,1}}, :: GapObj) is invoked, with T = Tuple{Int64}; this then
+    ## invokes gap_to_julia recursively with signature (::Tuple{Int64},::Any),
+    ## which ends up selecting the method below.
     if ! (typeof(x) <: t)
         throw(ErrorException("Don't know how to convert value of type " *
             string(typeof(x)) * " to type " * string(t)))
@@ -159,7 +158,7 @@ function gap_to_julia( ::Type{BitArray{1}}, obj :: GapObj )
 end
 
 ## Arrays
-function gap_to_julia( ::Type{Array{Obj,1}}, obj :: GapObj , recursion_dict = IdDict() )
+function gap_to_julia( ::Type{Array{Obj,1}}, obj :: GapObj, recursion_dict = IdDict() )
     if ! Globals.IsList( obj )
         throw(ArgumentError("<obj> is not a list"))
     end

@@ -2,19 +2,16 @@
 """
     julia_to_gap(input, recursive::Val{Recursive} = Val(false), recursion_dict = IdDict())
 
-Converts a julia object `input`` to an appropriate GAP object.
-If recursive is set to `Val(true)`, recursive conversions on
+Converts a julia object `input` to an appropriate GAP object.
+If `recursive` is set to `Val(true)`, recursive conversions on
 arrays, tuples, and dictionaries is performed.
 
 The input `recursive_data` should never be set by the user, it is meant to keep egality
 of input data, by converting egal data to identical objects in GAP.
 """
-
-
-## Default for actual GAP objects is to do nothing
-julia_to_gap(x::GapObj) = x
-julia_to_gap(x::FFE) = x
-julia_to_gap(x::Bool) = x
+julia_to_gap(x::GapObj) = x # Default for actual GAP objects is to do nothing
+julia_to_gap(x::FFE) = x    # Default for actual GAP objects is to do nothing
+julia_to_gap(x::Bool) = x   # Default for actual GAP objects is to do nothing
 
 ## Integers: general case first deal with things that fit into immediate
 ## integers, then falls back to converting to BigInt and calling into the GAP

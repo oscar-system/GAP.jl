@@ -8,10 +8,9 @@ include(abspath(joinpath(@__DIR__, "..", "deps", "deps.jl")))
 """
     FFE
 
-> Wraps a pointer to a GAP FFE immediate object
-> This type is defined in the JuliaInterface C code.
+Wraps a pointer to a GAP FFE immediate object.
+This type is defined in the JuliaInterface C code.
 """
-
 primitive type FFE 64 end
 
 export FFE
@@ -20,13 +19,17 @@ import Base: length, convert, finalize
 
 import Libdl
 
+"""
+    GapObj
+
+TODO
+"""
 abstract type GapObj end
 
 export GapObj
 
+# TODO: should we document Obj? What about ForeignGAP.MPtr?
 const Obj = Union{GapObj,FFE,Int64,Bool,Nothing}
-
-sysinfo = missing
 
 function read_sysinfo_gap(dir::String)
     d = missing
@@ -122,7 +125,7 @@ end
 gap_is_initialized = false
 
 run_it = function(gapdir::String, error_handler_func::Ptr{Nothing})
-    global sysinfo, gap_is_initialized
+    global gap_is_initialized
     if gap_is_initialized
         error("GAP already initialized")
     end

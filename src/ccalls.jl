@@ -157,6 +157,11 @@ end
 
 Base.show(io::IO,::GlobalsType) = Base.show(io,"table of global GAP objects")
 
+"""
+    Globals
+
+TODO: describe how this allows accesing any GAP variable or function as `GAP.Globals.VARIABLE_NAME`.
+"""
 Globals = GlobalsType(Dict{Symbol,Cuint}())
 
 function getproperty(funcobj::GlobalsType, name::Symbol)

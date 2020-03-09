@@ -66,9 +66,9 @@ export @gap
 
 
 """
-    macro g_str
+    @g_str
 
-Create a GAP string by typing g"content".
+Create a GAP string by typing `g"content"`.
 
 # Examples
 ```jldoctest
