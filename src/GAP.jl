@@ -124,7 +124,7 @@ end
 
 gap_is_initialized = false
 
-run_it = function(gapdir::String, error_handler_func::Ptr{Nothing})
+function run_it(gapdir::String, error_handler_func::Ptr{Nothing})
     global gap_is_initialized
     if gap_is_initialized
         error("GAP already initialized")
