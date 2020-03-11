@@ -154,8 +154,11 @@ function __init__()
     gap_module = @__MODULE__
     Base.MainInclude.eval(:(__JULIAGAPMODULE = $gap_module))
 
-    # TODO: try to get rid of __GAPINTERNAL_LOADED_FROM_GAP, too
-    if ! isdefined(Main, :__GAPINTERNAL_LOADED_FROM_GAP) || Main.__GAPINTERNAL_LOADED_FROM_GAP != true
+    # check if GAP was already loaded
+    try
+        sym = cglobal("GAP_Initialize")
+    catch e
+        # GAP was not yet loaded, do so now
         run_it(GAPROOT, error_handler_func)
     end
     register_GapObj()
