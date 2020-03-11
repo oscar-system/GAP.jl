@@ -168,8 +168,11 @@ function __init__()
         (func::$MPtr)(args...; kwargs...) = $(GAP.call_gap_func)(func, args...; kwargs...)
     ))
 
-    if ! haskey( ENV, "GAP_SHOW_BANNER" ) || ENV[ "GAP_SHOW_BANNER" ] != "true"
-      # Show package banners by default when LoadPackage is called.
+    if get( ENV, "GAP_SHOW_BANNER", "false" ) != "true"
+      # Leave it to GAP's `LoadPackage` whether package banners are shown.
+      # Note that a second argument `false` of this function suppresses the
+      # package banner,
+      # but no package banners can be shown if the `-b` option is `true`.
       Base.MainInclude.eval(:(
         begin
           record = $gap_module.Globals.GAPInfo
