@@ -122,9 +122,7 @@ end
 > There is no argument number checking here, all checks on the arguments
 > are done by GAP itself.
 """
-# # The (func::GapObj) function (commented out below) needs to be instantiated for `MPtr` 
-# # and is therefore moved to the init function
-# (func::GapObj)(args...; kwargs...) where T <: GapObj = call_gap_func(func, args...; kwargs...)
+(func::GapObj)(args...; kwargs...) = call_gap_func(func, args...; kwargs...)
 
 
 function call_gap_func(func::GapObj, args...; kwargs...)
