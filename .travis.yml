@@ -27,10 +27,10 @@ branches:
 install:
   # install some optional dependencies for our tests
   - JULIA_PROJECT= julia -e 'import Pkg ; Pkg.add("Documenter")'
+  - JULIA_PROJECT= julia -e 'import Pkg ; Pkg.add("Singular")'
   - JULIA_PROJECT= julia -e 'import Pkg ; Pkg.add("Nemo")'
   - JULIA_PROJECT= julia -e 'import Pkg ; Pkg.add("Primes")'
   - JULIA_PROJECT= julia -e 'import Pkg ; Pkg.add("LinearAlgebra")'
-  - JULIA_PROJECT= julia -e 'import Pkg ; Pkg.add("Singular")'
   # install GAP "manually" if requested
   - if [[ -v GAPROOT ]]; then etc/travis_install_gap.sh; fi
 
