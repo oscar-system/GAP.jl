@@ -103,6 +103,8 @@
     ## Tuples
     x = GAP.julia_to_gap([1,2,3])
     @test GAP.gap_to_julia(Tuple{Int64,Any,Int32},x) == Tuple{Int64,Any,Int32}([1,2,3])
+    @test_throws ArgumentError GAP.gap_to_julia(Tuple{Any,Any},x)
+    @test_throws ArgumentError GAP.gap_to_julia(Tuple{Any,Any,Any,Any},x)
     n = GAP.julia_to_gap(big(2)^100)
     @test_throws ArgumentError GAP.gap_to_julia(Tuple{Int64,Any,Int32},n)
 
