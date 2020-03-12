@@ -40,10 +40,10 @@ function read_sysinfo_gap(dir::String)
                 continue
             end
             s = split(ln, "=")
-            if length(s) != 2 
+            if length(s) != 2
                 continue
             end
-            d[s[1]] = strip(s[2], [ '"' ])
+            d[s[1]] = strip(s[2], ['"'])
         end
     end
     return d
@@ -59,9 +59,7 @@ end
 
 function error_handler()
     str = gap_to_julia(Globals._JULIAINTERFACE_ERROR_OUTPUT)
-# FIXME: As soon as Julia 1.1 need not be supported anymore,
-#        remove Base.invokelatest.
-    Base.invokelatest(reset_GAP_ERROR_OUTPUT)
+    reset_GAP_ERROR_OUTPUT()
     error("Error thrown by GAP: ", str)
 end
 
@@ -161,14 +159,6 @@ function __init__()
         run_it(GAPROOT)
     end
     register_GapObj()
-
-    ## FIXME: Hack because abstract types cannot be endowed with methods in Julia 1.1.
-    ## With Julia 1.2, this will be possible and this hack could then be replaced with the
-    ## corresponding function call in in ccalls.jl (func::GapObj)(...)
-    MPtr = Base.MainInclude.eval(:(ForeignGAP.MPtr))
-    Base.MainInclude.eval(:(
-        (func::$MPtr)(args...; kwargs...) = $(GAP.call_gap_func)(func, args...; kwargs...)
-    ))
 
     if get( ENV, "GAP_SHOW_BANNER", "false" ) != "true"
       # Leave it to GAP's `LoadPackage` whether package banners are shown.

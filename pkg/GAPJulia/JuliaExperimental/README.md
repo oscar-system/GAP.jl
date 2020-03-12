@@ -22,7 +22,7 @@ This software is licensed under the LGPL, version 3, or any later version.
 
 ### Requirements
 
-- Julia 1.1 or higher, compiled in `<path_to_julia>`
+- Julia 1.3 or higher, compiled in `<path_to_julia>`
 - GAP 4.11 or higher, compiled in `<path_to_gaproot>`
 - JuliaInterface, compiled in `<path_to_juliainterface>`
 - The Julia packages Nemo.jl and Singular.jl
