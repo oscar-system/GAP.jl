@@ -1,4 +1,3 @@
-/Makefile
 /gap/
 /gh-pages/
 /Manifest.toml
@@ -7,3 +6,4 @@
 /deps/build.log
 /gap.sh
 /pkg/GAPJulia/Makefile
+/tags
