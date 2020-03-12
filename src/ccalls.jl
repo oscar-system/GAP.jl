@@ -150,7 +150,7 @@ function call_gap_func(func::GapObj, args...; kwargs...)
 end
 
 struct GlobalsType
-    funcs::Dict{Symbol,Cuint}
+    funcs::IdDict{Symbol,Cuint}
 end
 
 Base.show(io::IO,::GlobalsType) = Base.show(io,"table of global GAP objects")
@@ -160,7 +160,7 @@ Base.show(io::IO,::GlobalsType) = Base.show(io,"table of global GAP objects")
 
 TODO: describe how this allows accesing any GAP variable or function as `GAP.Globals.VARIABLE_NAME`.
 """
-Globals = GlobalsType(Dict{Symbol,Cuint}())
+Globals = GlobalsType(IdDict{Symbol,Cuint}())
 
 function getproperty(funcobj::GlobalsType, name::Symbol)
     cache = getfield(funcobj,:funcs)
