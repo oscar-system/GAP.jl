@@ -65,9 +65,10 @@ function error_handler()
     error("Error thrown by GAP: ", str)
 end
 
-function initialize( gapdir::String, argv::Array{String,1}, env::Array{String,1}, error_handler_func::Ptr{Nothing} )
+function initialize(gapdir::String, argv::Array{String,1}, env::Array{String,1})
     lib = joinpath(gapdir, ".libs", "libgap")
     gap_library = Libdl.dlopen(lib, Libdl.RTLD_GLOBAL)
+    error_handler_func = @cfunction(error_handler, Cvoid, ())
     ccall( Libdl.dlsym(gap_library, :GAP_Initialize)
            , Cvoid
            , (Int32, Ptr{Ptr{UInt8}},Ptr{Cvoid},Ptr{Cvoid},Cuint)
@@ -124,7 +125,7 @@ end
 
 gap_is_initialized = false
 
-function run_it(gapdir::String, error_handler_func::Ptr{Nothing})
+function run_it(gapdir::String)
     global gap_is_initialized
     if gap_is_initialized
         error("GAP already initialized")
@@ -139,13 +140,11 @@ function run_it(gapdir::String, error_handler_func::Ptr{Nothing})
       # Do not show the main GAP banner by default.
       push!( cmdline_options, "-b" )
     end
-    initialize( gapdir, cmdline_options, [""], error_handler_func )
+    initialize(gapdir, cmdline_options, [""])
     gap_is_initialized = true
 end
 
 function __init__()
-    error_handler_func = @cfunction(error_handler, Cvoid, ())
-
     ## Older versions of GAP need a pointer to the GAP.jl module during
     ## initialization, but at this point Main.GAP is not yet bound. So instead
     ## we assign this module to the name __JULIAGAPMODULE.
@@ -159,7 +158,7 @@ function __init__()
         sym = cglobal("GAP_Initialize")
     catch e
         # GAP was not yet loaded, do so now
-        run_it(GAPROOT, error_handler_func)
+        run_it(GAPROOT)
     end
     register_GapObj()
 
