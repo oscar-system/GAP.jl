@@ -3,6 +3,10 @@
 ```@contents
 ```
 
+```@meta
+CurrentModule = GAP
+```
+
 ## Introduction
 
 TODO: describe the goals and non-goals of this package
@@ -27,9 +31,8 @@ GapObj
 ## Conversions
 
 ```@docs
-gap_to_julia()
-julia_to_gap()
-
+gap_to_julia
+julia_to_gap
 ```
 
 ## Convenience adapters
