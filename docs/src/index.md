@@ -46,6 +46,16 @@ TODO: Describe access to arbitrary GAP variables and functions via `GAP.Globals.
 TODO: describe Help system integration
 
 
+## Managing GAP packages
+
+```@docs
+GAP.Packages.load
+GAP.Packages.install
+GAP.Packages.update
+GAP.Packages.remove
+```
+
+
 
 ## Index
 

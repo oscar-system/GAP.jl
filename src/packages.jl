@@ -64,3 +64,59 @@ function LoadPackageAndExposeGlobals(package::String, mod::Module; all_globals::
 end
 
 export LoadPackageAndExposeGlobals
+
+
+module Packages
+
+import ...GAP: Globals, julia_to_gap
+
+"""
+    load(desc)
+
+TODO: write text, link to GAP's LoadPackage
+
+TODO: support version qualifier?
+"""
+function load(desc::String)
+    return Globals.LoadPackage(julia_to_gap(desc), false)
+    # TODO: can we provide more information in case of a failure?
+    # GAP unfortunately only gives us info messages...
+end
+
+"""
+    install(desc)
+
+TODO: copy text from <https://gap-packages.github.io/PackageManager/doc/chap2.html> resp.
+link to that
+"""
+function install(desc::String, interactive::Bool = true)
+    res = Globals.LoadPackage(julia_to_gap("PackageManager"), false)
+    @assert res
+    return Globals.InstallPackage(julia_to_gap(desc), interactive)
+end
+
+"""
+    update(desc)
+
+TODO: copy text from <https://gap-packages.github.io/PackageManager/doc/chap2.html> resp.
+link to that
+"""
+function update(desc::String, interactive::Bool = true)
+    res = Globals.LoadPackage(julia_to_gap("PackageManager"), false)
+    @assert res
+    return Globals.UpdatePackage(julia_to_gap(desc), interactive)
+end
+
+"""
+    remove(desc)
+
+TODO: copy text from <https://gap-packages.github.io/PackageManager/doc/chap2.html> resp.
+link to that
+"""
+function remove(desc::String, interactive::Bool = true)
+    res = Globals.LoadPackage(julia_to_gap("PackageManager"), false)
+    @assert res
+    return Globals.RemovePackage(julia_to_gap(desc), interactive)
+end
+
+end
