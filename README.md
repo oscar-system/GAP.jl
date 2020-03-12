@@ -12,7 +12,7 @@ as part of the [OSCAR project](http://oscar.computeralgebra.de).
 
 To install this module in Julia, use
 ```
-] add https://github.com/oscar-system/GAP.jl
+] add GAP
 ```
 
 ## Basic usage
