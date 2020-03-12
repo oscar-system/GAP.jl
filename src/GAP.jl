@@ -178,11 +178,11 @@ end
 
 include( "ccalls.jl" )
 include( "adapter.jl" )
-include( "packages.jl" )
 include( "macros.jl" )
 include( "gap_to_julia.jl" )
 include( "julia_to_gap.jl" )
 include( "utils.jl" )
 include( "help.jl" )
+include( "packages.jl" )
 
 end
