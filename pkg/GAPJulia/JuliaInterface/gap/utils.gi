@@ -14,3 +14,13 @@ BindGlobal( "CreateRecFromKeyValuePairList",
     od;
     return return_rec;
 end );
+
+BindGlobal( "StringViewObj",
+function(obj)
+  local str, out;
+  str := "";
+  out := OutputTextString(str, false);
+  STREAM_VIEWOBJ(out, obj);
+  CloseStream(out);
+  return str;
+end );
