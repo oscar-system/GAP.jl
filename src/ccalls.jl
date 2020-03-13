@@ -1,6 +1,6 @@
 ## Internal ccall's
 
-import Base: getproperty, propertynames
+import Base: getproperty, hasproperty, setproperty!, propertynames
 
 function RAW_GAP_TO_JULIA(ptr::Ptr{Cvoid})::Any
     return ccall(:julia_gap,Any,(Ptr{Cvoid},),ptr)
@@ -29,6 +29,7 @@ function ValueGlobalVariable( name :: String )
 end
 
 function CanAssignGlobalVariable(name::String)
+    # TODO: use symbol_to_gvar here, too`? Or conversely: convert
     ccall(:GAP_CanAssignGlobalVariable, Bool,
              (Ptr{UInt8},), name)
 end
@@ -150,7 +151,6 @@ function call_gap_func(func::GapObj, args...; kwargs...)
 end
 
 struct GlobalsType
-    funcs::IdDict{Symbol,Cuint}
 end
 
 Base.show(io::IO,::GlobalsType) = Base.show(io,"table of global GAP objects")
@@ -158,24 +158,28 @@ Base.show(io::IO,::GlobalsType) = Base.show(io,"table of global GAP objects")
 """
     Globals
 
-TODO: describe how this allows accesing any GAP variable or function as `GAP.Globals.VARIABLE_NAME`.
+TODO: describe how this allows accesing any GAP variable or function as
+`GAP.Globals.VARIABLE_NAME`.
 """
-Globals = GlobalsType(IdDict{Symbol,Cuint}())
+Globals = GlobalsType()
 
 function getproperty(funcobj::GlobalsType, name::Symbol)
-    cache = getfield(funcobj,:funcs)
-
-    gvar = get!(cache, name) do
-        name_string = string(name)
-        ccall(:GVarName, Cuint, (Ptr{UInt8},), name_string)
-    end
-
-    v = ccall(:ValGVar, Ptr{Cvoid}, (Cuint,), gvar)
-    v = RAW_GAP_TO_JULIA(v)
-    if v === nothing
+    v = ccall(:GAP_ValueGlobalVariable, Ptr{Cvoid}, (Ptr{UInt8},), name)
+    if v === C_NULL
         error("GAP variable ", name, " not bound")
     end
+    v = RAW_GAP_TO_JULIA(v)
     return v
+end
+
+function hasproperty(funcobj::GlobalsType, name::Symbol)
+    v = ccall(:GAP_ValueGlobalVariable, Ptr{Cvoid}, (Ptr{UInt8},), name)
+    return v !== C_NULL
+end
+
+function setproperty!(funcobj::GlobalsType, name::Symbol, val::Any)
+    tmp = (val === nothing) ? C_NULL : RAW_JULIA_TO_GAP(val)
+    ccall(:GAP_AssignGlobalVariable, Cvoid, (Ptr{UInt8}, Ptr{Cvoid}), name, tmp)
 end
 
 function propertynames(funcobj::GlobalsType,private)

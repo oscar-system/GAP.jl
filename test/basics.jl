@@ -8,8 +8,6 @@
     @test firstindex(l) == 1
     @test lastindex(l) == 3
     
-    @test Symbol("Print") in propertynames(GAP.Globals,false)
-
     x = GAP.NewPlist(0)
     x[1] = 1
     @test x[1] == 1
@@ -17,6 +15,15 @@
 
     xx = GAP.julia_to_gap([1,2,3])
     @test_throws ErrorException xx[4]
+
+    @test string(GAP.julia_to_gap("x")) == "x"
+end
+
+@testset "globals" begin
+
+    @test Symbol("Print") in propertynames(GAP.Globals,false)
+    @test hasproperty(GAP.Globals, :Print)
+    @test !hasproperty(GAP.Globals, :foobar)
 
     @test_throws ErrorException GAP.Globals.FOOBARQUX
 
@@ -27,17 +34,23 @@
     @test GAP.CanAssignGlobalVariable("foobar")
 
     GAP.AssignGlobalVariable("foobar", 42)
+
     @test GAP.ValueGlobalVariable("foobar") == 42
+    @test GAP.Globals.foobar == 42
 
     GAP.AssignGlobalVariable("foobar", false)
     @test GAP.ValueGlobalVariable("foobar") == false
+    @test GAP.Globals.foobar == false
 
     GAP.AssignGlobalVariable("foobar", "julia_string")
     @test GAP.ValueGlobalVariable("foobar") == "julia_string"
+    @test GAP.Globals.foobar == "julia_string"
+
+    @test hasproperty(GAP.Globals, :foobar)
+    GAP.Globals.foobar = nothing
+    @test !hasproperty(GAP.Globals, :foobar)
 
     @test string(GAP.Globals) == "\"table of global GAP objects\""
-
-    @test string(GAP.julia_to_gap("x")) == "x"
 end
 
 @testset "gapcalls" begin
