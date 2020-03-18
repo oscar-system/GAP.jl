@@ -4,17 +4,16 @@ import Base: show
 ## These two functions are used on the GAP side.
 
 """
-    get_symbols_in_module(module_t::Module) :: Array{Symbol,1}
+    get_symbols_in_module(m::Module) :: Array{Symbol,1}
 
-Return all symbols in the module `module_t`.
+Return all symbols in the module `m`.
 This is used in the GAP function `ImportJuliaModuleIntoGAP`.
 """
-function get_symbols_in_module(module_t)
-    module_name = string(nameof(module_t))
-    string_list = completions( module_name * ".", length( module_name ) + 1 )[1]
-    string_list = [ x.mod for x in string_list ]
-    list = [ Symbol(x) for x in string_list ]
-    list = filter(i->isdefined(module_t,i),list)
+function get_symbols_in_module(m::Module)
+    name = string(nameof(m))
+    list = completions(name * ".", length(name) + 1)[1]
+    list = [Symbol(x.mod) for x in list]
+    list = filter(i -> isdefined(m, i), list)
     return list
 end
 
@@ -37,12 +36,12 @@ julia> GAP.call_with_catch( sqrt, -2 )
 
 ```
 """
-function call_with_catch( juliafunc, arguments )
+function call_with_catch(juliafunc, arguments)
     try
-      res = Core._apply( juliafunc, arguments )
-      return ( true, res )
+        res = Core._apply(juliafunc, arguments)
+        return (true, res)
     catch e
-      return ( false, string( e ) )
+        return (false, string(e))
     end
 end
 
@@ -54,7 +53,7 @@ function Display(x::GapObj)
     ##        once GAP offers a consistent
     ##        DisplayString function
     local_var = "julia_gap_display_tmp"
-    AssignGlobalVariable(local_var,x)
+    AssignGlobalVariable(local_var, x)
     xx = EvalStringEx("Display($local_var);")[1]
     if xx[1] == true
         println(GAP.gap_to_julia(AbstractString, xx[5]))
