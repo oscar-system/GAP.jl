@@ -15,6 +15,16 @@ BindGlobal( "CreateRecFromKeyValuePairList",
     return return_rec;
 end );
 
+BindGlobal( "StringDisplayObj",
+function(obj)
+  local str, out;
+  str := "";
+  out := OutputTextString(str, false);
+  STREAM_DISPLAYOBJ(out, obj);
+  CloseStream(out);
+  return str;
+end );
+
 BindGlobal( "StringViewObj",
 function(obj)
   local str, out;
