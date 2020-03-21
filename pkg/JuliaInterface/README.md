@@ -33,7 +33,7 @@ This software is licensed under the LGPL, version 3, or any later version.
   ```
 - Configure and compile JuliaInterface via
   ```
-  cd <path_to_gaproot>/pkg/GAPJulia/JuliaInterface
+  cd <path_to_gaproot>/pkg/JuliaInterface
   ./configure <path_to_gaproot>
   make
   ```
