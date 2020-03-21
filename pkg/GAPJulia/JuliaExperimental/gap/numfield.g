@@ -906,7 +906,7 @@ InstallMethod( TraceMat,
     local C;
 
     C:= ContextGAPNemo( FamilyObj( nemomat ) );
-    return C!.ElementWrapped( C, Julia.LinearAlgebra.tr( nemomat ) );
+    return C!.ElementWrapped( C, Julia.Nemo.tr( nemomat ) );
     end );
 
 InstallOtherMethod( DeterminantMat,
