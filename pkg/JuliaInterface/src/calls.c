@@ -301,11 +301,11 @@ static Obj DoCallJuliaCFunc6Arg(
 }
 
 
-Obj NewJuliaCFunc(void * function, Obj arg_names)
+Obj NewJuliaCFunc(void * function, Obj args)
 {
     ObjFunc handler;
 
-    switch (LEN_PLIST(arg_names)) {
+    switch (LEN_PLIST(args)) {
     case 0:
         handler = DoCallJuliaCFunc0Arg;
         break;
@@ -333,7 +333,7 @@ Obj NewJuliaCFunc(void * function, Obj arg_names)
     }
 
     Obj func = NewFunctionT(T_FUNCTION, sizeof(JuliaFuncBag), 0,
-                            LEN_PLIST(arg_names), arg_names, handler);
+                            LEN_PLIST(args), args, handler);
 
     // store function pointer in the bag; since it gets marked by the GC, we
     // store it as a valid julia obj (i.e., void ptr).

@@ -276,7 +276,7 @@ Error, Function is not defined in julia
 gap> _NewJuliaCFunc(fail, fail);
 Error, NewJuliaCFunc: <ptr> must be a Julia object
 gap> _NewJuliaCFunc(JuliaEvalString("'a'"), fail);
-Error, NewJuliaCFunc: <arg_names> must be plain list
+Error, NewJuliaCFunc: <args> must be a plain list (not the value 'fail')
 
 #
 gap> _JuliaFunction(fail);
@@ -286,9 +286,11 @@ Error, Function is not defined in julia
 
 #
 gap> _JuliaFunctionByModule(fail, fail);
-Error, _JuliaFunctionByModule: <function_name> must be a string
+Error, _JuliaFunctionByModule: <funcName> must be a string (not the value 'fai\
+l')
 gap> _JuliaFunctionByModule("foo", fail);
-Error, _JuliaFunctionByModule: <module_name> must be a string
+Error, _JuliaFunctionByModule: <moduleName> must be a string (not the value 'f\
+ail')
 gap> _JuliaFunctionByModule("foo", "bar");
 Error, UndefVarError: bar not defined
 
