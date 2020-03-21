@@ -39,7 +39,7 @@ void handle_jl_exception(void)
     ErrorMayQuit(jl_string_data(string_object), 0, 0);
 }
 
-jl_module_t * get_module_from_string(char * name)
+static jl_module_t * get_module(const char * name)
 {
     // It suffices to use JULIAINTERFACE_EXCEPTION_HANDLER here, as
     // jl_eval_string is part of the jlapi, so don't have to be wrapped in
@@ -55,7 +55,7 @@ jl_module_t * get_module_from_string(char * name)
 // Therefore we do not call in InitKernel, but in the `read.g` file.
 Obj Func_JULIAINTERFACE_INTERNAL_INIT(Obj self)
 {
-    jl_module_t * gap_module = get_module_from_string("__JULIAGAPMODULE");
+    jl_module_t * gap_module = get_module("__JULIAGAPMODULE");
     JULIA_GAPFFE_type =
         (jl_datatype_t *)jl_get_global(gap_module, jl_symbol("FFE"));
     if (!JULIA_GAPFFE_type)
@@ -162,7 +162,7 @@ jl_function_t * get_function_from_obj_or_string(Obj func)
         // jl_get_function is a thin wrapper for jl_get_global and never
         // throws an exception
         jl_function_t * function =
-            jl_get_function(jl_main_module, CSTR_STRING(func));
+            jl_get_function(jl_main_module, CONST_CSTR_STRING(func));
         if (function == 0) {
             ErrorMayQuit("Function is not defined in julia", 0, 0);
         }
@@ -201,11 +201,11 @@ Func_JuliaFunctionByModule(Obj self, Obj function_name, Obj module_name)
                      0, 0);
     }
 
-    jl_module_t * module_t = get_module_from_string(CSTR_STRING(module_name));
+    jl_module_t * module_t = get_module(CONST_CSTR_STRING(module_name));
     // jl_get_function is a thin wrapper for jl_get_global and never throws
     // an exception
     jl_function_t * function =
-        jl_get_function(module_t, CSTR_STRING(function_name));
+        jl_get_function(module_t, CONST_CSTR_STRING(function_name));
     if (function == 0)
         ErrorMayQuit("Function is not defined in julia", 0, 0);
     return NewJuliaFunc(function);
@@ -218,14 +218,10 @@ static Obj FuncJuliaEvalString(Obj self, Obj string)
         ErrorMayQuit("JuliaEvalString: <string> must be a string", 0, 0);
     }
 
-    char * current = CSTR_STRING(string);
-    char   copy[strlen(current) + 1];
-    strcpy(copy, current);
-
     // It suffices to use JULIAINTERFACE_EXCEPTION_HANDLER here, as
     // jl_eval_string is part of the jlapi, so don't have to be wrapped in
     // JL_TRY/JL_CATCH.
-    jl_value_t * result = jl_eval_string(copy);
+    jl_value_t * result = jl_eval_string(CONST_CSTR_STRING(string));
     JULIAINTERFACE_EXCEPTION_HANDLER
     return gap_julia(result);
 }
@@ -240,7 +236,7 @@ static Obj FuncJuliaSymbol(Obj self, Obj name)
 
     // jl_symbol never throws an exception and always returns a valid
     // result, so no need for extra checks.
-    jl_sym_t * julia_symbol = jl_symbol(CSTR_STRING(name));
+    jl_sym_t * julia_symbol = jl_symbol(CONST_CSTR_STRING(name));
     return NewJuliaObj((jl_value_t *)julia_symbol);
 }
 
@@ -252,7 +248,7 @@ static Obj FuncJuliaSetVal(Obj self, Obj name, Obj val)
         ErrorMayQuit("JuliaSetVal: <name> must be a string", 0, 0);
     }
     jl_value_t * julia_obj = julia_gap(val);
-    jl_sym_t *   julia_symbol = jl_symbol(CSTR_STRING(name));
+    jl_sym_t *   julia_symbol = jl_symbol(CONST_CSTR_STRING(name));
     jl_set_global(jl_main_module, julia_symbol, julia_obj);
     return 0;
 }
@@ -266,7 +262,7 @@ static Obj Func_JuliaGetGlobalVariable(Obj self, Obj name)
                      0);
     }
 
-    jl_sym_t * symbol = jl_symbol(CSTR_STRING(name));
+    jl_sym_t * symbol = jl_symbol(CONST_CSTR_STRING(name));
     if (!jl_boundp(jl_main_module, symbol)) {
         return Fail;
     }
@@ -290,14 +286,14 @@ static Obj Func_JuliaGetGlobalVariableByModule(Obj self, Obj name, Obj module)
             m = 0;
     }
     else if (IsStringConv(module)) {
-        m = get_module_from_string(CSTR_STRING(module));
+        m = get_module(CONST_CSTR_STRING(module));
     }
     if (!m) {
         ErrorMayQuit("_JuliaGetGlobalVariableByModule: <module> must be a "
                      "string or a Julia module",
                      0, 0);
     }
-    jl_sym_t * symbol = jl_symbol(CSTR_STRING(name));
+    jl_sym_t * symbol = jl_symbol(CONST_CSTR_STRING(name));
     if (!jl_boundp(m, symbol)) {
         return Fail;
     }
@@ -326,7 +322,7 @@ static Obj FuncJuliaGetFieldOfObject(Obj self, Obj super_obj, Obj field_name)
     // jl_get_field is part of the jlapi, so don't have to be wrapped in
     // JL_TRY/JL_CATCH.
     jl_value_t * field_value =
-        jl_get_field(extracted_superobj, CSTR_STRING(field_name));
+        jl_get_field(extracted_superobj, CONST_CSTR_STRING(field_name));
     JULIAINTERFACE_EXCEPTION_HANDLER
     return gap_julia(field_value);
 }

@@ -73,12 +73,6 @@ extern int IS_JULIA_OBJ(Obj o);
 // from the julia value pointer v.
 Obj NewJuliaObj(jl_value_t *);
 
-// get_module_from_string( name )
-//
-// Returns a julia module pointer to the module <name>.
-jl_module_t * get_module_from_string(char * name);
-
-
 //
 jl_value_t * gap_box_gapffe(Obj value);
 
