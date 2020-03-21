@@ -1,4 +1,4 @@
-# Builds GAP with julia GC, compiles/links GAPJulia against it,
+# Builds GAP with julia GC, compiles/links a few package against it,
 # and exposes the right paths to julia/GAP
 
 import Pkg
@@ -55,7 +55,7 @@ end
 ## Compile JuliaInterface
 ##
 println("Compiling JuliaInterface ...")
-cd(abspath(joinpath(@__DIR__, "..", "pkg", "GAPJulia", "JuliaInterface")))
+cd(abspath(joinpath(@__DIR__, "..", "pkg", "JuliaInterface")))
 run(`./configure $gap_root`)
 run(`make -j$(Sys.CPU_THREADS)`)
 

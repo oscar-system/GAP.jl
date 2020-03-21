@@ -21,9 +21,9 @@ echo "Setting version to $relvers, released $reldate"
 
 #
 perl -pi -e 's;version = "[^"]+";version = "'$relvers'";' Project.toml
-perl -pi -e 's;Date := "[^"]+",;Date := "'$reldate'",;' pkg/GAPJulia/Julia*/PackageInfo.g
-perl -pi -e 's;Version := "[^"]+",;Version := "'$relvers'",;' pkg/GAPJulia/Julia*/PackageInfo.g
-perl -pi -e 's;\[ "JuliaInterface", ">=[^"]+" \];[ "JuliaInterface", ">='$relvers'" ];' pkg/GAPJulia/JuliaExperimental/PackageInfo.g
+perl -pi -e 's;Date := "[^"]+",;Date := "'$reldate'",;' pkg/Julia*/PackageInfo.g
+perl -pi -e 's;Version := "[^"]+",;Version := "'$relvers'",;' pkg/Julia*/PackageInfo.g
+perl -pi -e 's;\[ "JuliaInterface", ">=[^"]+" \];[ "JuliaInterface", ">='$relvers'" ];' pkg/JuliaExperimental/PackageInfo.g
 
 # commit it
-git commit -m "Version $relvers" Project.toml pkg/GAPJulia/Julia*/PackageInfo.g
+git commit -m "Version $relvers" Project.toml pkg/Julia*/PackageInfo.g
