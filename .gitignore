@@ -5,5 +5,4 @@
 /deps/deps.jl
 /deps/build.log
 /gap.sh
-/pkg/GAPJulia/Makefile
 /tags

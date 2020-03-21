@@ -18,13 +18,6 @@
 /doc/*.tex
 /doc/*.toc
 /doc/manual.pdf
-
-/Makefile
-
-/bin/
-
-/gen/
-
 /doc/*.xml
 
 /gh-pages/
