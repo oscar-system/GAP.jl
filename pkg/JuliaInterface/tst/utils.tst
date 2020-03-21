@@ -21,11 +21,11 @@ ed with a complex argument. Try sqrt(Complex(x)).\")" )
 
 ##
 gap> JuliaEvalString(fail);
-Error, JuliaEvalString: <string> must be a string
+Error, JuliaEvalString: <string> must be a string (not the value 'fail')
 
 ##
 gap> JuliaSetVal(fail, 1);
-Error, JuliaSetVal: <name> must be a string
+Error, JuliaSetVal: <name> must be a string (not the value 'fail')
 gap> JuliaSetVal("foo", JuliaEvalString("1"));
 gap> JuliaGetGlobalVariable("foo");
 1
@@ -56,7 +56,7 @@ gap> JuliaSymbol("someSymbol");
 gap> JuliaSymbol("");
 <Julia: Symbol("")>
 gap> JuliaSymbol(1);
-Error, JuliaSymbol: <name> must be a string
+Error, JuliaSymbol: <name> must be a string (not the integer 1)
 
 ##
 gap> JuliaModule("Base");
@@ -70,7 +70,7 @@ Error, JuliaModule: <name> is not a module
 
 ##
 gap> _JuliaGetGlobalVariable(0);
-Error, _JuliaGetGlobalVariable: <name> must be a string
+Error, _JuliaGetGlobalVariable: <name> must be a string (not the integer 0)
 gap> _JuliaGetGlobalVariable("not-a-global-variable");
 fail
 gap> _JuliaGetGlobalVariable("sqrt");
@@ -78,7 +78,8 @@ gap> _JuliaGetGlobalVariable("sqrt");
 
 ##
 gap> _JuliaGetGlobalVariableByModule(0, 0);
-Error, _JuliaGetGlobalVariableByModule: <name> must be a string
+Error, _JuliaGetGlobalVariableByModule: <name> must be a string (not the integ\
+er 0)
 gap> _JuliaGetGlobalVariableByModule("sqrt", 0);
 Error, _JuliaGetGlobalVariableByModule: <module> must be a string or a Julia m\
 odule
@@ -96,7 +97,8 @@ gap> _JuliaGetGlobalVariableByModule("sqrt", JuliaModule("Base"));
 gap> JuliaGetFieldOfObject(1, "");
 Error, JuliaGetFieldOfObject: <super_obj> must be a Julia object
 gap> JuliaGetFieldOfObject(JuliaModule("Base"), fail);
-Error, JuliaGetFieldOfObject: <field_name> must be a string
+Error, JuliaGetFieldOfObject: <field_name> must be a string (not the value 'fa\
+il')
 gap> JuliaGetFieldOfObject(JuliaModule("Base"), "not-a-field");
 Error, type Module has no field not-a-field
 

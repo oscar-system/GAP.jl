@@ -87,18 +87,16 @@ int is_gapobj(jl_value_t * v)
     return jl_typeis(v, gap_datatype_mptr);
 }
 
-static Obj Func_NewJuliaCFunc(Obj self, Obj julia_function_ptr, Obj arg_names)
+static Obj Func_NewJuliaCFunc(Obj self, Obj julia_function_ptr, Obj args)
 {
     if (!IS_JULIA_OBJ(julia_function_ptr)) {
         ErrorMayQuit("NewJuliaCFunc: <ptr> must be a Julia object", 0, 0);
     }
-    if (!IS_PLIST(arg_names)) {
-        ErrorMayQuit("NewJuliaCFunc: <arg_names> must be plain list", 0, 0);
-    }
+    RequirePlainList("NewJuliaCFunc", args);
 
     jl_value_t * func_ptr = GET_JULIA_OBJ(julia_function_ptr);
     void *       ptr = jl_unbox_voidpointer(func_ptr);
-    return NewJuliaCFunc(ptr, arg_names);
+    return NewJuliaCFunc(ptr, args);
 }
 
 /*
@@ -160,12 +158,12 @@ jl_function_t * get_function_from_obj_or_string(Obj func)
     if (IsStringConv(func)) {
         // jl_get_function is a thin wrapper for jl_get_global and never
         // throws an exception
-        jl_function_t * function =
+        jl_function_t * f =
             jl_get_function(jl_main_module, CONST_CSTR_STRING(func));
-        if (function == 0) {
+        if (f == 0) {
             ErrorMayQuit("Function is not defined in julia", 0, 0);
         }
-        return function;
+        return f;
     }
     ErrorMayQuit("argument is not a julia object or string", 0, 0);
     return 0;
@@ -179,43 +177,32 @@ jl_function_t * get_function_from_obj_or_string(Obj func)
  */
 static Obj Func_JuliaFunction(Obj self, Obj func)
 {
-    jl_function_t * function = get_function_from_obj_or_string(func);
-    return NewJuliaFunc(function);
+    jl_function_t * f = get_function_from_obj_or_string(func);
+    return NewJuliaFunc(f);
 }
 
 /*
- * Returns the function with name <function_name> from the Julia module with
- * name <module_name>.
+ * Returns the function with name <funcName> from the Julia module with
+ * name <moduleName>.
  */
-static Obj
-Func_JuliaFunctionByModule(Obj self, Obj function_name, Obj module_name)
+static Obj Func_JuliaFunctionByModule(Obj self, Obj funcName, Obj moduleName)
 {
-    if (!IsStringConv(function_name)) {
-        ErrorMayQuit(
-            "_JuliaFunctionByModule: <function_name> must be a string", 0, 0);
-    }
+    RequireStringRep("_JuliaFunctionByModule", funcName);
+    RequireStringRep("_JuliaFunctionByModule", moduleName);
 
-    if (!IsStringConv(module_name)) {
-        ErrorMayQuit("_JuliaFunctionByModule: <module_name> must be a string",
-                     0, 0);
-    }
-
-    jl_module_t * module_t = get_module(CONST_CSTR_STRING(module_name));
+    jl_module_t * m = get_module(CONST_CSTR_STRING(moduleName));
     // jl_get_function is a thin wrapper for jl_get_global and never throws
     // an exception
-    jl_function_t * function =
-        jl_get_function(module_t, CONST_CSTR_STRING(function_name));
-    if (function == 0)
+    jl_function_t * f = jl_get_function(m, CONST_CSTR_STRING(funcName));
+    if (f == 0)
         ErrorMayQuit("Function is not defined in julia", 0, 0);
-    return NewJuliaFunc(function);
+    return NewJuliaFunc(f);
 }
 
 // Executes the string <string> in the current julia session.
 static Obj FuncJuliaEvalString(Obj self, Obj string)
 {
-    if (!IsStringConv(string)) {
-        ErrorMayQuit("JuliaEvalString: <string> must be a string", 0, 0);
-    }
+    RequireStringRep("JuliaEvalString", string);
 
     // It suffices to use JULIAINTERFACE_EXCEPTION_HANDLER here, as
     // jl_eval_string is part of the jlapi, so don't have to be wrapped in
@@ -229,9 +216,7 @@ static Obj FuncJuliaEvalString(Obj self, Obj string)
 // :<name>.
 static Obj FuncJuliaSymbol(Obj self, Obj name)
 {
-    if (!IsStringConv(name)) {
-        ErrorMayQuit("JuliaSymbol: <name> must be a string", 0, 0);
-    }
+    RequireStringRep("JuliaSymbol", name);
 
     // jl_symbol never throws an exception and always returns a valid
     // result, so no need for extra checks.
@@ -243,9 +228,8 @@ static Obj FuncJuliaSymbol(Obj self, Obj name)
 // This function is for debugging purposes.
 static Obj FuncJuliaSetVal(Obj self, Obj name, Obj val)
 {
-    if (!IsStringConv(name)) {
-        ErrorMayQuit("JuliaSetVal: <name> must be a string", 0, 0);
-    }
+    RequireStringRep("JuliaSetVal", name);
+
     jl_value_t * julia_obj = julia_gap(val);
     jl_sym_t *   julia_symbol = jl_symbol(CONST_CSTR_STRING(name));
     jl_set_global(jl_main_module, julia_symbol, julia_obj);
@@ -256,10 +240,7 @@ static Obj FuncJuliaSetVal(Obj self, Obj name, Obj val)
 // currently bound to the julia identifier <name>.
 static Obj Func_JuliaGetGlobalVariable(Obj self, Obj name)
 {
-    if (!IsStringConv(name)) {
-        ErrorMayQuit("_JuliaGetGlobalVariable: <name> must be a string", 0,
-                     0);
-    }
+    RequireStringRep("_JuliaGetGlobalVariable", name);
 
     jl_sym_t * symbol = jl_symbol(CONST_CSTR_STRING(name));
     if (!jl_boundp(jl_main_module, symbol)) {
@@ -270,13 +251,10 @@ static Obj Func_JuliaGetGlobalVariable(Obj self, Obj name)
 }
 
 // Returns the julia object GAP object that holds a pointer to the value
-// currently bound to the julia identifier <module_name>.<name>.
+// currently bound to the julia identifier <moduleName>.<name>.
 static Obj Func_JuliaGetGlobalVariableByModule(Obj self, Obj name, Obj module)
 {
-    if (!IsStringConv(name)) {
-        ErrorMayQuit(
-            "_JuliaGetGlobalVariableByModule: <name> must be a string", 0, 0);
-    }
+    RequireStringRep("_JuliaGetGlobalVariableByModule", name);
 
     jl_module_t * m = 0;
     if (IS_JULIA_OBJ(module)) {
@@ -310,10 +288,7 @@ static Obj FuncJuliaGetFieldOfObject(Obj self, Obj super_obj, Obj field_name)
             "JuliaGetFieldOfObject: <super_obj> must be a Julia object", 0,
             0);
     }
-    if (!IsStringConv(field_name)) {
-        ErrorMayQuit("JuliaGetFieldOfObject: <field_name> must be a string",
-                     0, 0);
-    }
+    RequireStringRep("JuliaGetFieldOfObject", field_name);
 
     jl_value_t * extracted_superobj = GET_JULIA_OBJ(super_obj);
 
@@ -372,14 +347,14 @@ static void MarkJuliaObject(Bag bag)
 // Table of functions to export
 static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(_JuliaFunction, 1, "string"),
-    GVAR_FUNC(_JuliaFunctionByModule, 2, "function_name, module_name"),
+    GVAR_FUNC(_JuliaFunctionByModule, 2, "funcName, moduleName"),
     GVAR_FUNC(JuliaEvalString, 1, "string"),
     GVAR_FUNC(JuliaSetVal, 2, "name,val"),
     GVAR_FUNC(_JuliaGetGlobalVariable, 1, "name"),
-    GVAR_FUNC(_JuliaGetGlobalVariableByModule, 2, "name,module"),
+    GVAR_FUNC(_JuliaGetGlobalVariableByModule, 2, "name, module"),
     GVAR_FUNC(JuliaGetFieldOfObject, 2, "obj,name"),
     GVAR_FUNC(JuliaSymbol, 1, "name"),
-    GVAR_FUNC(_NewJuliaCFunc, 2, "ptr,arg_names"),
+    GVAR_FUNC(_NewJuliaCFunc, 2, "ptr, args"),
     GVAR_FUNC(_JULIAINTERFACE_INTERNAL_INIT, 0, ""),
     GVAR_FUNC(STREAM_CALL, 3, "stream, func, obj"),
     { 0 } /* Finish with an empty entry */
