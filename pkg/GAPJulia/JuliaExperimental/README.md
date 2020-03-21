@@ -5,7 +5,7 @@ capabilities of the JuliaInterface package, and the general combination of
 GAP and Julia.
 
 ## General Disclaimer
-## 
+
 All code in this repository is preliminary work.
 
 It comes with absolutely no warranty and will most likely have errors. If you
@@ -36,21 +36,6 @@ This software is licensed under the LGPL, version 3, or any later version.
 
         using Singular
         using Nemo
-
-- Configure and compile JuliaExperimental via
-
-        cd <path_to_juliainterface>/../JuliaExperimental
-        ./autogen.sh
-        ./configure --with-gaproot=<path_to_gaproot> --with-julia=<path_to_julia>/usr --with-juliainterface=<path_to_juliainterface>
-        make
-
-#### Notes for Mac OS X
-
-It is possible to link JuliaExperimental against the official Julia binary
-which one can download from <https://julialang.org/downloads/>.
-To do so, run configure as follows:
-
-    ./configure --with-julia=/PATH/TO/Julia*.app/Contents/Resources/julia
 
 ## Usage
 

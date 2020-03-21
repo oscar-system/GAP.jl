@@ -52,10 +52,10 @@ if install_gap
 end
 
 ##
-## Compile JuliaInterface/Experimental
+## Compile JuliaInterface
 ##
-println("Compiling JuliaInterface and JuliaExperimental ...")
-cd(abspath(joinpath(@__DIR__, "..", "pkg", "GAPJulia" )))
+println("Compiling JuliaInterface ...")
+cd(abspath(joinpath(@__DIR__, "..", "pkg", "GAPJulia", "JuliaInterface")))
 run(`./configure $gap_root`)
 run(`make -j$(Sys.CPU_THREADS)`)
 
