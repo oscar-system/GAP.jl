@@ -4,7 +4,7 @@ coverage:
   range: "70...100"
 
   status:
-    project: on
+    project: off
     patch: off
     changes: off
 
