@@ -25,7 +25,6 @@ jl_datatype_t * gap_datatype_mptr;
 Obj  TheTypeJuliaObject;
 UInt T_JULIA_OBJ;
 
-Obj JULIAINTERFACE_Display;
 Obj JULIAINTERFACE_IsJuliaWrapper;
 Obj JULIAINTERFACE_JuliaPointer;
 
@@ -329,23 +328,22 @@ static Obj FuncJuliaGetFieldOfObject(Obj self, Obj super_obj, Obj field_name)
 
 static Obj IsOutputStream;
 
-static Obj FuncSTREAM_DISPLAYOBJ(Obj self, Obj stream, Obj obj)
+static Obj FuncSTREAM_CALL(Obj self, Obj stream, Obj func, Obj obj)
 {
     syJmp_buf readJmpError;
 
     if (CALL_1ARGS(IsOutputStream, stream) != True) {
-        ErrorQuit("STREAM_DISPLAYOBJ: <outstream> must be an output stream",
-                  0, 0);
+        ErrorQuit("STREAM_CALL: <outstream> must be an output stream", 0, 0);
     }
     if (!OpenOutputStream(stream)) {
-        ErrorQuit("STREAM_DISPLAYOBJ: cannot open stream for output", 0, 0);
+        ErrorQuit("STREAM_CALL: cannot open stream for output", 0, 0);
     }
 
     // if an error occurs stop printing
     memcpy(readJmpError, STATE(ReadJmpError), sizeof(syJmp_buf));
     TRY_IF_NO_ERROR
     {
-        CALL_1ARGS(JULIAINTERFACE_Display, obj);
+        CALL_1ARGS(func, obj);
     }
     CATCH_ERROR
     {
@@ -355,39 +353,7 @@ static Obj FuncSTREAM_DISPLAYOBJ(Obj self, Obj stream, Obj obj)
 
     // close the output file again, and return nothing
     if (!CloseOutput()) {
-        ErrorQuit("STREAM_DISPLAYOBJ: cannot close output", 0, 0);
-    }
-
-    return 0;
-}
-
-static Obj FuncSTREAM_VIEWOBJ(Obj self, Obj stream, Obj obj)
-{
-    syJmp_buf readJmpError;
-
-    if (CALL_1ARGS(IsOutputStream, stream) != True) {
-        ErrorQuit("STREAM_VIEWOBJ: <outstream> must be an output stream", 0,
-                  0);
-    }
-    if (!OpenOutputStream(stream)) {
-        ErrorQuit("STREAM_VIEWOBJ: cannot open stream for output", 0, 0);
-    }
-
-    // if an error occurs stop printing
-    memcpy(readJmpError, STATE(ReadJmpError), sizeof(syJmp_buf));
-    TRY_IF_NO_ERROR
-    {
-        ViewObj(obj);
-    }
-    CATCH_ERROR
-    {
-        // TODO: signal failure somehow?
-    }
-    memcpy(STATE(ReadJmpError), readJmpError, sizeof(syJmp_buf));
-
-    // close the output file again, and return nothing
-    if (!CloseOutput()) {
-        ErrorQuit("STREAM_VIEWOBJ: cannot close output", 0, 0);
+        ErrorQuit("STREAM_CALL: cannot close output", 0, 0);
     }
 
     return 0;
@@ -415,8 +381,7 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(JuliaSymbol, 1, "name"),
     GVAR_FUNC(_NewJuliaCFunc, 2, "ptr,arg_names"),
     GVAR_FUNC(_JULIAINTERFACE_INTERNAL_INIT, 0, ""),
-    GVAR_FUNC(STREAM_DISPLAYOBJ, 2, "stream, obj"),
-    GVAR_FUNC(STREAM_VIEWOBJ, 2, "stream, obj"),
+    GVAR_FUNC(STREAM_CALL, 3, "stream, func, obj"),
     { 0 } /* Finish with an empty entry */
 
 };
@@ -477,7 +442,6 @@ static Int InitKernel(StructInitInfo * module)
         (jl_datatype_t *)jl_get_global(gap_module, jl_symbol("MPtr"));
     GAP_ASSERT(gap_datatype_mptr);
 
-    ImportFuncFromLibrary("Display", &JULIAINTERFACE_Display);
     ImportFuncFromLibrary("IsJuliaWrapper", &JULIAINTERFACE_IsJuliaWrapper);
     ImportFuncFromLibrary("JuliaPointer", &JULIAINTERFACE_JuliaPointer);
     ImportFuncFromLibrary("IsOutputStream", &IsOutputStream);
