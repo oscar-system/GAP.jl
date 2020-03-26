@@ -63,21 +63,24 @@ after_script:
   - julia --color=yes etc/gather_coverage.jl
   - bash <(curl -s https://codecov.io/bash)
 
-jobs:
-   include:
-     # test with external GAP
-     - julia: 1.3
-       os: linux
-       env: GAPROOT=$TRAVIS_BUILD_DIR/gap-4.11.0
+matrix:
+  allow_failures:
+    - julia: nightly
+  fast_finish: true
+  include:
+    # test with external GAP
+    - julia: 1.3
+      os: linux
+      env: GAPROOT=$TRAVIS_BUILD_DIR/gap-4.11.0
 
-     - stage: "Documentation"
-       julia: 1.3
-       os: linux
-       script:
-         - julia --color=yes --project=docs/ -e 'using Pkg; Pkg.instantiate(); Pkg.add(PackageSpec(path=pwd()))'
-         - julia --color=yes --project=docs/ docs/make.jl
-       after_success: skip
-       name: "HTML"
+    - stage: "Documentation"
+      julia: 1.3
+      os: linux
+      script:
+        - julia --color=yes --project=docs/ -e 'using Pkg; Pkg.instantiate(); Pkg.add(PackageSpec(path=pwd()))'
+        - julia --color=yes --project=docs/ docs/make.jl
+      after_success: skip
+      name: "HTML"
 
 notifications:
   email:
