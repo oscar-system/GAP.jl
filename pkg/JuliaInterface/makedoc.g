@@ -9,6 +9,7 @@ fi;
 
 AutoDoc(rec(
     autodoc := true,
+    extract_examples:= true,
     scaffold := rec(
         entities := rec(
             Julia := "<Package>Julia</Package>"

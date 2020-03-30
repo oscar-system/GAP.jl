@@ -20,9 +20,6 @@
 #!  and must be callable on as many arguments as the length of the list
 #!  <A>arg_names</A> of strings describing the argument names
 #!  that are displayed in the function header by &GAP;.
-#! @BeginExampleSession
-#! ...
-#! @EndExampleSession
 DeclareGlobalFunction( "JuliaBindCFunction" );
 
 #! @Section GAP functions in Julia
@@ -32,8 +29,6 @@ DeclareGlobalFunction( "JuliaBindCFunction" );
 #! @Description
 #!  Sets the function <A>func</A> in &Julia; as <C>GAP.</C><A>name</A>.
 #!  The resulting function is then callable from &Julia; on <A>argument_number</A> arguments.
-#! @BeginExampleSession
-#! ...
-#! @EndExampleSession
+
 #! TODO: Does this function ever get installed?
 DeclareGlobalFunction( "JuliaSetGAPFuncAsJuliaObjFunc" );

@@ -25,7 +25,7 @@
 #!  The results of <Ref Func="JuliaModule"/> are always in
 #!  <Ref Filt="IsJuliaObject" Label="for IsObject"/>.
 #!  The results of <Ref Func="JuliaEvalString"/> are in
-#!  <Ref Filt="IsArgumentForJuliaFunction" Label="for IsObject"/>
+#!  <Ref Func="IsArgumentForJuliaFunction"/>
 #!  but not necessarily in <Ref Filt="IsJuliaObject" Label="for IsObject"/>.
 #!  <!-- What about &Julia; functions (see <Ref Func="JuliaFunction"/>)? -->
 #! @BeginExampleSession
@@ -115,22 +115,27 @@ BindGlobal( "TheTypeOfJuliaModules", NewType( TheFamilyOfJuliaModules, IsJuliaMo
 
 #! @Arguments obj
 #! @Description
-#!  This filter is set in all those &GAP; objects that can be used
-#!  as arguments of &Julia; functions.
+#!  This function returns <K>true</K> for all those &GAP; objects
+#!  that can be used as arguments of &Julia; functions.
 #!  These are the objects in
 #!  <Ref Filt="IsJuliaObject" Label="for IsObject"/>,
 #!  <Ref Filt="IsJuliaWrapper" Label="for IsObject"/>,
 #!  <Ref Filt="IsBool" BookName="ref"/>,
-#!  <C>IsInt and IsSmallIntRep</C> (see <Ref Chap="Integers" BookName="ref"/>,
-#!  and <C>IsFFE and IsInternalRep</C> (see <Ref Filt="IsFFE" BookName="ref"/>.
-DeclareCategory( "IsArgumentForJuliaFunction", IsObject );
-
-InstallTrueMethod( IsArgumentForJuliaFunction, IsJuliaObject );
-InstallTrueMethod( IsArgumentForJuliaFunction, IsJuliaWrapper );
-InstallTrueMethod( IsArgumentForJuliaFunction, IsBool );
-InstallTrueMethod( IsArgumentForJuliaFunction, IsInt and IsSmallIntRep );
-InstallTrueMethod( IsArgumentForJuliaFunction, IsFFE and IsInternalRep );
-
+#!  <C>IsInt and IsSmallIntRep</C>
+#!  (see <Ref Chap="Integers" BookName="ref"/>),
+#!  and <C>IsFFE and IsInternalRep</C>
+#!  (see <Ref Filt="IsFFE" BookName="ref"/>).
+#!  <!-- (Except for IsJuliaWrapper, these are the objects with the
+#!       Julia type GAP.Obj.) -->
+#!  For all other &GAP; objects, the function returns <K>false</K>.
+#! @BeginExampleSession
+#! gap> m:= JuliaEvalString( "sqrt(2)" );;
+#! gap> ForAll( [ m, Julia, true, 1, Z(2) ], IsArgumentForJuliaFunction );
+#! true
+#! gap> ForAny( [ 2^62, [], (1,2) ], IsArgumentForJuliaFunction );
+#! false
+#! @EndExampleSession
+DeclareGlobalFunction( "IsArgumentForJuliaFunction" );
 
 #! @Section Creating &Julia; objects
 
@@ -200,11 +205,11 @@ BindGlobal( "_JuliaFunctions", rec( ) );
 #! If <A>module_name</A> is not given,
 #! the function is taken from &Julia;'s <C>Main</C> module.
 #! The returned function can be called on arguments in
-#! <Ref Filt="IsArgumentForJuliaFunction" Label="for IsObject"/>.
+#! <Ref Func="IsArgumentForJuliaFunction"/>.
 #! <!-- The result is not in IsJuliaObject, note that JuliaFunction calls
 #!      _JuliaFunction, which calls NewJuliaFunc;
 #!      and this returns a GAP function that delegates to
-#!      DoCallJuliaFunc0Arg etc. -->
+#!      DoCallJuliaFunc0Arg and eventually to jl_call. -->
 #! @BeginExampleSession
 #! gap> fun:= JuliaFunction( "sqrt" );
 #! function( arg... ) ... end
@@ -218,13 +223,15 @@ DeclareGlobalFunction( "JuliaFunction" );
 #! @Arguments variable_name[, module_name]
 #! @Returns a &Julia; object
 #! @Description
-#!  Returns the &Julia; object <A>variable_name</A> from the
-#!  module <A>module_name</A>.
+#!  Returns the &Julia; object assigned to the variable with name
+#!  <A>variable_name</A> in the &Julia; module <A>module_name</A>.
 #!  Both arguments must be strings. If <A>module_name</A> is not given,
 #!  the variable is taken from the <C>Main</C> module.
 #!  <P/>
-#!  The result of this function is in
-#!  <Ref Filt="IsArgumentForJuliaFunction" Label="for IsObject"/>,
+#!  If the variable with name <A>variable_name</A> is not bound in the
+#!  &Julia; module then <K>fail</K> is returned.
+#!  Otherwise the result of this function is in
+#!  <Ref Func="IsArgumentForJuliaFunction"/>,
 #!  <!-- but never in IsJuliaWrapper -->
 #!  thus it can be passed as an argument to &Julia; functions.
 #! @BeginExampleSession
@@ -232,6 +239,8 @@ DeclareGlobalFunction( "JuliaFunction" );
 #! 17
 #! gap> JuliaGetGlobalVariable( "x" );
 #! 17
+#! gap> JuliaGetGlobalVariable( "unbound_variable", "GAP" );
+#! fail
 #! @EndExampleSession
 DeclareGlobalFunction( "JuliaGetGlobalVariable" );
 
@@ -298,7 +307,7 @@ DeclareGlobalFunction( "JuliaTypeInfo" );
 #! @Returns a record.
 #! @Description
 #!  The function calls the &Julia; function <A>juliafunc</A>
-#!  with arguments in the list <A>arguments</A>,
+#!  with arguments in the &GAP; list <A>arguments</A>,
 #!  and returns a record with the components <C>ok</C> and <C>value</C>.
 #!  If no error occured then <C>ok</C> has the value <K>true</K>,
 #!  and <C>value</C> is the value returned by <A>juliafunc</A>.
@@ -313,6 +322,14 @@ DeclareGlobalFunction( "JuliaTypeInfo" );
 #! false
 #! gap> res.value{ [ 1 .. Position( res.value, '(' )-1 ] };
 #! "DomainError"
+#! gap> inv:= Julia.inv;;
+#! gap> m:= GAPToJulia( JuliaEvalString( "Array{Int,2}" ), [[1,2],[2,4]] );
+#! <Julia: [1 2; 2 4]>
+#! gap> res:= CallJuliaFunctionWithCatch( inv, [ m ] );;
+#! gap> res.ok;
+#! false
+#! gap> res.value{ [ 1 .. Position( res.value, '(' )-1 ] };
+#! "LinearAlgebra.SingularException"
 #! @EndExampleSession
 DeclareGlobalFunction( "CallJuliaFunctionWithCatch" );
 
@@ -320,14 +337,21 @@ DeclareGlobalFunction( "CallJuliaFunctionWithCatch" );
 #!  The simplest way to execute &Julia; code from &GAP; is to call
 #!  <Ref Func="JuliaEvalString"/> with a string that contains
 #!  the &Julia; code in question.
+#! @BeginExampleSession
+#! gap> JuliaEvalString( "sqrt( 2 )" );
+#! <Julia: 1.4142135623730951>
+#! @EndExampleSession
 #!  However, it is usually more suitable to create &GAP; variables
 #!  whose values are &Julia; objects, and to call &Julia; functions
 #!  directly.
 #!  The &GAP; function call syntax is used for that.
 #! @BeginExampleSession
-#! ...
+#! gap> jsqrt:= JuliaEvalString( "sqrt" );
+#! <Julia: sqrt>
+#! gap> jsqrt( 2 );
+#! <Julia: 1.4142135623730951>
 #! @EndExampleSession
-#!  In fact, there are three slightly different ways to achieve this.
+#!  In fact, there are slightly different ways to achieve this.
 #!
 #!  <List>
 #!  <Item>
@@ -336,19 +360,21 @@ DeclareGlobalFunction( "CallJuliaFunctionWithCatch" );
 #!    that points to a &Julia; function then we can call <C>obj</C> with
 #!    suitable arguments.
 #!    In this situation, the function call is executed via
-#!    &Julia;'s <C>Core._apply</C>.
-#!    <!-- see the installed CallFuncList methods -->
+#!    the applicable <Ref Oper="CallFuncList" BookName="ref"/> method,
+#!    which calls &Julia;'s <C>Core._apply</C>.
 #!  </Item>
 #!  <Item>
 #!    If we have a &GAP; function that was created with
-#!    <Ref Func="JuliaFunction"/> then calling this function results in
-#!    ...
+#!    <Ref Func="JuliaFunction"/> then the function call is executed
+#!    on the C level, using &Julia;'s <C>jl_call</C>.
 #!  </Item>
+#!  <!--
 #!  <Item>
 #!    If we have a &GAP; function that was created with
 #!    <Ref Func="JuliaBindCFunction"/> then calling this function results in
 #!    ...
 #!  </Item>
+#!  -->
 #!  </List>
 #!
 #!  TODO: Add examples.
@@ -420,6 +446,13 @@ DeclareGlobalFunction( "CallJuliaFunctionWithCatch" );
 #!  </Item>
 #!  </List>
 #!
-#! @BeginExampleSession
-#! ...
-#! @EndExampleSession
+#!<Example>
+#!gap> m:= GAPToJulia( [ [ 1, 2 ], [ 3, 4 ] ] );
+#!&lt;Julia: Any[Any[1, 2], Any[3, 4]]>
+#!gap> m[1];
+#!&lt;Julia: Any[1, 2]>
+#!gap> - m;
+#!&lt;Julia: Array{Int64,1}[[-1, -2], [-3, -4]]>
+#!gap> m + m;
+#!&lt;Julia: Array{Int64,1}[[2, 4], [6, 8]]>
+#!</Example>

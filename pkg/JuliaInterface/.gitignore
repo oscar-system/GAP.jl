@@ -29,7 +29,7 @@
 
 /gh-pages/
 
-/maketest.g
+/tst/juliainterface*.tst
 
 /tmp/
 /misc
