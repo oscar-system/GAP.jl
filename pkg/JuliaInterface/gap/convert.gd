@@ -202,17 +202,17 @@
 #!    <C>UInt64</C>,
 #!    <C>UInt128</C>,
 #!    <C>BigInt</C>,
-#!    <C>Rational{T} where T &lt;: Integer</C>,
+#!    <C>Rational{T} where T &lt;:&nbsp;Integer</C>,
 #!  </Item>
 #!  <Item>
 #!    <C>MPtr and IsInt</C> to
 #!    <C>BigInt</C> (default),
-#!    <C>Rational{T} where T &lt;: Integer</C>,
+#!    <C>Rational{T} where T &lt;:&nbsp;Integer</C>,
 #!  </Item>
 #!  <Item>
 #!    <C>MPtr and IsRat</C> to
 #!    <C>Rational{BigInt}</C> (default),
-#!    <C>Rational{T} where T &lt;: Integer</C>,
+#!    <C>Rational{T} where T &lt;:&nbsp;Integer</C>,
 #!  </Item>
 #!  <Item>
 #!    <C>IsFloat</C> to
@@ -352,29 +352,28 @@
 #! @Returns a &GAP; object in the filter <A>filt</A>
 #! @Description
 #!  Let <A>juliaobj</A> be an object in
-#!  <Ref Filt="IsArgumentForJuliaFunction" Label="for IsObject"/>
+#!  <Ref Func="IsArgumentForJuliaFunction"/>
 #!  for which a conversion to &GAP; is provided,
 #!  in the sense of Section <Ref Sect="Section_Conversion_rules"/>,
 #!  such that the corresponding &GAP; object is in the filter <A>filt</A>.
 #!  Then <Ref Constr="JuliaToGAP" Label="for IsObject, IsObject"/>
 #!  returns this &GAP; object.
-#!  <P/>
+#!
 #!  For recursive structures (&GAP; lists and records),
 #!  only the outermost level is converted except if the optional argument
 #!  <A>recursive</A> is given and has the value <K>true</K>.
-#!  <P/>
-#! <!-- Note that the Julia output contains the "forbidden" sequence "]]>",
-#!      thus the CDATA syntax cannot be used. -->
-#! <Example>
+#!
+#! @BeginExampleSession
 #! gap> s:= GAPToJulia( "abc" );
-#! &lt;Julia: "abc">
+#! <Julia: "abc">
 #! gap> JuliaToGAP( IsString, s );
 #! "abc"
 #! gap> l:= GAPToJulia( [ 1, 2, 4 ] );
-#! &lt;Julia: Any[1, 2, 4]>
+#! <Julia: Any[1, 2, 4]>
 #! gap> JuliaToGAP( IsList, l );
 #! [ 1, 2, 4 ]
-#! </Example>
+#! @EndExampleSession
+#!
 #!  The following values for <A>filt</A> are supported.
 #!  <Ref Filt="IsInt" BookName="ref"/>,
 #!  <Ref Filt="IsRat" BookName="ref"/>,
@@ -409,25 +408,42 @@ DeclareConstructor("JuliaToGAP", [IsObject, IsObject, IsBool]);
 #!  <P/>
 #! <!-- Note that the Julia output contains the "forbidden" sequence "]]>",
 #!      thus the CDATA syntax cannot be used. -->
-#! <Example>
-#! gap> GAPToJulia( 1 );
-#! 1
-#! gap> GAPToJulia( JuliaEvalString( "Rational{Int64}" ), 1 );
-#! &lt;Julia: 1//1>
-#! gap> l:= [ 1, 3, 4 ];;
-#! gap> GAPToJulia( l );
-#! &lt;Julia: Any[1, 3, 4]>
-#! gap> GAPToJulia( JuliaEvalString( "Array{Int,1}" ), l );
-#! &lt;Julia: [1, 3, 4]>
-#! gap> m:= [ [ 1, 2 ], [ 3, 4 ] ];;
-#! gap> GAPToJulia( m );
-#! &lt;Julia: Any[Any[1, 2], Any[3, 4]]>
-#! gap> GAPToJulia( JuliaEvalString( "Array{Int,2}" ), m );
-#! &lt;Julia: [1 2; 3 4]>
-#! gap> r:= rec( a:= 1, b:= [ 1, 2, 3 ] );;
-#! gap> GAPToJulia( r );
-#! &lt;Julia: Dict{Symbol,Any}(:a => 1,:b => Any[1, 2, 3])>
-#! </Example>
+#!<Example>
+#!gap> GAPToJulia( 1 );
+#!1
+#!gap> GAPToJulia( JuliaEvalString( "Rational{Int64}" ), 1 );
+#!&lt;Julia: 1//1>
+#!gap> l:= [ 1, 3, 4 ];;
+#!gap> GAPToJulia( l );
+#!&lt;Julia: Any[1, 3, 4]>
+#!gap> GAPToJulia( JuliaEvalString( "Array{Int,1}" ), l );
+#!&lt;Julia: [1, 3, 4]>
+#!gap> m:= [ [ 1, 2 ], [ 3, 4 ] ];;
+#!gap> GAPToJulia( m );
+#!&lt;Julia: Any[Any[1, 2], Any[3, 4]]>
+#!gap> GAPToJulia( JuliaEvalString( "Array{Int,2}" ), m );
+#!&lt;Julia: [1 2; 3 4]>
+#!gap> r:= rec( a:= 1, b:= [ 1, 2, 3 ] );;
+#!gap> GAPToJulia( r );
+#!&lt;Julia: Dict{Symbol,Any}(:a => 1,:b => Any[1, 2, 3])>
+#!</Example>
+#! By default, &GAP; lists and records are converted recursively.
+#! <E>Non-recursive</E> conversions of &GAP; lists and records can be
+#! achieved by prescribing a suitable &Julia; type, as follows.
+#! Note that arbitrary &GAP; objects are covered by the &Julia; type
+#! <C>GAP.Obj</C>, and &GAP; objects which are not <Q>immediate</Q>
+#! are covered by the &Julia; type <C>GAP.GapObj</C>.
+#!<Example>
+#!gap> jl:= GAPToJulia( JuliaEvalString( "Array{GAP.GapObj,1}" ), m );
+#!&lt;Julia: Main.GAP.GapObj[GAP: [ 1, 2 ], GAP: [ 3, 4 ]]>
+#!gap> jl[1];
+#![ 1, 2 ]
+#!gap> jr:= GAPToJulia( JuliaEvalString( "Dict{Symbol,GAP.Obj}" ), r );
+#!&lt;Julia: Dict{Symbol,Union{Nothing, Bool, Int64, Main.GAP.FFE, Main.GAP\
+#!.GapObj}}(:a => 1,:b => GAP: [ 1, 2, 3 ])>
+#!gap> Julia.Base.get( jr, JuliaSymbol( "b" ), fail );
+#![ 1, 2, 3 ]
+#!</Example>
 DeclareGlobalFunction("GAPToJulia");
 
 #! @Section Open items

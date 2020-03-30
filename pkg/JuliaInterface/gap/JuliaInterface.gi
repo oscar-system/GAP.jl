@@ -42,6 +42,13 @@ BindGlobal( "_WrapJuliaModule",
 
 end );
 
+InstallGlobalFunction( IsArgumentForJuliaFunction,
+    obj -> IsJuliaObject( obj ) or
+           IsJuliaWrapper( obj ) or
+           IsBool( obj ) or
+           ( IsInt( obj ) and IsSmallIntRep( obj ) ) or
+           ( IsFFE( obj ) and IsInternalRep( obj ) ) );
+
 InstallMethod( \.,
               [ "IsJuliaModule", "IsPosInt" ],
   function( module, rnum )
