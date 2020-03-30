@@ -498,10 +498,6 @@ DeclareGlobalFunction("GAPToJulia");
 #!   Why is <Ref Func="GAPToJulia"/> always recursive?
 #! </Item>
 #! <Item>
-#!   Is there a way to call &Julia; functions with named arguments
-#!   from &GAP; via the interface?
-#! </Item>
-#! <Item>
 #!   Should we allow the three argument case of <C>JuliaToGAP</C> in all
 #!   cases, e.g., <C>JuliaToGAP( IsInt, 1, true )</C>?
 #! </Item>

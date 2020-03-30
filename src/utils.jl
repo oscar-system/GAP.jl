@@ -45,6 +45,29 @@ function call_with_catch(juliafunc, arguments)
     end
 end
 
+"""
+    function kwarg_wrapper(func, args::Array{T1,1}, kwargs::Dict{Symbol,T2}) where {T1, T2}
+
+Call the function `func` with arguments `args` and keyword arguments
+given by the keys and values of `kwargs`.
+
+This function is used on the GAP side, in calls of Julia functions that
+require keyword arguments.
+Note that `jl_call` and `Core._apply` do not support keyword arguments.
+
+# Examples
+```jldoctest
+julia> range( 2, length = 5, step = 2 )
+2:2:10
+
+julia> GAP.kwarg_wrapper( range, [ 2 ], Dict( :length => 5, :step => 2 ) )
+2:2:10
+
+```
+"""
+function kwarg_wrapper(func, args::Array{T1,1}, kwargs::Dict{Symbol,T2}) where {T1, T2}
+    return func( args...; [ k => kwargs[k] for k in keys( kwargs ) ]... )
+end
 
 ## convenience function
 

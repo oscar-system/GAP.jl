@@ -333,6 +333,36 @@ DeclareGlobalFunction( "JuliaTypeInfo" );
 #! @EndExampleSession
 DeclareGlobalFunction( "CallJuliaFunctionWithCatch" );
 
+#! @Arguments juliafunc, arguments, arec
+#! @Returns the result of the &Julia; function call.
+#! @Description
+#!  The function calls the &Julia; function <A>juliafunc</A>
+#!  with ordinary arguments in the &GAP; list <A>arguments</A>
+#!  and keyword arguments given by the component names (keys) and values
+#!  of the record <A>arec</A>,
+#!  and returns the function value.
+#!  <P/>
+#!  Note that the entries of <A>arguments</A> and the components of
+#!  <A>arec</A> are not implicitly converted to &Julia;.
+#! @BeginExampleSession
+#! gap> CallJuliaFunctionWithKeywordArguments( Julia.Base.round,
+#! >        [ GAPToJulia( Float( 1/3 ) ) ], rec( digits:= 5 ) );
+#! <Julia: 0.33333>
+#! gap> CallJuliaFunctionWithKeywordArguments(
+#! >        Julia.Base.range, [ 2 ], rec( length:= 5, step:= 2 ) );
+#! <Julia: 2:2:10>
+#! gap> m:= GAPToJulia( JuliaEvalString( "Array{Int,2}" ),
+#! >            [ [ 1, 2 ], [ 3, 4 ] ] );
+#! <Julia: [1 2; 3 4]>
+#! gap> CallJuliaFunctionWithKeywordArguments(
+#! >        Julia.Base.reverse, [ m ], rec( dims:= 1 ) );
+#! <Julia: [3 4; 1 2]>
+#! gap> CallJuliaFunctionWithKeywordArguments(
+#! >        Julia.Base.reverse, [ m ], rec( dims:= 2 ) );
+#! <Julia: [2 1; 4 3]>
+#! @EndExampleSession
+DeclareGlobalFunction( "CallJuliaFunctionWithKeywordArguments" );
+
 #! @Section Calling &Julia; functions
 #!  The simplest way to execute &Julia; code from &GAP; is to call
 #!  <Ref Func="JuliaEvalString"/> with a string that contains

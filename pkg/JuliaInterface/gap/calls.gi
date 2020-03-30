@@ -5,6 +5,8 @@
 ##
 BindGlobal("_JL_Array_GAPObj_1", JuliaEvalString("Array{__JULIAGAPMODULE.Obj,1}"));
 
+BindGlobal("_JL_Dict_GAPObj", JuliaEvalString("Dict{Symbol,__JULIAGAPMODULE.Obj}"));
+
 ##
 ##  We want to use &GAP's function call syntax also for certain Julia objects
 ##  that are <E>not</E> functions, for example for types such as <C>fmpz</C>.
@@ -35,3 +37,9 @@ InstallGlobalFunction( CallJuliaFunctionWithCatch,
       return rec( ok:= false, value:= JuliaToGAP( IsString, res[2] ) );
     fi;
 end );
+
+InstallGlobalFunction( CallJuliaFunctionWithKeywordArguments,
+    { julia_obj, args, arec } -> Julia.GAP.kwarg_wrapper( julia_obj,
+                                     # non-recursive conversions
+                                     GAPToJulia( _JL_Array_GAPObj_1, args ),
+                                     GAPToJulia( _JL_Dict_GAPObj, arec ) ) );
