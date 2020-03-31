@@ -446,13 +446,14 @@ DeclareGlobalFunction( "CallJuliaFunctionWithCatch" );
 #!  </Item>
 #!  </List>
 #!
-#!<Example>
-#!gap> m:= GAPToJulia( [ [ 1, 2 ], [ 3, 4 ] ] );
-#!&lt;Julia: Any[Any[1, 2], Any[3, 4]]>
-#!gap> m[1];
-#!&lt;Julia: Any[1, 2]>
-#!gap> - m;
-#!&lt;Julia: Array{Int64,1}[[-1, -2], [-3, -4]]>
-#!gap> m + m;
-#!&lt;Julia: Array{Int64,1}[[2, 4], [6, 8]]>
-#!</Example>
+#! @BeginExampleSession
+#! gap> m:= GAPToJulia( JuliaEvalString( "Array{Int,2}" ),
+#! >            [ [ 1, 2 ], [ 3, 4 ] ] );
+#! <Julia: [1 2; 3 4]>
+#! gap> m[1,2];
+#! 2
+#! gap> - m;
+#! <Julia: [-1 -2; -3 -4]>
+#! gap> m + m;
+#! <Julia: [2 4; 6 8]>
+#! @EndExampleSession
