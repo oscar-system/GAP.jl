@@ -1,3 +1,8 @@
+@doc Markdown.doc"""
+  GAP.jl is the Julia interface to the GAP-System.
+
+  For more information about GAP see https://www.gap-system.org/
+"""
 module GAP
 
 # In order to locate the GAP installation, 'deps/build.jl' generate a file
@@ -18,6 +23,7 @@ export FFE
 import Base: length, convert, finalize
 
 import Libdl
+import Markdown
 
 """
     GapObj
