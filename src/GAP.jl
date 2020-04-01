@@ -182,6 +182,7 @@ function __init__()
     end
 end
 
+include( "lowlevel.jl" )
 include( "ccalls.jl" )
 include( "adapter.jl" )
 include( "macros.jl" )
