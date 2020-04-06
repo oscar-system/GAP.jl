@@ -20,7 +20,7 @@ primitive type FFE 64 end
 
 export FFE
 
-import Base: length, convert, finalize
+import Base: length, finalize
 
 import Libdl
 import Markdown
@@ -127,13 +127,7 @@ function register_GapObj()
 end
 
 
-gap_is_initialized = false
-
 function run_it(gapdir::String)
-    global gap_is_initialized
-    if gap_is_initialized
-        error("GAP already initialized")
-    end
     sysinfo = read_sysinfo_gap(gapdir)
     gaproots = abspath(joinpath(@__DIR__, "..")) * ";" * sysinfo["GAP_LIB_DIR"]
     cmdline_options = [ ""
@@ -145,7 +139,6 @@ function run_it(gapdir::String)
       push!( cmdline_options, "-b" )
     end
     initialize(gapdir, cmdline_options, [""])
-    gap_is_initialized = true
 end
 
 function __init__()
