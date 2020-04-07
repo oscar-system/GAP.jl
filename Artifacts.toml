@@ -1,0 +1,9 @@
+[gap-4-11-0]
+git-tree-sha1 = "48e8399d220c782f4c6cf862f8ac0f436a2a6053"
+
+    [[gap-4-11-0.download]]
+    sha256 = "bf070a10dc2ac60593fe65df0f873d72d4d67501e86eb262a6f6bd48fc868602"
+    url = "https://github.com/gap-system/gap/releases/download/v4.11.0/gap-4.11.0.tar.bz2"
+    [[gap-4-11-0.download]]
+    sha256 = "bf070a10dc2ac60593fe65df0f873d72d4d67501e86eb262a6f6bd48fc868602"
+    url = "https://www.gap-system.org/pub/gap/gap-4.11/tar.bz2/gap-4.11.0.tar.bz2"

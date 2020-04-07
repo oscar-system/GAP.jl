@@ -42,13 +42,10 @@ script:
   # Build package and run Julia specific tests
   - julia --color=yes -e 'using Pkg ; Pkg.build(; verbose = true)'
   - julia --color=yes -e 'using Pkg ; Pkg.test(coverage=true)'
-  - pkgpath=$(julia -e 'print(abspath(joinpath(dirname(Base.find_package("GAP")), "..")))');
+  - gap_sh=$(julia -e 'import GAP; print(GAP.gap_exe())');
   # Run GAP specific tests
-  - export GAP="$pkgpath/gap.sh -A --quitonbreak --norepl"
+  - export GAP="$gap_sh -A --quitonbreak --norepl"
   - etc/travis_test.sh
-  # delete *.gcno and *.gcda coverage files for GAP C files, to avoid clash
-  # with our .c files such as calls.c
-  - rm -f $pkgpath/gap/obj/src/.libs/*.gc* ;
 
 after_script:
   - cd $TRAVIS_BUILD_DIR

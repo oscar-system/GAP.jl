@@ -1,8 +1,9 @@
 /gap/
 /gh-pages/
 /Manifest.toml
-/deps/gap/
-/deps/deps.jl
+/deps/build
 /deps/build.log
-/gap.sh
+/deps/deps-*.jl
+/deps/gap/
+/deps/usr/
 /tags

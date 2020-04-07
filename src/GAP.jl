@@ -6,9 +6,20 @@
 module GAP
 
 # In order to locate the GAP installation, 'deps/build.jl' generate a file
-# 'deps/deps.jl' for us which sets the variable GAPROOT. We read this file
-# here.
-include(abspath(joinpath(@__DIR__, "..", "deps", "deps.jl")))
+# 'deps/deps-$(VERSION).jl' for us which sets the variable GAPROOT. We read
+# this file here.
+deps_jl = abspath(joinpath(@__DIR__, "..", "deps", "deps-$(VERSION).jl"))
+if !isfile(deps_jl)
+    # HACK: we need to compile GAP once for each Julia version, but Julia only
+    # builds it for us once; so we need to check if the package was actually
+    # built, and if not, trigger a build now. This *seems* to work well in
+    # practice, but I am not sure if we are strictly speaking "allowed" to do
+    # this
+    import Pkg
+    Pkg.build("GAP")
+end
+include(deps_jl)
+
 
 """
     FFE
@@ -174,6 +185,11 @@ function __init__()
       ))
     end
 end
+
+function gap_exe()
+    return joinpath(GAPROOT, "bin", "gap.sh")
+end
+export gap_exe
 
 include( "lowlevel.jl" )
 include( "ccalls.jl" )
