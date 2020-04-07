@@ -24,3 +24,13 @@ Some information for maintainers of the GAP.jl packages
 The latter works because we have set up a GitHub Action for
 [Julia TagBot](https://github.com/marketplace/actions/julia-tagbot) to tag and
 make the release automatically.
+
+
+## Using GAP.jl with a different version of GAP than is bundled
+
+For various reasons you may wish to use GAP.jl with a different GAP version than
+the one bundled with it via `Artifacts.toml`; e.g. to test GAP.jl against the
+GAP master branch.
+
+To do so, you can use a `Overrides.toml` file, as described in the `Pkg.jl` manual:
+<https://julialang.github.io/Pkg.jl/dev/artifacts/#Overriding-artifact-locations-1>
