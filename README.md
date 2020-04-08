@@ -1,16 +1,16 @@
 [![Build Status](https://travis-ci.com/oscar-system/GAP.jl.svg?branch=master)](https://travis-ci.com/oscar-system/GAP.jl)
 [![Code Coverage](https://codecov.io/github/oscar-system/GAP.jl/coverage.svg?branch=master&token=)](https://codecov.io/gh/oscar-system/GAP.jl)
 
-# GAP.jl Julia module
+# GAP.jl Julia package
 
-This repository contains the [GAP.jl](src/GAP.jl) Julia module, as well as the GAP packages
+This repository contains the [GAP.jl](src/GAP.jl) Julia package, as well as the GAP packages
 [`JuliaInterface`](pkg/JuliaInterface) and [`JuliaExperimental`](pkg/JuliaExperimental)
 developed for the [GAP](https://www.gap-system.org/)-[Julia](https://julialang.org/) integration
 as part of the [OSCAR project](https://oscar.computeralgebra.de).
 
 ## Install
 
-To install this module in Julia, use
+To install this package in Julia, use
 ```
 ] add GAP
 ```
