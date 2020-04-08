@@ -1,4 +1,9 @@
 language: julia
+
+os:
+  - osx
+  - linux
+
 julia:
   - 1.3
   - 1.4
@@ -31,7 +36,7 @@ install:
 
 before_script:
   # check code formatting
-  - git ls-files | egrep '\.[ch]$' | xargs clang-format -i
+  - if command -v clang-format > /dev/null ; then git ls-files | egrep '\.[ch]$' | xargs clang-format -i ; fi
   - git diff --exit-code -- .   # detect if there are any diffs
 
 script:
@@ -50,6 +55,9 @@ after_script:
   - cd $TRAVIS_BUILD_DIR
   - $GAP etc/gather_coverage.g
   - rm -rf gap  # delete GAP if present, to avoid collecting its coverage data
+  # workaround Travis leaving a julia installation behind on macOS, see
+  # <https://github.com/travis-ci/travis-build/pull/1895>
+  - if [ -d juliamnt ]; then sudo hdiutil detach juliamnt ; fi
   - julia --color=yes etc/gather_coverage.jl
   - bash <(curl -s https://codecov.io/bash)
 
