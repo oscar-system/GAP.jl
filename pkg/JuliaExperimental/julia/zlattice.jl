@@ -9,8 +9,6 @@ module GAPZLattice
 
 import Core: Int, isa
 
-import LinearAlgebra: diag
-
 import Base: abs, convert, copy, deepcopy, haskey, inv, lcm, length,
              map, push!, sign, size, sum, trunc, zero, zeros
 
@@ -627,7 +625,7 @@ row = M[ii]
 
     # 'Ainv' is an integer matrix and 'denom' is an integer
     # such that 'Ainv = denom * Inverse( A )'.
-    Adiag = diag( A )
+    Adiag = [ A[i,i] for i in 1:n ]
     Ainv = inv( convert( Array{Rational{Int},2}, A ) )
     denom = lcm( map( denominator, Ainv ) )
     AinvI = denom * Ainv
