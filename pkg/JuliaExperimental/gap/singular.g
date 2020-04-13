@@ -212,16 +212,13 @@ InstallMethod( ContextGAPSingular,
       degree_bound:= 0;
     fi;
 
-    # Create the Singular ring.
-    # If we would be able to deal with keyword arguments
-    # then wrapping would not be needed here.
-    dict:= GAPToJulia( rec( ring:= FContext!.JuliaDomainPointer,
-                          indeterminates:= names,
-                          cached:= true,
-                          ordering:= JuliaSymbol( ordering ),
-                          ordering2:= JuliaSymbol( ordering2 ),
-                          degree_bound:= degree_bound ) );
-    juliaRing:= Julia.GAPSingularModule.SingularPolynomialRingWrapper( dict );
+    juliaRing:= CallJuliaFunctionWithKeywordArguments(
+                    Julia.Singular.PolynomialRing,
+                    [ FContext!.JuliaDomainPointer, names ],
+                    rec( cached:= true,
+                         ordering:= JuliaSymbol( ordering ),
+                         ordering2:= JuliaSymbol( ordering2 ),
+                         degree_bound:= degree_bound ) );
 
     # Create the GAP wrappers.
     # Create a new family.
