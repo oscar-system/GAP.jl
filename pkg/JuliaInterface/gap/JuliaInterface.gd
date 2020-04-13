@@ -357,6 +357,15 @@ DeclareGlobalFunction( "CallJuliaFunctionWithCatch" );
 #! gap> CallJuliaFunctionWithKeywordArguments(
 #! >        Julia.Base.reverse, [ m ], rec( dims:= 2 ) );
 #! <Julia: [2 1; 4 3]>
+#! gap> tuptyp:= JuliaEvalString( "Tuple{Int,Int}" );;
+#! gap> t1:= GAPToJulia( tuptyp, [ 2, 1 ] );
+#! <Julia: (2, 1)>
+#! gap> t2:= GAPToJulia( tuptyp, [ 1, 3 ] );
+#! <Julia: (1, 3)>
+#! gap> CallJuliaFunctionWithKeywordArguments(
+#! >        Julia.Base.( "repeat" ), [ m ],
+#! >        rec( inner:= t1, outer:= t2 ) );
+#! <Julia: [1 2 1 2 1 2; 1 2 1 2 1 2; 3 4 3 4 3 4; 3 4 3 4 3 4]>
 #! @EndExampleSession
 DeclareGlobalFunction( "CallJuliaFunctionWithKeywordArguments" );
 
