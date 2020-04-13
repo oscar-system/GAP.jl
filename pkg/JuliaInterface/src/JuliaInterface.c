@@ -305,7 +305,7 @@ static Obj IsOutputStream;
 
 static Obj FuncSTREAM_CALL(Obj self, Obj stream, Obj func, Obj obj)
 {
-    syJmp_buf readJmpError;
+    jmp_buf readJmpError;
 
     if (CALL_1ARGS(IsOutputStream, stream) != True) {
         ErrorQuit("STREAM_CALL: <outstream> must be an output stream", 0, 0);
@@ -315,7 +315,7 @@ static Obj FuncSTREAM_CALL(Obj self, Obj stream, Obj func, Obj obj)
     }
 
     // if an error occurs stop printing
-    memcpy(readJmpError, STATE(ReadJmpError), sizeof(syJmp_buf));
+    memcpy(readJmpError, STATE(ReadJmpError), sizeof(jmp_buf));
     TRY_IF_NO_ERROR
     {
         CALL_1ARGS(func, obj);
@@ -324,7 +324,7 @@ static Obj FuncSTREAM_CALL(Obj self, Obj stream, Obj func, Obj obj)
     {
         // TODO: signal failure somehow?
     }
-    memcpy(STATE(ReadJmpError), readJmpError, sizeof(syJmp_buf));
+    memcpy(STATE(ReadJmpError), readJmpError, sizeof(jmp_buf));
 
     // close the output file again, and return nothing
     if (!CloseOutput()) {
