@@ -56,6 +56,7 @@ cd(gap_bin_root) do
                 --with-gmp=$(deps_prefix)
                 --with-readline=$(deps_prefix)
                 --with-zlib=$(deps_prefix)
+                --disable-maintainer-mode
                 LIBS="-Wl,-rpath -Wl,$(deps_prefix)/lib"
                 ARCHEXT=v$(VERSION)
                 `)
