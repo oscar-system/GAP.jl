@@ -66,6 +66,9 @@ function read_sysinfo_gap(dir::String)
     return d
 end
 
+const sysinfo = read_sysinfo_gap(GAPROOT)
+
+
 function reset_GAP_ERROR_OUTPUT()
     Globals.CloseStream(Globals.ERROR_OUTPUT)
     EvalString("_JULIAINTERFACE_ERROR_OUTPUT:= \"\";")
@@ -80,8 +83,8 @@ function error_handler()
     error("Error thrown by GAP: ", str)
 end
 
-function initialize(gapdir::String, argv::Array{String,1}, env::Array{String,1})
-    lib = joinpath(gapdir, ".libs", "libgap")
+function initialize(argv::Array{String,1})
+    lib = joinpath(GAPROOT, ".libs", "libgap")
     gap_library = Libdl.dlopen(lib, Libdl.RTLD_GLOBAL)
     error_handler_func = @cfunction(error_handler, Cvoid, ())
     ccall( Libdl.dlsym(gap_library, :GAP_Initialize)
@@ -138,8 +141,7 @@ function register_GapObj()
 end
 
 
-function run_it(gapdir::String)
-    sysinfo = read_sysinfo_gap(gapdir)
+function run_it()
     gaproots = abspath(joinpath(@__DIR__, "..")) * ";" * sysinfo["GAP_LIB_DIR"]
     cmdline_options = [ ""
                        , "-l", gaproots
@@ -149,7 +151,7 @@ function run_it(gapdir::String)
       # Do not show the main GAP banner by default.
       push!( cmdline_options, "-b" )
     end
-    initialize(gapdir, cmdline_options, [""])
+    initialize(cmdline_options)
 end
 
 function __init__()
@@ -166,7 +168,7 @@ function __init__()
         sym = cglobal("GAP_Initialize")
     catch e
         # GAP was not yet loaded, do so now
-        run_it(GAPROOT)
+        run_it()
     end
     register_GapObj()
 

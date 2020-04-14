@@ -98,7 +98,7 @@ end
 println("Generating $(deps_jl) ...")
 
 write(deps_jl, """
-GAPROOT = "$gap_bin_root"
+const GAPROOT = "$gap_bin_root"
 """)
 
 ##
