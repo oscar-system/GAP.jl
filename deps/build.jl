@@ -67,6 +67,13 @@ end
 # clean out some clutter
 rm(joinpath(gap_bin_root, "obj"), force=true, recursive=true)
 
+# use our own copy of BuildPackages.sh to work around issues in the one
+# shipped with GAP 4.11.0 with out-of-tree builds; we also copy it to
+# our GAPROOT to help PackageManager
+# FIXME: remove this once GAP 4.11.1 is out and PackageManager is improved
+BuildPackages_sh = joinpath(gap_bin_root, "bin", "BuildPackages.sh")
+cp(joinpath(@__DIR__, "BuildPackages.sh"), BuildPackages_sh, force = true)
+
 gap_build_packages =  get(ENV, "GAP_BUILD_PACKAGES", "no")
 if gap_build_packages == "yes"
     cd("$(gap_src_root)/pkg") do
@@ -74,13 +81,13 @@ if gap_build_packages == "yes"
         pkgs = Base.Filesystem.readdir()
         pkgs = Base.filter(x -> occursin(r"^(Normaliz|semigroups|simpcomp)", x), pkgs)
         run(`rm -rf $pkgs`)
-        run(`../bin/BuildPackages.sh --with-gaproot=$(gap_bin_root)`)
+        run(`$(BuildPackages_sh) --with-gaproot=$(gap_bin_root)`)
     end
 elseif gap_build_packages == "debug"
     cd("$(gap_src_root)/pkg") do
         pkgs = Base.Filesystem.readdir()
         pkgs = Base.filter(x -> occursin(r"^(io|profiling)", x), pkgs)
-        run(`../bin/BuildPackages.sh --with-gaproot=$(gap_bin_root) $pkgs`)
+        run(`$(BuildPackages_sh) --with-gaproot=$(gap_bin_root) $pkgs`)
     end
 end
 
