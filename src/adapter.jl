@@ -3,20 +3,20 @@
 
 import Base: getindex, setindex!, length, show
 
-function Base.show( io::IO, obj::Union{GapObj,FFE} )
-    str = Globals.StringViewObj( obj )
-    stri = CSTR_STRING( str )
-    print(io,"GAP: $stri")
+function Base.show(io::IO, obj::Union{GapObj,FFE})
+    str = Globals.StringViewObj(obj)
+    stri = CSTR_STRING(str)
+    print(io, "GAP: $stri")
 end
 
-function Base.string( obj::Union{GapObj,FFE} )
-    str = Globals.String( obj )
-    return CSTR_STRING( str )
+function Base.string(obj::Union{GapObj,FFE})
+    str = Globals.String(obj)
+    return CSTR_STRING(str)
 end
 
 ## implement indexing interface
 Base.getindex(x::GapObj, i::Int64) = Globals.ELM_LIST(x, i)
-Base.setindex!(x::GapObj, v::Any, i::Int64 ) = Globals.ASS_LIST( x, i, v )
+Base.setindex!(x::GapObj, v::Any, i::Int64) = Globals.ASS_LIST(x, i, v)
 Base.length(x::GapObj) = Globals.Length(x)
 Base.firstindex(x::GapObj) = 1
 Base.lastindex(x::GapObj) = Globals.Length(x)
@@ -41,32 +41,36 @@ Base.one(x::Union{GapObj,FFE}) = Globals.ONE(x)
 Base.:-(x::Union{GapObj,FFE}) = Globals.AINV(x)
 
 #
-typecombinations = ((:GapObj,:GapObj),
-                    (:FFE,:FFE),
-                    (:GapObj,:FFE),
-                    (:FFE,:GapObj),
-                    (:GapObj,:Int64),
-                    (:Int64,:GapObj),
-                    (:FFE,:Int64),
-                    (:Int64,:FFE),
-                    (:GapObj,:Bool),
-                    (:Bool,:GapObj),
-                    (:FFE,:Bool),
-                    (:Bool,:FFE))
-function_combinations = ((:+,:SUM),
-                         (:-,:DIFF),
-                         (:*,:PROD),
-                         (:/,:QUO),
-                         (:\,:LQUO),
-                         (:^,:POW),
-                         (:mod,:MOD),
-                         (:<,:LT),
-                         (:(==),:EQ))
+typecombinations = (
+    (:GapObj, :GapObj),
+    (:FFE, :FFE),
+    (:GapObj, :FFE),
+    (:FFE, :GapObj),
+    (:GapObj, :Int64),
+    (:Int64, :GapObj),
+    (:FFE, :Int64),
+    (:Int64, :FFE),
+    (:GapObj, :Bool),
+    (:Bool, :GapObj),
+    (:FFE, :Bool),
+    (:Bool, :FFE),
+)
+function_combinations = (
+    (:+, :SUM),
+    (:-, :DIFF),
+    (:*, :PROD),
+    (:/, :QUO),
+    (:\, :LQUO),
+    (:^, :POW),
+    (:mod, :MOD),
+    (:<, :LT),
+    (:(==), :EQ),
+)
 
 for (left, right) in typecombinations
     for (funcJ, funcC) in function_combinations
         @eval begin
-            Base.$(funcJ)(x::$left,y::$right) = Globals.$(funcC)(x,y)
+            Base.$(funcJ)(x::$left, y::$right) = Globals.$(funcC)(x, y)
         end
     end
 end

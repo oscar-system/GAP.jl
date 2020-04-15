@@ -3,116 +3,85 @@
 import Base: getproperty, hasproperty, setproperty!, propertynames
 
 function RAW_GAP_TO_JULIA(ptr::Ptr{Cvoid})::Any
-    return ccall(:julia_gap,Any,(Ptr{Cvoid},),ptr)
+    return ccall(:julia_gap, Any, (Ptr{Cvoid},), ptr)
 end
 
 function RAW_JULIA_TO_GAP(val::Any)::Ptr{Cvoid}
-    return ccall(:gap_julia,Ptr{Cvoid},(Any,),val)
+    return ccall(:gap_julia, Ptr{Cvoid}, (Any,), val)
 end
 
-function EvalStringEx( cmd :: String )
-    res = ccall( :GAP_EvalString, Any, 
-                 (Ptr{UInt8},),
-                 cmd );
+function EvalStringEx(cmd::String)
+    res = ccall(:GAP_EvalString, Any, (Ptr{UInt8},), cmd)
     return res
 end
 
-function EvalString( cmd :: String )
+function EvalString(cmd::String)
     res = EvalStringEx(cmd * ";")
     return res[end][2]
 end
 
-function ValueGlobalVariable( name :: String )
-    gvar = ccall( :GAP_ValueGlobalVariable, Ptr{Cvoid},
-                      (Ptr{UInt8},),name)
+function ValueGlobalVariable(name::String)
+    gvar = ccall(:GAP_ValueGlobalVariable, Ptr{Cvoid}, (Ptr{UInt8},), name)
     return RAW_GAP_TO_JULIA(gvar)
 end
 
 function CanAssignGlobalVariable(name::String)
     # TODO: use symbol_to_gvar here, too`? Or conversely: convert
-    ccall(:GAP_CanAssignGlobalVariable, Bool,
-             (Ptr{UInt8},), name)
+    ccall(:GAP_CanAssignGlobalVariable, Bool, (Ptr{UInt8},), name)
 end
 
 function AssignGlobalVariable(name::String, value::Any)
-    if ! CanAssignGlobalVariable(name)
+    if !CanAssignGlobalVariable(name)
         error("cannot assing to $name in GAP")
     end
     tmp = RAW_JULIA_TO_GAP(value)
-    ccall(:GAP_AssignGlobalVariable, Cvoid,
-             (Ptr{UInt8}, Ptr{Cvoid}), name, tmp)
+    ccall(:GAP_AssignGlobalVariable, Cvoid, (Ptr{UInt8}, Ptr{Cvoid}), name, tmp)
 end
 
-function MakeString( val::String )::GapObj
-    string = ccall( :GAP_MakeString, Any,
-                    ( Ptr{UInt8}, ),
-                    val )
+function MakeString(val::String)::GapObj
+    string = ccall(:GAP_MakeString, Any, (Ptr{UInt8},), val)
     return string
 end
 
-function CSTR_STRING( val::GapObj )::String
-    char_ptr = ccall( :GAP_CSTR_STRING, Ptr{UInt8},
-                      ( Any, ),
-                      val )
+function CSTR_STRING(val::GapObj)::String
+    char_ptr = ccall(:GAP_CSTR_STRING, Ptr{UInt8}, (Any,), val)
     return deepcopy(unsafe_string(char_ptr))
 end
 
-function UNSAFE_CSTR_STRING( val::GapObj )::Array{UInt8,1}
-    string_len = Int64( ccall( :GAP_LenString, Cuint,
-                               ( Any, ),
-                               val ) )
-    char_ptr = ccall( :GAP_CSTR_STRING, Ptr{UInt8},
-                      ( Any, ),
-                      val )
-    return unsafe_wrap( Array{UInt8,1}, char_ptr, string_len )
+function UNSAFE_CSTR_STRING(val::GapObj)::Array{UInt8,1}
+    string_len = Int64(ccall(:GAP_LenString, Cuint, (Any,), val))
+    char_ptr = ccall(:GAP_CSTR_STRING, Ptr{UInt8}, (Any,), val)
+    return unsafe_wrap(Array{UInt8,1}, char_ptr, string_len)
 end
 
 
-function NewPlist(length :: Int64)
-    o = ccall( :GAP_NewPlist,
-               Any,
-               (Int64,),
-               length )
+function NewPlist(length::Int64)
+    o = ccall(:GAP_NewPlist, Any, (Int64,), length)
     return o
 end
 
 function NEW_MACFLOAT(x::Float64)
-    o = ccall( :NEW_MACFLOAT,
-               Any,
-               (Cdouble,),
-               x )
+    o = ccall(:NEW_MACFLOAT, Any, (Cdouble,), x)
     return o
 end
 
 function ValueMacFloat(x::GapObj)
-    o = ccall( :GAP_ValueMacFloat,
-               Cdouble,
-               (Any,),
-               x )
+    o = ccall(:GAP_ValueMacFloat, Cdouble, (Any,), x)
     return o
 end
 
 function CharWithValue(x::Cuchar)
-    o = ccall( :GAP_CharWithValue,
-               Any,
-               (Cuchar,),
-               x )
+    o = ccall(:GAP_CharWithValue, Any, (Cuchar,), x)
     return o
 end
 
-function ElmList(x::GapObj,position)
-    o = ccall( :GAP_ElmList,
-               Ptr{Cvoid},
-               (Any,Culong),
-               x,Culong(position))
+function ElmList(x::GapObj, position)
+    o = ccall(:GAP_ElmList, Ptr{Cvoid}, (Any, Culong), x, Culong(position))
     return RAW_GAP_TO_JULIA(o)
 end
 
 function NewJuliaFunc(x::Function)
-    o = ccall( :NewJuliaFunc,
-               Any,
-               (Any,),
-               x )
+    o = ccall(:NewJuliaFunc, Any, (Any,), x)
     return o
 end
 
@@ -150,10 +119,9 @@ function call_gap_func(func::GapObj, args...; kwargs...)
     return result
 end
 
-struct GlobalsType
-end
+struct GlobalsType end
 
-Base.show(io::IO,::GlobalsType) = Base.show(io,"table of global GAP objects")
+Base.show(io::IO, ::GlobalsType) = Base.show(io, "table of global GAP objects")
 
 """
     Globals
@@ -182,8 +150,8 @@ function setproperty!(funcobj::GlobalsType, name::Symbol, val::Any)
     ccall(:GAP_AssignGlobalVariable, Cvoid, (Ptr{UInt8}, Ptr{Cvoid}), name, tmp)
 end
 
-function propertynames(funcobj::GlobalsType,private)
+function propertynames(funcobj::GlobalsType, private)
     list = Globals.NamesGVars()
-    list_converted = gap_to_julia( Array{Symbol,1}, list )
+    list_converted = gap_to_julia(Array{Symbol,1}, list)
     return tuple(list_converted...)
 end

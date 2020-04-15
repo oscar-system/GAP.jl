@@ -39,7 +39,7 @@ julia_to_gap(x::UInt8)  = Int64(x)
 
 ## BigInts are converted via a ccall
 function julia_to_gap(x::BigInt)
-    o = ccall(:MakeObjInt, Ptr{Cvoid}, (Ptr{UInt64},Cint), x.d, x.size)
+    o = ccall(:MakeObjInt, Ptr{Cvoid}, (Ptr{UInt64}, Cint), x.d, x.size)
     return RAW_GAP_TO_JULIA(o)
 end
 
@@ -56,7 +56,7 @@ function julia_to_gap(x::Rational{T}) where T <: Integer
     end
     numer = julia_to_gap(numer_julia)
     denom = julia_to_gap(denom_julia)
-    return Globals.QUO(numer,denom)
+    return Globals.QUO(numer, denom)
 end
 
 ## Floats
@@ -65,7 +65,7 @@ julia_to_gap(x::Float32) = NEW_MACFLOAT(Float64(x))
 julia_to_gap(x::Float16) = NEW_MACFLOAT(Float64(x))
 
 ## Chars
-julia_to_gap(x::Char) = CharWithValue(Cuchar(x)) 
+julia_to_gap(x::Char) = CharWithValue(Cuchar(x))
 
 ## Strings and symbols
 julia_to_gap(x::AbstractString) = MakeString(x)
@@ -171,4 +171,3 @@ function julia_to_gap(obj::Dict{T,S}, recursive::Val{Recursive}=Val(false), recu
 end
 
 julia_to_gap(func::Function) = NewJuliaFunc(func)
-

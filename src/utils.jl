@@ -65,8 +65,8 @@ julia> GAP.kwarg_wrapper( range, [ 2 ], Dict( :length => 5, :step => 2 ) )
 
 ```
 """
-function kwarg_wrapper(func, args::Array{T1,1}, kwargs::Dict{Symbol,T2}) where {T1, T2}
-    return func( args...; [ k => kwargs[k] for k in keys( kwargs ) ]... )
+function kwarg_wrapper(func, args::Array{T1,1}, kwargs::Dict{Symbol,T2}) where {T1,T2}
+    return func(args...; [k => kwargs[k] for k in keys(kwargs)]...)
 end
 
 ## convenience function

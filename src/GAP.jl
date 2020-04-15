@@ -87,54 +87,68 @@ function initialize(argv::Array{String,1})
     lib = joinpath(GAPROOT, ".libs", "libgap")
     gap_library = Libdl.dlopen(lib, Libdl.RTLD_GLOBAL)
     error_handler_func = @cfunction(error_handler, Cvoid, ())
-    ccall( Libdl.dlsym(gap_library, :GAP_Initialize)
-           , Cvoid
-           , (Int32, Ptr{Ptr{UInt8}},Ptr{Cvoid},Ptr{Cvoid},Cuint)
-           , length(argv)
-           , argv
-           , C_NULL
-           , error_handler_func
-           , Cuint(0) )
-    ccall( Libdl.dlsym(gap_library, :GAP_EvalString)
-           , Ptr{Cvoid}
-           , (Ptr{UInt8},)
-           , "BindGlobal(\"__JULIAINTERNAL_LOADED_FROM_JULIA\", true );" )
-    loadpackage_return = ccall( Libdl.dlsym(gap_library, :GAP_EvalString)
-           , Ptr{Cvoid}
-           , (Ptr{UInt8},)
-           , "LoadPackage(\"JuliaInterface\");" )
-    if loadpackage_return == Libdl.dlsym(gap_library, :GAP_Fail )
-        throw(ErrorException( "JuliaInterface could not be loaded" ))
+    ccall(
+        Libdl.dlsym(gap_library, :GAP_Initialize),
+        Cvoid,
+        (Int32, Ptr{Ptr{UInt8}}, Ptr{Cvoid}, Ptr{Cvoid}, Cuint),
+        length(argv),
+        argv,
+        C_NULL,
+        error_handler_func,
+        Cuint(0),
+    )
+    ccall(
+        Libdl.dlsym(gap_library, :GAP_EvalString),
+        Ptr{Cvoid},
+        (Ptr{UInt8},),
+        "BindGlobal(\"__JULIAINTERNAL_LOADED_FROM_JULIA\", true );",
+    )
+    loadpackage_return = ccall(
+        Libdl.dlsym(gap_library, :GAP_EvalString),
+        Ptr{Cvoid},
+        (Ptr{UInt8},),
+        "LoadPackage(\"JuliaInterface\");",
+    )
+    if loadpackage_return == Libdl.dlsym(gap_library, :GAP_Fail)
+        throw(ErrorException("JuliaInterface could not be loaded"))
     end
 
     # Redirect error messages, in order not to print them to the screen.
-    ccall( Libdl.dlsym(gap_library, :GAP_EvalString)
-           , Ptr{Cvoid}
-           , (Ptr{UInt8},)
-           , "_JULIAINTERFACE_ERROR_OUTPUT:= \"\";" )
-    ccall( Libdl.dlsym(gap_library, :GAP_EvalString)
-           , Ptr{Cvoid}
-           , (Ptr{UInt8},)
-           , "MakeReadWriteGlobal( \"ERROR_OUTPUT\" );" )
-    ccall( Libdl.dlsym(gap_library, :GAP_EvalString)
-           , Ptr{Cvoid}
-           , (Ptr{UInt8},)
-           , "ERROR_OUTPUT:= OutputTextString( _JULIAINTERFACE_ERROR_OUTPUT, true );" )
-    ccall( Libdl.dlsym(gap_library, :GAP_EvalString)
-           , Ptr{Cvoid}
-           , (Ptr{UInt8},)
-           , "MakeReadOnlyGlobal( \"ERROR_OUTPUT\" );" )
+    ccall(
+        Libdl.dlsym(gap_library, :GAP_EvalString),
+        Ptr{Cvoid},
+        (Ptr{UInt8},),
+        "_JULIAINTERFACE_ERROR_OUTPUT:= \"\";",
+    )
+    ccall(
+        Libdl.dlsym(gap_library, :GAP_EvalString),
+        Ptr{Cvoid},
+        (Ptr{UInt8},),
+        "MakeReadWriteGlobal( \"ERROR_OUTPUT\" );",
+    )
+    ccall(
+        Libdl.dlsym(gap_library, :GAP_EvalString),
+        Ptr{Cvoid},
+        (Ptr{UInt8},),
+        "ERROR_OUTPUT:= OutputTextString( _JULIAINTERFACE_ERROR_OUTPUT, true );",
+    )
+    ccall(
+        Libdl.dlsym(gap_library, :GAP_EvalString),
+        Ptr{Cvoid},
+        (Ptr{UInt8},),
+        "MakeReadOnlyGlobal( \"ERROR_OUTPUT\" );",
+    )
 end
 
-function finalize( )
-    ccall( (:GAP_finalize, "libgap"), Cvoid, () )
+function finalize()
+    ccall((:GAP_finalize, "libgap"), Cvoid, ())
 end
 
 function register_GapObj()
     # TODO: for now we try to stay compatible with older GAP versions that
     # don't have GAP_register_GapObj yet, but we should remove this ASAP
     try
-        ccall( :GAP_register_GapObj, Cvoid, (Any, ), GapObj )
+        ccall(:GAP_register_GapObj, Cvoid, (Any,), GapObj)
     catch
         # silently ignore for now
     end
@@ -143,13 +157,10 @@ end
 
 function run_it()
     gaproots = abspath(joinpath(@__DIR__, "..")) * ";" * sysinfo["GAP_LIB_DIR"]
-    cmdline_options = [ ""
-                       , "-l", gaproots
-                       , "-T", "-A", "--nointeract"
-                       , "-m", "1000m" ]
-    if get( ENV, "GAP_SHOW_BANNER", "false" ) != "true"
-      # Do not show the main GAP banner by default.
-      push!( cmdline_options, "-b" )
+    cmdline_options = ["", "-l", gaproots, "-T", "-A", "--nointeract", "-m", "1000m"]
+    if get(ENV, "GAP_SHOW_BANNER", "false") != "true"
+        # Do not show the main GAP banner by default.
+        push!(cmdline_options, "-b")
     end
     initialize(cmdline_options)
 end
@@ -172,19 +183,22 @@ function __init__()
     end
     register_GapObj()
 
-    if get( ENV, "GAP_SHOW_BANNER", "false" ) != "true"
-      # Leave it to GAP's `LoadPackage` whether package banners are shown.
-      # Note that a second argument `false` of this function suppresses the
-      # package banner,
-      # but no package banners can be shown if the `-b` option is `true`.
-      Base.MainInclude.eval(:(
-        begin
-          record = $gap_module.Globals.GAPInfo
-          record.CommandLineOptions = $gap_module.Globals.ShallowCopy( record.CommandLineOptions )
-          record.CommandLineOptions.b = false
-          $gap_module.Globals.MakeImmutable( record.CommandLineOptions )
-        end
-      ))
+    if get(ENV, "GAP_SHOW_BANNER", "false") != "true"
+        # Leave it to GAP's `LoadPackage` whether package banners are shown.
+        # Note that a second argument `false` of this function suppresses the
+        # package banner,
+        # but no package banners can be shown if the `-b` option is `true`.
+        Base.MainInclude.eval(
+            :(
+                begin
+                    record = $gap_module.Globals.GAPInfo
+                    record.CommandLineOptions =
+                        $gap_module.Globals.ShallowCopy(record.CommandLineOptions)
+                    record.CommandLineOptions.b = false
+                    $gap_module.Globals.MakeImmutable(record.CommandLineOptions)
+                end
+            ),
+        )
     end
 end
 
@@ -193,14 +207,14 @@ function gap_exe()
 end
 export gap_exe
 
-include( "lowlevel.jl" )
-include( "ccalls.jl" )
-include( "adapter.jl" )
-include( "macros.jl" )
-include( "gap_to_julia.jl" )
-include( "julia_to_gap.jl" )
-include( "utils.jl" )
-include( "help.jl" )
-include( "packages.jl" )
+include("lowlevel.jl")
+include("ccalls.jl")
+include("adapter.jl")
+include("macros.jl")
+include("gap_to_julia.jl")
+include("julia_to_gap.jl")
+include("utils.jl")
+include("help.jl")
+include("packages.jl")
 
 end

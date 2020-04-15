@@ -21,23 +21,35 @@ If `overwrite` is true, Symbols already in the `Main` module will be overloaded.
 Be aware that this flag only works in `Main`.
 
 """
-function LoadPackageAndExposeGlobals(package::String, mod::String; all_globals::Bool = false)
+function LoadPackageAndExposeGlobals(
+    package::String,
+    mod::String;
+    all_globals::Bool = false,
+)
     mod_sym = Symbol(mod)
-    Base.MainInclude.eval(:(
-        module $(mod_sym)
-            import GAP
-        end
-    ))
+    Base.MainInclude.eval(:(module $(mod_sym)
+    import GAP
+    end))
     ## Adds the new module to the Main module, so it is directly accessible in the julia REPL
     mod_mod = Base.MainInclude.eval(:(Main.$(mod_sym)))
 
     ## We need to call `invokelatest` as the module `mod_mod` was only created during the
     ## call of this function in a different module, so its world age is higher than the
     ## function calls world age.
-    Base.invokelatest(LoadPackageAndExposeGlobals, package, mod_mod; all_globals = all_globals)
+    Base.invokelatest(
+        LoadPackageAndExposeGlobals,
+        package,
+        mod_mod;
+        all_globals = all_globals,
+    )
 end
 
-function LoadPackageAndExposeGlobals(package::String, mod::Module; all_globals::Bool = false, overwrite::Bool = false)
+function LoadPackageAndExposeGlobals(
+    package::String,
+    mod::Module;
+    all_globals::Bool = false,
+    overwrite::Bool = false,
+)
     current_gvar_list = nothing
     if !all_globals
         current_gvar_list = Globals.ShallowCopy(Globals.NamesGVars())
@@ -50,13 +62,11 @@ function LoadPackageAndExposeGlobals(package::String, mod::Module; all_globals::
     if !all_globals
         new_gvar_list = Globals.Difference(new_gvar_list, current_gvar_list)
     end
-    new_symbols = gap_to_julia(Array{Symbol,1},new_gvar_list)
+    new_symbols = gap_to_julia(Array{Symbol,1}, new_gvar_list)
     for sym in new_symbols
-        if overwrite || ! isdefined(mod,sym)
+        if overwrite || !isdefined(mod, sym)
             try
-                mod.eval(:(
-                    $(sym)=GAP.Globals.$(sym)
-                ))
+                mod.eval(:($(sym) = GAP.Globals.$(sym)))
             catch
             end
         end

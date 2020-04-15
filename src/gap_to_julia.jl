@@ -290,32 +290,32 @@ end
 
 ## Generic conversions
 
-gap_to_julia(x::Any)  = x
+gap_to_julia(x::Any) = x
 
 function gap_to_julia(x::GapObj)
     if Globals.IsInt(x)
-        return gap_to_julia(BigInt,x)
+        return gap_to_julia(BigInt, x)
     elseif Globals.IsRat(x)
-        return gap_to_julia(Rational{BigInt},x)
+        return gap_to_julia(Rational{BigInt}, x)
     elseif Globals.IsFloat(x)
-        return gap_to_julia(Float64,x)
+        return gap_to_julia(Float64, x)
     elseif Globals.IsChar(x)
-#T why Cuchar not Char?
-        return gap_to_julia(Cuchar,x)
+        #T why Cuchar not Char?
+        return gap_to_julia(Cuchar, x)
     elseif Globals.IsStringRep(x)
         # Do not choose this conversion for other lists in 'IsString'.
-        return gap_to_julia(AbstractString,x)
+        return gap_to_julia(AbstractString, x)
     elseif Globals.IsRangeRep(x)
         # Do not choose this conversion for other lists in 'IsRange'.
         # Note that the entries are always small GAP integers.
-        return gap_to_julia(StepRange{Int64,Int64},x)
+        return gap_to_julia(StepRange{Int64,Int64}, x)
     elseif Globals.IsBlistRep(x)
         # Do not choose this conversion for other lists in 'IsBlist'.
-        return gap_to_julia(BitArray{1},x)
+        return gap_to_julia(BitArray{1}, x)
     elseif Globals.IsList(x)
-        return gap_to_julia(Array{Union{Any,Nothing},1},x)
+        return gap_to_julia(Array{Union{Any,Nothing},1}, x)
     elseif Globals.IsRecord(x)
-        return gap_to_julia(Dict{Symbol,Any},x)
+        return gap_to_julia(Dict{Symbol,Any}, x)
     end
     return x
 end
