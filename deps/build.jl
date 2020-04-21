@@ -2,7 +2,8 @@ using BinaryProvider
 using Pkg.Artifacts
 
 # Remove deps.jl now, so that we can recognize an aborted build by its absence
-deps_jl = abspath(joinpath(@__DIR__, "deps-$(VERSION).jl"))
+const julia_version = "$(VERSION.major).$(VERSION.minor)"
+deps_jl = abspath(joinpath(@__DIR__, "deps-$(julia_version).jl"))
 rm(deps_jl, force = true)
 
 # Reference the Julia artifact containing the GAP source code
@@ -21,7 +22,7 @@ gap_src_root = abspath(joinpath(artifact_dir, "$(gapdirname)"))
 extra_gap_root = abspath(joinpath(@__DIR__, ".."))
 
 # the location in which we initiate GAP's "out of tree build"
-gap_bin_root = abspath(joinpath(@__DIR__, "build", "$(gapdirname)-julia-$(VERSION)"))
+gap_bin_root = abspath(joinpath(@__DIR__, "build", "$(gapdirname)-julia-$(julia_version)"))
 
 # Dependencies that must be installed before this package can be built
 dependencies = [
@@ -58,7 +59,7 @@ cd(gap_bin_root) do
                 --with-zlib=$(deps_prefix)
                 --disable-maintainer-mode
                 LIBS="-Wl,-rpath -Wl,$(deps_prefix)/lib"
-                ARCHEXT=v$(VERSION)
+                ARCHEXT=v$(julia_version)
                 `)
     run(`make -j$(Sys.CPU_THREADS)`)
 end
