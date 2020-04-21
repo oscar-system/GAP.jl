@@ -6,9 +6,10 @@
 module GAP
 
 # In order to locate the GAP installation, 'deps/build.jl' generate a file
-# 'deps/deps-$(VERSION).jl' for us which sets the variable GAPROOT. We read
-# this file here.
-deps_jl = abspath(joinpath(@__DIR__, "..", "deps", "deps-$(VERSION).jl"))
+# 'deps/deps-$(julia_version).jl' for us which sets the variable GAPROOT. We
+# read this file here.
+const julia_version = "$(VERSION.major).$(VERSION.minor)"
+deps_jl = abspath(joinpath(@__DIR__, "..", "deps", "deps-$(julia_version).jl"))
 if !isfile(deps_jl)
     # HACK: we need to compile GAP once for each Julia version, but Julia only
     # builds it for us once; so we need to check if the package was actually
