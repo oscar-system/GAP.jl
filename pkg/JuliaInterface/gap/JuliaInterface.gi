@@ -108,11 +108,6 @@ InstallMethod( Unbind\.,
 end );
 
 
-InstallGlobalFunction( JuliaSymbolsInModule,
-  module -> RecNames( module!.storage ) );
-#T This makes no sense anymore,
-#T after removing the caching for arbitrary Julia variables.
-
 InstallValue( Julia, _WrapJuliaModule( "Main", _JuliaGetGlobalVariable( "Main" ) ) );
 
 
