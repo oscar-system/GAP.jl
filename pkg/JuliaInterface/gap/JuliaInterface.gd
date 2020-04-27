@@ -259,19 +259,6 @@ DeclareGlobalFunction( "JuliaGetGlobalVariable" );
 #!  see <Ref Filt="IsJuliaModule" Label="for IsJuliaWrapper"/>.
 DeclareGlobalVariable( "Julia" );
 
-#! @Arguments module
-#! @Returns a list of strings
-#! @Description
-#!  Returns a list of names of components currently bound
-#!  in <A>module</A>. Note that this does usually
-#!  not reflect all symbols bound to a module on the
-#!  &Julia; side: Even if a module has been imported
-#!  in &Julia;, this list of symbols does only
-#!  reflect the variables currently stored in the &GAP;
-#!  module object. It might be possible to access
-#!  further &Julia; variables or functions in this module.
-DeclareGlobalFunction( "JuliaSymbolsInModule" );
-
 #! @Arguments name
 #! @Returns nothing.
 #! @Description
