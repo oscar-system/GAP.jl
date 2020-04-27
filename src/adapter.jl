@@ -41,6 +41,9 @@ Base.one(x::Union{GapObj,FFE}) = Globals.ONE(x)
 Base.:-(x::Union{GapObj,FFE}) = Globals.AINV(x)
 
 #
+Base.in(x::Obj, y::GapObj) = Globals.in(x, y)
+
+#
 typecombinations = (
     (:GapObj, :GapObj),
     (:FFE, :FFE),

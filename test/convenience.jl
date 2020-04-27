@@ -59,6 +59,13 @@ end
     @test z3 - 1 == z3_one
 end
 
+@testset "operators" begin
+    sym5 = GAP.Globals.SymmetricGroup(5)
+    pi = @gap "(1,2,3)(4,17)"
+    @test !(pi in sym5)
+    @test pi^2 in sym5
+end
+
 @testset "object_access" begin
     list = GAP.EvalString( "[1,2,3]" )
     matrix = GAP.EvalString( "[[1,2],[3,4]]" )
