@@ -1,6 +1,6 @@
 # TODO: ensure JulieInterface is up-to-date
 default:
-	@echo "Use 'make doc' or 'make check' or 'make tags'""
+	@echo "Use 'make doc' or 'make check' or 'make tags'"
 
 check:
 	julia --color=yes test/runtests.jl
