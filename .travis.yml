@@ -1,4 +1,5 @@
 language: julia
+dist: bionic # needed for CxxWrap / Singular.jl
 
 os:
   - osx
@@ -29,10 +30,10 @@ branches:
 
 install:
   # install some optional dependencies for our tests
-  - JULIA_PROJECT= julia -e 'import Pkg ; Pkg.add("Documenter")'
-  - JULIA_PROJECT= julia -e 'import Pkg ; Pkg.add("Singular")'
-  - JULIA_PROJECT= julia -e 'import Pkg ; Pkg.add("Nemo")'
-  - JULIA_PROJECT= julia -e 'import Pkg ; Pkg.add("Primes")'
+  - JULIA_PROJECT= julia -e 'import Pkg ; Pkg.add("Documenter") ; @time using Documenter' || travis_terminate $?
+  - JULIA_PROJECT= julia -e 'import Pkg ; Pkg.add("Singular") ; @time using Singular' || travis_terminate $?
+  - JULIA_PROJECT= julia -e 'import Pkg ; Pkg.add("Nemo") ; @time using Nemo' || travis_terminate $?
+  - JULIA_PROJECT= julia -e 'import Pkg ; Pkg.add("Primes") ; @time using Primes' || travis_terminate $?
 
 before_script:
   # check code formatting
