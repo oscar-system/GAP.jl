@@ -31,7 +31,7 @@ gap> Julia.Base;
 gap> IsBound( Julia.Base );
 true
 gap> Julia.Base.sqrt;
-function( arg... ) ... end
+<Julia: sqrt>
 gap> IsBound( Julia.Base.foo_bar_quux_not_defined );
 false
 gap> Julia.Base.foo_bar_quux_not_defined;
@@ -47,8 +47,7 @@ gap> Julia.Base.C_NULL;
 gap> IsBound( Julia.Base.C_NULL );
 true
 gap> Unbind( Julia.Base.C_NULL );
-gap> IsBound( Julia.Base.C_NULL );
-true
+Error, cannot unbind Julia variables
 
 ##
 gap> STOP_TEST( "import.tst", 1 );

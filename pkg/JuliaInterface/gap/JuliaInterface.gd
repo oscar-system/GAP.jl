@@ -104,9 +104,9 @@ DeclareAttribute( "JuliaPointer", IsJuliaWrapper );
 #! gap> IsJuliaModule( Julia.GAP );
 #! true
 #! gap> Julia.GAP.julia_to_gap;
-#! function( arg... ) ... end
+#! <Julia: julia_to_gap>
 #! gap> JuliaFunction( "julia_to_gap", "GAP" );  # the same function
-#! function( arg... ) ... end
+#! <Julia: julia_to_gap>
 #! @EndExampleSession
 DeclareCategory( "IsJuliaModule", IsJuliaWrapper  );
 
@@ -212,7 +212,7 @@ BindGlobal( "_JuliaFunctions", rec( ) );
 #!      DoCallJuliaFunc0Arg and eventually to jl_call. -->
 #! @BeginExampleSession
 #! gap> fun:= JuliaFunction( "sqrt" );
-#! function( arg... ) ... end
+#! <Julia: sqrt>
 #! gap> Print( fun );
 #! function ( arg... )
 #!     <<kernel code>> from Julia:sqrt
@@ -223,17 +223,13 @@ DeclareGlobalFunction( "JuliaFunction" );
 #! @Arguments variable_name[, module_name]
 #! @Returns a &Julia; object
 #! @Description
-#!  Returns the &Julia; object assigned to the variable with name
+#!  Returns the object assigned to the &Julia; variable with name
 #!  <A>variable_name</A> in the &Julia; module <A>module_name</A>.
 #!  Both arguments must be strings. If <A>module_name</A> is not given,
-#!  the variable is taken from the <C>Main</C> module.
+#!  the variable is taken from &Julia;'s <C>Main</C> module.
 #!  <P/>
 #!  If the variable with name <A>variable_name</A> is not bound in the
 #!  &Julia; module then <K>fail</K> is returned.
-#!  Otherwise the result of this function is in
-#!  <Ref Func="IsArgumentForJuliaFunction"/>,
-#!  <!-- but never in IsJuliaWrapper -->
-#!  thus it can be passed as an argument to &Julia; functions.
 #! @BeginExampleSession
 #! gap> JuliaEvalString( "x = 17" );
 #! 17
@@ -241,6 +237,20 @@ DeclareGlobalFunction( "JuliaFunction" );
 #! 17
 #! gap> JuliaGetGlobalVariable( "unbound_variable", "GAP" );
 #! fail
+#! @EndExampleSession
+#! Note that the value of a &Julia; variable may be a &GAP; object,
+#! thus the value <K>fail</K> can be returned in a situation where the
+#! &Julia; variable in question is bound.
+#! In order to decide whether a &Julia; variable is bound,
+#! one can use the &Julia; function <C>isdefined</C>.
+#! @BeginExampleSession
+#! gap> JuliaEvalString( "julia_x = GAP.Globals.fail" );;
+#! gap> JuliaGetGlobalVariable( "julia_x" );
+#! fail
+#! gap> Julia.isdefined( Julia.Main, JuliaSymbol( "julia_x" ) );
+#! true
+#! gap> Julia.isdefined( Julia.Main, JuliaSymbol( "julia_y" ) );
+#! false
 #! @EndExampleSession
 DeclareGlobalFunction( "JuliaGetGlobalVariable" );
 

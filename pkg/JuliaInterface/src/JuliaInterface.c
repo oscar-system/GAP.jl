@@ -199,6 +199,12 @@ static Obj Func_JuliaFunctionByModule(Obj self, Obj funcName, Obj moduleName)
     return NewJuliaFunc(f);
 }
 
+// Export 'IS_JULIA_FUNC' to the GAP level.
+static Obj FuncIS_JULIA_FUNC(Obj self, Obj obj)
+{
+    return IS_JULIA_FUNC(obj) ? True : False;
+}
+
 // Executes the string <string> in the current julia session.
 static Obj FuncJuliaEvalString(Obj self, Obj string)
 {
@@ -348,6 +354,7 @@ static void MarkJuliaObject(Bag bag)
 static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(_JuliaFunction, 1, "string"),
     GVAR_FUNC(_JuliaFunctionByModule, 2, "funcName, moduleName"),
+    GVAR_FUNC(IS_JULIA_FUNC, 1, "obj"),
     GVAR_FUNC(JuliaEvalString, 1, "string"),
     GVAR_FUNC(JuliaSetVal, 2, "name,val"),
     GVAR_FUNC(_JuliaGetGlobalVariable, 1, "name"),

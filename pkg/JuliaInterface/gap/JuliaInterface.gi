@@ -30,16 +30,15 @@ BindGlobal( "_JULIA_ISA", JuliaFunction( "isa" ) );
 
 BindGlobal( "_WrapJuliaModule",
   function( name, julia_pointer )
-    local module;
+    local str;
 
-    module := rec( storage := rec( ) );
+    str:= Concatenation( "<Julia module ", name, ">" );
 
-    ObjectifyWithAttributes( module, TheTypeOfJuliaModules,
-                             Name, Concatenation( "<Julia module ", name, ">" ),
+    return ObjectifyWithAttributes( rec( storage := rec( ) ),
+                             TheTypeOfJuliaModules,
+                             Name, str,
+                             String, str,
                              JuliaPointer, julia_pointer );
-
-    return module;
-
 end );
 
 InstallGlobalFunction( IsArgumentForJuliaFunction,
@@ -48,6 +47,16 @@ InstallGlobalFunction( IsArgumentForJuliaFunction,
            IsBool( obj ) or
            ( IsInt( obj ) and IsSmallIntRep( obj ) ) or
            ( IsFFE( obj ) and IsInternalRep( obj ) ) );
+
+InstallMethod( ViewString,
+    [ "IsFunction and IsInternalRep and HasNameFunction" ],
+    1, # override GAP's default method for functions
+    function( func )
+    if IS_JULIA_FUNC( func ) then
+      return Concatenation( "<Julia: ", NameFunction( func ), ">" );
+    fi;
+    TryNextMethod();
+    end );
 
 InstallMethod( \.,
               [ "IsJuliaModule", "IsPosInt" ],
@@ -69,11 +78,10 @@ InstallMethod( \.,
         global_variable := _JuliaFunction( global_variable );
     elif _JULIA_ISA( global_variable, _JULIA_MODULE_TYPE ) then
         global_variable := _WrapJuliaModule( rnam, global_variable );
+        \.\:\=( module!.storage, rnum, global_variable );
     fi;
 
-    \.\:\=( module!.storage, rnum, global_variable );
     return global_variable;
-
 end );
 
 InstallMethod( \.\:\=,
@@ -96,12 +104,14 @@ end );
 InstallMethod( Unbind\.,
                [ "IsJuliaModule", "IsPosInt" ],
   function( module, rnum )
-    Unbind\.( module!.storage, rnum );
+    Error( "cannot unbind Julia variables" );
 end );
 
 
 InstallGlobalFunction( JuliaSymbolsInModule,
   module -> RecNames( module!.storage ) );
+#T This makes no sense anymore,
+#T after removing the caching for arbitrary Julia variables.
 
 InstallValue( Julia, _WrapJuliaModule( "Main", _JuliaGetGlobalVariable( "Main" ) ) );
 
@@ -155,9 +165,9 @@ InstallGlobalFunction( ImportJuliaModuleIntoGAP,
     if no_import = fail then
         no_import := false;
     fi;
-    
+
     is_module_present := JuliaEvalString( Concatenation( "isdefined( Main, :", name, ")" ) );
-    
+
     if no_import = false then
         if not is_module_present then
             ## Local modules cannot be imported
