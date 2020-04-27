@@ -244,7 +244,29 @@ gap> h4C := JuliaBindCFunction("h4", "a,b,c,d");;
 gap> h5C := JuliaBindCFunction("h5", "a,b,c,d,e");;
 gap> h6C := JuliaBindCFunction("h6", "a,b,c,d,e,f");;
 
-#
+#@if CompareVersionNumbers(GAPInfo.KernelInfo.JULIA_VERSION, "1.5")
+gap> h0C();
+Error, TypeError: in cfunction, expected Ptr{Nothing}, got a value of type Not
+hing
+gap> h1C(true);
+Error, TypeError: in cfunction, expected Ptr{Nothing}, got a value of type Not
+hing
+gap> h2C(true,2);
+Error, TypeError: in cfunction, expected Ptr{Nothing}, got a value of type Not
+hing
+gap> h3C(true,2,3);
+Error, TypeError: in cfunction, expected Ptr{Nothing}, got a value of type Not
+hing
+gap> h4C(true,2,3,4);
+Error, TypeError: in cfunction, expected Ptr{Nothing}, got a value of type Not
+hing
+gap> h5C(true,2,3,4,5);
+Error, TypeError: in cfunction, expected Ptr{Nothing}, got a value of type Not
+hing
+gap> h6C(true,2,3,4,5,6);
+Error, TypeError: in cfunction, expected Ptr{Nothing}, got a value of type Not
+hing
+#@else
 gap> h0C();
 Error, TypeError: in cfunction, expected Ptr{Nothing}, got Nothing
 gap> h1C(true);
@@ -259,6 +281,7 @@ gap> h5C(true,2,3,4,5);
 Error, TypeError: in cfunction, expected Ptr{Nothing}, got Nothing
 gap> h6C(true,2,3,4,5,6);
 Error, TypeError: in cfunction, expected Ptr{Nothing}, got Nothing
+#@fi
 
 #
 # handling invalid inputs
