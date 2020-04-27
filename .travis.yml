@@ -29,10 +29,10 @@ branches:
 
 install:
   # install some optional dependencies for our tests
-  - JULIA_PROJECT= julia -e 'import Pkg ; Pkg.add("Documenter")'
-  - JULIA_PROJECT= julia -e 'import Pkg ; Pkg.add("Singular")'
-  - JULIA_PROJECT= julia -e 'import Pkg ; Pkg.add("Nemo")'
-  - JULIA_PROJECT= julia -e 'import Pkg ; Pkg.add("Primes")'
+  - JULIA_PROJECT= julia -e 'import Pkg ; Pkg.add("Documenter")' || travis_terminate $?
+  - JULIA_PROJECT= julia -e 'import Pkg ; Pkg.add("Singular")' || travis_terminate $?
+  - JULIA_PROJECT= julia -e 'import Pkg ; Pkg.add("Nemo")' || travis_terminate $?
+  - JULIA_PROJECT= julia -e 'import Pkg ; Pkg.add("Primes")' || travis_terminate $?
 
 before_script:
   # check code formatting
