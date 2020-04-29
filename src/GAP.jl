@@ -159,11 +159,37 @@ end
 function run_it()
     gaproots = abspath(joinpath(@__DIR__, "..")) * ";" * sysinfo["GAP_LIB_DIR"]
     cmdline_options = ["", "-l", gaproots, "-T", "-A", "--nointeract", "-m", "1000m"]
-    if get(ENV, "GAP_SHOW_BANNER", "false") != "true"
+    if haskey(ENV, "GAP_SHOW_BANNER")
+        show_banner = ENV["GAP_SHOW_BANNER"] == "true"
+    else
+        show_banner = isinteractive() &&
+                !any(x->x.name in ["Oscar"], keys(Base.package_locks))
+    end
+
+    if !show_banner
         # Do not show the main GAP banner by default.
         push!(cmdline_options, "-b")
     end
     initialize(cmdline_options)
+
+    if !show_banner
+        # Leave it to GAP's `LoadPackage` whether package banners are shown.
+        # Note that a second argument `false` of this function suppresses the
+        # package banner,
+        # but no package banners can be shown if the `-b` option is `true`.
+        gap_module = @__MODULE__
+        Base.MainInclude.eval(
+            :(
+                begin
+                    record = $gap_module.Globals.GAPInfo
+                    record.CommandLineOptions =
+                        $gap_module.Globals.ShallowCopy(record.CommandLineOptions)
+                    record.CommandLineOptions.b = false
+                    $gap_module.Globals.MakeImmutable(record.CommandLineOptions)
+                end
+            ),
+        )
+    end
 end
 
 function __init__()
@@ -183,24 +209,6 @@ function __init__()
         run_it()
     end
     register_GapObj()
-
-    if get(ENV, "GAP_SHOW_BANNER", "false") != "true"
-        # Leave it to GAP's `LoadPackage` whether package banners are shown.
-        # Note that a second argument `false` of this function suppresses the
-        # package banner,
-        # but no package banners can be shown if the `-b` option is `true`.
-        Base.MainInclude.eval(
-            :(
-                begin
-                    record = $gap_module.Globals.GAPInfo
-                    record.CommandLineOptions =
-                        $gap_module.Globals.ShallowCopy(record.CommandLineOptions)
-                    record.CommandLineOptions.b = false
-                    $gap_module.Globals.MakeImmutable(record.CommandLineOptions)
-                end
-            ),
-        )
-    end
 end
 
 function gap_exe()
