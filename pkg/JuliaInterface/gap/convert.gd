@@ -392,7 +392,7 @@ DeclareConstructor("JuliaToGAP", [IsObject, IsObject]);
 
 DeclareConstructor("JuliaToGAP", [IsObject, IsObject, IsBool]);
 
-#! @Arguments [juliatype, ]gapobj
+#! @Arguments [juliatype, ]gapobj[, recursive]
 #! @Returns a &Julia; object
 #! @Description
 #!  Let <A>gapobj</A> be an object
@@ -427,20 +427,19 @@ DeclareConstructor("JuliaToGAP", [IsObject, IsObject, IsBool]);
 #!gap> GAPToJulia( r );
 #!&lt;Julia: Dict{Symbol,Any}(:a => 1,:b => Any[1, 2, 3])>
 #!</Example>
-#! By default, &GAP; lists and records are converted recursively.
-#! <E>Non-recursive</E> conversions of &GAP; lists and records can be
-#! achieved by prescribing a suitable &Julia; type, as follows.
-#! Note that arbitrary &GAP; objects are covered by the &Julia; type
-#! <C>GAP.Obj</C>, and &GAP; objects which are not <Q>immediate</Q>
-#! are covered by the &Julia; type <C>GAP.GapObj</C>.
+#! If <A>gapobj</A> is a list or a record, one may want that its subobjects
+#! are also converted to &Julia; or that they are kept as they are,
+#! which can be decided by entering <K>true</K> or <K>false</K> as the value
+#! of the optional argument <A>recursive</A>;
+#! the default is <K>true</K>, that is, the subobjects of <A>gapobj</A> are
+#! converted recursively.
 #!<Example>
-#!gap> jl:= GAPToJulia( JuliaEvalString( "Array{GAP.GapObj,1}" ), m );
-#!&lt;Julia: Main.GAP.GapObj[GAP: [ 1, 2 ], GAP: [ 3, 4 ]]>
+#!gap> jl:= GAPToJulia( m, false );
+#!&lt;Julia: Any[GAP: [ 1, 2 ], GAP: [ 3, 4 ]]>
 #!gap> jl[1];
 #![ 1, 2 ]
-#!gap> jr:= GAPToJulia( JuliaEvalString( "Dict{Symbol,GAP.Obj}" ), r );
-#!&lt;Julia: Dict{Symbol,Union{Nothing, Bool, Int64, Main.GAP.FFE, Main.GAP\
-#!.GapObj}}(:a => 1,:b => GAP: [ 1, 2, 3 ])>
+#!gap> jr:= GAPToJulia( r, false );
+#!&lt;Julia: Dict{Symbol,Any}(:a => 1,:b => GAP: [ 1, 2, 3 ])>
 #!gap> Julia.Base.get( jr, JuliaSymbol( "b" ), fail );
 #![ 1, 2, 3 ]
 #!</Example>
@@ -448,18 +447,6 @@ DeclareGlobalFunction("GAPToJulia");
 
 #! @Section Open items
 #! <List>
-#! <Item>
-#!   On the &Julia; side,
-#!   an alternative to <C>gap_to_julia</C> would be a bunch of
-#!   constructor methods, e.g., <C>BigInt(x::MPtr)</C> or <C>big(x::MPtr)</C>
-#!   to convert a &GAP; object to a &Julia; <C>BigInt</C>, if possible.
-#!   Explain why we did not do this instead of <C>gap_to_julia</C>;
-#!   think about the possibility of still prodiving these,
-#!   implemented by calling <C>gap_to_julia</C> or vice versa.
-#!   (Pro constructors: <C>BigInt(x)</C> is shorter than
-#!   <C>gap_to_julia(BigInt, x)</C>.
-#!   Con constructors: symmetry perhaps?)
-#! </Item>
 #! <Item>
 #!   Discuss/add more dedicated conversion functions and/or special wrapper
 #!   kinds, e.g.:

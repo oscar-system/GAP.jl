@@ -141,8 +141,8 @@ function(filter, obj)
 end);
 
 
-#
-#
-#
-
-InstallGlobalFunction("GAPToJulia", JuliaFunction( "gap_to_julia", "__JULIAGAPMODULE" ) );
+##
+##  When Julia loads GAP.jl, the module GAP is not yet available here;
+##  we have to use __JULIAGAPMODULE instead.
+##
+InstallGlobalFunction("GAPToJulia", JuliaFunction( "_gap_to_julia", "__JULIAGAPMODULE" ) );
