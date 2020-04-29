@@ -1,9 +1,17 @@
 @testset "conversion from GAP" begin
 
     ## Defaults
-    @test GAP.gap_to_julia(Any, true ) == true
-    @test GAP.gap_to_julia(GAP.Obj, true ) == true
-    @test GAP.gap_to_julia(Any, "foo" ) == "foo"
+    @test GAP.gap_to_julia(Any, true) == true
+    @test GAP.gap_to_julia(GAP.Obj, true) == true
+    @test GAP.gap_to_julia(Any, "foo") == "foo"
+
+    ## Conversion to GAP.Obj and GAP.GapObj.
+    x = GAP.EvalString("2^100")
+    @test GAP.gap_to_julia(GAP.GapObj, x) == x
+    @test GAP.gap_to_julia(GAP.Obj, true) == true
+    x = GAP.EvalString("Z(3)")
+    @test GAP.gap_to_julia(GAP.Obj, x) == x
+    @test GAP.gap_to_julia(GAP.Obj, 0) == 0
 
     ## Integers
     @test GAP.gap_to_julia(Int128,1) == Int128(1)
@@ -19,13 +27,21 @@
     @test GAP.gap_to_julia(UInt16 ,1) == UInt16(1)
     @test GAP.gap_to_julia(UInt8  ,1) == UInt8(1)
 
+    ## Border cases
+    x = GAP.EvalString("2^100")
+    @test_throws InexactError GAP.gap_to_julia(Int64, x)
+    @test GAP.gap_to_julia(Int128, x) == BigInt(2)^100
+    @test GAP.gap_to_julia(BigInt, x) == BigInt(2)^100
+    x = GAP.EvalString("2^62")  # not an immediate integer
+    @test GAP.gap_to_julia(Int64, x) == 2^62
+
     ## BigInts
     @test GAP.gap_to_julia(BigInt,1) == BigInt(1)
     x = GAP.EvalString("2^100")
     @test GAP.gap_to_julia(BigInt,x) == BigInt(2)^100
     @test GAP.gap_to_julia(x) == BigInt(2)^100
     x = GAP.EvalString("1/2")
-    @test_throws ArgumentError GAP.gap_to_julia(BigInt,x)
+    @test_throws GAP.ConversionError GAP.gap_to_julia(BigInt,x)
 
     ## Rationals
     @test GAP.gap_to_julia(Rational{Int64},1) == 1//1
@@ -35,7 +51,7 @@
     @test GAP.gap_to_julia(Rational{BigInt},x) == BigInt(2)^100 // 3
     @test GAP.gap_to_julia(x) == BigInt(2)^100 // 3
     x = GAP.EvalString("(1,2,3)")
-    @test_throws ArgumentError GAP.gap_to_julia(Rational{BigInt},x)
+    @test_throws GAP.ConversionError GAP.gap_to_julia(Rational{BigInt},x)
 
     ## Floats
     x = GAP.EvalString("2.")
@@ -45,60 +61,87 @@
     @test GAP.gap_to_julia(Float16,x) == Float16(2.)
     @test GAP.gap_to_julia(BigFloat,x) == BigFloat(2.)
     x = GAP.EvalString("(1,2,3)")
-    @test_throws ArgumentError GAP.gap_to_julia(Float64,x)
+    @test_throws GAP.ConversionError GAP.gap_to_julia(Float64,x)
 
     ## Chars
     x = GAP.EvalString("'x'")
     @test GAP.gap_to_julia(Cuchar,x) == Cuchar('x')
     @test GAP.gap_to_julia(x) == Cuchar('x')
     x = GAP.EvalString("(1,2,3)")
-    @test_throws ArgumentError GAP.gap_to_julia(Cuchar,x)
+    @test_throws GAP.ConversionError GAP.gap_to_julia(Cuchar,x)
 
-    ## Strings & Symbols
+    ## Strings
     x = GAP.EvalString("[]")
-    @test GAP.Globals.IsString( x ) == true
-    @test GAP.Globals.IsStringRep( x ) == false
+    @test GAP.Globals.IsString(x) == true
+    @test GAP.Globals.IsStringRep(x) == false
     @test GAP.gap_to_julia(String,x) == ""
     x = GAP.EvalString("[ 'a', 'b', 'c' ]")
-    @test GAP.Globals.IsString( x ) == true
-    @test GAP.Globals.IsStringRep( x ) == false
+    @test GAP.Globals.IsString(x) == true
+    @test GAP.Globals.IsStringRep(x) == false
     @test GAP.gap_to_julia(String,x) == "abc"
     x = GAP.EvalString("\"foo\"")
     @test GAP.gap_to_julia(String,x) == "foo"
     @test GAP.gap_to_julia(AbstractString,x) == "foo"
     @test GAP.gap_to_julia(x) == "foo"
+
+    ## Symbols
     @test GAP.gap_to_julia(Symbol,x) == :foo
     x = GAP.EvalString("(1,2,3)")
-    @test_throws ArgumentError GAP.gap_to_julia(AbstractString,x)
+    @test_throws GAP.ConversionError GAP.gap_to_julia(AbstractString,x)
+
+    # Convert GAP string to Vector{UInt8} (==Array{UInt8,1})
     x = GAP.EvalString("\"foo\"")
     @test GAP.gap_to_julia(Array{UInt8,1},x) == UInt8[0x66,0x6f,0x6f]
     x = GAP.EvalString("[1,2,3]")
     @test GAP.gap_to_julia(Array{UInt8,1},x) == UInt8[1,2,3]
 
-    ## Arrays
+    ## BitArrays
+    x = GAP.EvalString("[ true, false, false, true ]")
+    @test GAP.gap_to_julia(BitArray{1}, x) == [ true, false, false, true ]
+    x = GAP.EvalString("[ 1, 0, 0, 1 ]")
+    @test_throws GAP.ConversionError GAP.gap_to_julia(BitArray{1}, x)
+
+    ## Vectors
     x = GAP.julia_to_gap([1,2,3])
     @test GAP.gap_to_julia(Array{Any,1},x) == Array{Any,1}([1,2,3])
     @test GAP.gap_to_julia(x) == Array{Any,1}([1,2,3])
     @test GAP.gap_to_julia(Array{Int64,1},x) == [1,2,3]
     @test GAP.gap_to_julia(Array{BigInt,1},x) == [1,2,3]
     n = GAP.julia_to_gap(big(2)^100)
-    @test_throws ArgumentError GAP.gap_to_julia(Array{Int64,1},n)
-    @test_throws ArgumentError GAP.gap_to_julia(Array{BigInt,1},n)
+    @test_throws GAP.ConversionError GAP.gap_to_julia(Array{Int64,1},n)
+    @test_throws GAP.ConversionError GAP.gap_to_julia(Array{BigInt,1},n)
+    x = GAP.EvalString("[ [ 1, 2 ], [ 3, 4 ] ]")
+    nonrec1 = GAP.gap_to_julia(Array{GAP.GapObj,1}, x)
+    nonrec2 = GAP.gap_to_julia(Array{Any,1}, x; recursive = false)
+    rec = GAP.gap_to_julia(Array{Any,1}, x; recursive = true)
+    @test all(x -> isa(x, GAP.GapObj), nonrec1)
+    @test nonrec1 == nonrec2
+    @test nonrec1 != rec
+    @test all(x -> isa(x, Array), rec)
+    x = [ 1, 2 ]; y = GAP.julia_to_gap([ x, x ], Val(true))
+    z = GAP.gap_to_julia(Vector{Any}, y)
+    @test z[1] === z[2]
+
+    ## Matrices
     n = GAP.EvalString("[[1,2],[3,4]]")
     @test GAP.gap_to_julia(Array{Int64,2},n) == [1 2; 3 4]
     xt = [ (1,) (2,) ; (3,) (4,) ]
-    n = GAP.julia_to_gap( xt, Val(false) )
+    n = GAP.julia_to_gap(xt, Val(false))
     @test GAP.gap_to_julia(Array{Tuple{Int64},2}, n) == xt
     n = GAP.julia_to_gap(big(2)^100)
-    @test_throws ArgumentError GAP.gap_to_julia(Array{Int64,2}, n)
+    @test_throws GAP.ConversionError GAP.gap_to_julia(Array{Int64,2}, n)
     n = GAP.EvalString("[[1,2],[,4]]")
     @test GAP.gap_to_julia(Array{Union{Int64,Nothing},2},n) == [1 2; nothing 4]
-
-    ## BitArrays
-    x = GAP.EvalString( "[ true, false, false, true ]" )
-    @test GAP.gap_to_julia( BitArray{1}, x ) == [ true, false, false, true ]
-    x = GAP.EvalString( "[ 1, 0, 0, 1 ]" )
-    @test_throws ArgumentError GAP.gap_to_julia( BitArray{1}, x )
+    x = [ 1, 2 ]
+    m = Any[ 1 2 ; 3 4 ]
+    m[1,1] = x; m[2,2] = x
+    x = GAP.julia_to_gap(m, Val(true))
+    y = GAP.gap_to_julia(Array{Any,2}, x)
+    @test ! isa(y[1,1], GAP.GapObj)
+    @test y[1,1] === y[2,2]
+    z = GAP.gap_to_julia(Array{Any,2}, x; recursive=false)
+    @test isa(z[1,1], GAP.GapObj)
+    @test z[1,1] === z[2,2]
 
     ## Tuples
     x = GAP.julia_to_gap([1,2,3])
@@ -106,39 +149,59 @@
     @test_throws ArgumentError GAP.gap_to_julia(Tuple{Any,Any},x)
     @test_throws ArgumentError GAP.gap_to_julia(Tuple{Any,Any,Any,Any},x)
     n = GAP.julia_to_gap(big(2)^100)
-    @test_throws ArgumentError GAP.gap_to_julia(Tuple{Int64,Any,Int32},n)
+    @test_throws GAP.ConversionError GAP.gap_to_julia(Tuple{Int64,Any,Int32},n)
+    x = GAP.EvalString("[ [ 1, 2 ], [ 3, [ 4, 5 ] ] ]")
+    y = GAP.gap_to_julia(Tuple{GAP.Obj,Any}, x)
+    @test isa(y, Tuple)
+    @test isa(y[1], GAP.Obj)
+    @test isa(y[2], Array)
+    @test isa(y[2][2], Array)
+    y = GAP.gap_to_julia(Tuple{GAP.Obj,Any}, x; recursive=false)
+    @test isa(y, Tuple)
+    @test isa(y[1], GAP.Obj)
+    @test isa(y[2], Array)
+    @test isa(y[2][2], GAP.Obj)
 
     ## Ranges
-    r = GAP.EvalString( "[]" )
-    @test GAP.gap_to_julia( UnitRange{Int64}, r ) == 1:0
-    @test GAP.gap_to_julia( StepRange{Int64,Int64}, r ) == 1:1:0
-    r = GAP.EvalString( "[ 1 ]" )
-    @test GAP.gap_to_julia( UnitRange{Int64}, r ) == 1:1
-    @test GAP.gap_to_julia( StepRange{Int64,Int64}, r ) == 1:1:1
-    r = GAP.EvalString( "[ 4 .. 13 ]" )
-    @test GAP.gap_to_julia( UnitRange{Int64}, r ) == 4:13
-    @test GAP.gap_to_julia( StepRange{Int64,Int64}, r ) == 4:1:13
-    r = GAP.EvalString( "[ 1, 4 .. 10 ]" )
-    @test_throws ArgumentError GAP.gap_to_julia( UnitRange{Int64}, r )
-    @test GAP.gap_to_julia( StepRange{Int64,Int64}, r ) == 1:3:10
-    r = GAP.EvalString( "[ 1, 2, 4 ]" )
-    @test_throws ArgumentError GAP.gap_to_julia( UnitRange{Int64}, r )
-    @test_throws ArgumentError GAP.gap_to_julia( StepRange{Int64,Int64}, r )
-    r = GAP.EvalString( "rec()" )
-    @test_throws ArgumentError GAP.gap_to_julia( UnitRange{Int64}, r )
-    @test_throws ArgumentError GAP.gap_to_julia( StepRange{Int64,Int64}, r )
+    r = GAP.EvalString("[]")
+    @test GAP.gap_to_julia(UnitRange{Int64}, r) == 1:0
+    @test GAP.gap_to_julia(StepRange{Int64,Int64}, r) == 1:1:0
+    r = GAP.EvalString("[ 1 ]")
+    @test GAP.gap_to_julia(UnitRange{Int64}, r) == 1:1
+    @test GAP.gap_to_julia(StepRange{Int64,Int64}, r) == 1:1:1
+    r = GAP.EvalString("[ 4 .. 13 ]")
+    @test GAP.gap_to_julia(UnitRange{Int64}, r) == 4:13
+    @test GAP.gap_to_julia(StepRange{Int64,Int64}, r) == 4:1:13
+    r = GAP.EvalString("[ 1, 4 .. 10 ]")
+    @test_throws ArgumentError GAP.gap_to_julia(UnitRange{Int64}, r)
+    @test GAP.gap_to_julia(StepRange{Int64,Int64}, r) == 1:3:10
+    r = GAP.EvalString("[ 1, 2, 4 ]")
+    @test_throws GAP.ConversionError GAP.gap_to_julia(UnitRange{Int64}, r)
+    @test_throws GAP.ConversionError GAP.gap_to_julia(StepRange{Int64,Int64}, r)
+    r = GAP.EvalString("rec()")
+    @test_throws GAP.ConversionError GAP.gap_to_julia(UnitRange{Int64}, r)
+    @test_throws GAP.ConversionError GAP.gap_to_julia(StepRange{Int64,Int64}, r)
 
     ## Dictionaries
-    x = GAP.EvalString(" rec( foo := 1, bar := \"foo\" )" )
-    y = Dict{Symbol,Any}( :foo => 1, :bar => "foo" )
+    x = GAP.EvalString("rec( foo := 1, bar := \"foo\" )")
+    y = Dict{Symbol,Any}(:foo => 1, :bar => "foo")
     @test GAP.gap_to_julia(Dict{Symbol,Any},x) == y
     @test GAP.gap_to_julia(x) == y
     n = GAP.julia_to_gap(big(2)^100)
-    @test_throws ArgumentError GAP.gap_to_julia(Dict{Symbol,Any},n)
+    @test_throws GAP.ConversionError GAP.gap_to_julia(Dict{Symbol,Any},n)
+    x = GAP.EvalString("rec( a:= [ 1, 2 ], b:= [ 3, [ 4, 5 ] ] )")
+    y = GAP.gap_to_julia(Dict{Symbol,Any}, x)
+    @test isa(y, Dict)
+    @test isa(y[ :a ], Array)
+    @test isa(y[ :b ], Array)
+    @test isa(y[ :b ][2], Array)
+    y = GAP.gap_to_julia(Dict{Symbol,Any}, x; recursive=false)
+    @test isa(y[ :a ], GAP.Obj)
+    @test isa(y[ :b ], GAP.Obj)
 
     ## Default
     x = GAP.EvalString("(1,2,3)")
-    @test GAP.gap_to_julia(x) == x
+    @test_throws GAP.ConversionError GAP.gap_to_julia(x)
 
     ## Conversions involving circular references
     xx = GAP.EvalString("l:=[1];x:=[l,l];")
@@ -156,11 +219,11 @@
     @test conv === conv[:b]
 
     ## Catch conversions to types that are not supported
-    xx = GAP.julia_to_gap( "a" )
-    @test_throws ErrorException GAP.gap_to_julia( Dict{Int64,Int64}, xx )
+    xx = GAP.julia_to_gap("a")
+    @test_throws ErrorException GAP.gap_to_julia(Dict{Int64,Int64}, xx)
 
     ## Test converting GAP lists with holes in them
-    xx = GAP.EvalString( "[1,,1]" )
+    xx = GAP.EvalString("[1,,1]")
     @test GAP.gap_to_julia(xx) == Any[1,nothing,1]
     @test GAP.gap_to_julia(Array{Any,1},xx) == Any[1,nothing,1]
     @test_throws MethodError GAP.gap_to_julia(Array{Int64,1},xx)
@@ -178,7 +241,7 @@ end
 @testset "conversion to GAP" begin
 
     ## Defaults
-    @test GAP.julia_to_gap( true )
+    @test GAP.julia_to_gap(true)
 
     ## Integers
     @test GAP.julia_to_gap(Int128(1)) == 1
@@ -249,7 +312,7 @@ end
     x = GAP.EvalString("BlistList([1,2],[1])")
     y = GAP.julia_to_gap([true,false])
     @test y == x
-    @test GAP.gap_to_julia( GAP.Globals.TNAM_OBJ( y ) ) == "list (boolean)"
+    @test GAP.gap_to_julia(GAP.Globals.TNAM_OBJ(y)) == "list (boolean)"
 
     ## Tuples
     x = GAP.EvalString("[1,\"foo\",2]")
@@ -258,26 +321,26 @@ end
     @test GAP.julia_to_gap((1,"foo",2)) == x
 
     ## Ranges
-    r = GAP.EvalString( "[]" )
-    @test GAP.julia_to_gap( 1:0 ) == r
-    @test GAP.julia_to_gap( 1:1:0 ) == r
-    r = GAP.EvalString( "[ 1 ]" )
-    @test GAP.julia_to_gap( 1:1 ) == r
-    @test GAP.julia_to_gap( 1:1:1 ) == r
-    r = GAP.EvalString( "[ 4 .. 13 ]" )
-    @test GAP.julia_to_gap( 4:13 ) == r
-    @test GAP.julia_to_gap( 4:1:13 ) == r
-    r = GAP.EvalString( "[ 1, 4 .. 10 ]" )
-    @test GAP.julia_to_gap( 1:3:10 ) == r
-    @test_throws ErrorException GAP.julia_to_gap( 1:2^62 )
+    r = GAP.EvalString("[]")
+    @test GAP.julia_to_gap(1:0) == r
+    @test GAP.julia_to_gap(1:1:0) == r
+    r = GAP.EvalString("[ 1 ]")
+    @test GAP.julia_to_gap(1:1) == r
+    @test GAP.julia_to_gap(1:1:1) == r
+    r = GAP.EvalString("[ 4 .. 13 ]")
+    @test GAP.julia_to_gap(4:13) == r
+    @test GAP.julia_to_gap(4:1:13) == r
+    r = GAP.EvalString("[ 1, 4 .. 10 ]")
+    @test GAP.julia_to_gap(1:3:10) == r
+    @test_throws ErrorException GAP.julia_to_gap(1:2^62)
 
     ## Dictionaries
-    x = GAP.EvalString(" rec( foo := 1, bar := \"foo\" )" )
+    x = GAP.EvalString("rec( foo := 1, bar := \"foo\" )")
     # ... recursive conversion
-    y = Dict{Symbol,Any}( :foo => 1, :bar => "foo" )
+    y = Dict{Symbol,Any}(:foo => 1, :bar => "foo")
     @test GAP.julia_to_gap(y,Val(true)) == x
     # ... non-recursive conversion
-    x = GAP.EvalString(" rec( foo := 1, bar := JuliaEvalString(\"\\\"foo\\\"\") )" )
+    x = GAP.EvalString("rec( foo := 1, bar := JuliaEvalString(\"\\\"foo\\\"\") )")
     @test GAP.julia_to_gap(y) == x
 
     ## Conversions with identical sub-objects
@@ -312,7 +375,7 @@ end
     @test conv === conv.b
 
     ## Test converting lists with 'nothing' in them -> should be converted to a hole in the list
-    xx = GAP.EvalString( "[1,,1]" )
+    xx = GAP.EvalString("[1,,1]")
     @test GAP.julia_to_gap([1,nothing,1]) == xx
 
     ## Test function conversion
