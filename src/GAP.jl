@@ -196,8 +196,8 @@ function __init__()
     ## Older versions of GAP need a pointer to the GAP.jl module during
     ## initialization, but at this point Main.GAP is not yet bound. So instead
     ## we assign this module to the name __JULIAGAPMODULE.
-    ## TODO: Newer versions of GAP won't need this; we should get rid of
-    ## __JULIAGAPMODULE as soon as we can.
+    ## Newer versions of GAP won't need this; however, JuliaInterface still
+    ## uses it.
     gap_module = @__MODULE__
     Base.MainInclude.eval(:(__JULIAGAPMODULE = $gap_module))
 

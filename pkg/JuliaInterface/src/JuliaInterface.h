@@ -9,7 +9,7 @@ extern Obj JULIAINTERFACE_IsJuliaWrapper;
 extern Obj JULIAINTERFACE_JuliaPointer;
 
 // internal helper
-extern NOINLINE void handle_jl_exception(void);
+NOINLINE void handle_jl_exception(void);
 
 //
 // Exception handler for a few high-level Julia functions, namely
@@ -47,25 +47,16 @@ extern NOINLINE void handle_jl_exception(void);
 
 // Internal Julia access functions
 
-// SET_JULIA_OBJ(o,v)
-//
-// Sets the value of the julia object GAP object
-// to the julia value pointer v.
-void SET_JULIA_OBJ(Obj, jl_value_t *);
-
 // GET_JULIA_OBJ(o)
 //
 // Returns the julia value pointer
 // from the julia object GAP object o.
 jl_value_t * GET_JULIA_OBJ(Obj);
 
-// Internal
-extern UInt T_JULIA_OBJ;
-
 // IS_JULIA_OBJ(o)
 //
 // Checks if o is a julia object GAP object.
-extern int IS_JULIA_OBJ(Obj o);
+int IS_JULIA_OBJ(Obj o);
 
 // NewJuliaObj(v)
 //

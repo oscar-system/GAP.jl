@@ -20,10 +20,10 @@ static jl_datatype_t * JULIA_GAPFFE_type;
 
 static jl_value_t * jl_bigint_type = NULL;
 
-jl_datatype_t * gap_datatype_mptr;
+static jl_datatype_t * gap_datatype_mptr;
 
-Obj  TheTypeJuliaObject;
-UInt T_JULIA_OBJ;
+static Obj  TheTypeJuliaObject;
+static UInt T_JULIA_OBJ;
 
 Obj JULIAINTERFACE_IsJuliaWrapper;
 Obj JULIAINTERFACE_JuliaPointer;
@@ -123,11 +123,6 @@ inline int IS_JULIA_OBJ(Obj o)
     return TNUM_OBJ(o) == T_JULIA_OBJ;
 }
 
-void SET_JULIA_OBJ(Obj o, jl_value_t * p)
-{
-    ADDR_OBJ(o)[0] = (Obj)p;
-}
-
 jl_value_t * GET_JULIA_OBJ(Obj o)
 {
     return (jl_value_t *)(CONST_ADDR_OBJ(o)[0]);
@@ -144,7 +139,7 @@ Obj NewJuliaObj(jl_value_t * v)
         return (Obj)v;
     JL_GC_PUSH1(&v);
     Obj o = NewBag(T_JULIA_OBJ, 1 * sizeof(Obj));
-    SET_JULIA_OBJ(o, v);
+    ADDR_OBJ(o)[0] = (Obj)v;
     JL_GC_POP();
     return o;
 }
@@ -152,21 +147,22 @@ Obj NewJuliaObj(jl_value_t * v)
 
 jl_function_t * get_function_from_obj_or_string(Obj func)
 {
+    jl_function_t * f = NULL;
     if (IS_JULIA_OBJ(func)) {
-        return (jl_function_t *)GET_JULIA_OBJ(func);
+        f = (jl_function_t *)GET_JULIA_OBJ(func);
     }
-    if (IsStringConv(func)) {
+    else if (IsStringConv(func)) {
         // jl_get_function is a thin wrapper for jl_get_global and never
         // throws an exception
-        jl_function_t * f =
-            jl_get_function(jl_main_module, CONST_CSTR_STRING(func));
+        f = jl_get_function(jl_main_module, CONST_CSTR_STRING(func));
         if (f == 0) {
             ErrorMayQuit("Function is not defined in julia", 0, 0);
         }
         return f;
     }
-    ErrorMayQuit("argument is not a julia object or string", 0, 0);
-    return 0;
+    else
+        ErrorMayQuit("argument is not a julia object or string", 0, 0);
+    return f;
 }
 
 
