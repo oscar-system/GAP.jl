@@ -133,7 +133,7 @@ gap_to_julia(::Type{Symbol},obj::GapObj) = Symbol(gap_to_julia(String,obj))
 
 ## Convert GAP string to Vector{UInt8} (==Array{UInt8,1})
 function gap_to_julia(::Type{Vector{UInt8}}, obj::GapObj)
-    Globals.IsStringRep(obj) && return deepcopy(UNSAFE_CSTR_STRING(obj))
+    Globals.IsStringRep(obj) && return CSTR_STRING_AS_ARRAY(obj)
     Globals.IsList(obj) && return [gap_to_julia(UInt8,obj[i]) for i in 1:length(obj)]
     throw(ConversionError(obj, Vector{UInt8}))
 end

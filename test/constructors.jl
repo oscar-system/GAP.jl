@@ -42,6 +42,16 @@
     x = GAP.EvalString("(1,2,3)")
     @test_throws GAP.ConversionError Float64(x)
 
+    ## big
+    x = GAP.EvalString("2^100")
+    @test big(x) == BigInt(2)^100
+    x = GAP.EvalString("2^100/3")
+    @test big(x) == BigInt(2)^100 // 3
+    x = GAP.EvalString("2.")
+    @test big(x) == BigFloat(2.)
+    x = GAP.EvalString("[]")
+    @test_throws GAP.ConversionError big(x)
+
     ## Chars
     x = GAP.EvalString("'x'")
     @test Cuchar(x) == Cuchar('x')
