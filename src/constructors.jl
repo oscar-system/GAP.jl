@@ -6,6 +6,13 @@ GapObj(x::GapObj) = x
 Base.BigInt(obj::GapObj) = gap_to_julia(BigInt, obj)
 (::Type{T})(obj::GapObj) where T<:Integer = T(BigInt(obj))
 
+function Base.big(obj::GapObj)
+    Globals.IsInt(obj) && return gap_to_julia(BigInt, obj)
+    Globals.IsRat(obj) && return gap_to_julia(Rational{BigInt}, obj)
+    Globals.IsFloat(obj) && return gap_to_julia(BigFloat, obj)
+    throw(ConversionError(obj, "a type supported by big"))
+end
+
 ## Rationals
 Base.Rational{T}(obj::GapObj) where T<:Integer = gap_to_julia(Rational{T}, obj)
 
