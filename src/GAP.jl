@@ -11,13 +11,14 @@ module GAP
 const julia_version = "$(VERSION.major).$(VERSION.minor)"
 deps_jl = abspath(joinpath(@__DIR__, "..", "deps", "deps-$(julia_version).jl"))
 if !isfile(deps_jl)
-    # HACK: we need to compile GAP once for each Julia version, but Julia only
+    # We need to compile GAP once for each Julia version, but Julia only
     # builds it for us once; so we need to check if the package was actually
-    # built, and if not, trigger a build now. This *seems* to work well in
-    # practice, but I am not sure if we are strictly speaking "allowed" to do
-    # this
-    import Pkg
-    Pkg.build("GAP")
+    # built, and if not, tell the user to trigger a build. We used to just
+    # trigger on by ourselves using `Pkg.build("GAP")` but that doesn't work
+    # in general; e.g. if the user install Oscar.jl, and never did `add GAP`,
+    # it will just run into an error which then is even more confusing to the
+    # enduser than the message we are printing here.
+    error("""Please run `using Pkg; Pkg.add("GAP"); Pkg.build("GAP");`""")
 end
 include(deps_jl)
 
