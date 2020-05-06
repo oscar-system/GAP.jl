@@ -10,6 +10,10 @@ julia:
   - 1.4
   - nightly
 
+cache:
+  directories:
+    - $HOME/.julia/artifacts
+
 env:
   global:
     - MAKEFLAGS="-j4"
