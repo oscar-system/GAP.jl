@@ -6,6 +6,7 @@
 
 #include "calls.h"
 #include "convert.h"
+#include "sync.h"
 
 #include <src/julia_gc.h>
 
@@ -35,6 +36,7 @@ void handle_jl_exception(void)
     jl_value_t * string_object =
         jl_call1(JULIA_FUNC_take_inplace, JULIA_ERROR_IOBuffer);
     string_object = jl_call1(JULIA_FUNC_String_constructor, string_object);
+    BEGIN_GAP_SYNC();
     ErrorMayQuit(jl_string_data(string_object), 0, 0);
 }
 
@@ -45,8 +47,10 @@ static jl_module_t * get_module(const char * name)
     // JL_TRY/JL_CATCH.
     jl_value_t * module_value = jl_eval_string(name);
     JULIAINTERFACE_EXCEPTION_HANDLER
-    if (!jl_is_module(module_value))
+    if (!jl_is_module(module_value)) {
+        BEGIN_GAP_SYNC();
         ErrorQuit("Not a module", 0, 0);
+    }
     return (jl_module_t *)module_value;
 }
 
@@ -57,8 +61,10 @@ Obj Func_JULIAINTERFACE_INTERNAL_INIT(Obj self)
     jl_module_t * gap_module = get_module("__JULIAGAPMODULE");
     JULIA_GAPFFE_type =
         (jl_datatype_t *)jl_get_global(gap_module, jl_symbol("FFE"));
-    if (!JULIA_GAPFFE_type)
+    if (!JULIA_GAPFFE_type) {
+        BEGIN_GAP_SYNC();
         ErrorMayQuit("Could not locate the GAP.FFE datatype", 0, 0);
+    }
     return NULL;
 }
 
@@ -89,6 +95,7 @@ int is_gapobj(jl_value_t * v)
 
 static Obj Func_NewJuliaCFunc(Obj self, Obj julia_function_ptr, Obj args)
 {
+    BEGIN_GAP_SYNC();
     if (!IS_JULIA_OBJ(julia_function_ptr)) {
         ErrorMayQuit("NewJuliaCFunc: <ptr> must be a Julia object", 0, 0);
     }
@@ -96,6 +103,7 @@ static Obj Func_NewJuliaCFunc(Obj self, Obj julia_function_ptr, Obj args)
 
     jl_value_t * func_ptr = GET_JULIA_OBJ(julia_function_ptr);
     void *       ptr = jl_unbox_voidpointer(func_ptr);
+    END_GAP_SYNC();
     return NewJuliaCFunc(ptr, args);
 }
 
@@ -148,6 +156,7 @@ Obj NewJuliaObj(jl_value_t * v)
 jl_function_t * get_function_from_obj_or_string(Obj func)
 {
     jl_function_t * f = NULL;
+    BEGIN_GAP_SYNC();
     if (IS_JULIA_OBJ(func)) {
         f = (jl_function_t *)GET_JULIA_OBJ(func);
     }
@@ -158,10 +167,10 @@ jl_function_t * get_function_from_obj_or_string(Obj func)
         if (f == 0) {
             ErrorMayQuit("Function is not defined in julia", 0, 0);
         }
-        return f;
     }
     else
         ErrorMayQuit("argument is not a julia object or string", 0, 0);
+    END_GAP_SYNC();
     return f;
 }
 
@@ -183,6 +192,7 @@ static Obj Func_JuliaFunction(Obj self, Obj func)
  */
 static Obj Func_JuliaFunctionByModule(Obj self, Obj funcName, Obj moduleName)
 {
+    BEGIN_GAP_SYNC();
     RequireStringRep("_JuliaFunctionByModule", funcName);
     RequireStringRep("_JuliaFunctionByModule", moduleName);
 
@@ -192,6 +202,7 @@ static Obj Func_JuliaFunctionByModule(Obj self, Obj funcName, Obj moduleName)
     jl_function_t * f = jl_get_function(m, CONST_CSTR_STRING(funcName));
     if (f == 0)
         ErrorMayQuit("Function is not defined in julia", 0, 0);
+    END_GAP_SYNC();
     return NewJuliaFunc(f);
 }
 
@@ -204,12 +215,14 @@ static Obj FuncIS_JULIA_FUNC(Obj self, Obj obj)
 // Executes the string <string> in the current julia session.
 static Obj FuncJuliaEvalString(Obj self, Obj string)
 {
+    BEGIN_GAP_SYNC();
     RequireStringRep("JuliaEvalString", string);
 
     // It suffices to use JULIAINTERFACE_EXCEPTION_HANDLER here, as
     // jl_eval_string is part of the jlapi, so don't have to be wrapped in
     // JL_TRY/JL_CATCH.
     jl_value_t * result = jl_eval_string(CONST_CSTR_STRING(string));
+    END_GAP_SYNC();
     JULIAINTERFACE_EXCEPTION_HANDLER
     return gap_julia(result);
 }
@@ -218,11 +231,13 @@ static Obj FuncJuliaEvalString(Obj self, Obj string)
 // :<name>.
 static Obj FuncJuliaSymbol(Obj self, Obj name)
 {
+    BEGIN_GAP_SYNC();
     RequireStringRep("JuliaSymbol", name);
 
     // jl_symbol never throws an exception and always returns a valid
     // result, so no need for extra checks.
     jl_sym_t * julia_symbol = jl_symbol(CONST_CSTR_STRING(name));
+    END_GAP_SYNC();
     return NewJuliaObj((jl_value_t *)julia_symbol);
 }
 
@@ -230,10 +245,12 @@ static Obj FuncJuliaSymbol(Obj self, Obj name)
 // This function is for debugging purposes.
 static Obj FuncJuliaSetVal(Obj self, Obj name, Obj val)
 {
+    BEGIN_GAP_SYNC();
     RequireStringRep("JuliaSetVal", name);
 
     jl_value_t * julia_obj = julia_gap(val);
     jl_sym_t *   julia_symbol = jl_symbol(CONST_CSTR_STRING(name));
+    END_GAP_SYNC();
     jl_set_global(jl_main_module, julia_symbol, julia_obj);
     return 0;
 }
@@ -242,9 +259,11 @@ static Obj FuncJuliaSetVal(Obj self, Obj name, Obj val)
 // currently bound to the julia identifier <name>.
 static Obj Func_JuliaGetGlobalVariable(Obj self, Obj name)
 {
+    BEGIN_GAP_SYNC();
     RequireStringRep("_JuliaGetGlobalVariable", name);
 
     jl_sym_t * symbol = jl_symbol(CONST_CSTR_STRING(name));
+    END_GAP_SYNC();
     if (!jl_boundp(jl_main_module, symbol)) {
         return Fail;
     }
@@ -256,6 +275,7 @@ static Obj Func_JuliaGetGlobalVariable(Obj self, Obj name)
 // currently bound to the julia identifier <moduleName>.<name>.
 static Obj Func_JuliaGetGlobalVariableByModule(Obj self, Obj name, Obj module)
 {
+    BEGIN_GAP_SYNC();
     RequireStringRep("_JuliaGetGlobalVariableByModule", name);
 
     jl_module_t * m = 0;
@@ -273,6 +293,7 @@ static Obj Func_JuliaGetGlobalVariableByModule(Obj self, Obj name, Obj module)
                      0, 0);
     }
     jl_sym_t * symbol = jl_symbol(CONST_CSTR_STRING(name));
+    END_GAP_SYNC();
     if (!jl_boundp(m, symbol)) {
         return Fail;
     }
@@ -285,6 +306,7 @@ static Obj Func_JuliaGetGlobalVariableByModule(Obj self, Obj name, Obj module)
 // <super_object> must be a julia object GAP object, and <name> a string.
 static Obj FuncJuliaGetFieldOfObject(Obj self, Obj super_obj, Obj field_name)
 {
+    BEGIN_GAP_SYNC();
     if (!IS_JULIA_OBJ(super_obj)) {
         ErrorMayQuit(
             "JuliaGetFieldOfObject: <super_obj> must be a Julia object", 0,
@@ -299,6 +321,7 @@ static Obj FuncJuliaGetFieldOfObject(Obj self, Obj super_obj, Obj field_name)
     // JL_TRY/JL_CATCH.
     jl_value_t * field_value =
         jl_get_field(extracted_superobj, CONST_CSTR_STRING(field_name));
+    END_GAP_SYNC();
     JULIAINTERFACE_EXCEPTION_HANDLER
     return gap_julia(field_value);
 }
@@ -308,6 +331,8 @@ static Obj IsOutputStream;
 static Obj FuncSTREAM_CALL(Obj self, Obj stream, Obj func, Obj obj)
 {
     syJmp_buf readJmpError;
+
+    BEGIN_GAP_SYNC();
 
     if (CALL_1ARGS(IsOutputStream, stream) != True) {
         ErrorQuit("STREAM_CALL: <outstream> must be an output stream", 0, 0);
@@ -323,6 +348,7 @@ static Obj FuncSTREAM_CALL(Obj self, Obj stream, Obj func, Obj obj)
     if (!CloseOutput()) {
         ErrorQuit("STREAM_CALL: cannot close output", 0, 0);
     }
+    END_GAP_SYNC();
 
     return 0;
 }
@@ -366,6 +392,8 @@ static Int InitKernel(StructInitInfo * module)
         jl_options.code_coverage = JL_LOG_USER;
         jl_options.can_inline = 0;
     }
+
+    InitGapSync();
 
     // init filters and functions
     InitHdlrFuncsFromTable(GVarFuncs);

@@ -2,7 +2,7 @@
 # Makefile rules for the JuliaInterface package
 #
 KEXT_NAME = JuliaInterface
-KEXT_SOURCES = src/JuliaInterface.c src/calls.c src/convert.c
+KEXT_SOURCES = src/JuliaInterface.c src/calls.c src/convert.c src/sync.c
 
 KEXT_CFLAGS += -g
 KEXT_LDFLAGS += @JULIA_LDFLAGS@
