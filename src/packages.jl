@@ -100,7 +100,7 @@ TODO: copy text from <https://gap-packages.github.io/PackageManager/doc/chap2.ht
 link to that
 """
 function install(desc::String, interactive::Bool = true)
-    res = Globals.LoadPackage(julia_to_gap("PackageManager"), false)
+    res = load("PackageManager")
     @assert res
     return Globals.InstallPackage(julia_to_gap(desc), interactive)
 end
@@ -112,7 +112,7 @@ TODO: copy text from <https://gap-packages.github.io/PackageManager/doc/chap2.ht
 link to that
 """
 function update(desc::String, interactive::Bool = true)
-    res = Globals.LoadPackage(julia_to_gap("PackageManager"), false)
+    res = load("PackageManager")
     @assert res
     return Globals.UpdatePackage(julia_to_gap(desc), interactive)
 end
@@ -124,7 +124,7 @@ TODO: copy text from <https://gap-packages.github.io/PackageManager/doc/chap2.ht
 link to that
 """
 function remove(desc::String, interactive::Bool = true)
-    res = Globals.LoadPackage(julia_to_gap("PackageManager"), false)
+    res = load("PackageManager")
     @assert res
     return Globals.RemovePackage(julia_to_gap(desc), interactive)
 end
