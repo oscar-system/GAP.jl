@@ -316,17 +316,8 @@ static Obj FuncSTREAM_CALL(Obj self, Obj stream, Obj func, Obj obj)
         ErrorQuit("STREAM_CALL: cannot open stream for output", 0, 0);
     }
 
-    // if an error occurs stop printing
-    memcpy(readJmpError, STATE(ReadJmpError), sizeof(syJmp_buf));
-    TRY_IF_NO_ERROR
-    {
-        CALL_1ARGS(func, obj);
-    }
-    CATCH_ERROR
-    {
-        // TODO: signal failure somehow?
-    }
-    memcpy(STATE(ReadJmpError), readJmpError, sizeof(syJmp_buf));
+    // call the function, but suppress any errors
+    Call1ArgsInNewReader(func, obj);
 
     // close the output file again, and return nothing
     if (!CloseOutput()) {
