@@ -38,6 +38,7 @@ void handle_jl_exception(void)
     string_object = jl_call1(JULIA_FUNC_String_constructor, string_object);
     BEGIN_GAP_SYNC();
     ErrorMayQuit(jl_string_data(string_object), 0, 0);
+    END_GAP_SYNC();
 }
 
 static jl_module_t * get_module(const char * name)
@@ -50,6 +51,7 @@ static jl_module_t * get_module(const char * name)
     if (!jl_is_module(module_value)) {
         BEGIN_GAP_SYNC();
         ErrorQuit("Not a module", 0, 0);
+        END_GAP_SYNC();
     }
     return (jl_module_t *)module_value;
 }
@@ -64,6 +66,7 @@ Obj Func_JULIAINTERFACE_INTERNAL_INIT(Obj self)
     if (!JULIA_GAPFFE_type) {
         BEGIN_GAP_SYNC();
         ErrorMayQuit("Could not locate the GAP.FFE datatype", 0, 0);
+        END_GAP_SYNC();
     }
     return NULL;
 }
