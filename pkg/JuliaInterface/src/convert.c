@@ -1,6 +1,7 @@
 #include "convert.h"
 
 #include "calls.h"
+#include "sync.h"
 #include "JuliaInterface.h"
 
 // This function is used by GAP.jl
@@ -27,22 +28,27 @@ jl_value_t * julia_gap(Obj obj)
     if (obj == False) {
         return jl_false;
     }
+    BEGIN_GAP_SYNC();
     if (TNUM_OBJ(obj) >= FIRST_EXTERNAL_TNUM &&
         CALL_1ARGS(JULIAINTERFACE_IsJuliaWrapper, obj) == True) {
         obj = CALL_1ARGS(JULIAINTERFACE_JuliaPointer, obj);
         if (IS_JULIA_OBJ(obj)) {
+            END_GAP_SYNC();
             return GET_JULIA_OBJ(obj);
         }
         // to handle immediate integers, booleans, FFEs, IS_JULIA_FUNC, we
         // use recursion - but only for internal types; this prevents an
         // infinite recursion, e.g. if an object's JuliaPointer points to the
         // object itself
-        if (TNUM_OBJ(obj) < FIRST_EXTERNAL_TNUM)
+        if (TNUM_OBJ(obj) < FIRST_EXTERNAL_TNUM) {
+            END_GAP_SYNC();
             return julia_gap(obj);
+        }
         ErrorMayQuit("JuliaPointer must be a Julia object or an internal GAP "
                      "object (not a %s)",
                      (Int)TNAM_OBJ(obj), 0);
     }
+    END_GAP_SYNC();
     return (jl_value_t *)obj;
 }
 
