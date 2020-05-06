@@ -81,13 +81,13 @@ if gap_build_packages == "yes"
         pkgs = Base.Filesystem.readdir()
         pkgs = Base.filter(x -> occursin(r"^(Normaliz|semigroups|simpcomp)", x), pkgs)
         run(`rm -rf $pkgs`)
-        run(`$(BuildPackages_sh) --with-gaproot=$(gap_bin_root)`)
+        run(`$(BuildPackages_sh) --with-gaproot=$(gap_bin_root) --strict`)
     end
 elseif gap_build_packages == "debug"
     cd("$(gap_src_root)/pkg") do
         pkgs = Base.Filesystem.readdir()
         pkgs = Base.filter(x -> occursin(r"^(io|profiling)", x), pkgs)
-        run(`$(BuildPackages_sh) --with-gaproot=$(gap_bin_root) $pkgs`)
+        run(`$(BuildPackages_sh) --with-gaproot=$(gap_bin_root) --strict $pkgs`)
     end
 end
 
