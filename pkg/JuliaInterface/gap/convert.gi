@@ -87,14 +87,15 @@ InstallMethod(JuliaToGAP, ["IsList", "IsJuliaObject"],
 
 InstallMethod(JuliaToGAP, ["IsList", "IsJuliaObject", "IsBool"],
 function(filter, obj, recursive)
-    if Julia.isa(obj, Julia.Base.Array) or Julia.isa(obj, Julia.Base.Tuple) then
+    if Julia.isa(obj, Julia.Base.Array) or Julia.isa(obj, Julia.Base.Tuple)
+       or Julia.isa(obj, Julia.Base.AbstractRange) then
         if recursive then
             return Julia.GAP.julia_to_gap(obj,_JL_VAL_TRUE);
         else
             return Julia.GAP.julia_to_gap(obj);
         fi;
     fi;
-    Error("<obj> must be a Julia array or tuple");
+    Error("<obj> must be a Julia array or tuple or range");
 end);
 
 
