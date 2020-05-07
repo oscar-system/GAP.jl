@@ -79,6 +79,25 @@ end
     @test length(list) == 4
     @test list[4] == 4
 
+    @test list[ 1:2 ] == GAP.EvalString( "[1,2]" )
+    @test list[ 1:2:3 ] == GAP.EvalString( "[1,3]" )
+    @test list[ [1,2] ] == GAP.EvalString( "[1,2]" )
+    list[ [1,2] ] = [ 0, 1 ]
+    @test list[ [1,2] ] == GAP.EvalString( "[0,1]" )
+    list[ 1:2 ] = [ 2, 3 ]
+    @test list[ 1:2 ] == GAP.EvalString( "[2,3]" )
+    list[ 1:2:3 ] = [ 3, 4 ]
+    @test list[ 1:2:3 ] == GAP.EvalString( "[3,4]" )
+    @test list[ 1:1 ] == GAP.EvalString( "[3]" )
+    list[ 1:1 ] = [ 5 ]
+    @test list[ 1:1 ] == GAP.EvalString( "[5]" )
+    @test list[ [1] ] == GAP.EvalString( "[5]" )
+    list[ [1] ] = [ 6 ]
+    @test list[ [1] ] == GAP.EvalString( "[6]" )
+    @test list[ Int[] ] == GAP.EvalString( "[]" )
+    list[ Int[] ] = [  ]
+    @test list[ Int[] ] == GAP.EvalString( "[]" )
+
     @test matrix[1,1] == 1
     @test matrix[2,1] == 3
     matrix[1,2] = 5

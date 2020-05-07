@@ -148,6 +148,30 @@ gap> list:= GAPToJulia( [ 1, 2, 3 ] );
 gap> JuliaToGAP( IsList, list );
 [ 1, 2, 3 ]
 
+##  ranges
+gap> Julia.GAP.julia_to_gap( JuliaEvalString( "1:3" ) );
+[ 1 .. 3 ]
+gap> Julia.GAP.julia_to_gap( JuliaEvalString( "1:2:5" ) );
+[ 1, 3 .. 5 ]
+gap> Julia.GAP.julia_to_gap( JuliaEvalString( "3:2" ) );
+[  ]
+gap> JuliaToGAP( IsList, JuliaEvalString( "1:3" ) );
+[ 1 .. 3 ]
+gap> JuliaToGAP( IsList, JuliaEvalString( "1:2:5" ) );
+[ 1, 3 .. 5 ]
+gap> JuliaToGAP( IsList, JuliaEvalString( "3:2" ) );
+[  ]
+gap> JuliaToGAP( IsRange, JuliaEvalString( "1:3" ) );
+[ 1 .. 3 ]
+gap> JuliaToGAP( IsRange, JuliaEvalString( "1:2:5" ) );
+[ 1, 3 .. 5 ]
+gap> JuliaToGAP( IsRange, JuliaEvalString( "3:2" ) );
+[  ]
+gap> JuliaToGAP( IsRange, JuliaEvalString( "[ 1, 2, 3 ]" ) );
+Error, <obj> must be a Julia range
+gap> JuliaToGAP( IsRange, JuliaEvalString( "[ 1, 2, 4 ]" ) );
+Error, <obj> must be a Julia range
+
 ##  empty list vs. empty string
 gap> emptylist:= GAPToJulia( JuliaEvalString( "Array{Any,1}"), [] );
 <Julia: Any[]>
