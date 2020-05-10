@@ -96,7 +96,15 @@ end
 function initialize(argv::Array{String,1})
     lib = joinpath(GAPROOT, ".libs", "libgap")
     gap_library = Libdl.dlopen(lib, Libdl.RTLD_GLOBAL)
-    error_handler_func = @cfunction(error_handler, Cvoid, ())
+    handle_signals = isdefined(Main, :__GAP_ARGS__)  # a bit of a hack...
+    error_handler_func = handle_signals ? C_NULL : @cfunction(error_handler, Cvoid, ())
+
+    # Initialize __JULIAINTERNAL_LOADED_FROM_JULIA; this also allows us to
+    # detect whether GAP_Initialize and GAP's `init.g` completed successfully
+    # (if they didn't, then this GAP code won't be called, which we can easily
+    # detect by checking for the value of __JULIAINTERNAL_LOADED_FROM_JULIA).
+    append!(argv, ["-c", """BindGlobal("__JULIAINTERNAL_LOADED_FROM_JULIA", true );"""])
+
     ccall(
         Libdl.dlsym(gap_library, :GAP_Initialize),
         Cvoid,
@@ -105,14 +113,49 @@ function initialize(argv::Array{String,1})
         argv,
         C_NULL,
         error_handler_func,
-        Cuint(0),
+        handle_signals,
     )
-    ccall(
-        Libdl.dlsym(gap_library, :GAP_EvalString),
+
+    # detect if GAP quit early (e.g due `-h` or `-c` command line arguments)
+    # TODO: restrict this to "standalone" mode?
+    # HACK: GAP resp. libgap currently offers no good way to detect this
+    # (perhaps this could be a return value for GAP_Initialize?), so instead
+    # we check for the presence of a global variable which we ensure is
+    # declared near the end of init.g via a `-c` command line argument to GAP.
+    val = ccall(
+        Libdl.dlsym(gap_library, :GAP_ValueGlobalVariable),
         Ptr{Cvoid},
-        (Ptr{UInt8},),
-        "BindGlobal(\"__JULIAINTERNAL_LOADED_FROM_JULIA\", true );",
+        (Ptr{Cuchar},),
+        "__JULIAINTERNAL_LOADED_FROM_JULIA",
     )
+    if val == C_NULL
+        # Ask GAP to quit. Note that this invokes `jl_atexit_hook` so it
+        # should be fine. It might be "nicer" to call Julia's `exit` function
+        # here; but unfortunately we can't access GAP's exit code, which is
+        # stored in `SystemErrorCode`, a statically linked (and hence
+        # invisible to us) GAP C kernel variable. Hence we instead call
+        # FORCE_QUIT_GAP with no arguments, which just calls the `exit`
+        # function of the  C standard library with the appropriate exit code.
+        # But as mentioned, just before that, it runs `jl_atexit_hook`.
+        FORCE_QUIT_GAP = ccall(
+            Libdl.dlsym(gap_library, :GAP_ValueGlobalVariable),
+            Ptr{Cvoid},
+            (Ptr{Cuchar},),
+            "FORCE_QUIT_GAP",
+        )
+        ccall(
+            Libdl.dlsym(gap_library, :GAP_CallFuncArray),
+            Ptr{Cvoid},
+            (Ptr{Cvoid}, Culonglong, Ptr{Cvoid}),
+            FORCE_QUIT_GAP,
+            0,
+            C_NULL,
+        )
+        # we shouldn't get here, but just in case....
+        error("FORCE_QUIT_GAP failed")
+    end
+
+    # load JuliaInterface
     loadpackage_return = ccall(
         Libdl.dlsym(gap_library, :GAP_EvalString),
         Ptr{Cvoid},
@@ -120,7 +163,13 @@ function initialize(argv::Array{String,1})
         "LoadPackage(\"JuliaInterface\");",
     )
     if loadpackage_return == Libdl.dlsym(gap_library, :GAP_Fail)
-        throw(ErrorException("JuliaInterface could not be loaded"))
+        error("JuliaInterface could not be loaded")
+    end
+
+    # If we are in "stand-alone mode", stop here
+    if isdefined(Main, :__GAP_ARGS__)
+        ccall(Libdl.dlsym(gap_library, :SyInstallAnswerIntr), Cvoid, ())
+        return
     end
 
     # Redirect error messages, in order not to print them to the screen.
@@ -144,12 +193,18 @@ end
 
 function run_it()
     gaproots = abspath(joinpath(@__DIR__, "..")) * ";" * sysinfo["GAP_LIB_DIR"]
-    cmdline_options = ["", "-l", gaproots, "-T", "-A", "--nointeract", "-m", "1000m"]
+    cmdline_options = ["", "-l", gaproots, "--norepl"]
+    if isdefined(Main, :__GAP_ARGS__)
+        append!(cmdline_options, Main.__GAP_ARGS__)
+    else
+        append!(cmdline_options, ["--nointeract"])
+    end
+
     if haskey(ENV, "GAP_SHOW_BANNER")
         show_banner = ENV["GAP_SHOW_BANNER"] == "true"
     else
-        show_banner = isinteractive() &&
-                !any(x->x.name in ["Oscar"], keys(Base.package_locks))
+        show_banner =
+            isinteractive() && !any(x -> x.name in ["Oscar"], keys(Base.package_locks))
     end
 
     if !show_banner
