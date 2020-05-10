@@ -64,6 +64,7 @@ mkpath(gap_bin_root)
 cd(gap_bin_root) do
     # initiate an out of tree build; the ARCHEXT ensures we depend on the Julia version,
     # so that e.g. Julia 1.3 and 1.4 get separate binaries
+  try
     run(`$(gap_src_root)/configure
                 --with-gc=julia
                 --with-julia=$(Sys.BINDIR)
@@ -74,6 +75,10 @@ cd(gap_bin_root) do
                 LDFLAGS=$(LDFLAGS)
                 ARCHEXT=v$(julia_version)
                 `)
+  catch
+    run(`cat config.log`)
+    error("configure failed")
+  end
     run(`make -j$(Sys.CPU_THREADS)`)
 end
 
