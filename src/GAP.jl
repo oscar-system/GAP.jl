@@ -321,7 +321,14 @@ function run_it()
         # Do not show the main GAP banner by default.
         push!(cmdline_options, "-b")
     end
-    initialize(cmdline_options)
+
+
+    # The following withenv is needed to get readline input to work right; see also
+    # https://github.com/JuliaPackaging/Yggdrasil/issues/455 and
+    # https://github.com/oscar-system/GAP.jl/issues/415
+    withenv("TERMINFO_DIRS" => joinpath(Readline_jll.Ncurses_jll.artifact_dir, "share", "terminfo")) do
+        initialize(cmdline_options)
+    end
 
     gap_module = @__MODULE__
 
@@ -348,13 +355,6 @@ function run_it()
 end
 
 function __init__()
-
-    # The following is needed to get readline input to work right; see also
-    # https://github.com/JuliaPackaging/Yggdrasil/issues/455 and
-    # https://github.com/oscar-system/GAP.jl/issues/415
-    if !haskey(ENV, "TERMINFO_DIRS")
-        ENV["TERMINFO_DIRS"] = joinpath(@__DIR__, "..", "deps", "usr", "share", "terminfo")
-    end
 
     ## Older versions of GAP need a pointer to the GAP.jl module during
     ## initialization, but at this point Main.GAP is not yet bound. So instead
