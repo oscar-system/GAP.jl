@@ -53,9 +53,8 @@ foreach(p -> append!(LIBPATH_list, p.LIBPATH_list), (GMP_jll,Readline_jll,Zlib_j
 filter!(!isempty, unique!(LIBPATH_list))
 # FIXME/HACK: set LIBS after all, to see if we can get Travis to pass with it;
 #LIBS=join(["-Wl,-rpath -Wl,$path" for path in LIBPATH_list]," ")
-LDFLAGS=join(["-L$path" for path in LIBPATH_list]," ")
-
-#LIBPATH = join(LIBPATH_list, ':')
+#LDFLAGS=join(["-L$path" for path in LIBPATH_list]," ")
+LIBPATH=join(LIBPATH_list, ":")
 
 @info "Compiling GAP with" gap_src_root extra_gap_root gap_bin_root
 
@@ -65,6 +64,7 @@ cd(gap_bin_root) do
     # initiate an out of tree build; the ARCHEXT ensures we depend on the Julia version,
     # so that e.g. Julia 1.3 and 1.4 get separate binaries
   try
+    withenv(Readline_jll.LIBPATH_env => LIBPATH) do
     run(`$(gap_src_root)/configure
                 --with-gc=julia
                 --with-julia=$(Sys.BINDIR)
@@ -72,9 +72,9 @@ cd(gap_bin_root) do
                 --with-readline=$(readline_prefix)
                 --with-zlib=$(zlib_prefix)
                 --disable-maintainer-mode
-                LDFLAGS=$(LDFLAGS)
                 ARCHEXT=v$(julia_version)
                 `)
+    end
   catch
     run(`cat config.log`)
     error("configure failed")
