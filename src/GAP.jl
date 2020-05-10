@@ -4,6 +4,10 @@
   For more information about GAP see https://www.gap-system.org/
 """ module GAP
 
+using GMP_jll
+using Readline_jll
+using Zlib_jll
+
 # In order to locate the GAP installation, 'deps/build.jl' generate a file
 # 'deps/deps-$(julia_version).jl' for us which sets the variable GAPROOT. We
 # read this file here.

@@ -1,5 +1,8 @@
 using BinaryProvider
 using Pkg.Artifacts
+using GMP_jll
+using Readline_jll
+using Zlib_jll
 
 # Remove deps.jl now, so that we can recognize an aborted build by its absence
 const julia_version = "$(VERSION.major).$(VERSION.minor)"
@@ -24,27 +27,18 @@ extra_gap_root = abspath(joinpath(@__DIR__, ".."))
 # the location in which we initiate GAP's "out of tree build"
 gap_bin_root = abspath(joinpath(@__DIR__, "build", "$(gapdirname)-julia-$(julia_version)"))
 
-# Dependencies that must be installed before this package can be built
-dependencies = [
-    "https://github.com/bicycle1885/ZlibBuilder/releases/download/v1.0.4/build_Zlib.v1.2.11.jl",
-    "https://github.com/JuliaPackaging/Yggdrasil/releases/download/GMP-v6.1.2-1/build_GMP.v6.1.2.jl",
-    "https://github.com/benlorenz/ncursesBuilder/releases/download/v6.1/build_ncurses.v6.1.0.jl",
-    "https://github.com/benlorenz/readlineBuilder/releases/download/v8.0/build_readline.v8.0.0.jl",
-]
-
-# Download and install binaries
-for dependency in dependencies
-    build_file = basename(dependency)
-    if !isfile(build_file)
-        download(dependency, build_file)
-    end
-    # Execute the build scripts for the dependencies in an isolated module to
-    # avoid overwriting any variables/constants here
-    @eval module $(gensym())
-    include($build_file)
-    end
-end
-deps_prefix = joinpath(@__DIR__, "usr")
+gmp_prefix = GMP_jll.artifact_dir
+readline_prefix = Readline_jll.artifact_dir
+zlib_prefix = Zlib_jll.artifact_dir
+# TODO: setup LIBS via a loop or "for comprehension" or so
+# FIXME: actually we should NOT set these here at link time. Instead we need
+# to set these dynamically when loading GAP, as the _jll packages could be
+# upgraded at any time to use new artifacts, and then we must link against the
+# lib in the new location.
+# That also means gap.sh has to be different, and set the LIBPATH_env var
+# (i.e., LD_LIBRARY_PATH, DYLD_FALLBACK_LIBRARY_PATH) suitably
+#LIBS="-Wl,-rpath -Wl,$(gmp_prefix)/lib -Wl,-rpath -Wl,$(readline_prefix)/lib -Wl,-rpath -Wl,$(zlib_prefix)/lib"
+LIBS=""
 
 @info "Compiling GAP with" gap_src_root extra_gap_root gap_bin_root
 
@@ -56,11 +50,11 @@ cd(gap_bin_root) do
     run(`$(gap_src_root)/configure
                 --with-gc=julia
                 --with-julia=$(Sys.BINDIR)
-                --with-gmp=$(deps_prefix)
-                --with-readline=$(deps_prefix)
-                --with-zlib=$(deps_prefix)
+                --with-gmp=$(gmp_prefix)
+                --with-readline=$(readline_prefix)
+                --with-zlib=$(zlib_prefix)
                 --disable-maintainer-mode
-                LIBS="-Wl,-rpath -Wl,$(deps_prefix)/lib"
+                LIBS=$(LIBS)
                 ARCHEXT=v$(julia_version)
                 `)
     run(`make -j$(Sys.CPU_THREADS)`)

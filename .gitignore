@@ -4,6 +4,4 @@
 /deps/build
 /deps/build.log
 /deps/deps*.jl
-/deps/gap/
-/deps/usr/
 /tags
