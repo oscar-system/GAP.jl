@@ -92,9 +92,33 @@ println("Generating gap.sh ...")
 
 gap_sh_path = joinpath(gap_bin_root, "bin", "gap.sh")
 write(gap_sh_path,"""
-#!/bin/sh
+#!/bin/bash
+# This is a a Julia script which also is a valid bash script; if executed by
+# bash, it will execute itself by invoking `julia`. Of course this only works
+# right if `julia` exists in the PATH and is the "correct" julia executable.
+# But you can always instead load this file as if it was a .jl file via any
+# other Julia executable.
+#=
+exec julia --startup-file=no -- "\${BASH_SOURCE[0]}" "\$@"
+=#
 
-exec "$(gap_bin_root)/gap" -l "$(extra_gap_root);$(gap_src_root)" "\$@"
+# pass command line arguments to GAP.jl via a small hack
+ENV["GAP_SHOW_BANNER"] = "true"
+__GAP_ARGS__ = ARGS
+using GAP
+
+# GAP.jl passes --norepl to GAP, which means that init.g never
+# starts a GAP session; we now run one "manually". Note that this
+# may throw a "GAP exception", which we need to catch; thus we
+# use Call0ArgsInNewReader to perform the actual call.
+ccall(:Call0ArgsInNewReader, Cvoid, (Any,), GAP.Globals.SESSION)
+
+# call GAP's "atexit" cleanup functions
+ccall(:Call0ArgsInNewReader, Cvoid, (Any,), GAP.Globals.PROGRAM_CLEAN_UP)
+
+# Finally exit by calling GAP's FORCE_QUIT_GAP(). See comments in GAP.jl for
+# an explanation of why we do it this way.
+GAP.Globals.FORCE_QUIT_GAP()
 """)
 chmod(gap_sh_path, 0o755)
 
