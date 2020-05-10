@@ -30,15 +30,32 @@ gap_bin_root = abspath(joinpath(@__DIR__, "build", "$(gapdirname)-julia-$(julia_
 gmp_prefix = GMP_jll.artifact_dir
 readline_prefix = Readline_jll.artifact_dir
 zlib_prefix = Zlib_jll.artifact_dir
-# TODO: setup LIBS via a loop or "for comprehension" or so
-# FIXME: actually we should NOT set these here at link time. Instead we need
+
+
+# setup LIBS with the linker paths for the three libraries above, and their
+# transitive dependencies.
+#
+# WARNING: actually we should NOT set these here at link time. Instead we need
 # to set these dynamically when loading GAP, as the _jll packages could be
 # upgraded at any time to use new artifacts, and then we must link against the
-# lib in the new location.
+# lib in the new location. So hardcoding paths into the GAP binary is not the
+# best idea.
+#
+# On the other hand, for the configure tests for e.g. readline to pass, it needs
+# to "see" all paths. TODO
+#
+# TODO/FIXME revise the following test
 # That also means gap.sh has to be different, and set the LIBPATH_env var
 # (i.e., LD_LIBRARY_PATH, DYLD_FALLBACK_LIBRARY_PATH) suitably
 #LIBS="-Wl,-rpath -Wl,$(gmp_prefix)/lib -Wl,-rpath -Wl,$(readline_prefix)/lib -Wl,-rpath -Wl,$(zlib_prefix)/lib"
-LIBS=""
+LIBPATH_list=[]
+foreach(p -> append!(LIBPATH_list, p.LIBPATH_list), (GMP_jll,Readline_jll,Zlib_jll))
+filter!(!isempty, unique!(LIBPATH_list))
+# FIXME/HACK: set LIBS after all, to see if we can get Travis to pass with it;
+#LIBS=join(["-Wl,-rpath -Wl,$path" for path in LIBPATH_list]," ")
+LDFLAGS=join(["-L$path" for path in LIBPATH_list]," ")
+
+#LIBPATH = join(LIBPATH_list, ':')
 
 @info "Compiling GAP with" gap_src_root extra_gap_root gap_bin_root
 
@@ -54,7 +71,7 @@ cd(gap_bin_root) do
                 --with-readline=$(readline_prefix)
                 --with-zlib=$(zlib_prefix)
                 --disable-maintainer-mode
-                LIBS=$(LIBS)
+                LDFLAGS=$(LDFLAGS)
                 ARCHEXT=v$(julia_version)
                 `)
     run(`make -j$(Sys.CPU_THREADS)`)
