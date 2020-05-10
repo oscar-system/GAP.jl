@@ -193,6 +193,14 @@ function run_it()
 end
 
 function __init__()
+
+    # The following is needed to get readline input to work right; see also
+    # https://github.com/JuliaPackaging/Yggdrasil/issues/455 and
+    # https://github.com/oscar-system/GAP.jl/issues/415
+    if !haskey(ENV, "TERMINFO_DIRS")
+        ENV["TERMINFO_DIRS"] = joinpath(@__DIR__, "..", "deps", "usr", "share", "terminfo")
+    end
+
     ## Older versions of GAP need a pointer to the GAP.jl module during
     ## initialization, but at this point Main.GAP is not yet bound. So instead
     ## we assign this module to the name __JULIAGAPMODULE.
