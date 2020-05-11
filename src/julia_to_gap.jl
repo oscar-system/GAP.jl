@@ -87,17 +87,8 @@ function julia_to_gap(obj::Array{T,1}, recursive::Val{Recursive}=Val(false), rec
             continue
         end
         if Recursive
-#=
-            # It would be much nicer to write this, but we cannot in Julia 1.x, see
-            # https://github.com/JuliaLang/julia/issues/30165
             x = get!(recursion_dict, x) do
                 julia_to_gap(x, recursive, recursion_dict)
-            end
-=#
-            if haskey(recursion_dict,x)
-                x = recursion_dict[x]
-            else
-                x = recursion_dict[x] = julia_to_gap(x, recursive, recursion_dict)
             end
         end
         ret_val[i] = x
@@ -151,17 +142,8 @@ function julia_to_gap(obj::Dict{T,S}, recursive::Val{Recursive}=Val(false), recu
     for (x,y) in obj
         x = Globals.RNamObj(MakeString(string(x)))
         if Recursive
-#=
-            # It would be much nicer to write this, but we cannot in Julia 1.x, see
-            # https://github.com/JuliaLang/julia/issues/30165
             y = get!(recursion_dict, y) do
                 julia_to_gap(y, recursive, recursion_dict)
-            end
-=#
-            if haskey(recursion_dict,y)
-                y = recursion_dict[y]
-            else
-                y = recursion_dict[y] = julia_to_gap(y, recursive, recursion_dict)
             end
         end
         Globals.ASS_REC(record, x, y)
