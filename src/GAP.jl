@@ -71,7 +71,10 @@ const sysinfo = read_sysinfo_gap(GAPROOT)
 
 
 function reset_GAP_ERROR_OUTPUT()
-    Globals.CloseStream(Globals.ERROR_OUTPUT)
+    # Note: strictly speaking we should close the stream here; but since it is
+    # a string stream, this does nothing. So we don't do it, which saves us
+    # some hassle when calling reset_GAP_ERROR_OUTPUT from `initialize`
+    #Globals.CloseStream(Globals.ERROR_OUTPUT)
     EvalString("_JULIAINTERFACE_ERROR_OUTPUT:= \"\";")
     Globals.MakeReadWriteGlobal(julia_to_gap("ERROR_OUTPUT"))
     EvalString("ERROR_OUTPUT:= OutputTextString( _JULIAINTERFACE_ERROR_OUTPUT, true );")
@@ -115,30 +118,7 @@ function initialize(argv::Array{String,1})
     end
 
     # Redirect error messages, in order not to print them to the screen.
-    ccall(
-        Libdl.dlsym(gap_library, :GAP_EvalString),
-        Ptr{Cvoid},
-        (Ptr{UInt8},),
-        "_JULIAINTERFACE_ERROR_OUTPUT:= \"\";",
-    )
-    ccall(
-        Libdl.dlsym(gap_library, :GAP_EvalString),
-        Ptr{Cvoid},
-        (Ptr{UInt8},),
-        "MakeReadWriteGlobal( \"ERROR_OUTPUT\" );",
-    )
-    ccall(
-        Libdl.dlsym(gap_library, :GAP_EvalString),
-        Ptr{Cvoid},
-        (Ptr{UInt8},),
-        "ERROR_OUTPUT:= OutputTextString( _JULIAINTERFACE_ERROR_OUTPUT, true );",
-    )
-    ccall(
-        Libdl.dlsym(gap_library, :GAP_EvalString),
-        Ptr{Cvoid},
-        (Ptr{UInt8},),
-        "MakeReadOnlyGlobal( \"ERROR_OUTPUT\" );",
-    )
+    reset_GAP_ERROR_OUTPUT()
 end
 
 function finalize()
