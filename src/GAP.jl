@@ -81,7 +81,13 @@ function reset_GAP_ERROR_OUTPUT()
     Globals.MakeReadOnlyGlobal(julia_to_gap("ERROR_OUTPUT"))
 end
 
+disable_error_handler = false
+
 function error_handler()
+    global disable_error_handler
+    if disable_error_handler
+        return
+    end
     str = gap_to_julia(Globals._JULIAINTERFACE_ERROR_OUTPUT)
     reset_GAP_ERROR_OUTPUT()
     error("Error thrown by GAP: ", str)
@@ -203,6 +209,41 @@ function gap_exe()
     return joinpath(GAPROOT, "bin", "gap.sh")
 end
 export gap_exe
+
+function prompt()
+    global disable_error_handler
+
+
+    # save the current SIGINT handler
+    # HACK: the hardcoded value for SIG_DFL is not portable, revise this
+    # install GAP's SIGINT handler
+    old_sigint = ccall(:signal, Ptr{Cvoid}, (Cint, Ptr{Cvoid}), Base.SIGINT, C_NULL)
+
+    # install GAP's SIGINT handler
+    ccall(:SyInstallAnswerIntr, Cvoid, ())
+
+    # restore GAP's error output
+    disable_error_handler = true
+    Globals.MakeReadWriteGlobal(julia_to_gap("ERROR_OUTPUT"))
+    EvalString("""ERROR_OUTPUT:= "*errout*";""")
+    Globals.MakeReadOnlyGlobal(julia_to_gap("ERROR_OUTPUT"))
+
+    # enable break loop
+    Globals.BreakOnError = true
+
+    # start GAP repl
+    Globals.SESSION()
+
+    # disable break loop
+    Globals.BreakOnError = true
+
+    # restore signal handler
+    ccall(:signal, Ptr{Cvoid}, (Cint, Ptr{Cvoid}), Base.SIGINT, old_sigint)
+
+    # restore GAP error handler
+    global disable_error_handler = false
+    reset_GAP_ERROR_OUTPUT()
+end
 
 include("lowlevel.jl")
 include("ccalls.jl")
