@@ -55,6 +55,11 @@ GAP.Packages.update
 GAP.Packages.remove
 ```
 
+## Other
+
+```@docs
+GAP.prompt
+```
 
 
 ## Index

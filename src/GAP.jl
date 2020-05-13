@@ -265,6 +265,16 @@ function gap_exe()
 end
 export gap_exe
 
+"""
+    GAP.prompt()
+
+Start a GAP prompt where you can enter GAP commands as in a regular GAP
+session. This prompt can be left as any GAP prompt by either entering `quit;`
+or pressing ctrl-D, which returns to the Julia prompt.
+
+This GAP prompt allows to quickly switch between writing Julia and GAP code in
+a session where all data is shared.
+"""
 function prompt()
     global disable_error_handler
 
