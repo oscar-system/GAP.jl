@@ -278,7 +278,6 @@ a session where all data is shared.
 function prompt()
     global disable_error_handler
 
-
     # save the current SIGINT handler
     # HACK: the hardcoded value for SIG_DFL is not portable, revise this
     # install GAP's SIGINT handler
@@ -300,13 +299,13 @@ function prompt()
     Globals.SESSION()
 
     # disable break loop
-    Globals.BreakOnError = true
+    Globals.BreakOnError = false
 
     # restore signal handler
     ccall(:signal, Ptr{Cvoid}, (Cint, Ptr{Cvoid}), Base.SIGINT, old_sigint)
 
     # restore GAP error handler
-    global disable_error_handler = false
+    disable_error_handler = false
     reset_GAP_ERROR_OUTPUT()
 end
 
