@@ -78,7 +78,7 @@ export LoadPackageAndExposeGlobals
 
 module Packages
 
-import ...GAP: Globals, julia_to_gap
+import ...GAP: Globals, julia_to_gap, GAPROOT
 
 """
     load(desc)
@@ -102,6 +102,11 @@ link to that
 function install(desc::String, interactive::Bool = true)
     res = load("PackageManager")
     @assert res
+    # FIXME: crude hack to allow PackageManager 1.0 shipped with GAP
+    # 4.11.0 to work with out of tree builds. For a proper fix, see
+    # <https://github.com/gap-packages/PackageManager/pull/55>.
+    Globals.PKGMAN_BuildPackagesScript = julia_to_gap(GAPROOT * "/bin/BuildPackages.sh")
+
     return Globals.InstallPackage(julia_to_gap(desc), interactive)
 end
 
