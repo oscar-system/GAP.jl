@@ -146,6 +146,11 @@ elseif gap_build_packages == "debug"
     cd("$(gap_src_root)/pkg") do
         pkgs = Base.Filesystem.readdir()
         pkgs = Base.filter(x -> occursin(r"^(io|profiling)", x), pkgs)
+        for p in pkgs
+            path = joinpath(gap_src_root, "pkg", p, "configure")
+            chmod(path, 0o755)
+            touch(path)
+        end
         run(`$(BuildPackages_sh) --with-gaproot=$(gap_bin_root) --strict $pkgs`)
     end
 end
