@@ -1,4 +1,3 @@
 @testset "manual examples" begin
-    doctest( GAP; manual = false )
+    doctest(GAP; manual = false)
 end
-

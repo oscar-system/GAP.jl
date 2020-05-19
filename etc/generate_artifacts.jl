@@ -42,5 +42,12 @@ if gap_hash == nothing || !artifact_exists(gap_hash)
     # Now bind that hash within our `Artifacts.toml`.  `force = true` means that if it already exists,
     # just overwrite with the new content-hash.  Unless the source files change, we do not expect
     # the content hash to change, so this should not cause unnecessary version control churn.
-    bind_artifact!(artifacts_toml, artifact_name, gap_hash; download_info=[(url, tarball_hash), (url2, tarball_hash)], lazy=false, force=true)
+    bind_artifact!(
+        artifacts_toml,
+        artifact_name,
+        gap_hash;
+        download_info = [(url, tarball_hash), (url2, tarball_hash)],
+        lazy = false,
+        force = true,
+    )
 end
