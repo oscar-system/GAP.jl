@@ -192,7 +192,7 @@ end
 
 
 function run_it()
-    gaproots = abspath(joinpath(@__DIR__, "..")) * ";" * sysinfo["GAP_LIB_DIR"]
+    gaproots = abspath(joinpath(@__DIR__, "..")) * ";" * sysinfo["GAP_BIN_DIR"] * ";" * sysinfo["GAP_LIB_DIR"]
     cmdline_options = ["", "-l", gaproots, "--norepl"]
     if isdefined(Main, :__GAP_ARGS__)
         append!(cmdline_options, Main.__GAP_ARGS__)
