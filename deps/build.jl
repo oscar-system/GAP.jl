@@ -40,13 +40,15 @@ for dependency in dependencies
     end
     # Execute the build scripts for the dependencies in an isolated module to
     # avoid overwriting any variables/constants here
-    @eval module $(gensym()); include($build_file); end
+    @eval module $(gensym())
+    include($build_file)
+    end
 end
-deps_prefix = joinpath(@__DIR__,"usr")
+deps_prefix = joinpath(@__DIR__, "usr")
 
 @info "Compiling GAP with" gap_src_root extra_gap_root gap_bin_root
 
-rm(gap_bin_root, force=true, recursive=true)
+rm(gap_bin_root, force = true, recursive = true)
 mkpath(gap_bin_root)
 cd(gap_bin_root) do
     # initiate an out of tree build; the ARCHEXT ensures we depend on the Julia version,
@@ -65,7 +67,7 @@ cd(gap_bin_root) do
 end
 
 # clean out some clutter
-rm(joinpath(gap_bin_root, "obj"), force=true, recursive=true)
+rm(joinpath(gap_bin_root, "obj"), force = true, recursive = true)
 
 ##
 ## Compile JuliaInterface
@@ -81,9 +83,12 @@ end
 ##
 println("Generating $(deps_jl) ...")
 
-write(deps_jl, """
+write(
+    deps_jl,
+    """
 const GAPROOT = "$gap_bin_root"
-""")
+""",
+)
 
 ##
 ## Create custom gap.sh
@@ -91,7 +96,9 @@ const GAPROOT = "$gap_bin_root"
 println("Generating gap.sh ...")
 
 gap_sh_path = joinpath(gap_bin_root, "bin", "gap.sh")
-write(gap_sh_path,"""
+write(
+    gap_sh_path,
+    """
 #!/bin/bash
 # This is a a Julia script which also is a valid bash script; if executed by
 # bash, it will execute itself by invoking `julia`. Of course this only works
@@ -119,7 +126,8 @@ ccall(:Call0ArgsInNewReader, Cvoid, (Any,), GAP.Globals.PROGRAM_CLEAN_UP)
 # Finally exit by calling GAP's FORCE_QUIT_GAP(). See comments in GAP.jl for
 # an explanation of why we do it this way.
 GAP.Globals.FORCE_QUIT_GAP()
-""")
+""",
+)
 chmod(gap_sh_path, 0o755)
 
 ##
