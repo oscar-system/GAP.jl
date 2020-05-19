@@ -99,13 +99,16 @@ end
 TODO: copy text from <https://gap-packages.github.io/PackageManager/doc/chap2.html> resp.
 link to that
 """
-function install(desc::String, interactive::Bool = true)
+function install(desc::String; interactive::Bool = true, pkgdir::AbstractString = GAPROOT * "/pkg")
     res = load("PackageManager")
     @assert res
     # FIXME: crude hack to allow PackageManager 1.0 shipped with GAP
     # 4.11.0 to work with out of tree builds. For a proper fix, see
     # <https://github.com/gap-packages/PackageManager/pull/55>.
     Globals.PKGMAN_BuildPackagesScript = julia_to_gap(GAPROOT * "/bin/BuildPackages.sh")
+
+    # point PackageManager to our internal pkg dir
+    Globals.PKGMAN_CustomPackageDir = julia_to_gap(pkgdir)
 
     return Globals.InstallPackage(julia_to_gap(desc), interactive)
 end
@@ -116,9 +119,13 @@ end
 TODO: copy text from <https://gap-packages.github.io/PackageManager/doc/chap2.html> resp.
 link to that
 """
-function update(desc::String, interactive::Bool = true)
+function update(desc::String; interactive::Bool = true, pkgdir::AbstractString = GAPROOT * "/pkg")
     res = load("PackageManager")
     @assert res
+
+    # point PackageManager to our internal pkg dir
+    Globals.PKGMAN_CustomPackageDir = julia_to_gap(pkgdir)
+
     return Globals.UpdatePackage(julia_to_gap(desc), interactive)
 end
 
@@ -128,9 +135,13 @@ end
 TODO: copy text from <https://gap-packages.github.io/PackageManager/doc/chap2.html> resp.
 link to that
 """
-function remove(desc::String, interactive::Bool = true)
+function remove(desc::String; interactive::Bool = true, pkgdir::AbstractString = GAPROOT * "/pkg")
     res = load("PackageManager")
     @assert res
+
+    # point PackageManager to our internal pkg dir
+    Globals.PKGMAN_CustomPackageDir = julia_to_gap(pkgdir)
+
     return Globals.RemovePackage(julia_to_gap(desc), interactive)
 end
 
