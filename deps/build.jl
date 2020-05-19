@@ -65,6 +65,7 @@ cd(gap_bin_root) do
     # so that e.g. Julia 1.3 and 1.4 get separate binaries
   try
     withenv(Readline_jll.LIBPATH_env => LIBPATH) do
+    run(`printenv`)
     run(`$(gap_src_root)/configure
                 --with-gc=julia
                 --with-julia=$(Sys.BINDIR)
