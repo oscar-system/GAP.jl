@@ -279,7 +279,7 @@ DeclareGlobalFunction( "ImportJuliaModuleIntoGAP" );
 #!  see <Ref Func="ImportJuliaModuleIntoGAP"/>.
 #! @BeginExampleSession
 #! gap> gapmodule:= JuliaModule( "GAP" );
-#! <Julia: Main.GAP>
+#! <Julia: GAP>
 #! gap> gapmodule = JuliaPointer( Julia.GAP );
 #! true
 #! @EndExampleSession
