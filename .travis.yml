@@ -15,7 +15,6 @@ env:
     - MAKEFLAGS="-j4"
     - JULIA_TRACK_COVERAGE=yes
     - PATH="/usr/lib/ccache:$PATH"
-    - GAP_BUILD_PACKAGES=debug
 
 addons:
   apt_packages:
@@ -47,6 +46,7 @@ script:
   # Build package and run Julia specific tests
   - julia --color=yes -e 'using Pkg ; Pkg.build(; verbose = true)'
   - julia --color=yes -e 'using Pkg ; Pkg.test(coverage=true)'
+  - julia -e 'using GAP; GAP.Packages.install("io"); GAP.Packages.install("profiling")'
   - gap_sh=$(julia -e 'import GAP; print(GAP.gap_exe())');
   # Run GAP specific tests
   - export GAP="$gap_sh -A --quitonbreak --norepl"
