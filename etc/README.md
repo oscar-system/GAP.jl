@@ -15,8 +15,7 @@ Some information for maintainers of the GAP.jl packages
 
 3. `git push`
 
-4. Ideally wait for Travis CI to complete the full CI tests for the commit
-   you just pushed
+4. Ideally wait for completion of the all CI tests for the commit you just pushed.
 
 5. Comment on the commit on GitHub with the message `@JuliaRegistrator
    register` ([see here for an example](https://github.com/oscar-system/GAP.jl/commit/159c6fd580e9d9cfbc1877a0856c4a5f9ecaba4d)).

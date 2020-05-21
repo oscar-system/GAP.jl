@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/oscar-system/GAP.jl.svg?branch=master)](https://travis-ci.com/oscar-system/GAP.jl)
+[![Build Status](https://github.com/oscar-system/GAP.jl/workflows/Run%20tests/badge.svg)](https://github.com/oscar-system/GAP.jl/actions)
 [![Code Coverage](https://codecov.io/github/oscar-system/GAP.jl/coverage.svg?branch=master&token=)](https://codecov.io/gh/oscar-system/GAP.jl)
 
 # GAP.jl Julia package
