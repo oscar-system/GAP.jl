@@ -24,8 +24,18 @@ include(deps_jl)
 """
     FFE
 
-Wraps a pointer to a GAP FFE immediate object.
+Wrap a pointer to a GAP FFE immediate object.
 This type is defined in the JuliaInterface C code.
+
+# Examples
+```jldoctest
+julia> x = GAP.EvalString( "Z(3)" )
+GAP: Z(3)
+
+julia> typeof( x )
+FFE
+
+```
 """
 primitive type FFE 64 end
 
@@ -39,7 +49,48 @@ import Markdown
 """
     GapObj
 
-TODO
+This is the Julia type of all those GAP objects that are not
+"immediate" (Booleans, small integers, FFEs).
+
+# Examples
+```jldoctest
+julia> isa( GAP.EvalString( "[ 1, 2 ]" ), GAP.GapObj ) # a GAP list
+true
+
+julia> isa( GAP.EvalString( "rec()" ), GAP.GapObj )    # a GAP record
+true
+
+julia> isa( GAP.EvalString( "(1,2,3)" ), GAP.GapObj )  # a GAP permutation
+true
+
+julia> isa( GAP.EvalString( "2^64" ), GAP.GapObj )     # a large GAP integer
+true
+
+julia> isa( GAP.EvalString( "2^59" ), GAP.GapObj )     # a small GAP integer
+false
+
+julia> isa( GAP.EvalString( "Z(2)" ), GAP.GapObj )     # a GAP FFE
+false
+
+julia> isa( GAP.EvalString( "true" ), GAP.GapObj )     # a Boolean
+false
+
+```
+
+Note that this is Julia's viewpoint on GAP objects.
+From the viewpoint of GAP, also the pointers to Julia objects are
+implemented as "non-immediate GAP objects",
+but they appear as Julia objects to Julia, not "doubly wrapped".
+
+# Examples
+```jldoctest
+julia> GAP.EvalString( "Julia.Base" )
+Base
+
+julia> isa( GAP.EvalString( "Julia.Base" ), GAP.GapObj ) # native Julia object
+false
+
+```
 """
 abstract type GapObj end
 
@@ -265,7 +316,7 @@ end
 export gap_exe
 
 """
-    GAP.prompt()
+    prompt()
 
 Start a GAP prompt where you can enter GAP commands as in a regular GAP
 session. This prompt can be left as any GAP prompt by either entering `quit;`

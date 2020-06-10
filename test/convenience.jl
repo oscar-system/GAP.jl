@@ -64,6 +64,12 @@ end
     pi = @gap "(1,2,3)(4,17)"
     @test !(pi in sym5)
     @test pi^2 in sym5
+
+    # Julia object in GAP list
+    l = [ [ 1 2 ], [ 3 4 ] ]
+    gaplist = GAP.julia_to_gap( l )  # list of Julia arrays
+    @test l[1] in gaplist
+    @test !([ 5 6 ] in gaplist)
 end
 
 @testset "object_access" begin

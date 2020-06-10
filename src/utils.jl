@@ -72,5 +72,14 @@ end
 ## convenience function
 
 function Display(x::GapObj)
-    print(GAP.gap_to_julia(AbstractString, Globals.StringDisplayObj(x)))
+    print(gap_to_julia(AbstractString, Globals.StringDisplayObj(x)))
+end
+
+## Compute the links to GAP manuals in the HTML file created by Documenter.jl.
+function compute_links_to_GAP_manuals()
+    filename = abspath(joinpath(@__DIR__, "..", "docs", "build", "index.html"))
+    str = read(filename, String)
+    replstr = gap_to_julia( Globals.ComputeLinksToGAPManuals( julia_to_gap( str ) ) )
+    Base.Filesystem.mv( filename, filename * "~", force = true )
+    Base.write( filename, replstr )
 end

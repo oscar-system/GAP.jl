@@ -81,23 +81,35 @@ module Packages
 import ...GAP: Globals, julia_to_gap, GAPROOT
 
 """
-    load(desc)
+    load(desc::String, version::String = "")
 
-TODO: write text, link to GAP's LoadPackage
+Try to load the newest installed version of the GAP package with name `desc`.
+Return `true` if this is successful, and `false` otherwise.
 
-TODO: support version qualifier?
+The function calls [GAP's `LoadPackage` function](GAP_ref(ref:LoadPackage));
+the package banner is not printed.
 """
-function load(desc::String)
-    return Globals.LoadPackage(julia_to_gap(desc), false)
+function load(desc::String, version::String = "")
+    return Globals.LoadPackage(julia_to_gap(desc),
+                               julia_to_gap(version), false) == true
     # TODO: can we provide more information in case of a failure?
     # GAP unfortunately only gives us info messages...
 end
 
 """
-    install(desc)
+    install(desc::String, interactive::Bool = true)
 
-TODO: copy text from <https://gap-packages.github.io/PackageManager/doc/chap2.html> resp.
-link to that
+Download and install the newest released version of the GAP package
+given by `desc` in the `pkg` subdirectory of GAP's build directory
+(variable `GAP.GAPROOT`).
+Return `true` if the installation is successful or if the package
+was already installed, and `false` otherwise.
+
+`desc` can be either the package name or an URL of an archive or repository
+of the package, or an URL of its `PackageInfo.g` file.
+
+The function uses [the function `InstallPackage` from GAP's package
+`PackageManager`](GAP_ref(PackageManager:InstallPackage)).
 """
 function install(desc::String; interactive::Bool = true, pkgdir::AbstractString = GAPROOT * "/pkg")
     res = load("PackageManager")
@@ -114,10 +126,19 @@ function install(desc::String; interactive::Bool = true, pkgdir::AbstractString 
 end
 
 """
-    update(desc)
+    update(desc::String)
 
-TODO: copy text from <https://gap-packages.github.io/PackageManager/doc/chap2.html> resp.
-link to that
+Update the GAP package given by `desc` that is installed in the
+`pkg` subdirectory of GAP's build directory (variable `GAP.GAPROOT`),
+to the latest version.
+Return `true` if a newer version was installed successfully,
+or if no newer version is available, and `false` otherwise.
+
+`desc` can be either the package name or an URL of an archive or repository
+of the package, or an URL of its `PackageInfo.g` file.
+
+The function uses [the function `UpdatePackage` from GAP's package
+`PackageManager`](GAP_ref(PackageManager:UpdatePackage)).
 """
 function update(desc::String; interactive::Bool = true, pkgdir::AbstractString = GAPROOT * "/pkg")
     res = load("PackageManager")
@@ -128,12 +149,19 @@ function update(desc::String; interactive::Bool = true, pkgdir::AbstractString =
 
     return Globals.UpdatePackage(julia_to_gap(desc), interactive)
 end
+# note that the updated version cannot be used in the current GAP session,
+# because the older version is already loaded;
+# thus nec. to start Julia anew
 
 """
-    remove(desc)
+    remove(desc::String)
 
-TODO: copy text from <https://gap-packages.github.io/PackageManager/doc/chap2.html> resp.
-link to that
+Remove the GAP package with name `desc` that is installed in the
+`pkg` subdirectory of GAP's build directory (variable `GAP.GAPROOT`).
+Return `true` if the removal was successful, and `false` otherwise.
+
+The function uses [the function `RemovePackage` from GAP's package
+`PackageManager`](GAP_ref(PackageManager:RemovePackage)).
 """
 function remove(desc::String; interactive::Bool = true, pkgdir::AbstractString = GAPROOT * "/pkg")
     res = load("PackageManager")
