@@ -13,4 +13,7 @@ makedocs(
     pages = ["index.md"],
 )
 
+# Compute the links to GAP manuals.
+GAP.compute_links_to_GAP_manuals()
+
 deploydocs(repo = "github.com/oscar-system/GAP.jl.git", target = "build")

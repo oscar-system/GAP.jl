@@ -15,6 +15,47 @@ function Base.string(obj::Union{GapObj,FFE})
 end
 
 ## implement indexing interface
+
+"""
+    getindex(x::GapObj, i::Int64)
+    getindex(x::GapObj, i::Int64, j::Int64)
+    getindex(x::GapObj, l::Union{Vector{T},AbstractRange{T}}) where {T<:Integer}
+
+Return the entry at position `i` or at position `(i,j)` in `x`,
+or the list of entries in `x` at the positions described by `l`,
+provided that `x` is a GAP list.
+
+# Examples
+```jldoctest
+julia> l = GAP.EvalString( "[ 1, 2, 3, 5, 8, 13 ]" )
+GAP: [ 1, 2, 3, 5, 8, 13 ]
+
+julia> l[4]
+5
+
+julia> l[end]
+13
+
+julia> l[2:4]
+GAP: [ 2, 3, 5 ]
+
+julia> l[[1,4,4]]
+GAP: [ 1, 5, 5 ]
+
+julia> m = GAP.EvalString( "[ [ 1, 2 ], [ 3, 4 ] ]" )
+GAP: [ [ 1, 2 ], [ 3, 4 ] ]
+
+julia> m[1,1]
+1
+
+julia> m[1,2]
+2
+
+julia> m[2,1]
+3
+
+```
+"""
 Base.getindex(x::GapObj, i::Int64) = Globals.ELM_LIST(x, i)
 Base.getindex(x::GapObj, l::Union{Vector{T},AbstractRange{T}}) where {T<:Integer} =
     GAP.Globals.ELMS_LIST(x, GAP.julia_to_gap(l))
@@ -23,6 +64,47 @@ Base.getindex(x::GapObj, l::Union{Vector{T},AbstractRange{T}}) where {T<:Integer
 # also large integers (element access) or strings (component access) would have
 # to be handled.
 # Base.getindex(x::GapObj, l::GapObj) = GAP.Globals.ELMS_LIST(x, l)
+
+"""
+    setindex!(x::GapObj, v::Any, i::Int64)
+    setindex!(x::GapObj, v::Any, i::Int64, j::Int64)
+    setindex!(x::GapObj, v::Any, l::Union{Vector{T},AbstractRange{T}}) where {T<:Integer}
+
+Set the entry at position `i` or `(i,j)` in `x` to `v`,
+or set the entries at the positions in `x` that are described by `l`
+to the entries in `v`, provided that `x` is a GAP list.
+
+# Examples
+```jldoctest
+julia> l = GAP.EvalString( "[ 1, 2, 3, 5, 8, 13 ]" )
+GAP: [ 1, 2, 3, 5, 8, 13 ]
+
+julia> l[1] = 0
+0
+
+julia> l[8] = -1
+-1
+
+julia> l[2:4] = [ 7, 7, 7 ]
+3-element Array{Int64,1}:
+ 7
+ 7
+ 7
+
+julia> l
+GAP: [ 0, 7, 7, 7, 8, 13,, -1 ]
+
+julia> m = GAP.EvalString( "[ [ 1, 2 ], [ 3, 4 ] ]" )
+GAP: [ [ 1, 2 ], [ 3, 4 ] ]
+
+julia> m[1,2] = 0
+0
+
+julia> m
+GAP: [ [ 1, 0 ], [ 3, 4 ] ]
+
+```
+"""
 Base.setindex!(x::GapObj, v::Any, i::Int64) = Globals.ASS_LIST(x, i, v)
 Base.setindex!(x::GapObj, v::Any, l::Union{Vector{T},AbstractRange{T}}) where {T<:Integer} =
     GAP.Globals.ASSS_LIST(x, GAP.julia_to_gap(l), GAP.julia_to_gap(v))
@@ -40,19 +122,92 @@ RNamObj(f::Union{Symbol,Int64,AbstractString}) = Globals.RNamObj(MakeString(stri
 # note: we don't use Union{Symbol,Int64,AbstractString} below to avoid
 # ambiguity between these methods and method `getproperty(x, f::Symbol)`
 # from Julia's Base module
+
+"""
+    getproperty(x::GapObj, f::Symbol)
+    getproperty(x::GapObj, f::Union{AbstractString,Int64})
+
+Return the record component of the GAP record `x` that is described by `f`.
+
+# Examples
+```jldoctest
+julia> r = GAP.EvalString( "rec( a:= 1 )" )
+GAP: rec( a := 1 )
+
+julia> r.a
+1
+
+```
+"""
 Base.getproperty(x::GapObj, f::Symbol) = Globals.ELM_REC(x, RNamObj(f))
 Base.getproperty(x::GapObj, f::Union{AbstractString,Int64}) = Globals.ELM_REC(x, RNamObj(f))
+
+
+"""
+    setproperty!(x::GapObj, f::Symbol, v)
+    setproperty!(x::GapObj, f::Union{AbstractString,Int64}, v)
+
+Set the record component of the GAP record `x` that is described by `f`
+to the value `v`.
+
+# Examples
+```jldoctest
+julia> r = GAP.EvalString( "rec( a:= 1 )" )
+GAP: rec( a := 1 )
+
+julia> r.b = 0
+0
+
+julia> r
+GAP: rec( a := 1, b := 0 )
+
+```
+"""
 Base.setproperty!(x::GapObj, f::Symbol, v) = Globals.ASS_REC(x, RNamObj(f), v)
 Base.setproperty!(x::GapObj, f::Union{AbstractString,Int64}, v) =
     Globals.ASS_REC(x, RNamObj(f), v)
 
-#
-Base.zero(x::Union{GapObj,FFE}) = Globals.ZERO(x)
-Base.one(x::Union{GapObj,FFE}) = Globals.ONE(x)
-Base.:-(x::Union{GapObj,FFE}) = Globals.AINV(x)
+"""
+    hasproperty(x::GapObj, f::Symbol)
+    hasproperty(x::GapObj, f::Union{AbstractString,Int64})
+
+Return `true` if the GAP record `x` has a component that is described by `f`,
+and `false` otherwise.
+
+# Examples
+```jldoctest
+julia> r = GAP.EvalString( "rec( a:= 1 )" )
+GAP: rec( a := 1 )
+
+julia> hasproperty( r, :a )
+true
+
+julia> hasproperty( r, :b )
+false
+
+julia> r.b = 2
+2
+
+julia> hasproperty( r, :b )
+true
+
+julia> r
+GAP: rec( a := 1, b := 2 )
+
+```
+"""
+Base.hasproperty(x::GapObj, f::Symbol) = Globals.ISB_REC(x, RNamObj(f))
+Base.hasproperty(x::GapObj, f::Union{AbstractString,Int64}) =
+    Globals.ISB_REC(x, RNamObj(f))
 
 #
-Base.in(x::Obj, y::GapObj) = Globals.in(x, y)
+Base.zero(x::Union{GapObj,FFE}) = Globals.ZERO(x)   # same mutability
+Base.one(x::Union{GapObj,FFE}) = Globals.ONE_MUT(x) # same mutability
+Base.inv(x::Union{GapObj,FFE}) = Globals.INV_MUT(x) # same mutability
+Base.:-(x::Union{GapObj,FFE}) = Globals.AINV(x)     # same mutability
+
+#
+Base.in(x::Any, y::GapObj) = Globals.in(x, y)
 
 #
 typecombinations = (

@@ -2,7 +2,7 @@
 """
     julia_to_gap(input, recursive::Val{Recursive} = Val(false), recursion_dict = IdDict())
 
-Converts a julia object `input` to an appropriate GAP object.
+Convert a julia object `input` to an appropriate GAP object.
 If `recursive` is set to `Val(true)`, recursive conversions on
 arrays, tuples, and dictionaries is performed.
 

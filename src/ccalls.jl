@@ -15,6 +15,35 @@ function EvalStringEx(cmd::String)
     return res
 end
 
+"""
+    EvalString(cmd::String)
+
+Let GAP execute the command(s) given by `cmd` and returns the last result.
+An error is thrown if no value is returned.
+
+# Examples
+```jldoctest
+julia> GAP.EvalString( "1+2" )
+3
+
+julia> GAP.EvalString( "x:= []; y:= 0" )
+0
+
+julia> GAP.EvalString( "Add( x, 1 )" )
+ERROR: Error thrown by GAP: Error, List Element: <list>[2] must have an assigned value
+[...]
+
+julia> GAP.EvalString( "x:= []" )
+GAP: [  ]
+
+julia> GAP.EvalString( "Add( x, 1 ); 0" )
+0
+
+julia> GAP.EvalString( "x;" )
+GAP: [ 1 ]
+
+```
+"""
 function EvalString(cmd::String)
     res = EvalStringEx(cmd * ";")
     return res[end][2]
@@ -86,15 +115,35 @@ function NewJuliaFunc(x::Function)
 end
 
 """
-    (func::GapObj)(args...)
+    call_gap_func(func::GapObj, args...; kwargs...)
 
-> This function makes it possible to call GapObjs as functions.
-> There is no argument number checking here, all checks on the arguments
-> are done by GAP itself.
+Call the GAP object `func` as a function,
+with arguments `args...` and global GAP options `kwargs...`,
+and returns the result if there is one, and `nothing` otherwise.
+
+There is no argument number checking here, all checks on the arguments
+are done by GAP itself.
+
+For convenience, one can use the syntax `func(args...; kwargs...)`.
+
+# Examples
+```jldoctest
+julia> GAP.Globals.Factors( 12 )
+GAP: [ 2, 2, 3 ]
+
+julia> g = GAP.Globals.SylowSubgroup( GAP.Globals.SymmetricGroup( 6 ), 2 )
+GAP: Group([ (1,2), (3,4), (1,3)(2,4), (5,6) ])
+
+julia> GAP.Globals.StructureDescription( g )
+GAP: "C2 x D8"
+
+julia> g = GAP.Globals.SylowSubgroup( GAP.Globals.SymmetricGroup( 6 ), 2 );
+
+julia> GAP.Globals.StructureDescription( g, short = true )
+GAP: "2xD8"
+
+```
 """
-(func::GapObj)(args...; kwargs...) = call_gap_func(func, args...; kwargs...)
-
-
 function call_gap_func(func::GapObj, args...; kwargs...)
     global Globals
     options = false
@@ -119,6 +168,9 @@ function call_gap_func(func::GapObj, args...; kwargs...)
     return result
 end
 
+(func::GapObj)(args...; kwargs...) = call_gap_func(func, args...; kwargs...)
+
+
 struct GlobalsType end
 
 Base.show(io::IO, ::GlobalsType) = Base.show(io, "table of global GAP objects")
@@ -126,8 +178,33 @@ Base.show(io::IO, ::GlobalsType) = Base.show(io, "table of global GAP objects")
 """
     Globals
 
-TODO: describe how this allows accesing any GAP variable or function as
-`GAP.Globals.VARIABLE_NAME`.
+This is a global object that gives access to all global variables of the
+current GAP session via `getproperty` and `setproperty!`.
+
+# Examples
+```jldoctest
+julia> GAP.Globals.Size    # a global GAP function
+GAP: <Attribute "Size">
+
+julia> GAP.Globals.size    # there is no GAP variable with this name
+ERROR: GAP variable size not bound
+[...]
+
+julia> hasproperty( GAP.Globals, :size )
+false
+
+julia> GAP.Globals.size = 17;
+
+julia> hasproperty( GAP.Globals, :size )
+true
+
+julia> GAP.Globals.size
+17
+
+julia> GAP.Globals.Julia   # Julia objects can be values of GAP variables
+Main
+
+```
 """
 Globals = GlobalsType()
 

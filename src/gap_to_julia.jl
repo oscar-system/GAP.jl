@@ -13,7 +13,7 @@ Base.showerror(io::IO, e::ConversionError) =
 """
     gap_to_julia(type, x, recursion_dict=nothing; recursive=true)
 
-Tries to convert the object `x` to a Julia object of type `type`.
+Try to convert the object `x` to a Julia object of type `type`.
 If `x` is a `GAP.GapObj` then the conversion rules are defined in the
 manual of the GAP package JuliaInterface.
 If `x` is another `GAP.Obj` (for example a `Int64`) then the result is
