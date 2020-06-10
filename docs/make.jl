@@ -14,6 +14,6 @@ makedocs(
 )
 
 # Compute the links to GAP manuals.
-GAP.compute_links_to_GAP_manuals()
+GAP.compute_links_to_GAP_manuals(@__DIR__)
 
 deploydocs(repo = "github.com/oscar-system/GAP.jl.git", target = "build")
