@@ -81,37 +81,37 @@ module Packages
 import ...GAP: Globals, julia_to_gap, GAPROOT
 
 """
-    load(desc::String, version::String = "")
+    load(spec::String, version::String = "")
 
-Try to load the newest installed version of the GAP package with name `desc`.
+Try to load the newest installed version of the GAP package with name `spec`.
 Return `true` if this is successful, and `false` otherwise.
 
 The function calls [GAP's `LoadPackage` function](GAP_ref(ref:LoadPackage));
 the package banner is not printed.
 """
-function load(desc::String, version::String = "")
-    return Globals.LoadPackage(julia_to_gap(desc),
+function load(spec::String, version::String = "")
+    return Globals.LoadPackage(julia_to_gap(spec),
                                julia_to_gap(version), false) == true
     # TODO: can we provide more information in case of a failure?
     # GAP unfortunately only gives us info messages...
 end
 
 """
-    install(desc::String, interactive::Bool = true)
+    install(spec::String, interactive::Bool = true)
 
 Download and install the newest released version of the GAP package
-given by `desc` in the `pkg` subdirectory of GAP's build directory
+given by `spec` in the `pkg` subdirectory of GAP's build directory
 (variable `GAP.GAPROOT`).
 Return `true` if the installation is successful or if the package
 was already installed, and `false` otherwise.
 
-`desc` can be either the package name or an URL of an archive or repository
-of the package, or an URL of its `PackageInfo.g` file.
+`spec` can be either the name of a package or the URL of an archive or repository
+containing a package, or the URL of a `PackageInfo.g` file.
 
 The function uses [the function `InstallPackage` from GAP's package
 `PackageManager`](GAP_ref(PackageManager:InstallPackage)).
 """
-function install(desc::String; interactive::Bool = true, pkgdir::AbstractString = GAPROOT * "/pkg")
+function install(spec::String; interactive::Bool = true, pkgdir::AbstractString = GAPROOT * "/pkg")
     res = load("PackageManager")
     @assert res
     # FIXME: crude hack to allow PackageManager 1.0 shipped with GAP
@@ -122,55 +122,55 @@ function install(desc::String; interactive::Bool = true, pkgdir::AbstractString 
     # point PackageManager to our internal pkg dir
     Globals.PKGMAN_CustomPackageDir = julia_to_gap(pkgdir)
 
-    return Globals.InstallPackage(julia_to_gap(desc), interactive)
+    return Globals.InstallPackage(julia_to_gap(spec), interactive)
 end
 
 """
-    update(desc::String)
+    update(spec::String)
 
-Update the GAP package given by `desc` that is installed in the
+Update the GAP package given by `spec` that is installed in the
 `pkg` subdirectory of GAP's build directory (variable `GAP.GAPROOT`),
 to the latest version.
 Return `true` if a newer version was installed successfully,
 or if no newer version is available, and `false` otherwise.
 
-`desc` can be either the package name or an URL of an archive or repository
-of the package, or an URL of its `PackageInfo.g` file.
+`spec` can be either the name of a package or the URL of an archive or repository
+containing a package, or the URL of a `PackageInfo.g` file.
 
 The function uses [the function `UpdatePackage` from GAP's package
 `PackageManager`](GAP_ref(PackageManager:UpdatePackage)).
 """
-function update(desc::String; interactive::Bool = true, pkgdir::AbstractString = GAPROOT * "/pkg")
+function update(spec::String; interactive::Bool = true, pkgdir::AbstractString = GAPROOT * "/pkg")
     res = load("PackageManager")
     @assert res
 
     # point PackageManager to our internal pkg dir
     Globals.PKGMAN_CustomPackageDir = julia_to_gap(pkgdir)
 
-    return Globals.UpdatePackage(julia_to_gap(desc), interactive)
+    return Globals.UpdatePackage(julia_to_gap(spec), interactive)
 end
 # note that the updated version cannot be used in the current GAP session,
 # because the older version is already loaded;
 # thus nec. to start Julia anew
 
 """
-    remove(desc::String)
+    remove(spec::String)
 
-Remove the GAP package with name `desc` that is installed in the
+Remove the GAP package with name `spec` that is installed in the
 `pkg` subdirectory of GAP's build directory (variable `GAP.GAPROOT`).
 Return `true` if the removal was successful, and `false` otherwise.
 
 The function uses [the function `RemovePackage` from GAP's package
 `PackageManager`](GAP_ref(PackageManager:RemovePackage)).
 """
-function remove(desc::String; interactive::Bool = true, pkgdir::AbstractString = GAPROOT * "/pkg")
+function remove(spec::String; interactive::Bool = true, pkgdir::AbstractString = GAPROOT * "/pkg")
     res = load("PackageManager")
     @assert res
 
     # point PackageManager to our internal pkg dir
     Globals.PKGMAN_CustomPackageDir = julia_to_gap(pkgdir)
 
-    return Globals.RemovePackage(julia_to_gap(desc), interactive)
+    return Globals.RemovePackage(julia_to_gap(spec), interactive)
 end
 
 end

@@ -1,7 +1,7 @@
 @testset "help" begin
     function test_gap_help(topic::String)
-        return isa(GAP.GAP_help_string(topic), String) &&
-               isa(GAP.GAP_help_string(topic, true), String)
+        return isa(GAP.gap_help_string(topic), String) &&
+               isa(GAP.gap_help_string(topic, true), String)
     end
 
     @test test_gap_help("")
@@ -17,7 +17,7 @@
     @test test_gap_help("?determinant")
     @test test_gap_help("?PermList")
     @test test_gap_help("?IsJuliaWrapper")
-    println(GAP.GAP_help_string("?IsJuliaWrapper"))
+    println(GAP.gap_help_string("?IsJuliaWrapper"))
 
     @test test_gap_help("books")
     @test test_gap_help("tut:chapters")

@@ -24,7 +24,7 @@ include(deps_jl)
 """
     FFE
 
-Wrap a pointer to a GAP FFE immediate object.
+Wrap a pointer to a GAP FFE ("finite field element") immediate object.
 This type is defined in the JuliaInterface C code.
 
 # Examples
@@ -66,14 +66,14 @@ true
 julia> isa( GAP.evalstr( "2^64" ), GAP.GapObj )     # a large GAP integer
 true
 
-julia> isa( GAP.evalstr( "2^59" ), GAP.GapObj )     # a small GAP integer
-false
+julia> typeof( GAP.evalstr( "2^59" ) )              # a small GAP integer
+Int64
 
-julia> isa( GAP.evalstr( "Z(2)" ), GAP.GapObj )     # a GAP FFE
-false
+julia> typeof( GAP.evalstr( "Z(2)" ) )              # a GAP FFE
+FFE
 
-julia> isa( GAP.evalstr( "true" ), GAP.GapObj )     # a Boolean
-false
+julia> typeof( GAP.evalstr( "true" ) )              # a Boolean
+Bool
 
 ```
 
@@ -87,8 +87,8 @@ but they appear as Julia objects to Julia, not "doubly wrapped".
 julia> GAP.evalstr( "Julia.Base" )
 Base
 
-julia> isa( GAP.evalstr( "Julia.Base" ), GAP.GapObj ) # native Julia object
-false
+julia> typeof( GAP.evalstr( "Julia.Base" ) )        # native Julia object
+Module
 
 ```
 """
