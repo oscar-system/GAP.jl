@@ -29,7 +29,7 @@ This type is defined in the JuliaInterface C code.
 
 # Examples
 ```jldoctest
-julia> x = GAP.EvalString( "Z(3)" )
+julia> x = GAP.evalstr( "Z(3)" )
 GAP: Z(3)
 
 julia> typeof( x )
@@ -54,25 +54,25 @@ This is the Julia type of all those GAP objects that are not
 
 # Examples
 ```jldoctest
-julia> isa( GAP.EvalString( "[ 1, 2 ]" ), GAP.GapObj ) # a GAP list
+julia> isa( GAP.evalstr( "[ 1, 2 ]" ), GAP.GapObj ) # a GAP list
 true
 
-julia> isa( GAP.EvalString( "rec()" ), GAP.GapObj )    # a GAP record
+julia> isa( GAP.evalstr( "rec()" ), GAP.GapObj )    # a GAP record
 true
 
-julia> isa( GAP.EvalString( "(1,2,3)" ), GAP.GapObj )  # a GAP permutation
+julia> isa( GAP.evalstr( "(1,2,3)" ), GAP.GapObj )  # a GAP permutation
 true
 
-julia> isa( GAP.EvalString( "2^64" ), GAP.GapObj )     # a large GAP integer
+julia> isa( GAP.evalstr( "2^64" ), GAP.GapObj )     # a large GAP integer
 true
 
-julia> isa( GAP.EvalString( "2^59" ), GAP.GapObj )     # a small GAP integer
+julia> isa( GAP.evalstr( "2^59" ), GAP.GapObj )     # a small GAP integer
 false
 
-julia> isa( GAP.EvalString( "Z(2)" ), GAP.GapObj )     # a GAP FFE
+julia> isa( GAP.evalstr( "Z(2)" ), GAP.GapObj )     # a GAP FFE
 false
 
-julia> isa( GAP.EvalString( "true" ), GAP.GapObj )     # a Boolean
+julia> isa( GAP.evalstr( "true" ), GAP.GapObj )     # a Boolean
 false
 
 ```
@@ -84,10 +84,10 @@ but they appear as Julia objects to Julia, not "doubly wrapped".
 
 # Examples
 ```jldoctest
-julia> GAP.EvalString( "Julia.Base" )
+julia> GAP.evalstr( "Julia.Base" )
 Base
 
-julia> isa( GAP.EvalString( "Julia.Base" ), GAP.GapObj ) # native Julia object
+julia> isa( GAP.evalstr( "Julia.Base" ), GAP.GapObj ) # native Julia object
 false
 
 ```
@@ -125,9 +125,9 @@ function reset_GAP_ERROR_OUTPUT()
     # a string stream, this does nothing. So we don't do it, which saves us
     # some hassle when calling reset_GAP_ERROR_OUTPUT from `initialize`
     #Globals.CloseStream(Globals.ERROR_OUTPUT)
-    EvalString("_JULIAINTERFACE_ERROR_OUTPUT:= \"\";")
+    evalstr("_JULIAINTERFACE_ERROR_OUTPUT:= \"\";")
     Globals.MakeReadWriteGlobal(julia_to_gap("ERROR_OUTPUT"))
-    EvalString("ERROR_OUTPUT:= OutputTextString( _JULIAINTERFACE_ERROR_OUTPUT, true );")
+    evalstr("ERROR_OUTPUT:= OutputTextString( _JULIAINTERFACE_ERROR_OUTPUT, true );")
     Globals.MakeReadOnlyGlobal(julia_to_gap("ERROR_OUTPUT"))
 end
 
@@ -339,7 +339,7 @@ function prompt()
     # restore GAP's error output
     disable_error_handler = true
     Globals.MakeReadWriteGlobal(julia_to_gap("ERROR_OUTPUT"))
-    EvalString("""ERROR_OUTPUT:= "*errout*";""")
+    evalstr("""ERROR_OUTPUT:= "*errout*";""")
     Globals.MakeReadOnlyGlobal(julia_to_gap("ERROR_OUTPUT"))
 
     # enable break loop
@@ -369,5 +369,6 @@ include("julia_to_gap.jl")
 include("utils.jl")
 include("help.jl")
 include("packages.jl")
+include("obsolete.jl")
 
 end

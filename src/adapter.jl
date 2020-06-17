@@ -27,7 +27,7 @@ provided that `x` is a GAP list.
 
 # Examples
 ```jldoctest
-julia> l = GAP.EvalString( "[ 1, 2, 3, 5, 8, 13 ]" )
+julia> l = GAP.evalstr( "[ 1, 2, 3, 5, 8, 13 ]" )
 GAP: [ 1, 2, 3, 5, 8, 13 ]
 
 julia> l[4]
@@ -42,7 +42,7 @@ GAP: [ 2, 3, 5 ]
 julia> l[[1,4,4]]
 GAP: [ 1, 5, 5 ]
 
-julia> m = GAP.EvalString( "[ [ 1, 2 ], [ 3, 4 ] ]" )
+julia> m = GAP.evalstr( "[ [ 1, 2 ], [ 3, 4 ] ]" )
 GAP: [ [ 1, 2 ], [ 3, 4 ] ]
 
 julia> m[1,1]
@@ -76,7 +76,7 @@ to the entries in `v`, provided that `x` is a GAP list.
 
 # Examples
 ```jldoctest
-julia> l = GAP.EvalString( "[ 1, 2, 3, 5, 8, 13 ]" )
+julia> l = GAP.evalstr( "[ 1, 2, 3, 5, 8, 13 ]" )
 GAP: [ 1, 2, 3, 5, 8, 13 ]
 
 julia> l[1] = 0
@@ -94,7 +94,7 @@ julia> l[2:4] = [ 7, 7, 7 ]
 julia> l
 GAP: [ 0, 7, 7, 7, 8, 13,, -1 ]
 
-julia> m = GAP.EvalString( "[ [ 1, 2 ], [ 3, 4 ] ]" )
+julia> m = GAP.evalstr( "[ [ 1, 2 ], [ 3, 4 ] ]" )
 GAP: [ [ 1, 2 ], [ 3, 4 ] ]
 
 julia> m[1,2] = 0
@@ -131,7 +131,7 @@ Return the record component of the GAP record `x` that is described by `f`.
 
 # Examples
 ```jldoctest
-julia> r = GAP.EvalString( "rec( a:= 1 )" )
+julia> r = GAP.evalstr( "rec( a:= 1 )" )
 GAP: rec( a := 1 )
 
 julia> r.a
@@ -152,7 +152,7 @@ to the value `v`.
 
 # Examples
 ```jldoctest
-julia> r = GAP.EvalString( "rec( a:= 1 )" )
+julia> r = GAP.evalstr( "rec( a:= 1 )" )
 GAP: rec( a := 1 )
 
 julia> r.b = 0
@@ -176,7 +176,7 @@ and `false` otherwise.
 
 # Examples
 ```jldoctest
-julia> r = GAP.EvalString( "rec( a:= 1 )" )
+julia> r = GAP.evalstr( "rec( a:= 1 )" )
 GAP: rec( a := 1 )
 
 julia> hasproperty( r, :a )

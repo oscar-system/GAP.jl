@@ -63,7 +63,7 @@ using Julia syntax features.
 ```@docs
 Globals
 call_gap_func
-EvalString
+evalstr
 getindex
 setindex!
 getproperty
