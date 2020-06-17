@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>GAP.jl · GAP.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="assets/documenter.js"></script><script src="siteinfo.js"></script><script src="../versions.js"></script><link href="assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>GAP.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li class="current"><a class="toctext" href>GAP.jl</a><ul class="internal"><li><a class="toctext" href="#Introduction-1">Introduction</a></li><li><a class="toctext" href="#Types-1">Types</a></li><li><a class="toctext" href="#Macros-1">Macros</a></li><li><a class="toctext" href="#Conversions-1">Conversions</a></li><li><a class="toctext" href="#Convenience-adapters-1">Convenience adapters</a></li><li><a class="toctext" href="#Access-to-the-GAP-help-system-1">Access to the GAP help system</a></li><li><a class="toctext" href="#Managing-GAP-packages-1">Managing GAP packages</a></li><li><a class="toctext" href="#Other-1">Other</a></li><li><a class="toctext" href="#Index-1">Index</a></li></ul></li></ul></nav><article id="docs"><header><nav><ul><li><a href>GAP.jl</a></li></ul><a class="edit-page" href="https://github.com/oscar-system/GAP.jl/blob/master/docs/src/index.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>GAP.jl</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="GAP.jl-1" href="#GAP.jl-1">GAP.jl</a></h1><ul><li><a href="#GAP.jl-1">GAP.jl</a></li><ul><li><a href="#Introduction-1">Introduction</a></li><li><a href="#Types-1">Types</a></li><li><a href="#Macros-1">Macros</a></li><li><a href="#Conversions-1">Conversions</a></li><li><a href="#Convenience-adapters-1">Convenience adapters</a></li><li><a href="#Access-to-the-GAP-help-system-1">Access to the GAP help system</a></li><li><a href="#Managing-GAP-packages-1">Managing GAP packages</a></li><li><a href="#Other-1">Other</a></li><li><a href="#Index-1">Index</a></li></ul></ul><h2><a class="nav-anchor" id="Introduction-1" href="#Introduction-1">Introduction</a></h2><p>GAP.jl is a low level interface from Julia to <a href="https://www.gap-system.org">the computer algebra system GAP</a>. The term &quot;low level&quot; means that the aim is to give Julia access to all GAP objects, to let Julia call GAP functions, and to provide conversions of low level data (integers, Booleans, strings, arrays/lists, dictionaries/records) between the two systems.</p><p>In particular, it is <em>not</em> the aim of GAP.jl to provide Julia types for higher level GAP objects that represent algebraic structures, such as groups, rings, fields, etc., and mappings between such structures.</p><p>The connection between GAP and Julia is in fact bidirectional, that is, GAP can access all Julia objects, call Julia functions, and perform conversions of low level data. This direction will become interesting on the Julia side as soon as GAP packages provide functionality that is based on using Julia code from the GAP side.</p><p>The viewpoint of an interface from GAP to Julia is described in <a href="GAP_ref(JuliaInterface:Title page)">the manual of the GAP package JuliaInterface</a>.</p><h2><a class="nav-anchor" id="Types-1" href="#Types-1">Types</a></h2><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="GAP.FFE" href="#GAP.FFE"><code>GAP.FFE</code></a> — <span class="docstring-category">Type</span>.</div><div><div><pre><code class="language-julia">FFE</code></pre><p>Wrap a pointer to a GAP FFE (&quot;finite field element&quot;) immediate object. This type is defined in the JuliaInterface C code.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; x = GAP.evalstr( &quot;Z(3)&quot; )
+GAP: Z(3)
+
+julia&gt; typeof( x )
+FFE
+</code></pre></div></div></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="GAP.GapObj" href="#GAP.GapObj"><code>GAP.GapObj</code></a> — <span class="docstring-category">Type</span>.</div><div><div><pre><code class="language-julia">GapObj</code></pre><p>This is the Julia type of all those GAP objects that are not &quot;immediate&quot; (Booleans, small integers, FFEs).</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; isa( GAP.evalstr( &quot;[ 1, 2 ]&quot; ), GAP.GapObj ) # a GAP list
+true
+
+julia&gt; isa( GAP.evalstr( &quot;rec()&quot; ), GAP.GapObj )    # a GAP record
+true
+
+julia&gt; isa( GAP.evalstr( &quot;(1,2,3)&quot; ), GAP.GapObj )  # a GAP permutation
+true
+
+julia&gt; isa( GAP.evalstr( &quot;2^64&quot; ), GAP.GapObj )     # a large GAP integer
+true
+
+julia&gt; typeof( GAP.evalstr( &quot;2^59&quot; ) )              # a small GAP integer
+Int64
+
+julia&gt; typeof( GAP.evalstr( &quot;Z(2)&quot; ) )              # a GAP FFE
+FFE
+
+julia&gt; typeof( GAP.evalstr( &quot;true&quot; ) )              # a Boolean
+Bool
+</code></pre><p>Note that this is Julia&#39;s viewpoint on GAP objects. From the viewpoint of GAP, also the pointers to Julia objects are implemented as &quot;non-immediate GAP objects&quot;, but they appear as Julia objects to Julia, not &quot;doubly wrapped&quot;.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; GAP.evalstr( &quot;Julia.Base&quot; )
+Base
+
+julia&gt; typeof( GAP.evalstr( &quot;Julia.Base&quot; ) )        # native Julia object
+Module
+</code></pre></div></div></section><h2><a class="nav-anchor" id="Macros-1" href="#Macros-1">Macros</a></h2><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="GAP.@gap" href="#GAP.@gap"><code>GAP.@gap</code></a> — <span class="docstring-category">Macro</span>.</div><div><div><pre><code class="language-julia">@gap &lt;expr&gt;
+@gap(&lt;expr&gt;)</code></pre><p>Execute &lt;expr&gt; directly in GAP, as if <code>GAP.evalstr(&quot;&lt;expr&gt;&quot;)</code> was called. This can be used for creating GAP literals directly from Julia.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; @gap [1,2,3]
+GAP: [ 1, 2, 3 ]
+
+julia&gt; @gap SymmetricGroup(3)
+GAP: Sym( [ 1 .. 3 ] )
+
+julia&gt; @gap(SymmetricGroup)(3)
+GAP: Sym( [ 1 .. 3 ] )
+</code></pre><p>Note that the last two examples have a slight syntactical, and therefore also a semantical difference. The first one executes the string <code>SymmetricGroup(3)</code> directly inside GAP. The second example returns the function <code>SymmetricGroup</code> via <code>@gap(SymmetricGroup)</code>, then calls that function with the argument <code>3</code>.</p><p>Due to Julia&#39;s way of handing over arguments into the code of macros, not all expressions representing valid GAP code can be processed. For example, the GAP syntax of permutations consisting of more than one cycle cause problems, as well as the GAP syntax of non-dense lists.</p><pre><code class="language-julia-repl">julia&gt; @gap (1,2,3)
+GAP: (1,2,3)
+
+julia&gt; @gap (1,2)(3,4)
+ERROR: LoadError: Error thrown by GAP: Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+[...]
+
+julia&gt; @gap [ 1,, 2 ]
+ERROR: syntax: unexpected &quot;,&quot;
+[...]
+</code></pre><p>Note also that a string argument gets evaluated with <code>GAP.evalstr</code>.</p><pre><code class="language-julia-repl">julia&gt; @gap &quot;\&quot;abc\&quot;&quot;
+GAP: &quot;abc&quot;
+
+julia&gt; @gap &quot;[1,,2]&quot;
+GAP: [ 1,, 2 ]
+
+julia&gt; @gap &quot;(1,2)(3,4)&quot;
+GAP: (1,2)(3,4)
+</code></pre></div></div></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="GAP.@g_str" href="#GAP.@g_str"><code>GAP.@g_str</code></a> — <span class="docstring-category">Macro</span>.</div><div><div><pre><code class="language-julia">@g_str</code></pre><p>Create a GAP string by typing <code>g&quot;content&quot;</code>.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; g&quot;foo&quot;
+GAP: &quot;foo&quot;</code></pre></div></div></section><h2><a class="nav-anchor" id="Conversions-1" href="#Conversions-1">Conversions</a></h2><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="GAP.gap_to_julia" href="#GAP.gap_to_julia"><code>GAP.gap_to_julia</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-julia">gap_to_julia(type, x, recursion_dict=nothing; recursive=true)</code></pre><p>Try to convert the object <code>x</code> to a Julia object of type <code>type</code>. If <code>x</code> is a <code>GAP.GapObj</code> then the conversion rules are defined in the manual of the GAP package JuliaInterface. If <code>x</code> is another <code>GAP.Obj</code> (for example a <code>Int64</code>) then the result is defined in Julia by <code>type</code>.</p><p>The parameter <code>recursion_dict</code> is meant to preseve the identity of converted subobjects and should never be given by the user.</p><p>For GAP lists and records, it makes sense to convert also the subobjects recursively, or to keep the subobjects as they are; the behaviour is controlled by <code>recursive</code>, which can be <code>true</code> or <code>false</code>.</p></div></div></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="GAP.julia_to_gap" href="#GAP.julia_to_gap"><code>GAP.julia_to_gap</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-julia">julia_to_gap(input, recursive::Val{Recursive} = Val(false), recursion_dict = IdDict())</code></pre><p>Convert a julia object <code>input</code> to an appropriate GAP object. If <code>recursive</code> is set to <code>Val(true)</code>, recursive conversions on arrays, tuples, and dictionaries is performed.</p><p>The input <code>recursive_data</code> should never be set by the user, it is meant to keep egality of input data, by converting egal data to identical objects in GAP.</p></div></div></section><h2><a class="nav-anchor" id="Convenience-adapters-1" href="#Convenience-adapters-1">Convenience adapters</a></h2><p>This section describes how one can manipulate GAP objects from the Julia side, using Julia syntax features.</p><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="GAP.Globals" href="#GAP.Globals"><code>GAP.Globals</code></a> — <span class="docstring-category">Constant</span>.</div><div><div><pre><code class="language-julia">Globals</code></pre><p>This is a global object that gives access to all global variables of the current GAP session via <code>getproperty</code> and <code>setproperty!</code>.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; GAP.Globals.Size    # a global GAP function
+GAP: &lt;Attribute &quot;Size&quot;&gt;
+
+julia&gt; GAP.Globals.size    # there is no GAP variable with this name
+ERROR: GAP variable size not bound
+[...]
+
+julia&gt; hasproperty( GAP.Globals, :size )
+false
+
+julia&gt; GAP.Globals.size = 17;
+
+julia&gt; hasproperty( GAP.Globals, :size )
+true
+
+julia&gt; GAP.Globals.size
+17
+
+julia&gt; GAP.Globals.Julia   # Julia objects can be values of GAP variables
+Main
+</code></pre></div></div></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="GAP.call_gap_func" href="#GAP.call_gap_func"><code>GAP.call_gap_func</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-julia">call_gap_func(func::GapObj, args...; kwargs...)</code></pre><p>Call the GAP object <code>func</code> as a function, with arguments <code>args...</code> and global GAP options <code>kwargs...</code>, and returns the result if there is one, and <code>nothing</code> otherwise.</p><p>There is no argument number checking here, all checks on the arguments are done by GAP itself.</p><p>For convenience, one can use the syntax <code>func(args...; kwargs...)</code>.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; GAP.Globals.Factors( 12 )
+GAP: [ 2, 2, 3 ]
+
+julia&gt; g = GAP.Globals.SylowSubgroup( GAP.Globals.SymmetricGroup( 6 ), 2 )
+GAP: Group([ (1,2), (3,4), (1,3)(2,4), (5,6) ])
+
+julia&gt; GAP.Globals.StructureDescription( g )
+GAP: &quot;C2 x D8&quot;
+
+julia&gt; g = GAP.Globals.SylowSubgroup( GAP.Globals.SymmetricGroup( 6 ), 2 );
+
+julia&gt; GAP.Globals.StructureDescription( g, short = true )
+GAP: &quot;2xD8&quot;
+</code></pre></div></div></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="GAP.evalstr" href="#GAP.evalstr"><code>GAP.evalstr</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-julia">evalstr(cmd::String)</code></pre><p>Let GAP execute the command(s) given by <code>cmd</code> and return the last result. An error is thrown if no value is returned.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; GAP.evalstr( &quot;1+2&quot; )
+3
+
+julia&gt; GAP.evalstr( &quot;x:= []; y:= 0&quot; )
+0
+
+julia&gt; GAP.evalstr( &quot;Add( x, 1 )&quot; )
+ERROR: Error thrown by GAP: Error, List Element: &lt;list&gt;[2] must have an assigned value
+[...]
+
+julia&gt; GAP.evalstr( &quot;x:= []&quot; )
+GAP: [  ]
+
+julia&gt; GAP.evalstr( &quot;Add( x, 1 ); 0&quot; )
+0
+
+julia&gt; GAP.evalstr( &quot;x;&quot; )
+GAP: [ 1 ]
+</code></pre></div></div></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="Base.getindex" href="#Base.getindex"><code>Base.getindex</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-julia">getindex(x::GapObj, i::Int64)
+getindex(x::GapObj, i::Int64, j::Int64)
+getindex(x::GapObj, l::Union{Vector{T},AbstractRange{T}}) where {T&lt;:Integer}</code></pre><p>Return the entry at position <code>i</code> or at position <code>(i,j)</code> in <code>x</code>, or the list of entries in <code>x</code> at the positions described by <code>l</code>, provided that <code>x</code> is a GAP list.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; l = GAP.evalstr( &quot;[ 1, 2, 3, 5, 8, 13 ]&quot; )
+GAP: [ 1, 2, 3, 5, 8, 13 ]
+
+julia&gt; l[4]
+5
+
+julia&gt; l[end]
+13
+
+julia&gt; l[2:4]
+GAP: [ 2, 3, 5 ]
+
+julia&gt; l[[1,4,4]]
+GAP: [ 1, 5, 5 ]
+
+julia&gt; m = GAP.evalstr( &quot;[ [ 1, 2 ], [ 3, 4 ] ]&quot; )
+GAP: [ [ 1, 2 ], [ 3, 4 ] ]
+
+julia&gt; m[1,1]
+1
+
+julia&gt; m[1,2]
+2
+
+julia&gt; m[2,1]
+3
+</code></pre></div></div></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="Base.setindex!" href="#Base.setindex!"><code>Base.setindex!</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-julia">setindex!(x::GapObj, v::Any, i::Int64)
+setindex!(x::GapObj, v::Any, i::Int64, j::Int64)
+setindex!(x::GapObj, v::Any, l::Union{Vector{T},AbstractRange{T}}) where {T&lt;:Integer}</code></pre><p>Set the entry at position <code>i</code> or <code>(i,j)</code> in <code>x</code> to <code>v</code>, or set the entries at the positions in <code>x</code> that are described by <code>l</code> to the entries in <code>v</code>, provided that <code>x</code> is a GAP list.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; l = GAP.evalstr( &quot;[ 1, 2, 3, 5, 8, 13 ]&quot; )
+GAP: [ 1, 2, 3, 5, 8, 13 ]
+
+julia&gt; l[1] = 0
+0
+
+julia&gt; l[8] = -1
+-1
+
+julia&gt; l[2:4] = [ 7, 7, 7 ]
+3-element Array{Int64,1}:
+ 7
+ 7
+ 7
+
+julia&gt; l
+GAP: [ 0, 7, 7, 7, 8, 13,, -1 ]
+
+julia&gt; m = GAP.evalstr( &quot;[ [ 1, 2 ], [ 3, 4 ] ]&quot; )
+GAP: [ [ 1, 2 ], [ 3, 4 ] ]
+
+julia&gt; m[1,2] = 0
+0
+
+julia&gt; m
+GAP: [ [ 1, 0 ], [ 3, 4 ] ]
+</code></pre></div></div></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="Base.getproperty" href="#Base.getproperty"><code>Base.getproperty</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-julia">getproperty(x::GapObj, f::Symbol)
+getproperty(x::GapObj, f::Union{AbstractString,Int64})</code></pre><p>Return the record component of the GAP record <code>x</code> that is described by <code>f</code>.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; r = GAP.evalstr( &quot;rec( a:= 1 )&quot; )
+GAP: rec( a := 1 )
+
+julia&gt; r.a
+1
+</code></pre></div></div></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="Base.setproperty!" href="#Base.setproperty!"><code>Base.setproperty!</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-julia">setproperty!(x::GapObj, f::Symbol, v)
+setproperty!(x::GapObj, f::Union{AbstractString,Int64}, v)</code></pre><p>Set the record component of the GAP record <code>x</code> that is described by <code>f</code> to the value <code>v</code>.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; r = GAP.evalstr( &quot;rec( a:= 1 )&quot; )
+GAP: rec( a := 1 )
+
+julia&gt; r.b = 0
+0
+
+julia&gt; r
+GAP: rec( a := 1, b := 0 )
+</code></pre></div></div></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="Base.hasproperty" href="#Base.hasproperty"><code>Base.hasproperty</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-julia">hasproperty(x::GapObj, f::Symbol)
+hasproperty(x::GapObj, f::Union{AbstractString,Int64})</code></pre><p>Return <code>true</code> if the GAP record <code>x</code> has a component that is described by <code>f</code>, and <code>false</code> otherwise.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; r = GAP.evalstr( &quot;rec( a:= 1 )&quot; )
+GAP: rec( a := 1 )
+
+julia&gt; hasproperty( r, :a )
+true
+
+julia&gt; hasproperty( r, :b )
+false
+
+julia&gt; r.b = 2
+2
+
+julia&gt; hasproperty( r, :b )
+true
+
+julia&gt; r
+GAP: rec( a := 1, b := 2 )
+</code></pre></div></div></section><p>For the following Julia functions, methods are provided that deal with the case that the arguments are GAP objects; they delegate to the corresponding GAP operations.</p><table><tr><th style="text-align: right">Julia</th><th style="text-align: right">GAP</th></tr><tr><td style="text-align: right"><code>length</code></td><td style="text-align: right"><code>Length</code></td></tr><tr><td style="text-align: right"><code>in</code></td><td style="text-align: right"><code>\in</code></td></tr><tr><td style="text-align: right"><code>zero</code></td><td style="text-align: right"><code>ZERO</code></td></tr><tr><td style="text-align: right"><code>one</code></td><td style="text-align: right"><code>ONE</code></td></tr><tr><td style="text-align: right"><code>-</code> (unary)</td><td style="text-align: right"><code>AINV</code></td></tr><tr><td style="text-align: right"><code>+</code></td><td style="text-align: right"><code>SUM</code></td></tr><tr><td style="text-align: right"><code>-</code> (binary)</td><td style="text-align: right"><code>DIFF</code></td></tr><tr><td style="text-align: right"><code>*</code></td><td style="text-align: right"><code>PROD</code></td></tr><tr><td style="text-align: right"><code>/</code></td><td style="text-align: right"><code>QUO</code></td></tr><tr><td style="text-align: right"><code>\</code></td><td style="text-align: right"><code>LQUO</code></td></tr><tr><td style="text-align: right"><code>^</code></td><td style="text-align: right"><code>POW</code></td></tr><tr><td style="text-align: right"><code>mod</code></td><td style="text-align: right"><code>MOD</code></td></tr><tr><td style="text-align: right"><code>&lt;</code></td><td style="text-align: right"><code>LT</code></td></tr><tr><td style="text-align: right"><code>==</code></td><td style="text-align: right"><code>EQ</code></td></tr></table><pre><code class="language-julia">julia&gt; l = GAP.julia_to_gap( [ 1, 3, 7, 15 ] )
+GAP: [ 1, 3, 7, 15 ]
+
+julia&gt; m = GAP.julia_to_gap( [ 1 2; 3 4 ] )
+GAP: [ [ 1, 2 ], [ 3, 4 ] ]
+
+julia&gt; length( l )
+4
+
+julia&gt; length( m )  # different from Julia&#39;s behaviour
+2
+
+julia&gt; 1 in l
+true
+
+julia&gt; 2 in l
+false
+
+julia&gt; zero( l )
+GAP: [ 0, 0, 0, 0 ]
+
+julia&gt; one( m )
+GAP: [ [ 1, 0 ], [ 0, 1 ] ]
+
+julia&gt; - l
+GAP: [ -1, -3, -7, -15 ]
+
+julia&gt; l + 1
+GAP: [ 2, 4, 8, 16 ]
+
+julia&gt; l + l
+GAP: [ 2, 6, 14, 30 ]
+
+julia&gt; m + m
+GAP: [ [ 2, 4 ], [ 6, 8 ] ]
+
+julia&gt; 1 - m
+GAP: [ [ 0, -1 ], [ -2, -3 ] ]
+
+julia&gt; l * l
+284
+
+julia&gt; l * m
+GAP: [ 10, 14 ]
+
+julia&gt; m * m
+GAP: [ [ 7, 10 ], [ 15, 22 ] ]
+
+julia&gt; 1 / m
+GAP: [ [ -2, 1 ], [ 3/2, -1/2 ] ]
+
+julia&gt; m / 2
+GAP: [ [ 1/2, 1 ], [ 3/2, 2 ] ]
+
+julia&gt; 2 \ m
+GAP: [ [ 1/2, 1 ], [ 3/2, 2 ] ]
+
+julia&gt; m ^ 2
+GAP: [ [ 7, 10 ], [ 15, 22 ] ]
+
+julia&gt; m ^ -1
+GAP: [ [ -2, 1 ], [ 3/2, -1/2 ] ]
+
+julia&gt; mod( l, 3 )
+GAP: [ 1, 0, 1, 0 ]
+
+julia&gt; m &lt; 2 * m
+true
+
+julia&gt; m^2 - 5 * m == 2 * one( m )
+true
+</code></pre><h2><a class="nav-anchor" id="Access-to-the-GAP-help-system-1" href="#Access-to-the-GAP-help-system-1">Access to the GAP help system</a></h2><div class="admonition warning"><div class="admonition-title">Missing docstring.</div><div class="admonition-text"><p>Missing docstring for <code>show_GAP_help</code>. Check Documenter&#39;s build log for details.</p></div></div><h2><a class="nav-anchor" id="Managing-GAP-packages-1" href="#Managing-GAP-packages-1">Managing GAP packages</a></h2><p>The following functions allow one to load/install/update/remove GAP packages.</p><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="GAP.Packages.load" href="#GAP.Packages.load"><code>GAP.Packages.load</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-julia">load(spec::String, version::String = &quot;&quot;)</code></pre><p>Try to load the newest installed version of the GAP package with name <code>spec</code>. Return <code>true</code> if this is successful, and <code>false</code> otherwise.</p><p>The function calls <a href="GAP_ref(ref:LoadPackage)">GAP&#39;s <code>LoadPackage</code> function</a>; the package banner is not printed.</p></div></div></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="GAP.Packages.install" href="#GAP.Packages.install"><code>GAP.Packages.install</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-julia">install(spec::String, interactive::Bool = true)</code></pre><p>Download and install the newest released version of the GAP package given by <code>spec</code> in the <code>pkg</code> subdirectory of GAP&#39;s build directory (variable <code>GAP.GAPROOT</code>). Return <code>true</code> if the installation is successful or if the package was already installed, and <code>false</code> otherwise.</p><p><code>spec</code> can be either the name of a package or the URL of an archive or repository containing a package, or the URL of a <code>PackageInfo.g</code> file.</p><p>The function uses <a href="GAP_ref(PackageManager:InstallPackage)">the function <code>InstallPackage</code> from GAP&#39;s package <code>PackageManager</code></a>.</p></div></div></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="GAP.Packages.update" href="#GAP.Packages.update"><code>GAP.Packages.update</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-julia">update(spec::String)</code></pre><p>Update the GAP package given by <code>spec</code> that is installed in the <code>pkg</code> subdirectory of GAP&#39;s build directory (variable <code>GAP.GAPROOT</code>), to the latest version. Return <code>true</code> if a newer version was installed successfully, or if no newer version is available, and <code>false</code> otherwise.</p><p><code>spec</code> can be either the name of a package or the URL of an archive or repository containing a package, or the URL of a <code>PackageInfo.g</code> file.</p><p>The function uses <a href="GAP_ref(PackageManager:UpdatePackage)">the function <code>UpdatePackage</code> from GAP&#39;s package <code>PackageManager</code></a>.</p></div></div></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="GAP.Packages.remove" href="#GAP.Packages.remove"><code>GAP.Packages.remove</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-julia">remove(spec::String)</code></pre><p>Remove the GAP package with name <code>spec</code> that is installed in the <code>pkg</code> subdirectory of GAP&#39;s build directory (variable <code>GAP.GAPROOT</code>). Return <code>true</code> if the removal was successful, and <code>false</code> otherwise.</p><p>The function uses <a href="GAP_ref(PackageManager:RemovePackage)">the function <code>RemovePackage</code> from GAP&#39;s package <code>PackageManager</code></a>.</p></div></div></section><h2><a class="nav-anchor" id="Other-1" href="#Other-1">Other</a></h2><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="GAP.prompt" href="#GAP.prompt"><code>GAP.prompt</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-julia">prompt()</code></pre><p>Start a GAP prompt where you can enter GAP commands as in a regular GAP session. This prompt can be left as any GAP prompt by either entering <code>quit;</code> or pressing ctrl-D, which returns to the Julia prompt.</p><p>This GAP prompt allows to quickly switch between writing Julia and GAP code in a session where all data is shared.</p></div></div></section><h2><a class="nav-anchor" id="Index-1" href="#Index-1">Index</a></h2><ul><li><a href="#GAP.Globals"><code>GAP.Globals</code></a></li><li><a href="#GAP.FFE"><code>GAP.FFE</code></a></li><li><a href="#GAP.GapObj"><code>GAP.GapObj</code></a></li><li><a href="#Base.getindex"><code>Base.getindex</code></a></li><li><a href="#Base.getproperty"><code>Base.getproperty</code></a></li><li><a href="#Base.hasproperty"><code>Base.hasproperty</code></a></li><li><a href="#Base.setindex!"><code>Base.setindex!</code></a></li><li><a href="#Base.setproperty!"><code>Base.setproperty!</code></a></li><li><a href="#GAP.Packages.install"><code>GAP.Packages.install</code></a></li><li><a href="#GAP.Packages.load"><code>GAP.Packages.load</code></a></li><li><a href="#GAP.Packages.remove"><code>GAP.Packages.remove</code></a></li><li><a href="#GAP.Packages.update"><code>GAP.Packages.update</code></a></li><li><a href="#GAP.call_gap_func"><code>GAP.call_gap_func</code></a></li><li><a href="#GAP.evalstr"><code>GAP.evalstr</code></a></li><li><a href="#GAP.gap_to_julia"><code>GAP.gap_to_julia</code></a></li><li><a href="#GAP.julia_to_gap"><code>GAP.julia_to_gap</code></a></li><li><a href="#GAP.prompt"><code>GAP.prompt</code></a></li><li><a href="#GAP.@g_str"><code>GAP.@g_str</code></a></li><li><a href="#GAP.@gap"><code>GAP.@gap</code></a></li></ul><footer><hr/></footer></article></body></html>
