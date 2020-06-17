@@ -2,11 +2,11 @@
 @testset "integer_arithmetics" begin
 
     # Create some large integers
-    large_int = GAP.EvalString("2^100")
-    large_int_p1 = GAP.EvalString("2^100 + 1")
-    large_int_m1 = GAP.EvalString("2^100 - 1")
-    large_int_squared = GAP.EvalString("2^200")
-    large_int_t2 = GAP.EvalString("2^101")
+    large_int = GAP.evalstr("2^100")
+    large_int_p1 = GAP.evalstr("2^100 + 1")
+    large_int_m1 = GAP.evalstr("2^100 - 1")
+    large_int_squared = GAP.evalstr("2^200")
+    large_int_t2 = GAP.evalstr("2^101")
 
     @test zero(large_int) == 0
     @test one(large_int) == 1
@@ -42,9 +42,9 @@ end
 
 @testset "ffe_arithmetics" begin
 
-    z3_gen = GAP.EvalString("Z(3)")
-    z3_one = GAP.EvalString("Z(3)^0")
-    z3_zero = GAP.EvalString("0 * Z(3)")
+    z3_gen = GAP.evalstr("Z(3)")
+    z3_one = GAP.evalstr("Z(3)^0")
+    z3_zero = GAP.evalstr("0 * Z(3)")
 
     z3 = GAP.Globals.Z(3)
 
@@ -73,9 +73,9 @@ end
 end
 
 @testset "object_access" begin
-    list = GAP.EvalString("[1,2,3]")
-    matrix = GAP.EvalString("[[1,2],[3,4]]")
-    record = GAP.EvalString("rec( one := 1 )")
+    list = GAP.evalstr("[1,2,3]")
+    matrix = GAP.evalstr("[[1,2],[3,4]]")
+    record = GAP.evalstr("rec( one := 1 )")
 
     @test length(list) == 3
     @test list[1] == 1
@@ -85,24 +85,24 @@ end
     @test length(list) == 4
     @test list[4] == 4
 
-    @test list[1:2] == GAP.EvalString("[1,2]")
-    @test list[1:2:3] == GAP.EvalString("[1,3]")
-    @test list[[1, 2]] == GAP.EvalString("[1,2]")
+    @test list[1:2] == GAP.evalstr("[1,2]")
+    @test list[1:2:3] == GAP.evalstr("[1,3]")
+    @test list[[1, 2]] == GAP.evalstr("[1,2]")
     list[[1, 2]] = [0, 1]
-    @test list[[1, 2]] == GAP.EvalString("[0,1]")
+    @test list[[1, 2]] == GAP.evalstr("[0,1]")
     list[1:2] = [2, 3]
-    @test list[1:2] == GAP.EvalString("[2,3]")
+    @test list[1:2] == GAP.evalstr("[2,3]")
     list[1:2:3] = [3, 4]
-    @test list[1:2:3] == GAP.EvalString("[3,4]")
-    @test list[1:1] == GAP.EvalString("[3]")
+    @test list[1:2:3] == GAP.evalstr("[3,4]")
+    @test list[1:1] == GAP.evalstr("[3]")
     list[1:1] = [5]
-    @test list[1:1] == GAP.EvalString("[5]")
-    @test list[[1]] == GAP.EvalString("[5]")
+    @test list[1:1] == GAP.evalstr("[5]")
+    @test list[[1]] == GAP.evalstr("[5]")
     list[[1]] = [6]
-    @test list[[1]] == GAP.EvalString("[6]")
-    @test list[Int[]] == GAP.EvalString("[]")
+    @test list[[1]] == GAP.evalstr("[6]")
+    @test list[Int[]] == GAP.evalstr("[]")
     list[Int[]] = []
-    @test list[Int[]] == GAP.EvalString("[]")
+    @test list[Int[]] == GAP.evalstr("[]")
 
     @test matrix[1, 1] == 1
     @test matrix[2, 1] == 3

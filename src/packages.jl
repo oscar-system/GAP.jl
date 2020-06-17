@@ -54,7 +54,7 @@ function LoadPackageAndExposeGlobals(
     if !all_globals
         current_gvar_list = Globals.ShallowCopy(Globals.NamesGVars())
     end
-    load_package = EvalString("LoadPackage(\"$package\")")
+    load_package = evalstr("LoadPackage(\"$package\")")
     if load_package == Globals.fail
         error("cannot load package $package")
     end

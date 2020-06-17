@@ -4,7 +4,7 @@
     @gap <expr>
     @gap(<expr>)
 
-Execute <expr> directly in GAP, as if `GAP.EvalString("<expr>")` was called.
+Execute <expr> directly in GAP, as if `GAP.evalstr("<expr>")` was called.
 This can be used for creating GAP literals directly from Julia.
 
 # Examples
@@ -44,7 +44,7 @@ ERROR: syntax: unexpected ","
 
 ```
 
-Note also that a string argument gets evaluated with `GAP.EvalString`.
+Note also that a string argument gets evaluated with `GAP.evalstr`.
 
 ```jldoctest
 julia> @gap "\\"abc\\""
@@ -59,7 +59,7 @@ GAP: (1,2)(3,4)
 ```
 """
 macro gap(str)
-    return EvalString(string(str))
+    return evalstr(string(str))
 end
 
 export @gap

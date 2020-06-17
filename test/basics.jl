@@ -55,7 +55,7 @@ end
 end
 
 @testset "gapcalls" begin
-    f = GAP.EvalString("{x...} -> x")
+    f = GAP.evalstr("{x...} -> x")
 
     @test GAP.julia_to_gap([]) == f()
     @test GAP.julia_to_gap([1]) == f(1)
@@ -85,7 +85,7 @@ end
 
 @testset "bugfixes" begin
     # from issue #324:
-    l = GAP.EvalString("[1,~,3]")
+    l = GAP.evalstr("[1,~,3]")
     @test l[2] === l
     @test GAP.gap_to_julia(GAP.Globals.StringViewObj(l)) == "[ 1, ~, 3 ]"
 end

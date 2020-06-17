@@ -10,42 +10,42 @@ function RAW_JULIA_TO_GAP(val::Any)::Ptr{Cvoid}
     return ccall(:gap_julia, Ptr{Cvoid}, (Any,), val)
 end
 
-function EvalStringEx(cmd::String)
+function evalstr_ex(cmd::String)
     res = ccall(:GAP_EvalString, Any, (Ptr{UInt8},), cmd)
     return res
 end
 
 """
-    EvalString(cmd::String)
+    evalstr(cmd::String)
 
-Let GAP execute the command(s) given by `cmd` and returns the last result.
+Let GAP execute the command(s) given by `cmd` and return the last result.
 An error is thrown if no value is returned.
 
 # Examples
 ```jldoctest
-julia> GAP.EvalString( "1+2" )
+julia> GAP.evalstr( "1+2" )
 3
 
-julia> GAP.EvalString( "x:= []; y:= 0" )
+julia> GAP.evalstr( "x:= []; y:= 0" )
 0
 
-julia> GAP.EvalString( "Add( x, 1 )" )
+julia> GAP.evalstr( "Add( x, 1 )" )
 ERROR: Error thrown by GAP: Error, List Element: <list>[2] must have an assigned value
 [...]
 
-julia> GAP.EvalString( "x:= []" )
+julia> GAP.evalstr( "x:= []" )
 GAP: [  ]
 
-julia> GAP.EvalString( "Add( x, 1 ); 0" )
+julia> GAP.evalstr( "Add( x, 1 ); 0" )
 0
 
-julia> GAP.EvalString( "x;" )
+julia> GAP.evalstr( "x;" )
 GAP: [ 1 ]
 
 ```
 """
-function EvalString(cmd::String)
-    res = EvalStringEx(cmd * ";")
+function evalstr(cmd::String)
+    res = evalstr_ex(cmd * ";")
     return res[end][2]
 end
 

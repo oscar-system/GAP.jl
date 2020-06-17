@@ -133,11 +133,11 @@ end
 ## Ranges
 # FIXME: eventually check that the values are valid for GAP ranges
 function julia_to_gap(range::UnitRange{T}) where {T<:Integer}
-    return EvalString("[" * string(range.start) * ".." * string(range.stop) * "]")
+    return evalstr("[" * string(range.start) * ".." * string(range.stop) * "]")
 end
 
 function julia_to_gap(range::StepRange{T1,T2}) where {T1<:Integer,T2<:Integer}
-    return EvalString(
+    return evalstr(
         "[" *
         string(range.start) *
         "," *
@@ -156,7 +156,7 @@ function julia_to_gap(
 ) where {Recursive} where {S} where {T<:Union{Symbol,AbstractString}}
 
     # FIXME: add a dedicated method for creating an empty GAP record
-    record = EvalString("rec()")
+    record = evalstr("rec()")
     if Recursive
         recursion_dict[obj] = record
     end
