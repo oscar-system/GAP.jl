@@ -7,7 +7,7 @@ deps_jl = abspath(joinpath(@__DIR__, "deps-$(julia_version).jl"))
 rm(deps_jl, force = true)
 
 # Reference the Julia artifact containing the GAP source code
-artifact_dir = abspath(artifact"gap-4-11-0")
+artifact_dir = abspath(artifact"gap")
 
 # that artifact directory must contain a single subdirectory, with a name
 # which looks something like `gap-4.X.Y`; get that name

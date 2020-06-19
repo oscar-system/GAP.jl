@@ -7,7 +7,7 @@ import SHA
 gap_version = v"4.11.0"
 
 filename = "gap-$(gap_version)"
-artifact_name = replace(filename, "." => "-")
+artifact_name = "gap"
 gap_tarball = "$(filename).tar.bz2"
 url = "https://github.com/gap-system/gap/releases/download/v$(gap_version)/$(gap_tarball)"
 url2 = "https://files.gap-system.org/gap-4.$(gap_version.minor)/tar.bz2/$(gap_tarball)"
