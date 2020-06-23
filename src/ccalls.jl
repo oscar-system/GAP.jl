@@ -18,35 +18,32 @@ end
 """
     evalstr(cmd::String)
 
-Let GAP execute the command(s) given by `cmd` and return the last result.
-An error is thrown if no value is returned.
+Let GAP execute the command(s) given by `cmd`;
+if the last command has a result then return it,
+otherwise return `nothing`.
 
 # Examples
 ```jldoctest
 julia> GAP.evalstr( "1+2" )
 3
 
-julia> GAP.evalstr( "x:= []; y:= 0" )
-0
-
-julia> GAP.evalstr( "Add( x, 1 )" )
-ERROR: Error thrown by GAP: Error, List Element: <list>[2] must have an assigned value
-[...]
-
 julia> GAP.evalstr( "x:= []" )
 GAP: [  ]
 
-julia> GAP.evalstr( "Add( x, 1 ); 0" )
-0
+julia> GAP.evalstr( "y:= 2; Add( x, 1 )" )
 
-julia> GAP.evalstr( "x;" )
+julia> GAP.evalstr( "x" )
 GAP: [ 1 ]
 
 ```
 """
 function evalstr(cmd::String)
     res = evalstr_ex(cmd * ";")
-    return res[end][2]
+    if Globals.ISB_LIST( res[end], 2 )
+      return res[end][2]
+    else
+      return
+    end
 end
 
 function ValueGlobalVariable(name::String)
