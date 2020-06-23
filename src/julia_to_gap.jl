@@ -1,12 +1,13 @@
 ## Converters
 """
-    julia_to_gap(input, recursive::Val{Recursive} = Val(false), recursion_dict = IdDict())
+    julia_to_gap(input, recursion_dict = IdDict(); recursive = false)
+)
 
 Convert a julia object `input` to an appropriate GAP object.
-If `recursive` is set to `Val(true)`, recursive conversions on
+If `recursive` is set to `true`, recursive conversions on
 arrays, tuples, and dictionaries is performed.
 
-The input `recursive_data` should never be set by the user, it is meant to keep egality
+The input `recursion_dict` should never be set by the user, it is meant to keep egality
 of input data, by converting egal data to identical objects in GAP.
 """
 julia_to_gap(x::GapObj) = x # Default for actual GAP objects is to do nothing
@@ -72,17 +73,18 @@ julia_to_gap(x::AbstractString) = MakeString(x)
 julia_to_gap(x::Symbol) = MakeString(string(x))
 
 ## Generic caller for optional arguments
-julia_to_gap(obj::Any, recursive, recursion_dict) = julia_to_gap(obj)
+julia_to_gap(obj::Any, recursion_dict; recursive = true) = julia_to_gap(obj)
 
 ## Arrays (including BitArray{1})
 function julia_to_gap(
     obj::Array{T,1},
-    recursive::Val{Recursive} = Val(false),
-    recursion_dict = IdDict(),
-) where {Recursive} where {T}
+    recursion_dict::IdDict{Any,Any} = IdDict();
+    recursive = false,
+) where {T}
+
     len = length(obj)
     ret_val = NewPlist(len)
-    if Recursive
+    if recursive
         recursion_dict[obj] = ret_val
     end
     for i = 1:len
@@ -90,9 +92,9 @@ function julia_to_gap(
         if x === nothing
             continue
         end
-        if Recursive
+        if recursive
             x = get!(recursion_dict, x) do
-                julia_to_gap(x, recursive, recursion_dict)
+                julia_to_gap(x, recursion_dict; recursive = recursive)
             end
         end
         ret_val[i] = x
@@ -103,19 +105,19 @@ end
 ## Convert two dimensional arrays
 function julia_to_gap(
     obj::Array{T,2},
-    recursive::Val{Recursive} = Val(false),
-    recursion_dict = IdDict(),
-) where {Recursive} where {T}
+    recursion_dict::IdDict{Any,Any} = IdDict();
+    recursive::Bool = false,
+) where {T}
     (rows, cols) = size(obj)
     if haskey(recursion_dict, obj)
         return recursion_dict[obj]
     end
     ret_val = NewPlist(rows)
-    if Recursive
+    if recursive
         recursion_dict[obj] = ret_val
     end
     for i = 1:rows
-        ret_val[i] = julia_to_gap(obj[i, :], recursive, recursion_dict)
+        ret_val[i] = julia_to_gap(obj[i, :], recursion_dict; recursive = recursive)
     end
     return ret_val
 end
@@ -123,11 +125,11 @@ end
 ## Tuples
 function julia_to_gap(
     obj::Tuple,
-    recursive::Val{Recursive} = Val(false),
-    recursion_dict = IdDict(),
-) where {Recursive}
+    recursion_dict::IdDict{Any,Any} = IdDict();
+    recursive::Bool = false,
+)
     array = collect(Any, obj)
-    return julia_to_gap(array, recursive, recursion_dict)
+    return julia_to_gap(array, recursion_dict, recursive = recursive)
 end
 
 ## Ranges
@@ -151,20 +153,20 @@ end
 ## Dictionaries
 function julia_to_gap(
     obj::Dict{T,S},
-    recursive::Val{Recursive} = Val(false),
-    recursion_dict = IdDict(),
-) where {Recursive} where {S} where {T<:Union{Symbol,AbstractString}}
+    recursion_dict::IdDict{Any,Any} = IdDict();
+    recursive::Bool = false,
+) where {S} where {T<:Union{Symbol,AbstractString}}
 
     # FIXME: add a dedicated method for creating an empty GAP record
     record = evalstr("rec()")
-    if Recursive
+    if recursive
         recursion_dict[obj] = record
     end
     for (x, y) in obj
         x = Globals.RNamObj(MakeString(string(x)))
-        if Recursive
+        if recursive
             y = get!(recursion_dict, y) do
-                julia_to_gap(y, recursive, recursion_dict)
+                julia_to_gap(y, recursion_dict; recursive = recursive)
             end
         end
         Globals.ASS_REC(record, x, y)

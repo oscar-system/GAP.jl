@@ -65,6 +65,9 @@ end);
 
 BindGlobal("_JL_Dict_Symbol", JuliaEvalString("Dict{Symbol}"));
 BindGlobal("_JL_Dict_AbstractString", JuliaEvalString("Dict{AbstractString}"));
+
+# no longer used in the code, should be marked as obsolescent
+# (it was never documented)
 BindGlobal("_JL_VAL_TRUE", JuliaEvalString("Val(true)"));
 
 InstallMethod(JuliaToGAP, ["IsRecord", "IsJuliaObject"],
@@ -74,7 +77,10 @@ InstallMethod(JuliaToGAP, ["IsRecord", "IsJuliaObject", "IsBool"],
 function(filter, obj, recursive)
     if Julia.isa(obj, _JL_Dict_Symbol) or Julia.isa(obj, _JL_Dict_AbstractString) then
         if recursive then
-            return Julia.GAP.julia_to_gap(obj,_JL_VAL_TRUE);
+            return CallJuliaFunctionWithKeywordArguments(
+                       Julia.GAP.julia_to_gap,
+                       [ obj ],
+                       rec( recursive:= true ) );
         else
             return Julia.GAP.julia_to_gap(obj);
         fi;
@@ -90,7 +96,10 @@ function(filter, obj, recursive)
     if Julia.isa(obj, Julia.Base.Array) or Julia.isa(obj, Julia.Base.Tuple)
        or Julia.isa(obj, Julia.Base.AbstractRange) then
         if recursive then
-            return Julia.GAP.julia_to_gap(obj,_JL_VAL_TRUE);
+            return CallJuliaFunctionWithKeywordArguments(
+                       Julia.GAP.julia_to_gap,
+                       [ obj ],
+                       rec( recursive:= true ) );
         else
             return Julia.GAP.julia_to_gap(obj);
         fi;
@@ -106,7 +115,10 @@ InstallMethod(JuliaToGAP, ["IsRange", "IsJuliaObject", "IsBool"],
 function(filter, obj, recursive)
     if Julia.isa(obj, Julia.Base.AbstractRange) then
         if recursive then
-            return Julia.GAP.julia_to_gap(obj,_JL_VAL_TRUE);
+            return CallJuliaFunctionWithKeywordArguments(
+                       Julia.GAP.julia_to_gap,
+                       [ obj ],
+                       rec( recursive:= true ) );
         else
             return Julia.GAP.julia_to_gap(obj);
         fi;
@@ -124,7 +136,10 @@ InstallMethod(JuliaToGAP, ["IsBlist", "IsJuliaObject", "IsBool"],
 function(filter, obj, recursive)
     if Julia.isa(obj, _JL_Array_Bool_1) or Julia.isa(obj, _JL_BitArray_1) then
         if recursive then
-            return Julia.GAP.julia_to_gap(obj,_JL_VAL_TRUE);
+            return CallJuliaFunctionWithKeywordArguments(
+                       Julia.GAP.julia_to_gap,
+                       [ obj ],
+                       rec( recursive:= true ) );
         else
             return Julia.GAP.julia_to_gap(obj);
         fi;

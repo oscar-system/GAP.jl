@@ -105,7 +105,7 @@
     @test nonrec1 != rec
     @test all(x -> isa(x, Array), rec)
     x = [1, 2]
-    y = GAP.julia_to_gap([x, x], Val(true))
+    y = GAP.julia_to_gap([x, x]; recursive = true)
     z = Vector{Any}(y)
     @test z[1] === z[2]
 
@@ -113,7 +113,7 @@
     n = GAP.evalstr("[[1,2],[3,4]]")
     @test Matrix{Int64}(n) == [1 2; 3 4]
     xt = [(1,) (2,); (3,) (4,)]
-    n = GAP.julia_to_gap(xt, Val(false))
+    n = GAP.julia_to_gap(xt; recursive = false)
     @test Matrix{Tuple{Int64}}(n) == xt
     n = GAP.julia_to_gap(big(2)^100)
     @test_throws GAP.ConversionError Matrix{Int64}(n)
@@ -123,7 +123,7 @@
     m = Any[1 2; 3 4]
     m[1, 1] = x
     m[2, 2] = x
-    x = GAP.julia_to_gap(m, Val(true))
+    x = GAP.julia_to_gap(m; recursive = true)
     y = Matrix{Any}(x)
     @test !isa(y[1, 1], GAP.GapObj)
     @test y[1, 1] === y[2, 2]

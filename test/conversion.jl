@@ -119,7 +119,7 @@
     @test nonrec1 != rec
     @test all(x -> isa(x, Array), rec)
     x = [1, 2]
-    y = GAP.julia_to_gap([x, x], Val(true))
+    y = GAP.julia_to_gap([x, x]; recursive = true)
     z = GAP.gap_to_julia(Vector{Any}, y)
     @test z[1] === z[2]
 
@@ -127,7 +127,7 @@
     n = GAP.evalstr("[[1,2],[3,4]]")
     @test GAP.gap_to_julia(Array{Int64,2}, n) == [1 2; 3 4]
     xt = [(1,) (2,); (3,) (4,)]
-    n = GAP.julia_to_gap(xt, Val(false))
+    n = GAP.julia_to_gap(xt; recursive = false)
     @test GAP.gap_to_julia(Array{Tuple{Int64},2}, n) == xt
     n = GAP.julia_to_gap(big(2)^100)
     @test_throws GAP.ConversionError GAP.gap_to_julia(Array{Int64,2}, n)
@@ -137,7 +137,7 @@
     m = Any[1 2; 3 4]
     m[1, 1] = x
     m[2, 2] = x
-    x = GAP.julia_to_gap(m, Val(true))
+    x = GAP.julia_to_gap(m; recursive = true)
     y = GAP.gap_to_julia(Array{Any,2}, x)
     @test !isa(y[1, 1], GAP.GapObj)
     @test y[1, 1] === y[2, 2]
@@ -306,7 +306,7 @@ end
 
     ## Arrays
     x = GAP.evalstr("[1,\"foo\",2]")
-    @test GAP.julia_to_gap([1, "foo", BigInt(2)], Val(true)) == x
+    @test GAP.julia_to_gap([1, "foo", BigInt(2)]; recursive = true) == x
     x = GAP.evalstr("[1,JuliaEvalString(\"\\\"foo\\\"\"),2]")
     @test GAP.julia_to_gap([1, "foo", BigInt(2)]) == x
     x = GAP.evalstr("[[1,2],[3,4]]")
@@ -320,7 +320,7 @@ end
 
     ## Tuples
     x = GAP.evalstr("[1,\"foo\",2]")
-    @test GAP.julia_to_gap((1, "foo", 2), Val(true)) == x
+    @test GAP.julia_to_gap((1, "foo", 2); recursive = true) == x
     x = GAP.evalstr("[1,JuliaEvalString(\"\\\"foo\\\"\"),2]")
     @test GAP.julia_to_gap((1, "foo", 2)) == x
 
@@ -342,7 +342,7 @@ end
     x = GAP.evalstr("rec( foo := 1, bar := \"foo\" )")
     # ... recursive conversion
     y = Dict{Symbol,Any}(:foo => 1, :bar => "foo")
-    @test GAP.julia_to_gap(y, Val(true)) == x
+    @test GAP.julia_to_gap(y; recursive = true) == x
     # ... non-recursive conversion
     x = GAP.evalstr("rec( foo := 1, bar := JuliaEvalString(\"\\\"foo\\\"\") )")
     @test GAP.julia_to_gap(y) == x
@@ -351,11 +351,11 @@ end
     l = [1]
     yy = [l, l]
     # ... recursive conversion
-    conv = GAP.julia_to_gap(yy, Val(true))
+    conv = GAP.julia_to_gap(yy; recursive = true)
     @test conv[1] isa GAP.GapObj
     @test conv[1] === conv[2]
     # ... non-recursive conversion
-    conv = GAP.julia_to_gap(yy, Val(false))
+    conv = GAP.julia_to_gap(yy; recursive = false)
     @test isa(conv[1], Array{Int64,1})
     @test conv[1] === conv[2]
 
@@ -364,18 +364,18 @@ end
     yy[1] = yy
     yy[2] = yy
     # ... recursive conversion
-    conv = GAP.julia_to_gap(yy, Val(true))
+    conv = GAP.julia_to_gap(yy; recursive = true)
     @test conv[1] === conv
     @test conv[1] === conv[2]
     # ... non-recursive conversion
-    conv = GAP.julia_to_gap(yy, Val(false))
+    conv = GAP.julia_to_gap(yy; recursive = false)
     @test conv[1] !== conv
     @test conv[1] === conv[2]
 
     ## converting a dictionary with circular refs
     d = Dict{String,Any}("a" => 1)
     d["b"] = d
-    conv = GAP.julia_to_gap(d, Val(true))
+    conv = GAP.julia_to_gap(d; recursive = true)
     @test conv === conv.b
 
     ## Test converting lists with 'nothing' in them -> should be converted to a hole in the list
