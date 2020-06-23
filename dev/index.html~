@@ -90,23 +90,15 @@ julia&gt; g = GAP.Globals.SylowSubgroup( GAP.Globals.SymmetricGroup( 6 ), 2 );
 
 julia&gt; GAP.Globals.StructureDescription( g, short = true )
 GAP: &quot;2xD8&quot;
-</code></pre></div></div></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="GAP.evalstr" href="#GAP.evalstr"><code>GAP.evalstr</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-julia">evalstr(cmd::String)</code></pre><p>Let GAP execute the command(s) given by <code>cmd</code> and return the last result. An error is thrown if no value is returned.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; GAP.evalstr( &quot;1+2&quot; )
+</code></pre></div></div></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="GAP.evalstr" href="#GAP.evalstr"><code>GAP.evalstr</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-julia">evalstr(cmd::String)</code></pre><p>Let GAP execute the command(s) given by <code>cmd</code>; if the last command has a result then return it, otherwise return <code>nothing</code>.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; GAP.evalstr( &quot;1+2&quot; )
 3
-
-julia&gt; GAP.evalstr( &quot;x:= []; y:= 0&quot; )
-0
-
-julia&gt; GAP.evalstr( &quot;Add( x, 1 )&quot; )
-ERROR: Error thrown by GAP: Error, List Element: &lt;list&gt;[2] must have an assigned value
-[...]
 
 julia&gt; GAP.evalstr( &quot;x:= []&quot; )
 GAP: [  ]
 
-julia&gt; GAP.evalstr( &quot;Add( x, 1 ); 0&quot; )
-0
+julia&gt; GAP.evalstr( &quot;y:= 2; Add( x, 1 )&quot; )
 
-julia&gt; GAP.evalstr( &quot;x;&quot; )
+julia&gt; GAP.evalstr( &quot;x&quot; )
 GAP: [ 1 ]
 </code></pre></div></div></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="Base.getindex" href="#Base.getindex"><code>Base.getindex</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-julia">getindex(x::GapObj, i::Int64)
 getindex(x::GapObj, i::Int64, j::Int64)
