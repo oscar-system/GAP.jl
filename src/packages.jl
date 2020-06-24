@@ -81,17 +81,40 @@ module Packages
 import ...GAP: Globals, julia_to_gap, GAPROOT
 
 """
-    load(spec::String, version::String = "")
+    load(spec::String, version::String = ""; install = false)
 
 Try to load the newest installed version of the GAP package with name `spec`.
 Return `true` if this is successful, and `false` otherwise.
 
 The function calls [GAP's `LoadPackage` function](GAP_ref(ref:LoadPackage));
 the package banner is not printed.
+
+If `install` is set to `true` and the required GAP package is not yet
+installed then [`install`](@ref) is called first, in order to install
+the newest released version of the package.
 """
-function load(spec::String, version::String = "")
-    return Globals.LoadPackage(julia_to_gap(spec),
-                               julia_to_gap(version), false) == true
+function load(spec::String, version::String = ""; install = false)
+    # Try to load the package.
+    gspec = julia_to_gap(spec)
+    gversion = julia_to_gap(version)
+    loaded = Globals.LoadPackage(gspec, gversion, false)
+    if loaded == true
+        return true
+    elseif install == true
+        # Check whether an admissible version of the package is installed;
+        # if yes then we do not try to install the package anew.
+        info = Globals.PackageInfo(gspec)
+        available = [i -> info[i].Version for i in 1:length(info)]
+        if all(v -> ! Globals.CompareVersionNumbers(v, gversion), available)
+            # Try to install the package.
+            if Packages.install(spec)
+                # Make sure that the version is admissible.
+                return Globals.LoadPackage(gspec, gversion, false)
+            end
+        end
+    end
+
+    return false
     # TODO: can we provide more information in case of a failure?
     # GAP unfortunately only gives us info messages...
 end
