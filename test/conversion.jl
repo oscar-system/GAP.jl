@@ -122,6 +122,9 @@
     y = GAP.julia_to_gap([x, x]; recursive = true)
     z = GAP.gap_to_julia(Vector{Any}, y)
     @test z[1] === z[2]
+    x = GAP.evalstr( "NewVector( IsPlistVectorRep, Integers, [ 0, 2, 5 ] )" )
+    @test GAP.gap_to_julia(x) == Array{Any,1}([0, 2, 5])
+    @test GAP.gap_to_julia(Array{Int,1}, x) == Array{Int,1}([0, 2, 5])
 
     ## Matrices
     n = GAP.evalstr("[[1,2],[3,4]]")
@@ -144,6 +147,9 @@
     z = GAP.gap_to_julia(Array{Any,2}, x; recursive = false)
     @test isa(z[1, 1], GAP.GapObj)
     @test z[1, 1] === z[2, 2]
+    m = GAP.evalstr( "NewMatrix( IsPlistMatrixRep, Integers, 2, [ 0, 1, 2, 3 ] )" )
+    @test GAP.gap_to_julia(m) == Array{Any,2}([0 1; 2 3])
+    @test GAP.gap_to_julia(Array{Int,2}, m) == Array{Int,2}([0 1; 2 3])
 
     ## Tuples
     x = GAP.julia_to_gap([1, 2, 3])

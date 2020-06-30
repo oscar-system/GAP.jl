@@ -164,13 +164,22 @@ function gap_to_julia(
     recursion_dict = IdDict();
     recursive = true,
 ) where {T}
-    !Globals.IsList(obj) && throw(ConversionError(obj, Vector{T}))
+    if Globals.IsList(obj)
+        elmlist = ElmList  # returns 'nothing' for holes in the list
+    elseif Globals.IsVectorObj(obj)
+        # vector objects aren't lists,
+        # but the function for accessing entries is `ELM_LIST`
+        elmlist = Globals.ELM_LIST
+    else
+        throw(ConversionError(obj, Vector{T}))
+    end
+
     if !haskey(recursion_dict, obj)
         len_list = length(obj)
         new_array = Vector{T}(undef, len_list)
         recursion_dict[obj] = new_array
         for i = 1:len_list
-            current_obj = ElmList(obj, i)  # returns 'nothing' for holes in the list
+            current_obj = elmlist(obj, i)
             if recursive
                 new_array[i] = get!(recursion_dict, current_obj) do
                     gap_to_julia(T, current_obj, recursion_dict; recursive = true)
@@ -283,14 +292,23 @@ function gap_to_julia(::Type{T}, obj::GapObj) where {T<:StepRange}
     len = Globals.Length(obj)
     if len == 0
         # construct an empty StepRange object
-        result = 1:1:0
+        start = 1
+        step = 1
+        stop = 0
     elseif len == 1
-        result = obj[1]:1:obj[1]
+        start = obj[1]
+        step = 1
+        stop = obj[1]
     else
-        result = obj[1]:(obj[2]-obj[1]):obj[len]
+        start = obj[1]
+        step = obj[2]-obj[1]
+        stop = obj[len]
     end
 
-    return T(result)
+    # Julia does not support `StepRange(obj)` (but `StepRange{S,T}(obj)`),
+    # and also `T(start, step, stop)` does not work for each `T` in question,
+    # but we can always use `convert`.
+    return convert(T, start:step:stop)
 end
 
 ## Dictionaries
@@ -335,6 +353,8 @@ function gap_to_julia(x::GapObj; recursive = true)
     # Do not choose this conversion for other lists in 'IsBlist'.
     Globals.IsBlistRep(x) && return gap_to_julia(BitArray{1}, x)
     Globals.IsList(x) && return gap_to_julia(Vector{Any}, x; recursive = recursive)
+    Globals.IsMatrixObj(x) && return gap_to_julia(Array{Any,2}, x; recursive = recursive)
+    Globals.IsVectorObj(x) && return gap_to_julia(Vector{Any}, x; recursive = recursive)
     Globals.IsRecord(x) && return gap_to_julia(Dict{Symbol,Any}, x; recursive = recursive)
     throw(ConversionError(x, "any known type"))
 end
