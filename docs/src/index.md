@@ -5,6 +5,9 @@
 
 ```@meta
 CurrentModule = GAP
+DocTestSetup = quote
+  using GAP
+end
 ```
 
 ## Introduction
@@ -50,9 +53,34 @@ GapObj
 
 ## Conversions
 
+The conversions between GAP objects and corresponding Julia objects
+can be performed using [`gap_to_julia`](@ref) and [`julia_to_gap`](@ref).
+
+For convenience, also constructor methods are provided in the GAP-to-Julia
+direction, for example `Vector{Int64}(obj)` can be used instead of
+`GAP.gap_to_julia(Vector{Int64}, obj)`, where `obj` is a GAP list of
+integers;
+see the sections below for a description of these methods.
+
 ```@docs
 gap_to_julia
 julia_to_gap
+Int128
+BigInt
+Rational
+Float64
+big
+Char
+Cuchar
+String
+Symbol
+UnitRange
+StepRange
+Tuple
+BitArray
+Vector{T}
+Matrix{T}
+Dict{Symbol,T}
 ```
 
 ## Convenience adapters
@@ -170,7 +198,7 @@ true
 ## Access to the GAP help system
 
 ```@docs
-show_GAP_help
+show_gap_help
 ```
 
 ## Managing GAP packages
