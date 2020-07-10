@@ -1,11 +1,9 @@
 #ifndef JULIAINTERFACE_SYNC_H
 #define JULIAINTERFACE_SYNC_H
 
-// #define THREADSAFE_GAP_JL 1
-
 #include <src/compiled.h>
 
-#if defined(HPCGAP) || !defined(THREADSAFE_GAP_JL)
+#if defined(HPCGAP)
 #define BEGIN_GAP_SYNC() ((void)0)
 #define END_GAP_SYNC() ((void)0)
 #else
