@@ -183,7 +183,7 @@ function initialize(argv::Array{String,1})
     append!(argv, ["-c", """BindGlobal("__JULIAINTERNAL_LOADED_FROM_JULIA", true );"""])
 
     ccall(
-        Libdl.dlsym(libgap_handle, :GAP_Initialize),
+        (:GAP_Initialize, libgap),
         Cvoid,
         (Int32, Ptr{Ptr{UInt8}}, Ptr{Cvoid}, Ptr{Cvoid}, Cuint),
         length(argv),
@@ -200,7 +200,7 @@ function initialize(argv::Array{String,1})
     # we check for the presence of a global variable which we ensure is
     # declared near the end of init.g via a `-c` command line argument to GAP.
     val = ccall(
-        Libdl.dlsym(libgap_handle, :GAP_ValueGlobalVariable),
+        (:GAP_ValueGlobalVariable, libgap),
         Ptr{Cvoid},
         (Ptr{Cuchar},),
         "__JULIAINTERNAL_LOADED_FROM_JULIA",
@@ -215,13 +215,13 @@ function initialize(argv::Array{String,1})
         # function of the  C standard library with the appropriate exit code.
         # But as mentioned, just before that, it runs `jl_atexit_hook`.
         FORCE_QUIT_GAP = ccall(
-            Libdl.dlsym(libgap_handle, :GAP_ValueGlobalVariable),
+            (:GAP_ValueGlobalVariable, libgap),
             Ptr{Cvoid},
             (Ptr{Cuchar},),
             "FORCE_QUIT_GAP",
         )
         ccall(
-            Libdl.dlsym(libgap_handle, :GAP_CallFuncArray),
+            (:GAP_CallFuncArray, libgap),
             Ptr{Cvoid},
             (Ptr{Cvoid}, Culonglong, Ptr{Cvoid}),
             FORCE_QUIT_GAP,
@@ -234,18 +234,18 @@ function initialize(argv::Array{String,1})
 
     # load JuliaInterface
     loadpackage_return = ccall(
-        Libdl.dlsym(libgap_handle, :GAP_EvalString),
+        (:GAP_EvalString, libgap),
         Ptr{Cvoid},
         (Ptr{UInt8},),
         "LoadPackage(\"JuliaInterface\");",
     )
-    if loadpackage_return == Libdl.dlsym(libgap_handle, :GAP_Fail)
+    if loadpackage_return == cglobal((:GAP_Fail, libgap))
         error("JuliaInterface could not be loaded")
     end
 
     # If we are in "stand-alone mode", stop here
     if isdefined(Main, :__GAP_ARGS__)
-        ccall(Libdl.dlsym(libgap_handle, :SyInstallAnswerIntr), Cvoid, ())
+        ccall((:SyInstallAnswerIntr, libgap), Cvoid, ())
         return
     end
 
@@ -259,14 +259,14 @@ function initialize(argv::Array{String,1})
 end
 
 function finalize()
-    ccall((:GAP_finalize, "libgap"), Cvoid, ())
+    ccall((:GAP_finalize, libgap), Cvoid, ())
 end
 
 function register_GapObj()
     # TODO: for now we try to stay compatible with older GAP versions that
     # don't have GAP_register_GapObj yet, but we should remove this ASAP
     try
-        ccall(:GAP_register_GapObj, Cvoid, (Any,), GapObj)
+        ccall((:GAP_register_GapObj, libgap), Cvoid, (Any,), GapObj)
     catch
         # silently ignore for now
     end

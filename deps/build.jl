@@ -64,6 +64,9 @@ cd(gap_bin_root) do
                 ARCHEXT=v$(julia_version)
                 `)
     run(`make -j$(Sys.CPU_THREADS)`)
+    if Sys.isapple()
+        run(`install_name_tool -id libgap.dylib .libs/libgap.dylib`)
+    end
 end
 
 # clean out some clutter
@@ -76,6 +79,12 @@ println("Compiling JuliaInterface ...")
 cd(joinpath(extra_gap_root, "pkg", "JuliaInterface")) do
     run(`./configure $gap_bin_root`)
     run(`make -j$(Sys.CPU_THREADS)`)
+#    if Sys.isapple()
+#        # FIXME: the following doesn't work as JuliaInterface.so is just
+#        # a bundle ("loadable module"), not a dylib ("shared library");
+#        # on Linux, no such distinction exists
+#        run(`install_name_tool -id JuliaInterface.so bin/*/JuliaInterface.so`)
+#    end
 end
 
 ##

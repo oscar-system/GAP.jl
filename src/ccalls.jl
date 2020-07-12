@@ -11,7 +11,7 @@ function RAW_JULIA_TO_GAP(val::Any)::Ptr{Cvoid}
 end
 
 function evalstr_ex(cmd::String)
-    res = ccall(:GAP_EvalString, Any, (Ptr{UInt8},), cmd)
+    res = ccall((:GAP_EvalString, libgap), Any, (Ptr{UInt8},), cmd)
     return res
 end
 
@@ -51,7 +51,7 @@ end
 # Retrieve the value of a global GAP variable given its name. This function
 # returns a raw Ptr value, and should only be called by plumbing code.
 function _ValueGlobalVariable(name::Union{AbstractString,Symbol})
-    return ccall(:GAP_ValueGlobalVariable, Ptr{Cvoid}, (Ptr{UInt8},), name)
+    return ccall((:GAP_ValueGlobalVariable, libgap), Ptr{Cvoid}, (Ptr{UInt8},), name)
 end
 
 function ValueGlobalVariable(name::Union{AbstractString,Symbol})
@@ -61,13 +61,13 @@ end
 
 # Test whether the global GAP variable with the given name can be assigned to.
 function CanAssignGlobalVariable(name::Union{AbstractString,Symbol})
-    ccall(:GAP_CanAssignGlobalVariable, Bool, (Ptr{UInt8},), name)
+    ccall((:GAP_CanAssignGlobalVariable, libgap), Bool, (Ptr{UInt8},), name)
 end
 
 # Assign a value to the global GAP variable with the given name. This function
 # assigns a raw Ptr value, and should only be called by plumbing code.
 function _AssignGlobalVariable(name::Union{AbstractString,Symbol}, value::Ptr{Cvoid})
-    ccall(:GAP_AssignGlobalVariable, Cvoid, (Ptr{UInt8}, Ptr{Cvoid}), name, value)
+    ccall((:GAP_AssignGlobalVariable, libgap), Cvoid, (Ptr{UInt8}, Ptr{Cvoid}), name, value)
 end
 
 # Assign a value to the global GAP variable with the given name.
@@ -80,56 +80,32 @@ function AssignGlobalVariable(name::Union{AbstractString,Symbol}, value::Any)
 end
 
 function MakeString(val::String)::GapObj
-    string = ccall(:GAP_MakeString, Any, (Ptr{UInt8},), val)
+    string = ccall((:GAP_MakeString, libgap), Any, (Ptr{UInt8},), val)
     return string
 end
 
 function CSTR_STRING(val::GapObj)::String
-    char_ptr = ccall(:GAP_CSTR_STRING, Ptr{UInt8}, (Any,), val)
+    char_ptr = ccall((:GAP_CSTR_STRING, libgap), Ptr{UInt8}, (Any,), val)
     return deepcopy(unsafe_string(char_ptr))
 end
 
 function CSTR_STRING_AS_ARRAY(val::GapObj)::Array{UInt8,1}
-    string_len = Int64(ccall(:GAP_LenString, Cuint, (Any,), val))
-    char_ptr = ccall(:GAP_CSTR_STRING, Ptr{UInt8}, (Any,), val)
+    string_len = Int64(ccall((:GAP_LenString, libgap), Cuint, (Any,), val))
+    char_ptr = ccall((:GAP_CSTR_STRING, libgap), Ptr{UInt8}, (Any,), val)
     return deepcopy(unsafe_wrap(Array{UInt8,1}, char_ptr, string_len))
 end
 
 
-function NewPlist(length::Int64)
-    o = ccall(:GAP_NewPlist, Any, (Int64,), length)
-    return o
-end
-
-function NewPrecord(capacity::Int64)
-    o = ccall(:GAP_NewPrecord, Any, (Int64,), capacity)
-    return o
-end
-
-function NEW_MACFLOAT(x::Float64)
-    o = ccall(:NEW_MACFLOAT, Any, (Cdouble,), x)
-    return o
-end
-
-function ValueMacFloat(x::GapObj)
-    o = ccall(:GAP_ValueMacFloat, Cdouble, (Any,), x)
-    return o
-end
-
-function CharWithValue(x::Cuchar)
-    o = ccall(:GAP_CharWithValue, Any, (Cuchar,), x)
-    return o
-end
-
+NewPlist(length::Int64) = ccall((:GAP_NewPlist, libgap), Any, (Int64,), length)
+NewPrecord(capacity::Int64) = ccall((:GAP_NewPrecord, libgap), Any, (Int64,), capacity)
+NEW_MACFLOAT(x::Float64) = ccall((:NEW_MACFLOAT, libgap), Any, (Cdouble,), x)
+ValueMacFloat(x::GapObj) = ccall((:GAP_ValueMacFloat, libgap), Cdouble, (Any,), x)
+CharWithValue(x::Cuchar) = ccall((:GAP_CharWithValue, libgap), Any, (Cuchar,), x)
 function ElmList(x::GapObj, position)
-    o = ccall(:GAP_ElmList, Ptr{Cvoid}, (Any, Culong), x, Culong(position))
+    o = ccall((:GAP_ElmList, libgap), Ptr{Cvoid}, (Any, Culong), x, Culong(position))
     return RAW_GAP_TO_JULIA(o)
 end
-
-function NewJuliaFunc(x::Function)
-    o = ccall(:NewJuliaFunc, Any, (Any,), x)
-    return o
-end
+NewJuliaFunc(x::Function) = ccall(:NewJuliaFunc, Any, (Any,), x)
 
 """
     call_gap_func(func::GapObj, args...; kwargs...)
