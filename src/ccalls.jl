@@ -224,8 +224,4 @@ function setproperty!(funcobj::GlobalsType, name::Symbol, val::Any)
     ccall(:GAP_AssignGlobalVariable, Cvoid, (Ptr{UInt8}, Ptr{Cvoid}), name, tmp)
 end
 
-function propertynames(funcobj::GlobalsType, private)
-    list = Globals.NamesGVars()
-    list_converted = gap_to_julia(Array{Symbol,1}, list)
-    return tuple(list_converted...)
-end
+propertynames(::GlobalsType) = gap_to_julia(Vector{Symbol}, Globals.NamesGVars())
