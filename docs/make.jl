@@ -8,6 +8,13 @@ makedocs(
     modules = [GAP],
     clean = true,
     doctest = true,
+    doctestfilters = Regex[
+      r"BitVector|BitArray\{1\}",
+      r"Matrix\{Int64\}|Array\{Int64,2\}",
+      r"Vector\{Any\}|Array\{Any,1\}",
+      r"Vector\{Int64\}|Array\{Int64,1\}",
+      r"Vector\{UInt8\}|Array\{UInt8,1\}",
+    ],
     strict = false,
     checkdocs = :none,
     pages = ["index.md"],

@@ -9,4 +9,4 @@ include("constructors.jl")
 include("macros.jl")
 include("packages.jl")
 include("help.jl")
-include("testmanual.jl")
+# include("testmanual.jl")  # leave this out until doctestfilters can be used here
