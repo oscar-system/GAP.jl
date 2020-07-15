@@ -53,18 +53,56 @@ GapObj
 
 ## Conversions
 
-The conversions between GAP objects and corresponding Julia objects
-can be performed using [`gap_to_julia`](@ref) and [`julia_to_gap`](@ref).
+One of the main ideas of GAP.jl is that conversions of Julia objects
+to GAP objects and vice versa shall be avoided whenever this is possible.
+For a few types of objects, such conversions are unavoidable,
+see [Automatic GAP-to-Julia and Julia_to-GAP Conversions](@ref).
+In all other situations,
+the conversions between GAP objects and corresponding Julia objects
+can be performed using [`gap_to_julia`](@ref) and [`julia_to_gap`](@ref),
+or using `Base.convert`,
+see [Explicit GAP-to-Julia and Julia_to-GAP Conversions](@ref), respectively.
 
 For convenience, also constructor methods are provided in the GAP-to-Julia
 direction, for example `Vector{Int64}(obj)` can be used instead of
 `GAP.gap_to_julia(Vector{Int64}, obj)`, where `obj` is a GAP list of
 integers;
-see the sections below for a description of these methods.
+see [Constructor Methods for GAP-to-Julia Conversions](@ref)
+for a description of these methods.
+
+### Automatic GAP-to-Julia and Julia_to-GAP Conversions
+
+When one calls a GAP function with Julia objects as arguments,
+or a Julia function with GAP objects as arguments,
+the arguments are in general not automatically converted to GAP objects
+or Julia objects, respectively.
+The exceptions are as follows.
+
+- GAP's immediate integers (in the range ...)
+  are automatically converted to Julia's `Int64` objects;
+  Julia's `Int64` objects are automatically converted to GAP's immediate
+  integers if they fit, and to GAP's large integers otherwise.
+
+- GAP's immediate finite field elements
+  are automatically converted to Julia's `GAP.FFE` objects, and vice versa.
+
+- GAP's `true` and `false`
+  are automatically converted to Julia's `true` and `false`, and vice versa.
+
+### Explicit GAP-to-Julia and Julia_to-GAP Conversions
 
 ```@docs
 gap_to_julia
 julia_to_gap
+convert
+```
+
+### Constructor Methods for GAP-to-Julia Conversions
+
+(For Julia-to-GAP conversions,
+one can use [`GapObj`](@ref) as a constructor.)
+
+```@docs
 Int128
 BigInt
 Rational
@@ -120,7 +158,7 @@ GAP operations.
 | `<`          | `LT`     |
 | `==`         | `EQ`     |
 
-```julia
+```jldoctest
 julia> l = GAP.julia_to_gap( [ 1, 3, 7, 15 ] )
 GAP: [ 1, 3, 7, 15 ]
 
