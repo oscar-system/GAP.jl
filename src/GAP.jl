@@ -91,6 +91,20 @@ julia> typeof( GAP.evalstr( "Julia.Base" ) )        # native Julia object
 Module
 
 ```
+
+One can use `GapObj` as a constructor,
+in order to convert Julia objects to GAP objects.
+Such calls are delegated to [`julia_to_gap`](@ref).
+
+# Examples
+```jldoctest
+julia> GAP.GapObj(1//3)
+GAP: 1/3
+
+julia> GAP.GapObj([1 2; 3 4])
+GAP: [ [ 1, 2 ], [ 3, 4 ] ]
+
+```
 """
 abstract type GapObj end
 
@@ -365,6 +379,7 @@ include("adapter.jl")
 include("macros.jl")
 include("gap_to_julia.jl")
 include("constructors.jl")
+include("convert.jl")
 include("julia_to_gap.jl")
 include("utils.jl")
 include("help.jl")

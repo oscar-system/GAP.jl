@@ -25,6 +25,28 @@ of converted subobjects and should never be given by the user.
 For GAP lists and records, it makes sense to convert also the subobjects
 recursively, or to keep the subobjects as they are;
 the behaviour is controlled by `recursive`, which can be `true` or `false`.
+
+# Examples
+```jldoctest
+julia> GAP.gap_to_julia( GAP.evalstr( "1/3" ) )
+1//3
+
+julia> GAP.gap_to_julia( GAP.evalstr( "\\"abc\\"" ) )
+"abc"
+
+julia> val = GAP.evalstr( "[ [ 1, 2 ], [ 3, 4 ] ]" );
+
+julia> GAP.gap_to_julia( val )
+2-element Array{Any,1}:
+ Any[1, 2]
+ Any[3, 4]
+
+julia> GAP.gap_to_julia( val, recursive = false )
+2-element Array{Any,1}:
+ GAP: [ 1, 2 ]
+ GAP: [ 3, 4 ]
+
+```
 """
 function gap_to_julia(t::T, x::Any) where {T<:Type}
     ## Default for conversion:

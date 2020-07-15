@@ -1,7 +1,6 @@
 @testset "conversion from GAP using constructors" begin
 
-    ## Defaults
-    @test GAP.Obj(true) == true
+    ## Analogous tests for conversion using convert are in convert.jl.
 
     ## Conversion to GAP.Obj and GAP.GapObj.
     x = GAP.evalstr("2^100")
@@ -42,7 +41,7 @@
     x = GAP.evalstr("(1,2,3)")
     @test_throws GAP.ConversionError Float64(x)
 
-    ## big
+    ## big (is not a constructor but fits here)
     x = GAP.evalstr("2^100")
     @test big(x) == BigInt(2)^100
     x = GAP.evalstr("2^100/3")

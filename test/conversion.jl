@@ -390,6 +390,15 @@ end
     xx = GAP.evalstr("[1,,1]")
     @test GAP.julia_to_gap([1, nothing, 1]) == xx
 
+    ## Convert GAP objects recursively.
+    val = GAP.julia_to_gap([])
+    val[1] = [1, 2]
+    val[2] = [3, 4]
+    nonrec = GAP.julia_to_gap(val)
+    @test nonrec[1] == [1, 2]
+    rec = GAP.julia_to_gap(val, recursive = true)
+    @test nonrec[1] == GAP.julia_to_gap([1, 2])
+
     ## Test function conversion
     return_first(args...) = args[1]
     return_first_gap = GAP.julia_to_gap(return_first)

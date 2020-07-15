@@ -1,7 +1,6 @@
 ## Converters
 """
     julia_to_gap(input, recursion_dict = IdDict(); recursive = false)
-)
 
 Convert a julia object `input` to an appropriate GAP object.
 If `recursive` is set to `true`, recursive conversions on
@@ -9,8 +8,23 @@ arrays, tuples, and dictionaries is performed.
 
 The input `recursion_dict` should never be set by the user, it is meant to keep egality
 of input data, by converting egal data to identical objects in GAP.
+
+# Examples
+```jldoctest
+julia> GAP.julia_to_gap(1//3)
+GAP: 1/3
+
+julia> GAP.julia_to_gap("abc")
+GAP: "abc"
+
+julia> GAP.julia_to_gap([ [1, 2], [3, 4]])
+GAP: [ <Julia: [1, 2]>, <Julia: [3, 4]> ]
+
+julia> GAP.julia_to_gap([ [1, 2], [3, 4]], recursive = true)
+GAP: [ [ 1, 2 ], [ 3, 4 ] ]
+
+```
 """
-julia_to_gap(x::GapObj) = x # Default for actual GAP objects is to do nothing
 julia_to_gap(x::FFE) = x    # Default for actual GAP objects is to do nothing
 julia_to_gap(x::Bool) = x   # Default for actual GAP objects is to do nothing
 
@@ -173,6 +187,35 @@ function julia_to_gap(
     end
 
     return record
+end
+
+## GAP objects: deal with recursion (subobjects may be Julia objects)
+function julia_to_gap(
+    obj::GapObj,
+    recursion_dict::IdDict{Any,Any} = IdDict();
+    recursive::Bool = false,
+)
+    if ! recursive
+        ret_val = obj
+    elseif Globals.IsList(obj)
+        len = length(obj)
+        ret_val = NewPlist(len)
+        recursion_dict[obj] = ret_val
+        for i = 1:len
+             ret_val[i] = julia_to_gap(obj[i], recursion_dict; recursive = recursive)
+        end
+    elseif Globals.IsRecord(obj)
+        # FIXME: add a dedicated method for creating an empty GAP record
+        ret_val = evalstr("rec()")
+        recursion_dict[obj] = ret_val
+        for x in gap_to_julia(Globals.RecNames(obj))
+            Globals.ASS_REC(ret_val, x, julia_to_gap(Globals.ELM_REC(obj, x), recursion_dict; recursive = true))
+        end
+    else
+        ret_val = obj
+    end
+
+    return ret_val
 end
 
 julia_to_gap(func::Function) = NewJuliaFunc(func)
