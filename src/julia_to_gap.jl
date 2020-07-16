@@ -69,7 +69,7 @@ julia_to_gap(x::Float16) = NEW_MACFLOAT(Float64(x))
 julia_to_gap(x::Char) = CharWithValue(Cuchar(x))
 
 ## Strings and symbols
-julia_to_gap(x::AbstractString) = MakeString(x)
+julia_to_gap(x::AbstractString) = MakeString(string(x))
 julia_to_gap(x::Symbol) = MakeString(string(x))
 
 ## Generic caller for optional arguments

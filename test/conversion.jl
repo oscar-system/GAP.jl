@@ -309,6 +309,8 @@ end
     x = GAP.evalstr("\"foo\"")
     @test GAP.julia_to_gap("foo") == x
     @test GAP.julia_to_gap(:foo) == x
+    substr = match(r"a(.*)c", "abc").match  # type is `SubString{String}`
+    @test GAP.julia_to_gap(substr) == GAP.julia_to_gap("abc")
 
     ## Arrays
     x = GAP.evalstr("[1,\"foo\",2]")
