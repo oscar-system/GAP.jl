@@ -35,93 +35,68 @@ function(obj)
   return str;
 end );
 
-##  Compute the URL of a manual entry in the current &GAP; online manuals.
-##  (This should eventually be moved to GAPDoc.)
+##  Compute the URLs of matching manual entries in the current &GAP;
+##  online manuals.
+##  (This should eventually be moved to the GAP help system.)
 ##
-##  <A>reference</A> must be a string of the form <C>pkgname:label</C>,
+##  <A>str</A> must be a string of the form <C>label</C> or
+##  <C>pkgname:label</C>,
 ##  for example <C>ref:Size</C> or <C>atlasrep:InfoAtlasRep</C>.
 ##
-##  <A>prefix</A>, if given, must be the URL to a directory containing the
-##  HTML versions of &GAP; manuals;
-##  the default is the current address at <C>www.gap-system.org</C>.
+##  <A>prefix</A>, if given, must be the URL of a directory containing the
+##  HTML versions of &GAP; manuals.
 ##
-BindGlobal( "UrlOfManualEntry", function( reference, prefix... )
-    local pos, pkgname, label, ref, test, localurl, middle, nextpos, suffix;
+BindGlobal( "MatchURLs", function(str, prefix...)
+  local pref, p, book, books, matches, urls, u, r;
 
-    # Deal with the optional argument.
-    if Length( prefix ) = 0 then
-      prefix:= "https://www.gap-system.org/Manuals/";
-    elif Length( prefix ) = 1 and IsString( prefix[1] ) then
-      prefix:= prefix[1];
-    else
-      Error( "<prefix>, if given must be a string" );
-    fi;
+  # check for given prefix
+  if Length(prefix) > 0 then
+    pref := prefix[1];
+  else
+    pref := false;
+  fi;
 
-    # get package name and label
-    pos:= Position( reference, ':' );
-    if pos = fail then
-      return fail;
-    fi;
-    pkgname:= reference{ [ 1 .. pos-1 ] };
-    label:= reference{ [ pos+1 .. Length( reference ) ] };
+  # extract the book
+  p := Position( str, ':' );
+  if p <> fail  then
+      book := str{[1..p-1]};
+      str  := str{[p+1..Length(str)]};
+  else
+      book := "";
+  fi;
 
-    # the anchor for the label
-    ref:= GAPDoc2HTMLProcs.ResolveExternalRef( pkgname, label, 1 );
-    if ref = fail then
-      return fail;
-    fi;
-    test:= ref[1];
-    if test{ [ PositionSublist( test, ": " ) + 2 .. Length( test ) ] }
-       <> label then
-      Info( InfoWarning, 1,
-            "UrlOfManualEntry for label '", label, "': found reference to '",
-            test, "'" );
-      return fail;
-    fi;
-    localurl:= ref[6];
+  # normalizing for search
+  book := SIMPLE_STRING(book);
+  str := SIMPLE_STRING(str);
 
-    # prescribe the substring where to cut off the suffix
-    if pkgname = "ref" then
-      middle:= "/doc/ref/";
-    elif pkgname = "tut" then
-      middle:= "/doc/tut/";
-    else
-      middle:= "/pkg/";
-    fi;
+  # we check if `book' MATCH_BEGINs some of the available books
+  books := Filtered(HELP_KNOWN_BOOKS[1], bn-> MATCH_BEGIN(bn, book));
+  if Length(books) = 0 then return []; fi;
 
-    # compute the suffix
-    pos:= PositionSublist( localurl, middle );
-    if pos = fail then
-      return fail;
-    fi;
-    nextpos:= PositionSublist( localurl, middle, pos );
-    while nextpos <> fail do
-      pos:= nextpos;
-      nextpos:= PositionSublist( localurl, "/pkg/", pos );
-    od;
-    suffix:= localurl{ [ pos + 1 .. Length( localurl ) ] };
+  # matches[1] are exact matches, and matches[2] further ones
+  if Length(str) > 0 and str[1] = '?' then
+      matches := HELP_GET_MATCHES(books, str{[2..Length(str)]}, false);
+  else
+      matches := HELP_GET_MATCHES(books, str, true);
+  fi;
 
-    return Concatenation( prefix, suffix );
-end );
+  # evaluate "url"s for all matches
+  urls := List(Concatenation(matches), a->
+              [a[1].bookname, StripEscapeSequences(a[1].entries[a[2]][1]),
+               HELP_BOOK_HANDLER.(a[1].handler).HelpData(a[1], a[2], "url")]);
 
-BindGlobal( "ComputeLinksToGAPManuals", function( str )
-    local pos, pos2, reference, repl;
-
-    pos:= PositionSublist( str, "GAP_ref(" );
-    while pos <> fail do
-      pos2:= Position( str, ')', pos );
-      if pos2 = fail then
-        Info( InfoWarning, 1, "syntax/tagging problem" );
-        return "";
+  # substitute GAP roots by prefix
+  if pref <> false then
+    for u in urls do
+      if IsString(u[3]) then
+        for r in GAPInfo.RootPaths do
+          if PositionSublist(u[3], r) = 1 then
+            u[3] := Concatenation(pref, u[3]{[Length(r)+1..Length(u[3])]});
+          fi;
+        od;
       fi;
-      reference:= str{ [ pos + 8 .. pos2 - 1 ] };
-      repl:= UrlOfManualEntry( reference );
-      if repl = fail then
-        Info( InfoWarning, 1, "reference '", reference, "' not found" );
-        return "";
-      fi;
-      str:= ReplacedString( str, str{ [ pos .. pos2 ] }, repl );
-      pos:= PositionSublist( str, "GAP_ref(", pos );
     od;
-    return str;
+  fi;
+
+  return urls;
 end );
