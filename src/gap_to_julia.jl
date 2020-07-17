@@ -88,8 +88,8 @@ gap_to_julia(::T, x::Nothing) where {T<:Type} = nothing
 gap_to_julia(::Type{Any}, x::Nothing) = nothing
 
 ## Handle "conversion" to GAP.Obj and GAP.GapObj (may occur in recursions).
-gap_to_julia(::Type{GAP.Obj}, x::Obj) = x
-gap_to_julia(::Type{GAP.GapObj}, x::GapObj) = x
+gap_to_julia(::Type{Obj}, x::Obj) = x
+gap_to_julia(::Type{GapObj}, x::GapObj) = x
 
 ## Integers
 gap_to_julia(::Type{T}, x::Int64) where {T<:Integer} = trunc(T, x)

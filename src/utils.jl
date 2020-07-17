@@ -46,7 +46,7 @@ function call_with_catch(juliafunc, arguments)
 end
 
 """
-    function kwarg_wrapper(func, args::Array{T1,1}, kwargs::Dict{Symbol,T2}) where {T1, T2}
+    kwarg_wrapper(func, args::Array{T1,1}, kwargs::Dict{Symbol,T2}) where {T1, T2}
 
 Call the function `func` with arguments `args` and keyword arguments
 given by the keys and values of `kwargs`.

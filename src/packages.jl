@@ -66,6 +66,7 @@ function LoadPackageAndExposeGlobals(
     for sym in new_symbols
         if overwrite || !isdefined(mod, sym)
             try
+                # Note that we must specify `GAP.` here.
                 mod.eval(:($(sym) = GAP.Globals.$(sym)))
             catch
             end

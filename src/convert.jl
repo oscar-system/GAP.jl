@@ -14,10 +14,14 @@ Such calls are delegated to [`gap_to_julia`](@ref).
 
 # Examples
 ```jldoctest
-julia> convert(Rational{BigInt}, GAP.evalstr("2^64"))
+julia> val = @gap 2^64
+GAP: 18446744073709551616
+
+julia> convert(Rational{BigInt}, val)
 18446744073709551616//1
 
-julia> val = GAP.evalstr("[ [ 1 ], [ 2 ] ]");
+julia> val = @gap [ [ 1 ], [ 2 ] ]
+GAP: [ [ 1 ], [ 2 ] ]
 
 julia> convert(Vector{Any}, val)
 2-element Array{Any,1}:
@@ -52,13 +56,13 @@ otherwise not.
 
 # Examples
 ```jldoctest
-julia> convert( GAP.GapObj, [1 2; 3 4] )
+julia> convert( GapObj, [1 2; 3 4] )
 GAP: [ [ 1, 2 ], [ 3, 4 ] ]
 
-julia> convert( GAP.GapObj, [[1, 2], [3, 4]] )
+julia> convert( GapObj, [[1, 2], [3, 4]] )
 GAP: [ <Julia: [1, 2]>, <Julia: [3, 4]> ]
 
-julia> convert( GAP.GapObj, [[1, 2], [3, 4]], recursive = true )
+julia> convert( GapObj, [[1, 2], [3, 4]], recursive = true )
 GAP: [ [ 1, 2 ], [ 3, 4 ] ]
 
 ```

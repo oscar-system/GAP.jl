@@ -58,12 +58,12 @@ julia> m[2,1]
 """
 Base.getindex(x::GapObj, i::Int64) = Globals.ELM_LIST(x, i)
 Base.getindex(x::GapObj, l::Union{Vector{T},AbstractRange{T}}) where {T<:Integer} =
-    GAP.Globals.ELMS_LIST(x, GAP.julia_to_gap(l))
+    Globals.ELMS_LIST(x, julia_to_gap(l))
 # The following would make sense but could not be installed just for the case
 # that the second argument is a positions list;
 # also large integers (element access) or strings (component access) would have
 # to be handled.
-# Base.getindex(x::GapObj, l::GapObj) = GAP.Globals.ELMS_LIST(x, l)
+# Base.getindex(x::GapObj, l::GapObj) = Globals.ELMS_LIST(x, l)
 
 """
     setindex!(x::GapObj, v::Any, i::Int64)
@@ -107,7 +107,7 @@ GAP: [ [ 1, 0 ], [ 3, 4 ] ]
 """
 Base.setindex!(x::GapObj, v::Any, i::Int64) = Globals.ASS_LIST(x, i, v)
 Base.setindex!(x::GapObj, v::Any, l::Union{Vector{T},AbstractRange{T}}) where {T<:Integer} =
-    GAP.Globals.ASSS_LIST(x, GAP.julia_to_gap(l), GAP.julia_to_gap(v))
+    Globals.ASSS_LIST(x, julia_to_gap(l), julia_to_gap(v))
 
 Base.length(x::GapObj) = Globals.Length(x)
 Base.firstindex(x::GapObj) = 1

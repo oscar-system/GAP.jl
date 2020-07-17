@@ -25,7 +25,7 @@ julia> BigInt(val)
 julia> val = GAP.evalstr("2^59")
 576460752303423488
 
-julia> isa(val, GAP.GapObj)
+julia> isa(val, GapObj)
 false
 
 julia> BigInt(val)
@@ -372,7 +372,7 @@ GAP: [ [ 1 ], [ 2 ] ]
 julia> Tuple{Any,Any}(val)
 (Any[1], Any[2])
 
-julia> Tuple{GAP.GapObj,GAP.GapObj}(val, recursive = false)
+julia> Tuple{GapObj,GapObj}(val, recursive = false)
 (GAP: [ 1 ], GAP: [ 2 ])
 
 ```

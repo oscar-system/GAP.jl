@@ -1,7 +1,7 @@
 ## enable access to GAP help system from Julia
 
 function gap_help_string(topic::String, onlyexact::Bool = false)
-    return GAP.gap_to_julia(GAP.Globals.HelpString(GAP.julia_to_gap(topic), onlyexact))
+    return gap_to_julia(Globals.HelpString(julia_to_gap(topic), onlyexact))
 end
 
 """
