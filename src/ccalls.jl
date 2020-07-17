@@ -205,7 +205,7 @@ Main
 """
 const Globals = GlobalsType()
 
-function getproperty(funcobj::GlobalsType, name::Symbol)
+function getproperty(::GlobalsType, name::Symbol)
     v = ccall(:GAP_ValueGlobalVariable, Ptr{Cvoid}, (Ptr{UInt8},), name)
     if v === C_NULL
         error("GAP variable ", name, " not bound")
@@ -214,12 +214,12 @@ function getproperty(funcobj::GlobalsType, name::Symbol)
     return v
 end
 
-function hasproperty(funcobj::GlobalsType, name::Symbol)
+function hasproperty(::GlobalsType, name::Symbol)
     v = ccall(:GAP_ValueGlobalVariable, Ptr{Cvoid}, (Ptr{UInt8},), name)
     return v !== C_NULL
 end
 
-function setproperty!(funcobj::GlobalsType, name::Symbol, val::Any)
+function setproperty!(::GlobalsType, name::Symbol, val::Any)
     tmp = (val === nothing) ? C_NULL : RAW_JULIA_TO_GAP(val)
     ccall(:GAP_AssignGlobalVariable, Cvoid, (Ptr{UInt8}, Ptr{Cvoid}), name, tmp)
 end
