@@ -54,25 +54,25 @@ This is the Julia type of all those GAP objects that are not
 
 # Examples
 ```jldoctest
-julia> isa( GAP.evalstr( "[ 1, 2 ]" ), GAP.GapObj ) # a GAP list
+julia> isa( GAP.evalstr( "[ 1, 2 ]" ), GapObj ) # a GAP list
 true
 
-julia> isa( GAP.evalstr( "rec()" ), GAP.GapObj )    # a GAP record
+julia> isa( GAP.evalstr( "rec()" ), GapObj )    # a GAP record
 true
 
-julia> isa( GAP.evalstr( "(1,2,3)" ), GAP.GapObj )  # a GAP permutation
+julia> isa( GAP.evalstr( "(1,2,3)" ), GapObj )  # a GAP permutation
 true
 
-julia> isa( GAP.evalstr( "2^64" ), GAP.GapObj )     # a large GAP integer
+julia> isa( GAP.evalstr( "2^64" ), GapObj )     # a large GAP integer
 true
 
-julia> typeof( GAP.evalstr( "2^59" ) )              # a small GAP integer
+julia> typeof( GAP.evalstr( "2^59" ) )          # a small GAP integer
 Int64
 
-julia> typeof( GAP.evalstr( "Z(2)" ) )              # a GAP FFE
+julia> typeof( GAP.evalstr( "Z(2)" ) )          # a GAP FFE
 FFE
 
-julia> typeof( GAP.evalstr( "true" ) )              # a Boolean
+julia> typeof( GAP.evalstr( "true" ) )          # a Boolean
 Bool
 
 ```
@@ -98,10 +98,10 @@ Such calls are delegated to [`julia_to_gap`](@ref).
 
 # Examples
 ```jldoctest
-julia> GAP.GapObj(1//3)
+julia> GapObj(1//3)
 GAP: 1/3
 
-julia> GAP.GapObj([1 2; 3 4])
+julia> GapObj([1 2; 3 4])
 GAP: [ [ 1, 2 ], [ 3, 4 ] ]
 
 ```

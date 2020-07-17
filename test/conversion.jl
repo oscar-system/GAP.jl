@@ -397,7 +397,7 @@ end
     nonrec = GAP.julia_to_gap(val)
     @test nonrec[1] == [1, 2]
     rec = GAP.julia_to_gap(val, recursive = true)
-    @test nonrec[1] == GAP.julia_to_gap([1, 2])
+    @test rec[1] == GAP.julia_to_gap([1, 2])
 
     ## Test function conversion
     return_first(args...) = args[1]

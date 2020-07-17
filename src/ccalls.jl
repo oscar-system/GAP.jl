@@ -86,6 +86,11 @@ function NewPlist(length::Int64)
     return o
 end
 
+function NewPrecord(capacity::Int64)
+    o = ccall(:GAP_NewPrecord, Any, (Int64,), capacity)
+    return o
+end
+
 function NEW_MACFLOAT(x::Float64)
     o = ccall(:NEW_MACFLOAT, Any, (Cdouble,), x)
     return o

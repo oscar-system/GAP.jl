@@ -14,6 +14,10 @@
     @test x[1] == 1
     @test length(x) == 1
 
+    x = GAP.NewPrecord(0)
+    x.a = 1
+    @test x.a == 1
+
     xx = GAP.julia_to_gap([1, 2, 3])
     @test_throws ErrorException xx[4]
 

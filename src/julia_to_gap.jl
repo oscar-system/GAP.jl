@@ -171,8 +171,7 @@ function julia_to_gap(
     recursive::Bool = false,
 ) where {S} where {T<:Union{Symbol,AbstractString}}
 
-    # FIXME: add a dedicated method for creating an empty GAP record
-    record = evalstr("rec()")
+    record = NewPrecord(0)
     if recursive
         recursion_dict[obj] = record
     end
@@ -189,7 +188,11 @@ function julia_to_gap(
     return record
 end
 
-## GAP objects: deal with recursion (subobjects may be Julia objects)
+## GAP objects:
+## We have to do something only if recursive conversion is required,
+## and if `obj` contains Julia subobjects;
+## in this case, `obj` is a GAP list or record.
+## An example of such an `obj` is `GAP.julia_to_gap([[1]])`.
 function julia_to_gap(
     obj::GapObj,
     recursion_dict::IdDict{Any,Any} = IdDict();
@@ -205,8 +208,7 @@ function julia_to_gap(
              ret_val[i] = julia_to_gap(obj[i], recursion_dict; recursive = recursive)
         end
     elseif Globals.IsRecord(obj)
-        # FIXME: add a dedicated method for creating an empty GAP record
-        ret_val = evalstr("rec()")
+        ret_val = NewPrecord(0)
         recursion_dict[obj] = ret_val
         for x in gap_to_julia(Globals.RecNames(obj))
             Globals.ASS_REC(ret_val, x, julia_to_gap(Globals.ELM_REC(obj, x), recursion_dict; recursive = true))
