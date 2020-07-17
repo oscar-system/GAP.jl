@@ -203,7 +203,7 @@ Main
 
 ```
 """
-Globals = GlobalsType()
+const Globals = GlobalsType()
 
 function getproperty(funcobj::GlobalsType, name::Symbol)
     v = ccall(:GAP_ValueGlobalVariable, Ptr{Cvoid}, (Ptr{UInt8},), name)
