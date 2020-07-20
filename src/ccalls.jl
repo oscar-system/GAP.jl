@@ -2,7 +2,7 @@
 
 import Base: getproperty, hasproperty, setproperty!, propertynames
 
-function RAW_GAP_TO_JULIA(ptr::Ptr{Cvoid})::Any
+function RAW_GAP_TO_JULIA(ptr::Ptr{Cvoid})
     return ccall(:julia_gap, Any, (Ptr{Cvoid},), ptr)
 end
 
