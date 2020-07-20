@@ -2,13 +2,38 @@
 
 import Base: getproperty, hasproperty, setproperty!, propertynames
 
+#
+# low-level GAP -> Julia conversion
+#
 function RAW_GAP_TO_JULIA(ptr::Ptr{Cvoid})
+    # convert immediate ints and FFEs directly, to void (un)boxing
+    as_int = reinterpret(Int, ptr)
+    if as_int & 1 == 1
+        return as_int >> 2
+    elseif as_int & 2 == 2
+        return reinterpret(FFE, ptr)
+    end
     return ccall(:julia_gap, Any, (Ptr{Cvoid},), ptr)
 end
 
+#
+# low-level Julia -> GAP conversion
+#
 function RAW_JULIA_TO_GAP(val::Any)::Ptr{Cvoid}
     return ccall(:gap_julia, Ptr{Cvoid}, (Any,), val)
 end
+#RAW_JULIA_TO_GAP(x::Bool) = x ? gap_true : gap_false
+RAW_JULIA_TO_GAP(x::FFE) = reinterpret(Ptr{Cvoid}, x)
+RAW_JULIA_TO_GAP(x::GapObj) = pointer_from_objref(x)
+function RAW_JULIA_TO_GAP(x::Int)
+    # convert x into a GAP immediate integer if it fits
+    if x in -1<<60:(1<<60-1)
+        return Ptr{Cvoid}(x << 2 | 1)
+    end
+    return ccall(:gap_julia, Ptr{Cvoid}, (Any,), x)
+    #return ccall(:ObjInt_Int, Ptr{Cvoid}, (Int,), x)
+end
+
 
 function evalstr_ex(cmd::String)
     res = ccall(:GAP_EvalString, Any, (Ptr{UInt8},), cmd)
@@ -161,6 +186,8 @@ GAP: "2xD8"
 
 ```
 """
+# this is the generic method which supports keyword arguments (mapped to GAP options)
+# and goes through JuliaInterface, which is convenient but a bit slow.
 function call_gap_func(func::GapObj, args...; kwargs...)
     global Globals
     options = false
@@ -184,7 +211,122 @@ function call_gap_func(func::GapObj, args...; kwargs...)
     end
 end
 
+# make all GapObj callable
 (func::GapObj)(args...; kwargs...) = call_gap_func(func, args...; kwargs...)
+
+#
+# below several "fastpath" methods for call_gap_func follow which directly
+# jump to the C handler functions, bypassing JuliaInterface, for optimal
+# performance.
+#
+
+# 0 arguments
+function call_gap_func(func::GapObj)
+    fptr = GET_FUNC_PTR(func, 0)
+    ret = ccall(fptr, Ptr{Cvoid}, (Ptr{Cvoid},), pointer_from_objref(func))
+    return RAW_GAP_TO_JULIA(ret)
+end
+
+# 1 argument
+function call_gap_func(func::GapObj, a1::Obj)
+    fptr = GET_FUNC_PTR(func, 1)
+    ret = ccall(
+        fptr,
+        Ptr{Cvoid},
+        (Ptr{Cvoid}, Ptr{Cvoid}),
+        pointer_from_objref(func),
+        RAW_JULIA_TO_GAP(a1),
+    )
+    return RAW_GAP_TO_JULIA(ret)
+end
+
+# 2 arguments
+function call_gap_func(func::GapObj, a1::Obj, a2::Obj)
+    fptr = GET_FUNC_PTR(func, 2)
+    ret = ccall(
+        fptr,
+        Ptr{Cvoid},
+        (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}),
+        pointer_from_objref(func),
+        RAW_JULIA_TO_GAP(a1),
+        RAW_JULIA_TO_GAP(a2),
+    )
+    return RAW_GAP_TO_JULIA(ret)
+end
+
+# 3 arguments
+function call_gap_func(func::GapObj, a1::Obj, a2::Obj, a3::Obj)
+    fptr = GET_FUNC_PTR(func, 3)
+    ret = ccall(
+        fptr,
+        Ptr{Cvoid},
+        (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}),
+        pointer_from_objref(func),
+        RAW_JULIA_TO_GAP(a1),
+        RAW_JULIA_TO_GAP(a2),
+        RAW_JULIA_TO_GAP(a3),
+    )
+    return RAW_GAP_TO_JULIA(ret)
+end
+
+# 4 arguments
+function call_gap_func(func::GapObj, a1::Obj, a2::Obj, a3::Obj, a4::Obj)
+    fptr = GET_FUNC_PTR(func, 4)
+    ret = ccall(
+        fptr,
+        Ptr{Cvoid},
+        (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}),
+        pointer_from_objref(func),
+        RAW_JULIA_TO_GAP(a1),
+        RAW_JULIA_TO_GAP(a2),
+        RAW_JULIA_TO_GAP(a3),
+        RAW_JULIA_TO_GAP(a4),
+    )
+    return RAW_GAP_TO_JULIA(ret)
+end
+
+# 5 arguments
+function call_gap_func(func::GapObj, a1::Obj, a2::Obj, a3::Obj, a4::Obj, a5::Obj)
+    fptr = GET_FUNC_PTR(func, 5)
+    ret = ccall(
+        fptr,
+        Ptr{Cvoid},
+        (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}),
+        pointer_from_objref(func),
+        RAW_JULIA_TO_GAP(a1),
+        RAW_JULIA_TO_GAP(a2),
+        RAW_JULIA_TO_GAP(a3),
+        RAW_JULIA_TO_GAP(a4),
+        RAW_JULIA_TO_GAP(a5),
+    )
+    return RAW_GAP_TO_JULIA(ret)
+end
+
+# 6 arguments
+function call_gap_func(func::GapObj, a1::Obj, a2::Obj, a3::Obj, a4::Obj, a5::Obj, a6::Obj)
+    fptr = GET_FUNC_PTR(func, 6)
+    ret = ccall(
+        fptr,
+        Ptr{Cvoid},
+        (
+            Ptr{Cvoid},
+            Ptr{Cvoid},
+            Ptr{Cvoid},
+            Ptr{Cvoid},
+            Ptr{Cvoid},
+            Ptr{Cvoid},
+            Ptr{Cvoid},
+        ),
+        pointer_from_objref(func),
+        RAW_JULIA_TO_GAP(a1),
+        RAW_JULIA_TO_GAP(a2),
+        RAW_JULIA_TO_GAP(a3),
+        RAW_JULIA_TO_GAP(a4),
+        RAW_JULIA_TO_GAP(a5),
+        RAW_JULIA_TO_GAP(a6),
+    )
+    return RAW_GAP_TO_JULIA(ret)
+end
 
 
 struct GlobalsType end
