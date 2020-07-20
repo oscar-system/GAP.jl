@@ -232,6 +232,37 @@ function initialize(argv::Array{String,1})
         error("FORCE_QUIT_GAP failed")
     end
 
+    # Unfortunately, the following trick does not work if GAP.jl is
+    # used by another package, such as Oscar.jl; we get errors like this:
+    #   WARNING: eval into closed module GAP:
+    #   Expr(:const, :gap_true = Expr(:call, :cglobal, :(:True)))
+    #     ** incremental compilation may be fatally broken for this module **
+    #@eval const gap_true = cglobal(:True)
+    #@eval const gap_false = cglobal(:False)
+
+    # verify our TNUMs are still correct
+    # (Base.invokelatest is only needed for Julia 1.3)
+    @assert T_INT == Base.invokelatest(ValueGlobalVariable,:T_INT)
+    @assert T_INTPOS == Base.invokelatest(ValueGlobalVariable,:T_INTPOS)
+    @assert T_INTNEG == Base.invokelatest(ValueGlobalVariable,:T_INTNEG)
+    @assert T_RAT == Base.invokelatest(ValueGlobalVariable,:T_RAT)
+    @assert T_CYC == Base.invokelatest(ValueGlobalVariable,:T_CYC)
+    @assert T_FFE == Base.invokelatest(ValueGlobalVariable,:T_FFE)
+    @assert T_MACFLOAT == Base.invokelatest(ValueGlobalVariable,:T_MACFLOAT)
+    @assert T_PERM2 == Base.invokelatest(ValueGlobalVariable,:T_PERM2)
+    @assert T_PERM4 == Base.invokelatest(ValueGlobalVariable,:T_PERM4)
+    @assert T_TRANS2 == Base.invokelatest(ValueGlobalVariable,:T_TRANS2)
+    @assert T_TRANS4 == Base.invokelatest(ValueGlobalVariable,:T_TRANS4)
+    @assert T_PPERM2 == Base.invokelatest(ValueGlobalVariable,:T_PPERM2)
+    @assert T_PPERM4 == Base.invokelatest(ValueGlobalVariable,:T_PPERM4)
+    @assert T_BOOL == Base.invokelatest(ValueGlobalVariable,:T_BOOL)
+    @assert T_CHAR == Base.invokelatest(ValueGlobalVariable,:T_CHAR)
+    @assert T_FUNCTION == Base.invokelatest(ValueGlobalVariable,:T_FUNCTION)
+    @assert T_BODY == Base.invokelatest(ValueGlobalVariable,:T_BODY)
+    @assert T_FLAGS == Base.invokelatest(ValueGlobalVariable,:T_FLAGS)
+    @assert T_LVARS == Base.invokelatest(ValueGlobalVariable,:T_LVARS)
+    @assert T_HVARS == Base.invokelatest(ValueGlobalVariable,:T_HVARS)
+
     # load JuliaInterface
     loadpackage_return = ccall(
         Libdl.dlsym(libgap_handle, :GAP_EvalString),

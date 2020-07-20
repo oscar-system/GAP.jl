@@ -254,11 +254,13 @@ end
     @test GAP.julia_to_gap(true)
 
     ## Integers
-    @test GAP.julia_to_gap(Int128(1)) == 1
-    @test GAP.julia_to_gap(Int64(1)) == 1
-    @test GAP.julia_to_gap(Int32(1)) == 1
-    @test GAP.julia_to_gap(Int16(1)) == 1
-    @test GAP.julia_to_gap(Int8(1)) == 1
+    for i in -2:2
+        @test GAP.julia_to_gap(Int128(i)) == i
+        @test GAP.julia_to_gap(Int64(i)) == i
+        @test GAP.julia_to_gap(Int32(i)) == i
+        @test GAP.julia_to_gap(Int16(i)) == i
+        @test GAP.julia_to_gap(Int8(i)) == i
+    end
 
     ## Int64 corner cases
     @test GAP.julia_to_gap(-2^60) === -2^60
@@ -283,9 +285,12 @@ end
     @test GAP.julia_to_gap(UInt8(1)) == 1
 
     ## BigInts
-    @test GAP.julia_to_gap(BigInt(1)) == 1
+    for i = -2:2
+        @test GAP.julia_to_gap(BigInt(i)) == i
+    end
     x = GAP.evalstr("2^100")
     @test GAP.julia_to_gap(BigInt(2)^100) == x
+    @test GAP.julia_to_gap(-BigInt(2)^100) == -x
 
     ## Rationals
     x = GAP.evalstr("2^100")
