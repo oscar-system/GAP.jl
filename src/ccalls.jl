@@ -46,22 +46,75 @@ function evalstr(cmd::String)
     end
 end
 
-function ValueGlobalVariable(name::String)
-    gvar = ccall(:GAP_ValueGlobalVariable, Ptr{Cvoid}, (Ptr{UInt8},), name)
-    return RAW_GAP_TO_JULIA(gvar)
+# We use @pure to notify Julia about the fact that the GAP kernel function
+# GVarName is indeed pure, i.e., if called repeatedly with identical input,
+# it will always produce the same output. This means the compiler can hoist
+# it out of loops.
+Base.@pure function GVarName(name::Union{AbstractString,Symbol})
+    return ccall(:GVarName, Csize_t, (Ptr{UInt8},), name)
 end
 
-function CanAssignGlobalVariable(name::String)
-    # TODO: use symbol_to_gvar here, too`? Or conversely: convert
-    ccall(:GAP_CanAssignGlobalVariable, Bool, (Ptr{UInt8},), name)
+# low-level GAP kernel function for accessing the content of a global GAP
+# variable; returns C_NULL if the variable is unbound.
+function ValAutoGVar(gvar::Csize_t)
+    return ccall(:ValAutoGVar, Ptr{Cvoid}, (Csize_t,), gvar)
 end
 
-function AssignGlobalVariable(name::String, value::Any)
+function AssGVar(gvar::Csize_t, val::Ptr{Cvoid})
+    ccall(:AssGVar, Cvoid, (Csize_t, Ptr{Cvoid}), gvar, val)
+end
+
+function IsReadOnlyGVar(gvar::Csize_t)
+    return ccall(:IsReadOnlyGVar, Csize_t, (Csize_t,), gvar) != 0
+end
+
+function IsConstantGVar(gvar::Csize_t)
+    return ccall(:IsConstantGVar, Csize_t, (Csize_t,), gvar) != 0
+end
+
+
+# Retrieve the value of a global GAP variable given its name. This function
+# returns a raw Ptr value, and should only be called by plumbing code.
+#
+# We don't use the "official" libgap API to allow the Julia compiler to better
+# optimize the code.
+function _ValueGlobalVariable(name::Union{AbstractString,Symbol})
+    #return ccall(:GAP_ValueGlobalVariable, Ptr{Cvoid}, (Ptr{UInt8},), name)
+    return ValAutoGVar(GVarName(name))
+end
+
+function ValueGlobalVariable(name::Union{AbstractString,Symbol})
+    v = _ValueGlobalVariable(name)
+    return RAW_GAP_TO_JULIA(v)
+end
+
+# Test whether the global GAP variable with the given name can be assigned to.
+#
+# We don't use the "official" libgap API to allow the Julia compiler to better
+# optimize the code.
+function CanAssignGlobalVariable(name::Union{AbstractString,Symbol})
+    #ccall(:GAP_CanAssignGlobalVariable, Bool, (Ptr{UInt8},), name)
+    gvar = GVarName(name)
+    return !IsReadOnlyGVar(gvar) && !IsConstantGVar(gvar)
+end
+
+# Assign a value to the global GAP variable with the given name. This function
+# assigns a raw Ptr value, and should only be called by plumbing code.
+#
+# We don't use the "official" libgap API to allow the Julia compiler to better
+# optimize the code.
+function _AssignGlobalVariable(name::Union{AbstractString,Symbol}, value::Ptr{Cvoid})
+    #ccall(:GAP_AssignGlobalVariable, Cvoid, (Ptr{UInt8}, Ptr{Cvoid}), name, value)
+    return AssGVar(GVarName(name), value)
+end
+
+# Assign a value to the global GAP variable with the given name.
+function AssignGlobalVariable(name::Union{AbstractString,Symbol}, value::Any)
     if !CanAssignGlobalVariable(name)
         error("cannot assing to $name in GAP")
     end
     tmp = RAW_JULIA_TO_GAP(value)
-    ccall(:GAP_AssignGlobalVariable, Cvoid, (Ptr{UInt8}, Ptr{Cvoid}), name, tmp)
+    _AssignGlobalVariable(name, tmp)
 end
 
 function MakeString(val::String)::GapObj
@@ -211,7 +264,7 @@ Main
 const Globals = GlobalsType()
 
 function getproperty(::GlobalsType, name::Symbol)
-    v = ccall(:GAP_ValueGlobalVariable, Ptr{Cvoid}, (Ptr{UInt8},), name)
+    v = _ValueGlobalVariable(name)
     if v === C_NULL
         error("GAP variable ", name, " not bound")
     end
@@ -220,13 +273,12 @@ function getproperty(::GlobalsType, name::Symbol)
 end
 
 function hasproperty(::GlobalsType, name::Symbol)
-    v = ccall(:GAP_ValueGlobalVariable, Ptr{Cvoid}, (Ptr{UInt8},), name)
-    return v !== C_NULL
+    return _ValueGlobalVariable(name) !== C_NULL
 end
 
 function setproperty!(::GlobalsType, name::Symbol, val::Any)
     tmp = (val === nothing) ? C_NULL : RAW_JULIA_TO_GAP(val)
-    ccall(:GAP_AssignGlobalVariable, Cvoid, (Ptr{UInt8}, Ptr{Cvoid}), name, tmp)
+    _AssignGlobalVariable(name, tmp)
 end
 
 propertynames(::GlobalsType) = gap_to_julia(Vector{Symbol}, Globals.NamesGVars())
