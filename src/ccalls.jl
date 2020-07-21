@@ -39,8 +39,9 @@ GAP: [ 1 ]
 """
 function evalstr(cmd::String)
     res = evalstr_ex(cmd * ";")
-    if Globals.ISB_LIST( res[end], 2 )
-      return res[end][2]
+    res = res[end]
+    if Globals.ISB_LIST(res, 2)
+      return res[2]
     else
       return
     end
@@ -155,19 +156,18 @@ function call_gap_func(func::GapObj, args...; kwargs...)
         Globals.PushOptions(kwargs_rec)
         options = true
     end
-    result = nothing
     try
         result = ccall(:call_gap_func, Any, (Any, Any), func, args)
-    catch e
+        if options
+            Globals.PopOptions()
+        end
+        return result
+    catch
         if options
             Globals.ResetOptionsStack()
         end
-        rethrow(e)
+        rethrow()
     end
-    if options
-        Globals.PopOptions()
-    end
-    return result
 end
 
 (func::GapObj)(args...; kwargs...) = call_gap_func(func, args...; kwargs...)
