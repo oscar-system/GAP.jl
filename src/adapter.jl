@@ -109,9 +109,9 @@ Base.setindex!(x::GapObj, v::Any, i::Int64) = Globals.ASS_LIST(x, i, v)
 Base.setindex!(x::GapObj, v::Any, l::Union{Vector{T},AbstractRange{T}}) where {T<:Integer} =
     Globals.ASSS_LIST(x, julia_to_gap(l), julia_to_gap(v))
 
-Base.length(x::GapObj) = Globals.Length(x)
+Base.length(x::GapObj)::Int = Globals.Length(x)
 Base.firstindex(x::GapObj) = 1
-Base.lastindex(x::GapObj) = Globals.Length(x)
+Base.lastindex(x::GapObj)::Int = Globals.Length(x)
 
 # matrix
 Base.getindex(x::GapObj, i::Int64, j::Int64) = Globals.ELM_LIST(x, i, j)
