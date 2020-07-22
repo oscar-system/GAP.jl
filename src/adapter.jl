@@ -118,9 +118,7 @@ Base.getindex(x::GapObj, i::Int64, j::Int64) = Globals.ELM_LIST(x, i, j)
 Base.setindex!(x::GapObj, v::Any, i::Int64, j::Int64) = Globals.ASS_LIST(x, i, j, v)
 
 # records
-Base.@pure RNamObj(f::Union{AbstractString,Symbol}) = ccall(:RNamName, Int, (Ptr{UInt8},), f)
-Base.@pure RNamObj(f::Int) = ccall(:RNamIntg, Int, (Int,), f)
-
+RNamObj(f::Union{Symbol,Int64,AbstractString}) = Globals.RNamObj(MakeString(string(f)))
 # note: we don't use Union{Symbol,Int64,AbstractString} below to avoid
 # ambiguity between these methods and method `getproperty(x, f::Symbol)`
 # from Julia's Base module
