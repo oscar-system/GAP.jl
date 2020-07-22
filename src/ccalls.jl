@@ -47,41 +47,11 @@ function evalstr(cmd::String)
     end
 end
 
-# We use @pure to notify Julia about the fact that the GAP kernel function
-# GVarName is indeed pure, i.e., if called repeatedly with identical input,
-# it will always produce the same output. This means the compiler can hoist
-# it out of loops.
-Base.@pure function GVarName(name::Union{AbstractString,Symbol})
-    return ccall(:GVarName, Csize_t, (Ptr{UInt8},), name)
-end
-
-# low-level GAP kernel function for accessing the content of a global GAP
-# variable; returns C_NULL if the variable is unbound.
-function ValAutoGVar(gvar::Csize_t)
-    return ccall(:ValAutoGVar, Ptr{Cvoid}, (Csize_t,), gvar)
-end
-
-function AssGVar(gvar::Csize_t, val::Ptr{Cvoid})
-    ccall(:AssGVar, Cvoid, (Csize_t, Ptr{Cvoid}), gvar, val)
-end
-
-function IsReadOnlyGVar(gvar::Csize_t)
-    return ccall(:IsReadOnlyGVar, Csize_t, (Csize_t,), gvar) != 0
-end
-
-function IsConstantGVar(gvar::Csize_t)
-    return ccall(:IsConstantGVar, Csize_t, (Csize_t,), gvar) != 0
-end
-
 
 # Retrieve the value of a global GAP variable given its name. This function
 # returns a raw Ptr value, and should only be called by plumbing code.
-#
-# We don't use the "official" libgap API to allow the Julia compiler to better
-# optimize the code.
 function _ValueGlobalVariable(name::Union{AbstractString,Symbol})
-    #return ccall(:GAP_ValueGlobalVariable, Ptr{Cvoid}, (Ptr{UInt8},), name)
-    return ValAutoGVar(GVarName(name))
+    return ccall(:GAP_ValueGlobalVariable, Ptr{Cvoid}, (Ptr{UInt8},), name)
 end
 
 function ValueGlobalVariable(name::Union{AbstractString,Symbol})
@@ -90,23 +60,14 @@ function ValueGlobalVariable(name::Union{AbstractString,Symbol})
 end
 
 # Test whether the global GAP variable with the given name can be assigned to.
-#
-# We don't use the "official" libgap API to allow the Julia compiler to better
-# optimize the code.
 function CanAssignGlobalVariable(name::Union{AbstractString,Symbol})
-    #ccall(:GAP_CanAssignGlobalVariable, Bool, (Ptr{UInt8},), name)
-    gvar = GVarName(name)
-    return !IsReadOnlyGVar(gvar) && !IsConstantGVar(gvar)
+    ccall(:GAP_CanAssignGlobalVariable, Bool, (Ptr{UInt8},), name)
 end
 
 # Assign a value to the global GAP variable with the given name. This function
 # assigns a raw Ptr value, and should only be called by plumbing code.
-#
-# We don't use the "official" libgap API to allow the Julia compiler to better
-# optimize the code.
 function _AssignGlobalVariable(name::Union{AbstractString,Symbol}, value::Ptr{Cvoid})
-    #ccall(:GAP_AssignGlobalVariable, Cvoid, (Ptr{UInt8}, Ptr{Cvoid}), name, value)
-    return AssGVar(GVarName(name), value)
+    ccall(:GAP_AssignGlobalVariable, Cvoid, (Ptr{UInt8}, Ptr{Cvoid}), name, value)
 end
 
 # Assign a value to the global GAP variable with the given name.
@@ -266,10 +227,9 @@ const Globals = GlobalsType()
 function getproperty(::GlobalsType, name::Symbol)
     v = _ValueGlobalVariable(name)
     if v === C_NULL
-        error("GAP variable ", name, " not bound")
+        error("GAP variable $name not bound")
     end
-    v = RAW_GAP_TO_JULIA(v)
-    return v
+    return RAW_GAP_TO_JULIA(v)
 end
 
 function hasproperty(::GlobalsType, name::Symbol)
@@ -277,6 +237,9 @@ function hasproperty(::GlobalsType, name::Symbol)
 end
 
 function setproperty!(::GlobalsType, name::Symbol, val::Any)
+    if !CanAssignGlobalVariable(name)
+        error("cannot assing to $name in GAP")
+    end
     tmp = (val === nothing) ? C_NULL : RAW_JULIA_TO_GAP(val)
     _AssignGlobalVariable(name, tmp)
 end
