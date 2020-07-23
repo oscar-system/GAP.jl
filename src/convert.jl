@@ -39,7 +39,7 @@ Base.convert(::Type{T}, obj::GapObj; recursive::Bool = true) where {T} = gap_to_
 
 ## The following is needed to disambiguate.
 ## It is important not to call `gap_to_julia` here,
-## otherwise we get a circular call in `RAW_GAP_TO_JULIA`;
+## otherwise we get a circular call in `_GAP_TO_JULIA`;
 ## note that `ccall` calls `convert`.
 Base.convert(::Type{Any}, obj::GapObj) = obj
 
