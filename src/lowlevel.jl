@@ -26,34 +26,31 @@ const T_HVARS    = 19   # high variables bag
 #
 # functions which directly interact with GAP objects, bypassing the GAP kernel
 #
+function ADDR_OBJ(obj::GapObj)
+    mptr = Ptr{Ptr{Csize_t}}(pointer_from_objref(obj))
+    return unsafe_load(mptr)
+end
+
 function TNUM_OBJ(obj::GapObj)
-    mptr = Ptr{Ptr{Culonglong}}(pointer_from_objref(obj))
-    bag_ptr = unsafe_load(mptr)
-    header = unsafe_load(bag_ptr, 0)
-    return Int(header & 0xFF)
+    header = unsafe_load(ADDR_OBJ(obj), 0)
+    return reinterpret(Int, header & 0xFF)
 end
 
 function FLAGS_OBJ(obj::GapObj)
-    mptr = Ptr{Ptr{Culonglong}}(pointer_from_objref(obj))
-    bag_ptr = unsafe_load(mptr)
-    header = unsafe_load(bag_ptr, 0)
-    return Int((header >> 8) & 0xFF)
+    header = unsafe_load(ADDR_OBJ(obj), 0)
+    return reinterpret(Int, (header >> 8) & 0xFF)
 end
 
 function SIZE_OBJ(obj::GapObj)
-    mptr = Ptr{Ptr{Culonglong}}(pointer_from_objref(obj))
-    bag_ptr = unsafe_load(mptr)
-    header = unsafe_load(bag_ptr, 0)
-    return Int((header >> 16))
+    header = unsafe_load(ADDR_OBJ(obj), 0)
+    return reinterpret(Int, (header >> 16))
 end
-
 
 # given a GAP T_FUNCTION object, fetch its n-th function handler (handler 0-6
 # are for calls with that many arguments, handler 7 is for any higher number
 # of arguments)
 function GET_FUNC_PTR(obj::GapObj, narg::Int)
-    mptr = Ptr{Ptr{Culonglong}}(pointer_from_objref(obj))
-    bag_ptr = unsafe_load(mptr)
+    bag_ptr = ADDR_OBJ(obj)
     @assert (unsafe_load(bag_ptr, 0) & 0xFF) == T_FUNCTION
     @assert 0 <= narg && narg <= 7
     bag_ptr = Ptr{Ptr{Nothing}}(bag_ptr)
