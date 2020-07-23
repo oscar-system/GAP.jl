@@ -79,6 +79,17 @@ end
     @test ["1", "2", "3", "4", "5", "6"] == convert(Vector{String}, f("1", "2", "3", "4", "5", "6"))
     @test ["1", "2", "3", "4", "5", "6", "7"] == convert(Vector{String}, f("1", "2", "3", "4", "5", "6", "7"))
 
+    g = GAP.evalstr("""{x...} -> [x,ValueOption("option")]""")
+
+    @test GAP.julia_to_gap([[], 42], recursive=true) == g(; option=42)
+    @test GAP.julia_to_gap([[1], 42], recursive=true) == g(1; option=42)
+    @test GAP.julia_to_gap([[1, 2], 42], recursive=true) == g(1, 2; option=42)
+    @test GAP.julia_to_gap([[1, 2, 3], 42], recursive=true) == g(1, 2, 3; option=42)
+    @test GAP.julia_to_gap([[1, 2, 3, 4], 42], recursive=true) == g(1, 2, 3, 4; option=42)
+    @test GAP.julia_to_gap([[1, 2, 3, 4, 5], 42], recursive=true) == g(1, 2, 3, 4, 5; option=42)
+    @test GAP.julia_to_gap([[1, 2, 3, 4, 5, 6], 42], recursive=true) == g(1, 2, 3, 4, 5, 6; option=42)
+    @test GAP.julia_to_gap([[1, 2, 3, 4, 5, 6, 7], 42], recursive=true) == g(1, 2, 3, 4, 5, 6, 7; option=42)
+
     # check to see if a non-basic object (here: a tuple) can be
     # passed and then extracted again
     @test f((1, 2, 3))[1] == (1, 2, 3)
