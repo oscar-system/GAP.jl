@@ -157,9 +157,22 @@ function error_handler()
     error("Error thrown by GAP: ", str)
 end
 
+# This will be filled out by __init__(), as it must be done at runtime
+libgap_path = ""
+JuliaInterface_path = ""
+
+# This will be filled out by __init__()
+libgap_handle = C_NULL
+JuliaInterface_handle = C_NULL
+
+# This must be `const` so that we can use it with `ccall()`
+const libgap = "libgap" # extension is automatically added
+const JuliaInterface = "JuliaInterface.so"
+
 function initialize(argv::Array{String,1})
-    lib = joinpath(GAPROOT, ".libs", "libgap")
-    gap_library = Libdl.dlopen(lib, Libdl.RTLD_GLOBAL)
+    global libgap_path = joinpath(GAPROOT, ".libs", libgap)
+    global libgap_handle = Libdl.dlopen(libgap_path, Libdl.RTLD_GLOBAL)
+
     handle_signals = isdefined(Main, :__GAP_ARGS__)  # a bit of a hack...
     error_handler_func = handle_signals ? C_NULL : @cfunction(error_handler, Cvoid, ())
 
@@ -170,7 +183,7 @@ function initialize(argv::Array{String,1})
     append!(argv, ["-c", """BindGlobal("__JULIAINTERNAL_LOADED_FROM_JULIA", true );"""])
 
     ccall(
-        Libdl.dlsym(gap_library, :GAP_Initialize),
+        Libdl.dlsym(libgap_handle, :GAP_Initialize),
         Cvoid,
         (Int32, Ptr{Ptr{UInt8}}, Ptr{Cvoid}, Ptr{Cvoid}, Cuint),
         length(argv),
@@ -187,7 +200,7 @@ function initialize(argv::Array{String,1})
     # we check for the presence of a global variable which we ensure is
     # declared near the end of init.g via a `-c` command line argument to GAP.
     val = ccall(
-        Libdl.dlsym(gap_library, :GAP_ValueGlobalVariable),
+        Libdl.dlsym(libgap_handle, :GAP_ValueGlobalVariable),
         Ptr{Cvoid},
         (Ptr{Cuchar},),
         "__JULIAINTERNAL_LOADED_FROM_JULIA",
@@ -202,13 +215,13 @@ function initialize(argv::Array{String,1})
         # function of the  C standard library with the appropriate exit code.
         # But as mentioned, just before that, it runs `jl_atexit_hook`.
         FORCE_QUIT_GAP = ccall(
-            Libdl.dlsym(gap_library, :GAP_ValueGlobalVariable),
+            Libdl.dlsym(libgap_handle, :GAP_ValueGlobalVariable),
             Ptr{Cvoid},
             (Ptr{Cuchar},),
             "FORCE_QUIT_GAP",
         )
         ccall(
-            Libdl.dlsym(gap_library, :GAP_CallFuncArray),
+            Libdl.dlsym(libgap_handle, :GAP_CallFuncArray),
             Ptr{Cvoid},
             (Ptr{Cvoid}, Culonglong, Ptr{Cvoid}),
             FORCE_QUIT_GAP,
@@ -221,20 +234,25 @@ function initialize(argv::Array{String,1})
 
     # load JuliaInterface
     loadpackage_return = ccall(
-        Libdl.dlsym(gap_library, :GAP_EvalString),
+        Libdl.dlsym(libgap_handle, :GAP_EvalString),
         Ptr{Cvoid},
         (Ptr{UInt8},),
         "LoadPackage(\"JuliaInterface\");",
     )
-    if loadpackage_return == Libdl.dlsym(gap_library, :GAP_Fail)
+    if loadpackage_return == Libdl.dlsym(libgap_handle, :GAP_Fail)
         error("JuliaInterface could not be loaded")
     end
 
     # If we are in "stand-alone mode", stop here
     if isdefined(Main, :__GAP_ARGS__)
-        ccall(Libdl.dlsym(gap_library, :SyInstallAnswerIntr), Cvoid, ())
+        ccall(Libdl.dlsym(libgap_handle, :SyInstallAnswerIntr), Cvoid, ())
         return
     end
+
+    # open JuliaInterface.so, too
+    #global JuliaInterface_path = CSTR_STRING(EvalString("""Filename(DirectoriesPackagePrograms("JuliaInterface"), "JuliaInterface.so");"""))
+    global JuliaInterface_path = joinpath(@__DIR__, "..", "pkg", "JuliaInterface", "bin", sysinfo["GAParch"], ".libs", JuliaInterface)
+    global JuliaInterface_handle = Libdl.dlopen(JuliaInterface_path)
 
     # Redirect error messages, in order not to print them to the screen.
     reset_GAP_ERROR_OUTPUT()
