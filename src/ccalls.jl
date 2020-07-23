@@ -36,7 +36,7 @@ end
 
 
 function evalstr_ex(cmd::String)
-    res = ccall(:GAP_EvalString, Any, (Ptr{UInt8},), cmd)
+    res = ccall(:GAP_EvalString, GapObj, (Ptr{UInt8},), cmd)
     return res
 end
 
@@ -105,7 +105,7 @@ function AssignGlobalVariable(name::Union{AbstractString,Symbol}, value::Any)
 end
 
 function MakeString(val::String)::GapObj
-    string = ccall(:GAP_MakeString, Any, (Ptr{UInt8},), val)
+    string = ccall(:GAP_MakeString, GapObj, (Ptr{UInt8},), val)
     return string
 end
 
@@ -122,17 +122,17 @@ end
 
 
 function NewPlist(length::Int64)
-    o = ccall(:GAP_NewPlist, Any, (Int64,), length)
+    o = ccall(:GAP_NewPlist, GapObj, (Int64,), length)
     return o
 end
 
 function NewPrecord(capacity::Int64)
-    o = ccall(:GAP_NewPrecord, Any, (Int64,), capacity)
+    o = ccall(:GAP_NewPrecord, GapObj, (Int64,), capacity)
     return o
 end
 
 function NEW_MACFLOAT(x::Float64)
-    o = ccall(:NEW_MACFLOAT, Any, (Cdouble,), x)
+    o = ccall(:NEW_MACFLOAT, GapObj, (Cdouble,), x)
     return o
 end
 
@@ -152,7 +152,7 @@ function ElmList(x::GapObj, position)
 end
 
 function NewJuliaFunc(x::Function)
-    o = ccall(:NewJuliaFunc, Any, (Any,), x)
+    o = ccall(:NewJuliaFunc, GapObj, (Any,), x)
     return o
 end
 
