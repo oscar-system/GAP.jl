@@ -54,8 +54,10 @@ julia_to_gap(x::UInt8) = Int64(x)
 
 ## BigInts are converted via a ccall
 function julia_to_gap(x::BigInt)
-    o = ccall(:MakeObjInt, Ptr{Cvoid}, (Ptr{UInt64}, Cint), x.d, x.size)
-    return RAW_GAP_TO_JULIA(o)
+    if x in -1<<60:(1<<60-1)
+        return Int64(x)
+    end
+    return ccall(:MakeObjInt, GapObj, (Ptr{UInt64}, Cint), x.d, x.size)
 end
 
 ## Rationals
