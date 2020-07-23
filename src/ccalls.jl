@@ -30,8 +30,7 @@ function RAW_JULIA_TO_GAP(x::Int)
     if x in -1<<60:(1<<60-1)
         return Ptr{Cvoid}(x << 2 | 1)
     end
-    return ccall(:gap_julia, Ptr{Cvoid}, (Any,), x)
-    #return ccall(:ObjInt_Int, Ptr{Cvoid}, (Int,), x)
+    return ccall(:ObjInt_Int, Ptr{Cvoid}, (Int,), x)
 end
 
 
