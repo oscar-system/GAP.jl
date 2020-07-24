@@ -216,54 +216,42 @@ end
 
 ## Matrices or lists of lists
 function gap_to_julia(
-    ::Type{Matrix{T}},
+    type::Type{Matrix{T}},
     obj::GapObj,
     recursion_dict = IdDict();
     recursive = true,
 ) where {T}
-    if Globals.IsMatrixObj(obj)
-        if !haskey(recursion_dict, obj)
-            elm = Globals.MatElm
-            nrows = Globals.NumberRows(obj)
-            ncols = Globals.NumberColumns(obj)
-            new_array = Matrix{T}(undef, nrows, ncols)
-            recursion_dict[obj] = new_array
-            for i = 1:nrows
-                for j = 1:ncols
-                    current_obj = elm(obj, i, j)
-                    if recursive
-                        new_array[i, j] = get!(recursion_dict, current_obj) do
-                            gap_to_julia(T, current_obj, recursion_dict; recursive = true)
-                        end
-                    else
-                        new_array[i, j] = current_obj
-                    end
-                end
-            end
-        end
-        return recursion_dict[obj]
-    elseif Globals.IsList(obj)
-        if !haskey(recursion_dict, obj)
-            nrows = length(obj)
-            ncols = nrows == 0 ? 0 : length(obj[1])
-            new_array = Matrix{T}(undef, nrows, ncols)
-            recursion_dict[obj] = new_array
-            for i = 1:nrows
-                for j = 1:ncols
-                    current_obj = ElmList(ElmList(obj, i), j)
-                    if recursive
-                        new_array[i, j] = get!(recursion_dict, current_obj) do
-                            gap_to_julia(T, current_obj, recursion_dict; recursive = true)
-                        end
-                    else
-                        new_array[i, j] = current_obj
-                    end
-                end
-            end
-        end
+    if haskey(recursion_dict, obj)
         return recursion_dict[obj]
     end
-    throw(ConversionError(obj, Matrix{T}))
+    if Globals.IsMatrixObj(obj)
+        nrows = Globals.NumberRows(obj)
+        ncols = Globals.NumberColumns(obj)
+    elseif Globals.IsList(obj)
+        nrows = length(obj)
+        ncols = nrows == 0 ? 0 : length(obj[1])
+    else
+        throw(ConversionError(obj, type))
+    end
+
+    elm = Globals.MatElm
+    new_array = type(undef, nrows, ncols)
+    if recursive
+        recursion_dict[obj] = new_array
+    end
+    for i = 1:nrows
+        for j = 1:ncols
+            current_obj = elm(obj, i, j)
+            if recursive
+                new_array[i, j] = get!(recursion_dict, current_obj) do
+                    gap_to_julia(T, current_obj, recursion_dict; recursive = true)
+                end
+            else
+                new_array[i, j] = current_obj
+            end
+        end
+    end
+    return new_array
 end
 
 ## Tuples
