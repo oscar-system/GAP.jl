@@ -50,9 +50,8 @@ end
 # are for calls with that many arguments, handler 7 is for any higher number
 # of arguments)
 function GET_FUNC_PTR(obj::GapObj, narg::Int)
-    bag_ptr = ADDR_OBJ(obj)
-    @assert (unsafe_load(bag_ptr, 0) & 0xFF) == T_FUNCTION
-    @assert 0 <= narg && narg <= 7
-    bag_ptr = Ptr{Ptr{Nothing}}(bag_ptr)
+    #@assert TNUM_OBJ(obj) == T_FUNCTION
+    #@assert 0 <= narg && narg <= 7
+    bag_ptr = Ptr{Ptr{Nothing}}(ADDR_OBJ(obj))
     unsafe_load(bag_ptr, narg + 1)
 end

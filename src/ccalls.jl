@@ -197,7 +197,11 @@ function call_gap_func(func::GapObj, args...; kwargs...)
         options = true
     end
     try
-        result = ccall(:call_gap_func, Any, (Any, Any), func, args)
+        if TNUM_OBJ(func) == T_FUNCTION && length(args) <= 6
+            result = _call_gap_func(func, args...)
+        else
+            result = ccall(:call_gap_func, Any, (Any, Any), func, args)
+        end
         if options
             Globals.PopOptions()
         end
@@ -220,14 +224,14 @@ end
 #
 
 # 0 arguments
-function call_gap_func(func::GapObj)
+function _call_gap_func(func::GapObj)
     fptr = GET_FUNC_PTR(func, 0)
     ret = ccall(fptr, Ptr{Cvoid}, (Ptr{Cvoid},), pointer_from_objref(func))
     return _GAP_TO_JULIA(ret)
 end
 
 # 1 argument
-function call_gap_func(func::GapObj, a1::Obj)
+function _call_gap_func(func::GapObj, a1)
     fptr = GET_FUNC_PTR(func, 1)
     ret = ccall(
         fptr,
@@ -240,7 +244,7 @@ function call_gap_func(func::GapObj, a1::Obj)
 end
 
 # 2 arguments
-function call_gap_func(func::GapObj, a1::Obj, a2::Obj)
+function _call_gap_func(func::GapObj, a1, a2)
     fptr = GET_FUNC_PTR(func, 2)
     ret = ccall(
         fptr,
@@ -254,7 +258,7 @@ function call_gap_func(func::GapObj, a1::Obj, a2::Obj)
 end
 
 # 3 arguments
-function call_gap_func(func::GapObj, a1::Obj, a2::Obj, a3::Obj)
+function _call_gap_func(func::GapObj, a1, a2, a3)
     fptr = GET_FUNC_PTR(func, 3)
     ret = ccall(
         fptr,
@@ -269,7 +273,7 @@ function call_gap_func(func::GapObj, a1::Obj, a2::Obj, a3::Obj)
 end
 
 # 4 arguments
-function call_gap_func(func::GapObj, a1::Obj, a2::Obj, a3::Obj, a4::Obj)
+function _call_gap_func(func::GapObj, a1, a2, a3, a4)
     fptr = GET_FUNC_PTR(func, 4)
     ret = ccall(
         fptr,
@@ -285,7 +289,7 @@ function call_gap_func(func::GapObj, a1::Obj, a2::Obj, a3::Obj, a4::Obj)
 end
 
 # 5 arguments
-function call_gap_func(func::GapObj, a1::Obj, a2::Obj, a3::Obj, a4::Obj, a5::Obj)
+function _call_gap_func(func::GapObj, a1, a2, a3, a4, a5)
     fptr = GET_FUNC_PTR(func, 5)
     ret = ccall(
         fptr,
@@ -302,7 +306,7 @@ function call_gap_func(func::GapObj, a1::Obj, a2::Obj, a3::Obj, a4::Obj, a5::Obj
 end
 
 # 6 arguments
-function call_gap_func(func::GapObj, a1::Obj, a2::Obj, a3::Obj, a4::Obj, a5::Obj, a6::Obj)
+function _call_gap_func(func::GapObj, a1, a2, a3, a4, a5, a6)
     fptr = GET_FUNC_PTR(func, 6)
     ret = ccall(
         fptr,
