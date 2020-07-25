@@ -19,6 +19,7 @@ if !isfile(deps_jl)
     Pkg.build("GAP")
 end
 include(deps_jl)
+include("sync.jl")
 
 
 """
@@ -182,7 +183,7 @@ function initialize(argv::Array{String,1})
     # detect by checking for the value of __JULIAINTERNAL_LOADED_FROM_JULIA).
     append!(argv, ["-c", """BindGlobal("__JULIAINTERNAL_LOADED_FROM_JULIA", true );"""])
 
-    ccall(
+    @sync ccall(
         Libdl.dlsym(libgap_handle, :GAP_Initialize),
         Cvoid,
         (Int32, Ptr{Ptr{UInt8}}, Ptr{Cvoid}, Ptr{Cvoid}, Cuint),
@@ -199,7 +200,7 @@ function initialize(argv::Array{String,1})
     # (perhaps this could be a return value for GAP_Initialize?), so instead
     # we check for the presence of a global variable which we ensure is
     # declared near the end of init.g via a `-c` command line argument to GAP.
-    val = ccall(
+    val = @sync ccall(
         Libdl.dlsym(libgap_handle, :GAP_ValueGlobalVariable),
         Ptr{Cvoid},
         (Ptr{Cuchar},),
@@ -214,13 +215,13 @@ function initialize(argv::Array{String,1})
         # FORCE_QUIT_GAP with no arguments, which just calls the `exit`
         # function of the  C standard library with the appropriate exit code.
         # But as mentioned, just before that, it runs `jl_atexit_hook`.
-        FORCE_QUIT_GAP = ccall(
+        FORCE_QUIT_GAP = @sync ccall(
             Libdl.dlsym(libgap_handle, :GAP_ValueGlobalVariable),
             Ptr{Cvoid},
             (Ptr{Cuchar},),
             "FORCE_QUIT_GAP",
         )
-        ccall(
+        @sync ccall(
             Libdl.dlsym(libgap_handle, :GAP_CallFuncArray),
             Ptr{Cvoid},
             (Ptr{Cvoid}, Culonglong, Ptr{Cvoid}),
@@ -264,7 +265,7 @@ function initialize(argv::Array{String,1})
     @assert T_HVARS == Base.invokelatest(ValueGlobalVariable,:T_HVARS)
 
     # load JuliaInterface
-    loadpackage_return = ccall(
+    loadpackage_return = @sync ccall(
         Libdl.dlsym(libgap_handle, :GAP_EvalString),
         Ptr{Cvoid},
         (Ptr{UInt8},),
@@ -276,7 +277,7 @@ function initialize(argv::Array{String,1})
 
     # If we are in "stand-alone mode", stop here
     if isdefined(Main, :__GAP_ARGS__)
-        ccall(Libdl.dlsym(libgap_handle, :SyInstallAnswerIntr), Cvoid, ())
+        @sync ccall(Libdl.dlsym(libgap_handle, :SyInstallAnswerIntr), Cvoid, ())
         return
     end
 
@@ -290,7 +291,7 @@ function initialize(argv::Array{String,1})
 end
 
 function finalize()
-    ccall((:GAP_finalize, "libgap"), Cvoid, ())
+    @sync ccall((:GAP_finalize, "libgap"), Cvoid, ())
 end
 
 function run_it()
@@ -383,10 +384,10 @@ function prompt()
     # save the current SIGINT handler
     # HACK: the hardcoded value for SIG_DFL is not portable, revise this
     # install GAP's SIGINT handler
-    old_sigint = ccall(:signal, Ptr{Cvoid}, (Cint, Ptr{Cvoid}), Base.SIGINT, C_NULL)
+    old_sigint = @sync ccall(:signal, Ptr{Cvoid}, (Cint, Ptr{Cvoid}), Base.SIGINT, C_NULL)
 
     # install GAP's SIGINT handler
-    ccall(:SyInstallAnswerIntr, Cvoid, ())
+    @sync ccall(:SyInstallAnswerIntr, Cvoid, ())
 
     # restore GAP's error output
     disable_error_handler = true
@@ -404,7 +405,7 @@ function prompt()
     Globals.BreakOnError = false
 
     # restore signal handler
-    ccall(:signal, Ptr{Cvoid}, (Cint, Ptr{Cvoid}), Base.SIGINT, old_sigint)
+    @sync ccall(:signal, Ptr{Cvoid}, (Cint, Ptr{Cvoid}), Base.SIGINT, old_sigint)
 
     # restore GAP error handler
     disable_error_handler = false
