@@ -19,9 +19,7 @@ end
 #
 # low-level Julia -> GAP conversion
 #
-function _JULIA_TO_GAP(val::Any)::Ptr{Cvoid}
-    return ccall(:gap_julia, Ptr{Cvoid}, (Any,), val)
-end
+_JULIA_TO_GAP(val::Any) = ccall(:gap_julia, Ptr{Cvoid}, (Any,), val)
 #_JULIA_TO_GAP(x::Bool) = x ? gap_true : gap_false
 _JULIA_TO_GAP(x::FFE) = reinterpret(Ptr{Cvoid}, x)
 _JULIA_TO_GAP(x::GapObj) = pointer_from_objref(x)
@@ -103,14 +101,11 @@ function AssignGlobalVariable(name::Union{AbstractString,Symbol}, value::Any)
     _AssignGlobalVariable(name, tmp)
 end
 
-function MakeString(val::String)::GapObj
-    string = ccall(:GAP_MakeString, GapObj, (Ptr{UInt8},), val)
-    return string
-end
+MakeString(val::String) = ccall(:GAP_MakeString, GapObj, (Ptr{UInt8},), val)
 
-function CSTR_STRING(val::GapObj)::String
+function CSTR_STRING(val::GapObj)
     char_ptr = ccall(:GAP_CSTR_STRING, Ptr{UInt8}, (Any,), val)
-    return deepcopy(unsafe_string(char_ptr))
+    return deepcopy(unsafe_string(char_ptr))::String
 end
 
 function CSTR_STRING_AS_ARRAY(val::GapObj)::Array{UInt8,1}
@@ -120,40 +115,18 @@ function CSTR_STRING_AS_ARRAY(val::GapObj)::Array{UInt8,1}
 end
 
 
-function NewPlist(length::Int64)
-    o = ccall(:GAP_NewPlist, GapObj, (Int64,), length)
-    return o
-end
-
-function NewPrecord(capacity::Int64)
-    o = ccall(:GAP_NewPrecord, GapObj, (Int64,), capacity)
-    return o
-end
-
-function NEW_MACFLOAT(x::Float64)
-    o = ccall(:NEW_MACFLOAT, GapObj, (Cdouble,), x)
-    return o
-end
-
-function ValueMacFloat(x::GapObj)
-    o = ccall(:GAP_ValueMacFloat, Cdouble, (Any,), x)
-    return o
-end
-
-function CharWithValue(x::Cuchar)
-    o = ccall(:GAP_CharWithValue, Any, (Cuchar,), x)
-    return o
-end
+NewPlist(capacity::Int64) = ccall(:GAP_NewPlist, GapObj, (Int64,), capacity)
+NewPrecord(capacity::Int64) = ccall(:GAP_NewPrecord, GapObj, (Int64,), capacity)
+NEW_MACFLOAT(x::Float64) = ccall(:NEW_MACFLOAT, GapObj, (Cdouble,), x)
+ValueMacFloat(x::GapObj) = ccall(:GAP_ValueMacFloat, Cdouble, (Any,), x)
+CharWithValue(x::Cuchar) = ccall(:GAP_CharWithValue, GapObj, (Cuchar,), x)
+NewJuliaFunc(x::Function) = ccall(:NewJuliaFunc, GapObj, (Any,), x)
 
 function ElmList(x::GapObj, position)
     o = ccall(:GAP_ElmList, Ptr{Cvoid}, (Any, Culong), x, Culong(position))
     return _GAP_TO_JULIA(o)
 end
 
-function NewJuliaFunc(x::Function)
-    o = ccall(:NewJuliaFunc, GapObj, (Any,), x)
-    return o
-end
 
 """
     call_gap_func(func::GapObj, args...; kwargs...)
