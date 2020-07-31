@@ -1,6 +1,6 @@
 module Sync
-    global mutex = ReentrantLock()
-    global sync_level = repeat([ 0 ], Threads.nthreads())
+    const mutex = ReentrantLock()
+    const sync_level = repeat([ 0 ], Threads.nthreads())
 
     @inline is_locked() = sync_level[Threads.threadid()] > 0
 
