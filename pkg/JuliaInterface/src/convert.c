@@ -1,7 +1,6 @@
 #include "convert.h"
 
 #include "calls.h"
-#include "sync.h"
 #include "JuliaInterface.h"
 
 // This function is used by GAP.jl
@@ -29,7 +28,6 @@ jl_value_t * julia_gap(Obj obj)
         return jl_false;
     }
     jl_value_t * result = (jl_value_t *)obj;
-    BEGIN_GAP_SYNC();
     if (TNUM_OBJ(obj) >= FIRST_EXTERNAL_TNUM &&
         CALL_1ARGS(JULIAINTERFACE_IsJuliaWrapper, obj) == True) {
         obj = CALL_1ARGS(JULIAINTERFACE_JuliaPointer, obj);
@@ -49,7 +47,6 @@ jl_value_t * julia_gap(Obj obj)
                          (Int)TNAM_OBJ(obj), 0);
         }
     }
-    END_GAP_SYNC();
     return result;
 }
 
