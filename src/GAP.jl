@@ -183,7 +183,7 @@ function initialize(argv::Array{String,1})
     # detect by checking for the value of __JULIAINTERNAL_LOADED_FROM_JULIA).
     append!(argv, ["-c", """BindGlobal("__JULIAINTERNAL_LOADED_FROM_JULIA", true );"""])
 
-    @sync ccall(
+    ccall(
         Libdl.dlsym(libgap_handle, :GAP_Initialize),
         Cvoid,
         (Int32, Ptr{Ptr{UInt8}}, Ptr{Cvoid}, Ptr{Cvoid}, Cuint),
@@ -200,7 +200,7 @@ function initialize(argv::Array{String,1})
     # (perhaps this could be a return value for GAP_Initialize?), so instead
     # we check for the presence of a global variable which we ensure is
     # declared near the end of init.g via a `-c` command line argument to GAP.
-    val = @sync ccall(
+    val = ccall(
         Libdl.dlsym(libgap_handle, :GAP_ValueGlobalVariable),
         Ptr{Cvoid},
         (Ptr{Cuchar},),
@@ -215,13 +215,13 @@ function initialize(argv::Array{String,1})
         # FORCE_QUIT_GAP with no arguments, which just calls the `exit`
         # function of the  C standard library with the appropriate exit code.
         # But as mentioned, just before that, it runs `jl_atexit_hook`.
-        FORCE_QUIT_GAP = @sync ccall(
+        FORCE_QUIT_GAP = ccall(
             Libdl.dlsym(libgap_handle, :GAP_ValueGlobalVariable),
             Ptr{Cvoid},
             (Ptr{Cuchar},),
             "FORCE_QUIT_GAP",
         )
-        @sync ccall(
+        ccall(
             Libdl.dlsym(libgap_handle, :GAP_CallFuncArray),
             Ptr{Cvoid},
             (Ptr{Cvoid}, Culonglong, Ptr{Cvoid}),
@@ -265,7 +265,7 @@ function initialize(argv::Array{String,1})
     @assert T_HVARS == Base.invokelatest(ValueGlobalVariable,:T_HVARS)
 
     # load JuliaInterface
-    loadpackage_return = @sync ccall(
+    loadpackage_return = ccall(
         Libdl.dlsym(libgap_handle, :GAP_EvalString),
         Ptr{Cvoid},
         (Ptr{UInt8},),
@@ -277,7 +277,7 @@ function initialize(argv::Array{String,1})
 
     # If we are in "stand-alone mode", stop here
     if isdefined(Main, :__GAP_ARGS__)
-        @sync ccall(Libdl.dlsym(libgap_handle, :SyInstallAnswerIntr), Cvoid, ())
+        ccall(Libdl.dlsym(libgap_handle, :SyInstallAnswerIntr), Cvoid, ())
         return
     end
 
@@ -314,7 +314,7 @@ function run_it()
         # Do not show the main GAP banner by default.
         push!(cmdline_options, "-b")
     end
-    initialize(cmdline_options)
+    @sync initialize(cmdline_options)
 
     if !show_banner
         # Leave it to GAP's `LoadPackage` whether package banners are shown.
