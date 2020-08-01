@@ -293,17 +293,6 @@ function finalize()
     ccall((:GAP_finalize, "libgap"), Cvoid, ())
 end
 
-function register_GapObj()
-    # TODO: for now we try to stay compatible with older GAP versions that
-    # don't have GAP_register_GapObj yet, but we should remove this ASAP
-    try
-        ccall(:GAP_register_GapObj, Cvoid, (Any,), GapObj)
-    catch
-        # silently ignore for now
-    end
-end
-
-
 function run_it()
     gaproots = abspath(joinpath(@__DIR__, "..")) * ";" * sysinfo["GAP_BIN_DIR"] * ";" * sysinfo["GAP_LIB_DIR"]
     cmdline_options = ["", "-l", gaproots, "--norepl"]
@@ -366,11 +355,11 @@ function __init__()
     # check if GAP was already loaded
     try
         sym = cglobal("GAP_Initialize")
+        ccall(:GAP_register_GapObj, Cvoid, (Any,), GapObj)
     catch e
         # GAP was not yet loaded, do so now
         run_it()
     end
-    register_GapObj()
 end
 
 function gap_exe()
