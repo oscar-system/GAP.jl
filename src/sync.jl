@@ -1,27 +1,35 @@
 module Sync
-    const mutex = ReentrantLock()
-    const sync_level = repeat([ 0 ], Threads.nthreads())
+    mutable struct LockStatus
+        nested :: Int
+	owner :: Union{Task, Nothing}
+    end
 
-    @inline is_locked() = sync_level[Threads.threadid()] > 0
+    const mutex = ReentrantLock()
+    const lock_status = LockStatus(0, nothing)
+
+    @inline is_locked() = lock_status.owner == Base.current_task()
 
     @inline function lock()
-        tid = Threads.threadid()
-        if sync_level[tid] == 0
-            Base.lock(mutex)
-        end
-        sync_level[tid] += 1
+        if is_locked()
+	  lock_status.nested += 1
+	else
+	  Base.lock(mutex)
+	  lock_status.nested = 1
+	  lock_status.owner = Base.current_task()
+	end
     end
 
     @inline function unlock()
-        tid = Threads.threadid()
-        sync_level[tid] -= 1
-        if sync_level[tid] == 0
-            Base.unlock(mutex)
-        end
+        @assert is_locked()
+	lock_status.nested -= 1
+	if lock_status.nested == 0
+	  lock_status.owner = nothing
+	  Base.unlock(mutex)
+	end
     end
 
     @inline function check_lock()
-        assert(is_locked())
+        @assert is_locked()
     end
 end
 
