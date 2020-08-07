@@ -10,4 +10,5 @@ include("convert.jl")
 include("macros.jl")
 include("packages.jl")
 include("help.jl")
+include("sync.jl")
 # include("testmanual.jl")  # leave this out until doctestfilters can be used here
