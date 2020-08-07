@@ -1,73 +1,92 @@
 module Sync
-    mutable struct LockStatus
-        nested :: Int
-	owner :: Union{Task, Nothing}
-    end
 
     const mutex = ReentrantLock()
-    const lock_status = LockStatus(0, nothing)
-
-    @inline is_locked() = lock_status.owner == Base.current_task()
 
     @inline function lock()
-        if is_locked()
-	  lock_status.nested += 1
-	else
-	  Base.lock(mutex)
-	  lock_status.nested = 1
-	  lock_status.owner = Base.current_task()
-	end
+        Base.lock(mutex)
     end
 
     @inline function unlock()
-        @assert is_locked()
-	lock_status.nested -= 1
-	if lock_status.nested == 0
-	  lock_status.owner = nothing
-	  Base.unlock(mutex)
-	end
+        Base.unlock(mutex)
     end
 
     @inline function check_lock()
-        @assert is_locked()
+        @assert mutex.locked_by === Base.current_task()
+    end
+
+    # To switch between multi-threaded and single-threaded mode, we
+    # define functions that install the appropriate handlers for sync()
+    # etc.
+    #
+    # This is necessary because otherwise precompilation would fix
+    # the mode at whatever state it was during precompilation. Thus,
+    # initially loading GAP.jl in single-threaded mode would also keep
+    # synchronization off in multi-threaded mode.
+    #
+    # However, Julia tracks function dependencies. If a function changes
+    # upon which another depends, both are being recompiled. Thus,
+    # by installing the proper version during __init__(), we force
+    # selective recompilation of the affected functions as needed.
+
+    function enable_sync()
+        Sync.eval(:(@inline function sync(f::Function)
+            try
+                lock()
+                f()
+            finally
+                unlock()
+            end
+        end))
+        Sync.eval(:(@inline function sync_noexcept(f::Function)
+            lock()
+            t = f()
+            unlock()
+            t
+        end))
+        Sync.eval(:(@inline function check_sync(f::Function)
+            check_lock()
+            f()
+        end))
+    end
+
+    function disable_sync()
+        Sync.eval(:(@inline function sync(f::Function)
+            f()
+        end))
+        Sync.eval(:(@inline function sync_noexcept(f::Function)
+            f()
+        end))
+        Sync.eval(:(@inline function check_sync(f::Function)
+            f()
+        end))
+    end
+
+    # Initialization is tricky. __init__() can be called from
+    # within the first sync() call if the module has already
+    # been precompiled. Thus, we default to enable_sync() for
+    # precompilation and then set the actual sync mode during
+    # __init__(). Dropping back from sync enabled to being
+    # disabled is safe, but not the other way round.
+
+    enable_sync()
+
+    function __init__()
+        if Threads.nthreads() > 1
+            enable_sync()
+        else
+            disable_sync()
+        end
     end
 end
 
 macro sync(expr)
-    if Threads.nthreads() > 1
-        quote
-            try
-                Sync.lock()
-                $(esc(expr))
-            finally
-                Sync.unlock()
-            end
-        end
-    else
-        :( $(esc(expr)) )
-    end
+    :( Sync.sync(()->$(esc(expr))) )
 end
 
 macro sync_noexcept(expr)
-    if Threads.nthreads() > 1
-        quote
-            Sync.lock()
-            local t = $(esc(expr))
-            Sync.unlock()
-            t
-        end
-    else
-        :( $(esc(expr)) )
-    end
+    :( Sync.sync_noexcept(()->$(esc(expr))) )
 end
 
 macro check_sync(expr)
-    if Threads.nthreads() > 1
-        quote
-            Sync.check_lock()
-            $(esc(expr))
-        end
-    else
-        :( $(esc(expr)) )
-    end
+    :( Sync.check_sync(()->$(esc(expr))) )
 end
