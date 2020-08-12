@@ -3,7 +3,7 @@
 
 import Base: getindex, setindex!, length, show
 
-function Base.show(io::IO, ::MIME"text/plain", obj::Union{GapObj,FFE})
+function show_string(io::IO, obj::Union{GapObj,FFE})
     str = Globals.StringViewObj(obj)
     stri = CSTR_STRING(str)
     lines = split(stri, "\n")
@@ -15,6 +15,11 @@ function Base.show(io::IO, ::MIME"text/plain", obj::Union{GapObj,FFE})
       stri = join(lines[1:upper], "\n") * "\n  ⋮\n" *
              join(lines[(end-rows+upper+2):end], "\n")
     end
+    return stri
+end
+
+function Base.show(io::IO, obj::Union{GapObj,FFE})
+    stri = show_string(io, obj)
     print(io, "GAP: $stri")
 end
 
