@@ -1,5 +1,4 @@
 import REPL.REPLCompletions: completions
-import Base: show
 
 ## These two functions are used on the GAP side.
 
