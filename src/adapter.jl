@@ -3,9 +3,18 @@
 
 import Base: getindex, setindex!, length, show
 
-function Base.show(io::IO, obj::Union{GapObj,FFE})
+function Base.show(io::IO, ::MIME"text/plain", obj::Union{GapObj,FFE})
     str = Globals.StringViewObj(obj)
     stri = CSTR_STRING(str)
+    lines = split(stri, "\n")
+    rows = displaysize(io)[1]-3  # the maximum number of lines to show
+    if length(lines) > rows
+      # For objects that do not fit on the screen,
+      # show only the first and the last lines.
+      upper = div(rows, 2)
+      stri = join(lines[1:upper], "\n") * "\n  ⋮\n" *
+             join(lines[(end-rows+upper+2):end], "\n")
+    end
     print(io, "GAP: $stri")
 end
 
