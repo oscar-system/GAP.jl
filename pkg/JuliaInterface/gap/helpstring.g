@@ -329,7 +329,7 @@ end);
 #F  HELP_DESC_MATCHES( <book>, <topic>, <frombegin> )  . . .  collect matches
 ##  
 BindGlobal( "HELP_DESC_MATCHES", function( books, topic, frombegin, onlyexact... )
-  local   exact,  match,  x,  lines,  cnt,  i,  str,  n, sep, known, desc;
+  local   exact,  match,  x,  lines,  i,  str,  n, sep, known, desc, menu;
 
   # first get lists of exact and other matches
   x := HELP_GET_MATCHES2( books, topic, frombegin );
@@ -343,48 +343,25 @@ BindGlobal( "HELP_DESC_MATCHES", function( books, topic, frombegin, onlyexact...
   # no topic found
   if 0 = Length(match) and 0 = Length(exact)  then
     return [ false, [ "Help: no matching entry found" ] ];
-    
-#   # one exact or together one topic found
-#   elif 1 = Length(exact) or (0 = Length(exact) and 1 = Length(match)) then
-#     if Length(exact) = 0 then exact := match; fi;
-#     i := exact[1];
-#     str := Concatenation("Help: Showing `", i[1].bookname,": ", 
-#                          StripEscapeSequences( i[1].entries[i[2]][1] ), "'");
-#     # to avoid line breaking when str contains escape sequences:
-#     n := 0;
-#     lines:= [];
-#     while n < Length(str) do
-#       Add( lines, str{[n+1..Minimum(Length(str), 
-#                                     n + QuoInt(SizeScreen()[1] ,2))]} );
-#       n := n + QuoInt(SizeScreen()[1] ,2);
-#     od;
-#     return [ true, Concatenation( lines, HELP_DESC_MATCH(i)[2] ) ];
-# 
-#   # more than one topic found, show all entries
   else
-    if 1 = Length(exact) or (0 = Length(exact) and 1 = Length(match)) then
-      # one topic found
-      lines:= [];
-    else
-      # more than one topic found, show all entries
-      lines := [ "Help: several entries match this topic", "" ];
-    fi;
     sep:= [ "", RepeatedUTF8String( "─", SizeScreen()[1] ), "" ];
     HELP_LAST.TOPICS:=[];
     # show exact matches first
     match := Concatenation(exact, match);
     known:= [];
+    lines:= [];
+    menu:= [];
     for i  in match  do
       desc:= HELP_DESC_MATCH(i)[2];
       if not desc in known then
-        Add( lines, Concatenation( i[1].bookname, ":" ) );
-        Append( lines, desc );
-        Append( lines, sep );
+        Add( lines, i );
+        Add( menu, Concatenation( i[1].bookname, ": ",
+                                  i[1].entries[i[2]][1] ) );
         AddSet( known, desc );
       fi;
       Add(HELP_LAST.TOPICS, i);
     od;
-    return [ true, lines ];
+    return [ true, rec( entries:= lines, menu:= menu ) ];
   fi;
 end);
 
@@ -400,16 +377,25 @@ end);
 
 #############################################################################
 ##  
+#F  HELP_Info( <string>, <onlyexact> ) . . . . . . . deal with a help request
 #F  HELP_String( <string>, <onlyexact> ) . . . . . . deal with a help request
 ##  
-##  The return value is a list.
-##  Each of its entries is either a list of strings
+##  The return value of 'HELP_INFO' is either a list (in cases where just
+##  one entry shall be shown) or a record with the components 'entries' and
+##  'menu' (in cases where more than one entry may exist, and where an
+##  intermediate step via choosing from a menu may be appropriate).
+##
+##  Each of the entries is either a list of strings
 ##  or a record with the components 'lines' (a string or a list of strings)
 ##  and 'start' (the position of the first line to show).
 ##
+##  The return value of 'HELP_String' is a list that contains the
+##  concatenation of the contents of the result of ''HELP_Info' when this
+##  is called with the same arguments.
+##
 DeclareGlobalFunction( "HELP_String" );
 
-InstallGlobalFunction( HELP_String, function( str, onlyexact )
+BindGlobal( "HELP_Info", function( str, onlyexact )
   local origstr, nwostr, p, book, books, move, add,
         match;
 
@@ -539,14 +525,22 @@ InstallGlobalFunction( HELP_String, function( str, onlyexact )
       if match[1] = true then
           add( books, str );
       fi;
+if IsRecord( match[2] ) then
+      return match[2];
+else
       return [ match[2] ];
+fi;
 
   # search for this topic
   else
     match:= HELP_DESC_MATCHES( books, str, true, onlyexact );
     if match[1] = true then
       add( books, str );
+if IsRecord( match[2] ) then
+      return match[2];
+else
       return [ match[2] ];
+fi;
     elif origstr in NAMES_SYSTEM_GVARS then
       return [ [ Concatenation( "Help: '", origstr, "' is currently undocumented." ),
                "      For details, try ?Undocumented Variables" ] ];
@@ -557,9 +551,33 @@ InstallGlobalFunction( HELP_String, function( str, onlyexact )
           ":' ...)" ) ] ],
           HELP_String( Concatenation( origstr, ":" ), onlyexact ) );
     else
+if IsRecord( match[2] ) then
+      return match[2];
+else
       return [ match[2] ];
+fi;
     fi;
   fi;
+end);
+
+
+InstallGlobalFunction( HELP_String, function( str, onlyexact )
+    local info, sep, lines, i;
+
+    info:= HELP_Info( str, onlyexact );
+    if not IsRecord( info ) then
+      return info;
+    fi;
+
+    sep:= [ "", RepeatedUTF8String( "─", SizeScreen()[1] ), "" ];
+    lines:= [];
+    for i in [ 1 .. Length( info.entries ) ] do
+      Add( lines, Concatenation( info.entries[i][1].bookname, ":" ) );
+      Append( lines, HELP_DESC_MATCH( info.entries[i] )[2] );
+      Append( lines, sep );
+    od;
+
+    return [ lines ];
 end);
 
 
@@ -567,13 +585,11 @@ end);
 ##  
 #F  HelpString( <topic>[, <onlyexact>] )
 ##
-BindGlobal( "HelpString", function( topic, onlyexact... )
+BindGlobal( "HelpStringInner", function( entries )
     local res, entry, lines, start;
 
-    onlyexact:= ( Length( onlyexact ) = 1 and onlyexact[1] = true );
-
     res:= "";
-    for entry in HELP_String( topic, onlyexact ) do
+    for entry in entries do
       if IsRecord( entry ) then
         lines:= entry.lines;
         if IsString( lines ) then
@@ -597,4 +613,32 @@ BindGlobal( "HelpString", function( topic, onlyexact... )
     return res;
 end );
 
+
+BindGlobal( "HelpString", function( topic, onlyexact... )
+    onlyexact:= ( Length( onlyexact ) = 1 and onlyexact[1] = true );
+
+    return HelpStringInner( HELP_String( topic, onlyexact ) );
+end );
+
+BindGlobal( "ComposedHelpString", function( entry )
+    local res, lines, desc, sep, start;
+
+    lines:= [];
+    desc:= HELP_DESC_MATCH( entry )[2];
+    Add( lines, Concatenation( entry[1].bookname, ":" ) );
+    Append( lines, desc );
+    sep:= [ "", RepeatedUTF8String( "─", SizeScreen()[1] ), "" ];
+    Append( lines, sep );
+    res:= "";
+    if IsBound( entry[1].start ) then
+      start:= entry[1].start;
+    else
+      start:= 1;
+    fi;
+    Append( res, JoinStringsWithSeparator(
+        lines{ [ start .. Length( lines ) ] },
+        "\n" ) );
+
+    return res;
+end );
 

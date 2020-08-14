@@ -1,8 +1,16 @@
 @testset "help" begin
+    using REPL
+    tt = REPL.TerminalMenus.terminal
+
     function test_gap_help(topic::String)
-        return isa(GAP.gap_help_string(topic), String) &&
-               isa(GAP.gap_help_string(topic, true), String)
+        inp = Base.IOBuffer("qq") # exit the menu if applicable
+        term = REPL.Terminals.TTYTerminal( "dumb", inp, tt.out_stream, tt.err_stream)
+        return isa(GAP.gap_help_string(topic, false, term), String) &&
+               isa(GAP.gap_help_string(topic, true, term), String)
     end
+
+    # Do not print the menus.
+    REPL.TerminalMenus.config(supress_output = true)
 
     @test test_gap_help("")
     @test test_gap_help("&")
@@ -17,7 +25,6 @@
     @test test_gap_help("?determinant")
     @test test_gap_help("?PermList")
     @test test_gap_help("?IsJuliaWrapper")
-    println(GAP.gap_help_string("?IsJuliaWrapper"))
 
     @test test_gap_help("books")
     @test test_gap_help("tut:chapters")
@@ -28,4 +35,6 @@
     @test test_gap_help("ref:isobject")
     @test test_gap_help("unknow")
     @test test_gap_help("something for which no match is found")
+
+    REPL.TerminalMenus.config(supress_output = false)
 end

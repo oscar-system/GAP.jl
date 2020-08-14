@@ -1,7 +1,40 @@
 ## enable access to GAP help system from Julia
 
-function gap_help_string(topic::String, onlyexact::Bool = false)
-    return gap_to_julia(Globals.HelpString(julia_to_gap(topic), onlyexact))
+using REPL
+
+function gap_help_string(topic::String, onlyexact::Bool = false,
+    term::REPL.Terminals.TTYTerminal = REPL.TerminalMenus.terminal)
+    # Let GAP collect the information.
+    info = Globals.HELP_Info(julia_to_gap(topic), onlyexact)
+
+    if Globals.IsRecord(info)
+        len = length(info.entries)
+        if len == 1
+            # If there is a unique match then just return it.
+            choice = 1
+        else
+            # If there are several matches then try to present a menu.
+            # (This does not work in Jupyter notebooks.)
+            options = [gap_to_julia(x) for x in gap_to_julia(info.menu)]
+            try
+                pagesize = displaysize(Base.stdout)[1]-2
+                choice = REPL.TerminalMenus.request(
+                    term,
+                    "Choose an entry (out of $len) to view, 'q' for none:",
+                    REPL.TerminalMenus.RadioMenu(options, pagesize = pagesize))
+                if choice == -1
+                    # canceled
+                    return ""
+                end
+            catch e
+                # show *all* help entries
+                return gap_to_julia(Globals.HelpString(julia_to_gap(topic), onlyexact))
+            end
+        end
+        return gap_to_julia(Globals.ComposedHelpString(info.entries[choice]))
+    else
+        return gap_to_julia(Globals.HelpStringInner(info))
+    end
 end
 
 """
@@ -24,7 +57,7 @@ instead of calling `show_gap_help`.
 julia> GAP.show_gap_help( "Size" )
 [...]  # more than 50 entries from GAP manuals
 
-hepl?> GAP.Globals.Size
+help?> GAP.Globals.Size
 [...]  # the same
 
 julia> GAP.show_gap_help( "Size", true )
@@ -33,7 +66,7 @@ julia> GAP.show_gap_help( "Size", true )
 ```
 """
 function show_gap_help(topic::String, onlyexact::Bool = false)
-    print(GAP_help_string(topic, onlyexact))
+    print(gap_help_string(topic, onlyexact))
 end
 
 ## If one enters `?GAP.Globals.Size` then the following dispatch mechanism
