@@ -1,17 +1,24 @@
 module Sync
 
-    const mutex = ReentrantLock()
+    @enum SyncMode mutex pin disabled
+
+    const gap_lock = ReentrantLock()
+    const pinned_thread = Ref{Int}(1)
 
     @inline function lock()
-        Base.lock(mutex)
+        Base.lock(gap_lock)
     end
 
     @inline function unlock()
-        Base.unlock(mutex)
+        Base.unlock(gap_lock)
     end
 
     @inline function check_lock()
-        @assert mutex.locked_by === Base.current_task()
+        @assert gap_lock.locked_by === Base.current_task()
+    end
+
+    @inline function check_pinned()
+        @assert Threads.threadid() == pinned_thread[]
     end
 
     # To switch between multi-threaded and single-threaded mode, we
@@ -28,7 +35,7 @@ module Sync
     # by installing the proper version during __init__(), we force
     # selective recompilation of the affected functions as needed.
 
-    function enable_sync()
+    function _mode_mutex()
         Sync.eval(:(@inline function sync(f::Function)
             try
                 lock()
@@ -49,7 +56,22 @@ module Sync
         end))
     end
 
-    function disable_sync()
+    function _mode_pinned()
+        Sync.eval(:(@inline function sync(f::Function)
+            check_pinned()
+            f()
+        end))
+        Sync.eval(:(@inline function sync_noexcept(f::Function)
+            check_pinned()
+            f()
+        end))
+        Sync.eval(:(@inline function check_sync(f::Function)
+            check_pinned()
+            f()
+        end))
+    end
+
+    function _mode_nosync()
         Sync.eval(:(@inline function sync(f::Function)
             f()
         end))
@@ -61,20 +83,37 @@ module Sync
         end))
     end
 
-    # Initialization is tricky. __init__() can be called from
-    # within the first sync() call if the module has already
-    # been precompiled. Thus, we default to enable_sync() for
-    # precompilation and then set the actual sync mode during
-    # __init__(). Dropping back from sync enabled to being
-    # disabled is safe, but not the other way round.
+    function switch(mode::SyncMode)
+        stack = stacktrace()
+        file = stack[1].file
+        for frame in stack[2:end]
+            if frame.func in [ :sync, :sync_noexcept ] && frame.file == file
+                @error "trying to change sync mode within critical region"
+            end
+        end
+        if mode == pin
+            _mode_pinned()
+        elseif mode == mutex
+            _mode_mutex()
+        else # mode == disabled
+            _mode_nosync()
+        end
+    end
 
-    enable_sync()
+    # Initialization is tricky. __init__() can be called from within the
+    # first sync() call if the module has already been precompiled. Thus,
+    # we default to enabling synchronization during precompilation and
+    # then set the actual sync mode during __init__(). Dropping back from
+    # synchronization being enabled to being disabled is safe, but not the
+    # other way round.
+
+    _mode_pinned()
 
     function __init__()
-        if Threads.nthreads() > 1
-            enable_sync()
+        if Threads.nthreads() == 1
+            _mode_nosync()
         else
-            disable_sync()
+            _mode_pinned()
         end
     end
 end
