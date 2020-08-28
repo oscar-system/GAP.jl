@@ -13,13 +13,14 @@ function _GAP_TO_JULIA(ptr::Ptr{Cvoid})
     elseif as_int & 2 == 2
         return reinterpret(FFE, ptr)
     end
-    return ccall(:julia_gap, Any, (Ptr{Cvoid},), ptr)
+    return ccall(@csym(CJuliaInterface, :julia_gap), Any, (Ptr{Cvoid},), ptr)
 end
 
 #
 # low-level Julia -> GAP conversion
 #
-_JULIA_TO_GAP(val::Any) = ccall(:gap_julia, Ptr{Cvoid}, (Any,), val)
+_JULIA_TO_GAP(val::Any) = ccall(@csym(CJuliaInterface, :gap_julia),
+    Ptr{Cvoid}, (Any,), val)
 #_JULIA_TO_GAP(x::Bool) = x ? gap_true : gap_false
 _JULIA_TO_GAP(x::FFE) = reinterpret(Ptr{Cvoid}, x)
 _JULIA_TO_GAP(x::GapObj) = pointer_from_objref(x)
@@ -28,12 +29,12 @@ function _JULIA_TO_GAP(x::Int)
     if x in -1<<60:(1<<60-1)
         return Ptr{Cvoid}(x << 2 | 1)
     end
-    return ccall(:ObjInt_Int, Ptr{Cvoid}, (Int,), x)
+    return ccall(@csym(CLibGap, :ObjInt_Int), Ptr{Cvoid}, (Int,), x)
 end
 
 
 function evalstr_ex(cmd::String)
-    res = ccall(:GAP_EvalString, GapObj, (Ptr{UInt8},), cmd)
+    res = ccall(@csym(CLibGap, :GAP_EvalString), GapObj, (Ptr{UInt8},), cmd)
     return res
 end
 
@@ -73,7 +74,8 @@ end
 # Retrieve the value of a global GAP variable given its name. This function
 # returns a raw Ptr value, and should only be called by plumbing code.
 function _ValueGlobalVariable(name::Union{AbstractString,Symbol})
-    return ccall(:GAP_ValueGlobalVariable, Ptr{Cvoid}, (Ptr{UInt8},), name)
+    return ccall(@csym(CLibGap, :GAP_ValueGlobalVariable),
+        Ptr{Cvoid}, (Ptr{UInt8},), name)
 end
 
 function ValueGlobalVariable(name::Union{AbstractString,Symbol})
@@ -83,13 +85,15 @@ end
 
 # Test whether the global GAP variable with the given name can be assigned to.
 function CanAssignGlobalVariable(name::Union{AbstractString,Symbol})
-    ccall(:GAP_CanAssignGlobalVariable, Bool, (Ptr{UInt8},), name)
+    ccall(@csym(CLibGap, :GAP_CanAssignGlobalVariable),
+        Bool, (Ptr{UInt8},), name)
 end
 
 # Assign a value to the global GAP variable with the given name. This function
 # assigns a raw Ptr value, and should only be called by plumbing code.
 function _AssignGlobalVariable(name::Union{AbstractString,Symbol}, value::Ptr{Cvoid})
-    ccall(:GAP_AssignGlobalVariable, Cvoid, (Ptr{UInt8}, Ptr{Cvoid}), name, value)
+    ccall(@csym(CLibGap, :GAP_AssignGlobalVariable),
+        Cvoid, (Ptr{UInt8}, Ptr{Cvoid}), name, value)
 end
 
 # Assign a value to the global GAP variable with the given name.
@@ -101,29 +105,39 @@ function AssignGlobalVariable(name::Union{AbstractString,Symbol}, value::Any)
     _AssignGlobalVariable(name, tmp)
 end
 
-MakeString(val::String) = ccall(:GAP_MakeString, GapObj, (Ptr{UInt8},), val)
+MakeString(val::String) =
+    ccall(@csym(CLibGap, :GAP_MakeString), GapObj, (Ptr{UInt8},), val)
 
 function CSTR_STRING(val::GapObj)
-    char_ptr = ccall(:GAP_CSTR_STRING, Ptr{UInt8}, (Any,), val)
+    char_ptr = ccall(@csym(CLibGap, :GAP_CSTR_STRING),
+        Ptr{UInt8}, (Any,), val)
     return deepcopy(unsafe_string(char_ptr))::String
 end
 
 function CSTR_STRING_AS_ARRAY(val::GapObj)::Array{UInt8,1}
-    string_len = Int64(ccall(:GAP_LenString, Cuint, (Any,), val))
-    char_ptr = ccall(:GAP_CSTR_STRING, Ptr{UInt8}, (Any,), val)
+    string_len = Int64(ccall(@csym(CLibGap, :GAP_LenString),
+        Cuint, (Any,), val))
+    char_ptr = ccall(@csym(CLibGap, :GAP_CSTR_STRING), Ptr{UInt8}, (Any,), val)
     return deepcopy(unsafe_wrap(Array{UInt8,1}, char_ptr, string_len))
 end
 
 
-NewPlist(capacity::Int64) = ccall(:GAP_NewPlist, GapObj, (Int64,), capacity)
-NewPrecord(capacity::Int64) = ccall(:GAP_NewPrecord, GapObj, (Int64,), capacity)
-NEW_MACFLOAT(x::Float64) = ccall(:NEW_MACFLOAT, GapObj, (Cdouble,), x)
-ValueMacFloat(x::GapObj) = ccall(:GAP_ValueMacFloat, Cdouble, (Any,), x)
-CharWithValue(x::Cuchar) = ccall(:GAP_CharWithValue, GapObj, (Cuchar,), x)
-NewJuliaFunc(x::Function) = ccall(:NewJuliaFunc, GapObj, (Any,), x)
+NewPlist(capacity::Int64) = ccall(@csym(CLibGap, :GAP_NewPlist),
+    GapObj, (Int64,), capacity)
+NewPrecord(capacity::Int64) = ccall(@csym(CLibGap, :GAP_NewPrecord),
+    GapObj, (Int64,), capacity)
+NEW_MACFLOAT(x::Float64) = ccall(@csym(CLibGap, :NEW_MACFLOAT),
+    GapObj, (Cdouble,), x)
+ValueMacFloat(x::GapObj) = ccall(@csym(CLibGap, :GAP_ValueMacFloat),
+    Cdouble, (Any,), x)
+CharWithValue(x::Cuchar) = ccall(@csym(CLibGap, :GAP_CharWithValue),
+    GapObj, (Cuchar,), x)
+NewJuliaFunc(x::Function) =
+    ccall(@csym(CJuliaInterface, :NewJuliaFunc), GapObj, (Any,), x)
 
 function ElmList(x::GapObj, position)
-    o = ccall(:GAP_ElmList, Ptr{Cvoid}, (Any, Culong), x, Culong(position))
+    o = ccall(@csym(CLibGap, :GAP_ElmList),
+        Ptr{Cvoid}, (Any, Culong), x, Culong(position))
     return _GAP_TO_JULIA(o)
 end
 
@@ -173,7 +187,8 @@ function call_gap_func(func::GapObj, args...; kwargs...)
         if TNUM_OBJ(func) == T_FUNCTION && length(args) <= 6
             result = _call_gap_func(func, args...)
         else
-            result = ccall(:call_gap_func, Any, (Any, Any), func, args)
+            result = ccall(:call_gap_func,
+	        Any, (Any, Any), func, args)
         end
         if options
             Globals.PopOptions()
