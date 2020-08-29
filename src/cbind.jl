@@ -28,16 +28,6 @@ end
 
 macro csym(libname, expr)
     if libname == :CJuliaInterface
-        # HACK: On macOS, the system seems to get confused by the fact
-        # that JuliaInterface.so is loaded twice, once from the GAP
-        # kernel and once from GAP.jl. If we remove this check, GAP
-        # will eventually crash. Instead, we resort to simply returning
-        # the symbol on macOS, which will result in dlsym() looking it
-        # up in the global namespace rather than within the specified
-        # library.
-        if Sys.isapple()
-	        return expr
-	    end
         lib = CJuliaInterface
     elseif libname == :CLibGap
         lib = CLibGap
