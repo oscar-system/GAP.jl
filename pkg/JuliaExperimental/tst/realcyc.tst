@@ -41,4 +41,3 @@ true
 
 ##
 gap> STOP_TEST( "realcyc.tst" );
-

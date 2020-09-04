@@ -85,4 +85,3 @@ gap> GcdOp( R, f, g );
 
 ##
 gap> STOP_TEST( "singular.tst" );
-

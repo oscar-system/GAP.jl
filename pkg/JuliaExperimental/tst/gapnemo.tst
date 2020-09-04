@@ -18,4 +18,3 @@ gap> l:= JuliaArrayOfFmpq( [ 2^70/3, 1/2^70 ] );
 
 ##
 gap> STOP_TEST( "gapnemo.tst" );
-

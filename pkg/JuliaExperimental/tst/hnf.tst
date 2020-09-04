@@ -21,8 +21,7 @@ gap> for dim in [ 10, 20 .. 60 ] do
 
 ##
 gap> m_julia:= NemoMatrix_fmpz( [ [ 1, 2 ], [ 3, 2^65 ] ] );
-<Julia: [1 2]
-[3 36893488147419103232]>
+<Julia: [1 2; 3 36893488147419103232]>
 gap> GAPMatrix_fmpz_mat( m_julia );
 [ [ 1, 2 ], [ 3, 36893488147419103232 ] ]
 gap> HermiteNormalFormIntegerMatUsingNemo( m_julia );
@@ -30,4 +29,3 @@ gap> HermiteNormalFormIntegerMatUsingNemo( m_julia );
 
 ##
 gap> STOP_TEST( "hnf.tst" );
-

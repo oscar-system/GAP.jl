@@ -10,4 +10,3 @@ gap> JuliaMatrixFromGapMatrix( [ [ 1, 2 ], [ 3, 4 ] ] );
 
 ##
 gap> STOP_TEST( "utils.tst" );
-
