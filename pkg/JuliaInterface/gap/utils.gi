@@ -20,6 +20,7 @@ function(obj)
   local str, out;
   str := "";
   out := OutputTextString(str, false);
+  SetPrintFormattingStatus(out, false);
   STREAM_CALL(out, Display, obj);
   CloseStream(out);
   return str;
@@ -30,6 +31,7 @@ function(obj)
   local str, out;
   str := "";
   out := OutputTextString(str, false);
+  SetPrintFormattingStatus(out, false);
   STREAM_CALL(out, ViewObj, obj);
   CloseStream(out);
   return str;
