@@ -142,6 +142,7 @@ function reset_GAP_ERROR_OUTPUT()
     evalstr("_JULIAINTERFACE_ERROR_OUTPUT:= \"\";")
     Globals.MakeReadWriteGlobal(julia_to_gap("ERROR_OUTPUT"))
     evalstr("ERROR_OUTPUT:= OutputTextString( _JULIAINTERFACE_ERROR_OUTPUT, true );")
+    evalstr("SetPrintFormattingStatus( ERROR_OUTPUT, false )")
     Globals.MakeReadOnlyGlobal(julia_to_gap("ERROR_OUTPUT"))
 end
 
