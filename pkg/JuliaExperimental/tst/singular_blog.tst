@@ -46,7 +46,7 @@ gap> Julia.Base.gcd( f, g );
 ##  ideals
 gap> I1:= Julia.Singular.Ideal( R );
 <Julia: Singular Ideal over Singular Polynomial Ring (QQ),(x,y,z,t),(dp(4),C) \
-with generators ()>
+with generators (0)>
 gap> I2:= Julia.Singular.Ideal( R, x, t*z + x );
 <Julia: Singular Ideal over Singular Polynomial Ring (QQ),(x,y,z,t),(dp(4),C) \
 with generators (x, z*t+x)>
@@ -157,7 +157,7 @@ gap> J1[2];
 ##  (strange: runs into Julia MethodError over QQ instead of ZZ ...)
 gap> Rinfo:= Julia.Nemo.PolynomialRing( Julia.Singular.ZZ, indetnames );
 <Julia: (Multivariate Polynomial Ring in x, y, z, t over Integer Ring, Abstrac\
-tAlgebra.Generic.MPoly{Singular.n_Z}[x, y, z, t])>
+tAlgebra.Generic.MPoly{Singular.n_Z}[1*x, 1*y, 1*z, 1*t])>
 gap> R:= Rinfo[1];;
 gap> indets:= JuliaToGAP( IsList, Rinfo[2] );;
 gap> x:= indets[1];; y:= indets[2];; z:= indets[3];; t:= indets[4];;
@@ -185,10 +185,10 @@ gap> g:= (4*t^1156*z^30*y^46-28*t^158*z^30*y^37)*x^9
 >       +((-2*t^104-2*t^4)*z+(78*t^103+78*t^3))*x
 >       +((-t^201-2*t^101-t)*z+(39*t^200+78*t^100+39));;
 gap> p:= Julia.Base.gcd( f, g );
-<Julia: -2*x^6*y^33*z^15*t^1078+14*x^6*y^24*z^15*t^80-x^4*y^20*t^1003+7*x^4*y^\
-11*t^5-x^3*y^20*t^1100-x^3*y^20*t^1000+2*x^3*y^13*z^16*t^79-78*x^3*y^13*z^15*t\
-^78+7*x^3*y^11*t^102+7*x^3*y^11*t^2+x*z*t^4-39*x*t^3+z*t^101+z*t-39*t^100-39>
+<Julia: 2*x^6*y^33*z^15*t^1078 + -14*x^6*y^24*z^15*t^80 + 1*x^4*y^20*t^1003 + \
+-7*x^4*y^11*t^5 + 1*x^3*y^20*t^1100 + 1*x^3*y^20*t^1000 + -2*x^3*y^13*z^16*t^7\
+9 + 78*x^3*y^13*z^15*t^78 + -7*x^3*y^11*t^102 + -7*x^3*y^11*t^2 + -1*x*z*t^4 +\
+ 39*x*t^3 + -1*z*t^101 + -1*z*t + 39*t^100 + 39>
 
 ##
 gap> STOP_TEST( "singular_blog.tst" );
-

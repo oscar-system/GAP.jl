@@ -520,4 +520,3 @@ true
 
 ##
 gap> STOP_TEST( "loewy_ext.tst" );
-

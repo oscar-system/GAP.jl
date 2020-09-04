@@ -272,4 +272,3 @@ true
 
 ##
 gap> STOP_TEST( "loewy.tst" );
-
