@@ -286,7 +286,7 @@ function initialize(argv::Array{String,1})
     global JuliaInterface_handle = Libdl.dlopen(JuliaInterface_path)
 
     # Redirect error messages, in order not to print them to the screen.
-    reset_GAP_ERROR_OUTPUT()
+    Base.invokelatest(reset_GAP_ERROR_OUTPUT)
 end
 
 function finalize()
