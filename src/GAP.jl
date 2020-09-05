@@ -283,7 +283,7 @@ function initialize(argv::Array{String,1})
 
     # open JuliaInterface.so, too
     #global JuliaInterface_path = CSTR_STRING(EvalString("""Filename(DirectoriesPackagePrograms("JuliaInterface"), "JuliaInterface.so");"""))
-    global JuliaInterface_path = joinpath(@__DIR__, "..", "pkg", "JuliaInterface", "bin", sysinfo["GAParch"], ".libs", JuliaInterface)
+    global JuliaInterface_path = normpath(joinpath(@__DIR__, "..", "pkg", "JuliaInterface", "bin", sysinfo["GAParch"], JuliaInterface))
     global JuliaInterface_handle = Libdl.dlopen(JuliaInterface_path)
 
     # Redirect error messages, in order not to print them to the screen.
