@@ -13,13 +13,13 @@ function _GAP_TO_JULIA(ptr::Ptr{Cvoid})
     elseif as_int & 2 == 2
         return reinterpret(FFE, ptr)
     end
-    return @sync ccall(:julia_gap, Any, (Ptr{Cvoid},), ptr)
+    return @lock ccall(:julia_gap, Any, (Ptr{Cvoid},), ptr)
 end
 
 #
 # low-level Julia -> GAP conversion
 #
-_JULIA_TO_GAP(val::Any) = @sync ccall(:gap_julia, Ptr{Cvoid}, (Any,), val)
+_JULIA_TO_GAP(val::Any) = @lock ccall(:gap_julia, Ptr{Cvoid}, (Any,), val)
 #_JULIA_TO_GAP(x::Bool) = x ? gap_true : gap_false
 _JULIA_TO_GAP(x::FFE) = reinterpret(Ptr{Cvoid}, x)
 _JULIA_TO_GAP(x::GapObj) = pointer_from_objref(x)
@@ -28,12 +28,12 @@ function _JULIA_TO_GAP(x::Int)
     if x in -1<<60:(1<<60-1)
         return Ptr{Cvoid}(x << 2 | 1)
     end
-    return @sync_noexcept ccall(:ObjInt_Int, Ptr{Cvoid}, (Int,), x)
+    return @lock_noexcept ccall(:ObjInt_Int, Ptr{Cvoid}, (Int,), x)
 end
 
 
 function evalstr_ex(cmd::String)
-    res = @sync ccall(:GAP_EvalString, GapObj, (Ptr{UInt8},), cmd)
+    res = @lock ccall(:GAP_EvalString, GapObj, (Ptr{UInt8},), cmd)
     return res
 end
 
@@ -73,7 +73,7 @@ end
 # Retrieve the value of a global GAP variable given its name. This function
 # returns a raw Ptr value, and should only be called by plumbing code.
 function _ValueGlobalVariable(name::Union{AbstractString,Symbol})
-    return @sync_noexcept ccall(:GAP_ValueGlobalVariable, Ptr{Cvoid},
+    return @lock_noexcept ccall(:GAP_ValueGlobalVariable, Ptr{Cvoid},
         (Ptr{UInt8},), name)
 end
 
@@ -84,20 +84,20 @@ end
 
 # Test whether the global GAP variable with the given name can be assigned to.
 function CanAssignGlobalVariable(name::Union{AbstractString,Symbol})
-    @sync_noexcept ccall(:GAP_CanAssignGlobalVariable, Bool, (Ptr{UInt8},),
+    @lock_noexcept ccall(:GAP_CanAssignGlobalVariable, Bool, (Ptr{UInt8},),
         name)
 end
 
 # Assign a value to the global GAP variable with the given name. This function
 # assigns a raw Ptr value, and should only be called by plumbing code.
 function _AssignGlobalVariable(name::Union{AbstractString,Symbol}, value::Ptr{Cvoid})
-    @sync_noexcept ccall(:GAP_AssignGlobalVariable, Cvoid, (Ptr{UInt8},
+    @lock_noexcept ccall(:GAP_AssignGlobalVariable, Cvoid, (Ptr{UInt8},
         Ptr{Cvoid}), name, value)
 end
 
 # Assign a value to the global GAP variable with the given name.
 function AssignGlobalVariable(name::Union{AbstractString,Symbol}, value::Any)
-    @sync begin
+    @lock begin
       if !CanAssignGlobalVariable(name)
           error("cannot assing to $name in GAP")
       end
@@ -107,34 +107,34 @@ function AssignGlobalVariable(name::Union{AbstractString,Symbol}, value::Any)
 end
 
 MakeString(val::String) =
-    @sync_noexcept ccall(:GAP_MakeString, GapObj, (Ptr{UInt8},), val)
+    @lock_noexcept ccall(:GAP_MakeString, GapObj, (Ptr{UInt8},), val)
 
 function CSTR_STRING(val::GapObj)
-    char_ptr = @sync_noexcept ccall(:GAP_CSTR_STRING, Ptr{UInt8}, (Any,), val)
+    char_ptr = @lock_noexcept ccall(:GAP_CSTR_STRING, Ptr{UInt8}, (Any,), val)
     return deepcopy(unsafe_string(char_ptr))::String
 end
 
 function CSTR_STRING_AS_ARRAY(val::GapObj)::Array{UInt8,1}
-    string_len = @sync_noexcept Int64(ccall(:GAP_LenString, Cuint, (Any,), val))
-    char_ptr = @sync_noexcept ccall(:GAP_CSTR_STRING, Ptr{UInt8}, (Any,), val)
+    string_len = @lock_noexcept Int64(ccall(:GAP_LenString, Cuint, (Any,), val))
+    char_ptr = @lock_noexcept ccall(:GAP_CSTR_STRING, Ptr{UInt8}, (Any,), val)
     return deepcopy(unsafe_wrap(Array{UInt8,1}, char_ptr, string_len))
 end
 
 
 NewPlist(capacity::Int64) =
-    @sync_noexcept ccall(:GAP_NewPlist, GapObj, (Int64,), capacity)
+    @lock_noexcept ccall(:GAP_NewPlist, GapObj, (Int64,), capacity)
 NewPrecord(capacity::Int64) = ccall(:GAP_NewPrecord, GapObj, (Int64,), capacity)
 NEW_MACFLOAT(x::Float64) =
-    @sync_noexcept ccall(:NEW_MACFLOAT, GapObj, (Cdouble,), x)
+    @lock_noexcept ccall(:NEW_MACFLOAT, GapObj, (Cdouble,), x)
 ValueMacFloat(x::GapObj) =
-    @sync_noexcept ccall(:GAP_ValueMacFloat, Cdouble, (Any,), x)
+    @lock_noexcept ccall(:GAP_ValueMacFloat, Cdouble, (Any,), x)
 CharWithValue(x::Cuchar) =
-    @sync_noexcept ccall(:GAP_CharWithValue, GapObj, (Cuchar,), x)
+    @lock_noexcept ccall(:GAP_CharWithValue, GapObj, (Cuchar,), x)
 NewJuliaFunc(x::Function) =
-    @sync_noexcept ccall(:NewJuliaFunc, GapObj, (Any,), x)
+    @lock_noexcept ccall(:NewJuliaFunc, GapObj, (Any,), x)
 
 function ElmList(x::GapObj, position)
-    o = @sync ccall(:GAP_ElmList, Ptr{Cvoid}, (Any, Culong), x, Culong(position))
+    o = @lock ccall(:GAP_ElmList, Ptr{Cvoid}, (Any, Culong), x, Culong(position))
     return _GAP_TO_JULIA(o)
 end
 
@@ -180,7 +180,7 @@ function call_gap_func(func::GapObj, args...; kwargs...)
         options = true
     end
     try
-        @sync begin
+        @lock begin
             if TNUM_OBJ(func) == T_FUNCTION && length(args) <= 6
                 result = _call_gap_func(func, args...)
             else
@@ -355,7 +355,7 @@ Main
 const Globals = GlobalsType()
 
 function getproperty(::GlobalsType, name::Symbol)
-    @sync begin
+    @lock begin
         v = _ValueGlobalVariable(name)
         if v === C_NULL
             error("GAP variable $name not bound")
@@ -369,7 +369,7 @@ function hasproperty(::GlobalsType, name::Symbol)
 end
 
 function setproperty!(::GlobalsType, name::Symbol, val::Any)
-    @sync begin
+    @lock begin
         if !CanAssignGlobalVariable(name)
             error("cannot assing to $name in GAP")
         end

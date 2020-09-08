@@ -5,12 +5,12 @@ module Sync
     const gap_lock = ReentrantLock()
     const pinned_thread = Ref{Int}(1)
 
-    @inline function lock()
-        Base.lock(gap_lock)
+    @inline function _lock()
+        Base._lock(gap_lock)
     end
 
-    @inline function unlock()
-        Base.unlock(gap_lock)
+    @inline function _unlock()
+        Base._unlock(gap_lock)
     end
 
     @inline function check_lock()
@@ -22,7 +22,7 @@ module Sync
     end
 
     # To switch between multi-threaded and single-threaded mode, we
-    # define functions that install the appropriate handlers for sync()
+    # define functions that install the appropriate handlers for lock()
     # etc.
     #
     # This is necessary because otherwise precompilation would fix
@@ -36,49 +36,49 @@ module Sync
     # selective recompilation of the affected functions as needed.
 
     function _mode_mutex()
-        Sync.eval(:(@inline function sync(f::Function)
+        Sync.eval(:(@inline function lock(f::Function)
             try
-                lock()
+                _lock()
                 f()
             finally
-                unlock()
+                _unlock()
             end
         end))
-        Sync.eval(:(@inline function sync_noexcept(f::Function)
-            lock()
+        Sync.eval(:(@inline function lock_noexcept(f::Function)
+            _lock()
             t = f()
-            unlock()
+            _unlock()
             t
         end))
-        Sync.eval(:(@inline function check_sync(f::Function)
+        Sync.eval(:(@inline function check_lock(f::Function)
             check_lock()
             f()
         end))
     end
 
     function _mode_pinned()
-        Sync.eval(:(@inline function sync(f::Function)
+        Sync.eval(:(@inline function lock(f::Function)
             check_pinned()
             f()
         end))
-        Sync.eval(:(@inline function sync_noexcept(f::Function)
+        Sync.eval(:(@inline function lock_noexcept(f::Function)
             check_pinned()
             f()
         end))
-        Sync.eval(:(@inline function check_sync(f::Function)
+        Sync.eval(:(@inline function check_lock(f::Function)
             check_pinned()
             f()
         end))
     end
 
-    function _mode_nosync()
-        Sync.eval(:(@inline function sync(f::Function)
+    function _mode_nolock()
+        Sync.eval(:(@inline function lock(f::Function)
             f()
         end))
-        Sync.eval(:(@inline function sync_noexcept(f::Function)
+        Sync.eval(:(@inline function lock_noexcept(f::Function)
             f()
         end))
-        Sync.eval(:(@inline function check_sync(f::Function)
+        Sync.eval(:(@inline function check_lock(f::Function)
             f()
         end))
     end
@@ -87,8 +87,8 @@ module Sync
         stack = stacktrace()
         file = stack[1].file
         for frame in stack[2:end]
-            if frame.func in [ :sync, :sync_noexcept ] && frame.file == file
-                @error "trying to change sync mode within critical region"
+            if frame.func in [ :lock, :lock_noexcept ] && frame.file == file
+                @error "trying to change lock mode within critical region"
             end
         end
         if mode == pin
@@ -96,14 +96,14 @@ module Sync
         elseif mode == mutex
             _mode_mutex()
         else # mode == disabled
-            _mode_nosync()
+            _mode_nolock()
         end
     end
 
     # Initialization is tricky. __init__() can be called from within the
-    # first sync() call if the module has already been precompiled. Thus,
+    # first lock() call if the module has already been precompiled. Thus,
     # we default to enabling synchronization during precompilation and
-    # then set the actual sync mode during __init__(). Dropping back from
+    # then set the actual lock mode during __init__(). Dropping back from
     # synchronization being enabled to being disabled is safe, but not the
     # other way round.
 
@@ -111,21 +111,21 @@ module Sync
 
     function __init__()
         if Threads.nthreads() == 1
-            _mode_nosync()
+            _mode_nolock()
         else
             _mode_pinned()
         end
     end
 end
 
-macro sync(expr)
-    :( Sync.sync(()->$(esc(expr))) )
+macro lock(expr)
+    :( Sync.lock(()->$(esc(expr))) )
 end
 
-macro sync_noexcept(expr)
-    :( Sync.sync_noexcept(()->$(esc(expr))) )
+macro lock_noexcept(expr)
+    :( Sync.lock_noexcept(()->$(esc(expr))) )
 end
 
-macro check_sync(expr)
-    :( Sync.check_sync(()->$(esc(expr))) )
+macro check_lock(expr)
+    :( Sync.check_lock(()->$(esc(expr))) )
 end
