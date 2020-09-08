@@ -83,6 +83,20 @@ module Sync
         end))
     end
 
+    # The switch() method allows GAP users to switch at runtime between
+    # various modes:
+    #
+    # 1. Sync.pin pins the GAP interpreter to the current thread. It
+    #    cannot be called from other threads. This is the default mode,
+    #    as it combines best performance with thread safety.
+    # 2. Sync.mutex serializes all GAP calls via a global mutex. This
+    #    offers thread safety and the ability to call GAP from multiple
+    #    threads, but has worse performance than pinning the GAP interpreter
+    #    to a thread.
+    # 3. Sync.nolock removes all thread-safety checks. It eliminates all
+    #    overhead, but it is up to the user to ensure that no race
+    #    conditions occur.
+
     function switch(mode::SyncMode)
         stack = stacktrace()
         file = stack[1].file
