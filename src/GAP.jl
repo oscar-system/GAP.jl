@@ -334,6 +334,9 @@ function run_it()
             ),
         )
     end
+
+    # Show some traceback on errors.
+    Globals.AlwaysPrintTracebackOnError = true
 end
 
 function __init__()
