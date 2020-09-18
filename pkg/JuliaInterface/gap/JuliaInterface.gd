@@ -152,12 +152,16 @@ DeclareGlobalFunction( "IsArgumentForJuliaFunction" );
 #! @EndExampleSession
 #DeclareGlobalFunction( "JuliaEvalString" );
 
-#! @Arguments filename
+#! @Arguments filename[, module_name]
 #! @Returns nothing.
 #! @Description
-#!  calls &Julia;'s <C>Base.include</C> with the string <A>filename</A>.
-#!  This means that the &Julia; code in the file with this name gets
-#!  executed in the current &Julia; session.
+#!  calls &Julia;'s <C>Base.include</C> with the strings <A>filename</A>
+#!  (an absolute filename, as returned by
+#!  <Ref Oper="Filename" BookName="ref"/>) and <A>module_name</A>
+#!  (the name of a &Julia; module, the default is <C>"Main"</C>).
+#!  This means that the &Julia; code in the file with name <A>filename</A>
+#!  gets executed in the current &Julia; session,
+#!  in the context of the &Julia; module <A>module_name</A>.
 #!  If the file defines a new &Julia; module then the next step will be
 #!  to import this module, see <Ref Func="ImportJuliaModuleIntoGAP"/>.
 DeclareGlobalFunction( "JuliaIncludeFile" );
