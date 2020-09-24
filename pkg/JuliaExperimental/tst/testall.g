@@ -11,7 +11,6 @@ pairs:= [
   [ "gapnemo.tst", [ "Nemo" ] ],
   [ "gapperm.tst", [] ],
   [ "hnf.tst", [ "Nemo" ] ],
-  [ "loewy.tst", [ "Primes" ] ],
   [ "numfield.tst", [ "Nemo" ] ],
   [ "realcyc.tst", [ "Nemo" ] ],
   [ "singular.tst", [ "Singular" ] ],

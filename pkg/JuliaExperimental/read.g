@@ -24,11 +24,6 @@ if JuliaImportPackage( "Nemo" ) then
   ReadPackage( "JuliaExperimental", "gap/hnf.g" );
 fi;
 
-# Combinatorics: Julia speeds up large loops
-if JuliaImportPackage( "Primes" ) then
-  ReadPackage( "JuliaExperimental", "gap/loewy.gd");
-  ReadPackage( "JuliaExperimental", "gap/loewy.gi");
-fi;
 
 # Julia permutations
 ReadPackage( "JuliaExperimental", "gap/gapperm.g" );
