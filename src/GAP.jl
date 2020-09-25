@@ -158,6 +158,9 @@ function error_handler()
     error("Error thrown by GAP: ", str)
 end
 
+# The following hack is needed only in Julia 1.3, not in later versions.
+error_handlerwrap() = Base.invokelatest(error_handler)
+
 # This will be filled out by __init__(), as it must be done at runtime
 libgap_path = ""
 JuliaInterface_path = ""
@@ -175,7 +178,7 @@ function initialize(argv::Array{String,1})
     global libgap_handle = Libdl.dlopen(libgap_path, Libdl.RTLD_GLOBAL)
 
     handle_signals = isdefined(Main, :__GAP_ARGS__)  # a bit of a hack...
-    error_handler_func = handle_signals ? C_NULL : @cfunction(error_handler, Cvoid, ())
+    error_handler_func = handle_signals ? C_NULL : @cfunction(error_handlerwrap, Cvoid, ())
 
     # Initialize __JULIAINTERNAL_LOADED_FROM_JULIA; this also allows us to
     # detect whether GAP_Initialize and GAP's `init.g` completed successfully
@@ -316,12 +319,13 @@ function run_it()
     end
     initialize(cmdline_options)
 
+    gap_module = @__MODULE__
+
     if !show_banner
         # Leave it to GAP's `LoadPackage` whether package banners are shown.
         # Note that a second argument `false` of this function suppresses the
         # package banner,
         # but no package banners can be shown if the `-b` option is `true`.
-        gap_module = @__MODULE__
         Base.MainInclude.eval(
             :(
                 begin
@@ -336,7 +340,7 @@ function run_it()
     end
 
     # Show some traceback on errors.
-    Globals.AlwaysPrintTracebackOnError = true
+    Base.MainInclude.eval(:($gap_module.Globals.AlwaysPrintTracebackOnError = true))
 end
 
 function __init__()
