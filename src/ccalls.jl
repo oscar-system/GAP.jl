@@ -133,7 +133,7 @@ end
 
 Call the GAP object `func` as a function,
 with arguments `args...` and global GAP options `kwargs...`,
-and returns the result if there is one, and `nothing` otherwise.
+and return the result if there is one, and `nothing` otherwise.
 
 There is no argument number checking here, all checks on the arguments
 are done by GAP itself.
@@ -158,9 +158,9 @@ GAP: "2xD8"
 
 ```
 """
+function call_gap_func(func::GapObj, args...; kwargs...)
 # this is the generic method which supports keyword arguments (mapped to GAP options)
 # and goes through JuliaInterface, which is convenient but a bit slow.
-function call_gap_func(func::GapObj, args...; kwargs...)
     global Globals
     options = false
     if length(kwargs) > 0
