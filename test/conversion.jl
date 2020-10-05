@@ -403,6 +403,7 @@ end
     @test nonrec[1] == [1, 2]
     rec = GAP.julia_to_gap(val, recursive = true)
     @test rec[1] == GAP.julia_to_gap([1, 2])
+    @test GAP.julia_to_gap(1, recursive = false) == 1
 
     ## Test function conversion
     return_first(args...) = args[1]

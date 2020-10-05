@@ -89,7 +89,8 @@ julia_to_gap(x::AbstractString) = MakeString(string(x))
 julia_to_gap(x::Symbol) = MakeString(string(x))
 
 ## Generic caller for optional arguments
-julia_to_gap(obj::Any, recursion_dict; recursive = true) = julia_to_gap(obj)
+julia_to_gap(obj::Any; recursive::Bool) = julia_to_gap(obj)
+julia_to_gap(obj::Any, recursion_dict::IdDict{Any,Any}; recursive = true) = julia_to_gap(obj)
 
 ## Arrays (including BitArray{1})
 function julia_to_gap(
