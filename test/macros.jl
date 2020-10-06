@@ -12,7 +12,8 @@
     @test x == GAP.julia_to_gap("foo")
     x = GAP.g"1:\n, 2:\", 3:\\, 4:\b, 5:\r, 6:\c, 7:\001"
     @test x == GAP.julia_to_gap("1:\n, 2:\", 3:\\, 4:\b, 5:\r, 6:\003, 7:\001")
-#TODO: Can the following error not be tested?
-#    @test_throws LoadError GAP.g"\\"
+    # Errors thrown by the GAP.g macro cannot be tested directly,
+    # and the string "\\" can be handed over in the macro.
+    @test_throws ErrorException GAP.gap_string_macro_helper("\\")
 
 end
