@@ -64,6 +64,22 @@ end
 
 export @gap
 
+# Define a plain function that contains the code of the `@g_str` macro.
+# Note that errors thrown by macros can apparently not be tested using
+# `@test_throw`.
+function gap_string_macro_helper(str::String)
+    # We assume that `str` is the input of the `@g_str` macro;
+    # more precisely, `str` is what arrives inside the code of the macro.
+    # Note that here backslashes inside `str` are literally contained in `str`,
+    # except for backslashes that escape doublequotes.
+    # In order to get the intended meaning (as stated in the GAP manual section
+    # "Special Characters"),
+    # we escape doublequotes and leave the interpretation to `evalstr`.
+    evl = evalstr("\"" * replace(str, "\"" => "\\\"") * "\"")
+    evl === nothing && error("failed to convert to GapObj:\n $str")
+
+    return evl
+end
 
 """
     @g_str
@@ -101,15 +117,7 @@ GAP: "\\c"
 ```
 """
 macro g_str(str)
-    # Note that here backslashes inside `str` are literally contained in `str`,
-    # except for backslashes that escape doublequotes.
-    # In order to get the intended meaning (as stated in the GAP manual section
-    # "Special Characters"),
-    # we escape doublequotes and leave the interpretation to `evalstr`.
-    evl = evalstr("\"" * replace(str, "\"" => "\\\"") * "\"")
-    evl === nothing && error("failed to convert to GapObj:\n $str")
-
-    return evl
+    return gap_string_macro_helper(str)
 end
 
 export @g_str
