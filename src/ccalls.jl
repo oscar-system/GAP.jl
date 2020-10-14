@@ -190,6 +190,14 @@ end
 # make all GapObj callable
 (func::GapObj)(args...; kwargs...) = call_gap_func(func, args...; kwargs...)
 
+# specialize non-kwargs versions, which increases performance
+(func::GapObj)(a1) = call_gap_func(func, a1)
+(func::GapObj)(a1, a2) = call_gap_func(func, a1, a2)
+(func::GapObj)(a1, a2, a3) = call_gap_func(func, a1, a2, a3)
+(func::GapObj)(a1, a2, a3, a4) = call_gap_func(func, a1, a2, a3, a4)
+(func::GapObj)(a1, a2, a3, a4, a5) = call_gap_func(func, a1, a2, a3, a4, a5)
+(func::GapObj)(a1, a2, a3, a4, a5, a6) = call_gap_func(func, a1, a2, a3, a4, a5, a6)
+
 #
 # below several "fastpath" methods for call_gap_func follow which directly
 # jump to the C handler functions, bypassing JuliaInterface, for optimal
