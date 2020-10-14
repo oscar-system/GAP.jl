@@ -57,7 +57,7 @@ function julia_to_gap(x::BigInt)
     if x in -1<<60:(1<<60-1)
         return Int64(x)
     end
-    return ccall(:MakeObjInt, GapObj, (Ptr{UInt64}, Cint), x.d, x.size)
+    return @lock_noexcept ccall(:MakeObjInt, GapObj, (Ptr{UInt64}, Cint), x.d, x.size)
 end
 
 ## Rationals

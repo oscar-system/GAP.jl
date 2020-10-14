@@ -19,6 +19,7 @@ if !isfile(deps_jl)
     Pkg.build("GAP")
 end
 include(deps_jl)
+include("sync.jl")
 
 
 """
@@ -294,7 +295,7 @@ function initialize(argv::Array{String,1})
 end
 
 function finalize()
-    ccall((:GAP_finalize, "libgap"), Cvoid, ())
+    @lock ccall((:GAP_finalize, "libgap"), Cvoid, ())
 end
 
 function run_it()
@@ -317,7 +318,7 @@ function run_it()
         # Do not show the main GAP banner by default.
         push!(cmdline_options, "-b")
     end
-    initialize(cmdline_options)
+    @lock initialize(cmdline_options)
 
     gap_module = @__MODULE__
 
@@ -391,10 +392,10 @@ function prompt()
     # save the current SIGINT handler
     # HACK: the hardcoded value for SIG_DFL is not portable, revise this
     # install GAP's SIGINT handler
-    old_sigint = ccall(:signal, Ptr{Cvoid}, (Cint, Ptr{Cvoid}), Base.SIGINT, C_NULL)
+    old_sigint = @lock ccall(:signal, Ptr{Cvoid}, (Cint, Ptr{Cvoid}), Base.SIGINT, C_NULL)
 
     # install GAP's SIGINT handler
-    ccall(:SyInstallAnswerIntr, Cvoid, ())
+    @lock ccall(:SyInstallAnswerIntr, Cvoid, ())
 
     # restore GAP's error output
     disable_error_handler = true
@@ -412,7 +413,7 @@ function prompt()
     Globals.BreakOnError = false
 
     # restore signal handler
-    ccall(:signal, Ptr{Cvoid}, (Cint, Ptr{Cvoid}), Base.SIGINT, old_sigint)
+    @lock ccall(:signal, Ptr{Cvoid}, (Cint, Ptr{Cvoid}), Base.SIGINT, old_sigint)
 
     # restore GAP error handler
     disable_error_handler = false

@@ -1,6 +1,5 @@
 #include "calls.h"
 #include "convert.h"
-#include "sync.h"
 #include "JuliaInterface.h"
 
 
@@ -23,7 +22,6 @@ jl_value_t * call_gap_func(Obj func, jl_value_t * args)
 
     size_t len = jl_nfields(args);
     Obj    return_value = NULL;
-    BEGIN_GAP_SYNC();
     if (IS_FUNC(func) && len <= 6) {
         switch (len) {
         case 0:
@@ -73,7 +71,6 @@ jl_value_t * call_gap_func(Obj func, jl_value_t * args)
         }
         return_value = CallFuncList(func, arg_list);
     }
-    END_GAP_SYNC();
     if (return_value == NULL) {
         return jl_nothing;
     }
@@ -191,7 +188,6 @@ static Obj DoCallJuliaFuncXArg(Obj func, Obj args)
 //
 Obj NewJuliaFunc(jl_function_t * function)
 {
-    BEGIN_GAP_SYNC();
     Obj name = MakeImmString(jl_symbol_name(jl_gf_name(function)));
     Obj func = NewFunctionT(T_FUNCTION, sizeof(JuliaFuncBag), name, -1,
                             ArgStringToList("arg"), 0);
@@ -217,7 +213,6 @@ Obj NewJuliaFunc(jl_function_t * function)
     SET_BODY_FUNC(func, body);
     CHANGED_BAG(body);
     CHANGED_BAG(func);
-    END_GAP_SYNC();
 
     return func;
 }
@@ -310,7 +305,6 @@ Obj NewJuliaCFunc(void * function, Obj args)
 {
     ObjFunc handler;
 
-    BEGIN_GAP_SYNC();
     switch (LEN_PLIST(args)) {
     case 0:
         handler = DoCallJuliaCFunc0Arg;
@@ -345,7 +339,6 @@ Obj NewJuliaCFunc(void * function, Obj args)
     // store it as a valid julia obj (i.e., void ptr).
     ((JuliaFuncBag *)ADDR_OBJ(func))->juliaFunc =
         NewJuliaObj(jl_box_voidpointer(function));
-    END_GAP_SYNC();
 
     return func;
 }
