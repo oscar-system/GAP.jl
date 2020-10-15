@@ -45,6 +45,7 @@ import Base: length, finalize
 
 import Libdl
 import Markdown
+import Random
 
 """
     GapObj
@@ -417,6 +418,37 @@ function prompt()
     # restore GAP error handler
     disable_error_handler = false
     reset_GAP_ERROR_OUTPUT()
+end
+
+"""
+    GAP.randseed!([seed::Integer])
+
+Reseed GAP's global RNG with `seed`.
+
+The given `seed` must be a non-negative integer.
+When `seed` is not specified, a random seed is generated from Julia's global RNG.
+
+For a fixed seed, the stream of generated numbers is allowed to change between
+different versions of GAP.
+"""
+function randseed!(seed::Union{Integer,Nothing}=nothing)
+    if seed === nothing
+        seed = rand(UInt128)
+    end
+    if 0 <= seed < typemax(Int) ÷ 2
+        # avoid too small seeds by hashing them
+        seed = hash(seed, 0x886b5530f00038ef % UInt)
+    end
+    # Although GAP's `Reset` method can accept directly integers (also negative
+    # ones), we harmonize here the behavior with what Julia does, i.e. for two
+    # integers with the same value, even of different types, the initialization
+    # is the same (e.g. with `1` or `0x1`); so we re-use Julia's
+    # `Random.make_seed` internal function (which errors on negative argument)
+    # to normalize this, and create a string out of it.
+    str = String(reinterpret(UInt8, Random.make_seed(seed)))
+    MT = Globals.GlobalMersenneTwister
+    Globals.Reset(MT, str)
+    MT
 end
 
 include("lowlevel.jl")
