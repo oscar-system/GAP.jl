@@ -134,3 +134,20 @@ end
     @test l[2] === l
     @test GAP.gap_to_julia(GAP.Globals.StringViewObj(l)) == "[ 1, ~, 3 ]"
 end
+
+@testset "randseed!" begin
+    G = GAP.Globals.SymmetricGroup(9)
+    random = GAP.Globals.Random
+    GAP.randseed!()
+    g = random(G)
+    GAP.randseed!() # should initialize to a different state than before
+    @test g != random(G)
+
+    seed = rand(UInt128)
+    GAP.randseed!(seed)
+    gs = [random(G) for _=1:30]
+    GAP.randseed!(seed)
+    gs == [random(G) for _=1:30]
+
+    @test_throws DomainError GAP.randseed!(-rand(1:1234))
+end
