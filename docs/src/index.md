@@ -120,6 +120,7 @@ Tuple
 BitArray
 Vector{T}
 Matrix{T}
+Set{T}
 Dict{Symbol,T}
 ```
 

@@ -156,6 +156,14 @@
     @test GAP.gap_to_julia(m) == Array{Any,2}([0 1; 2 3])
     @test GAP.gap_to_julia(Array{Int,2}, m) == Array{Int,2}([0 1; 2 3])
 
+    ## Sets
+    x = GAP.evalstr("[ [ 1 ], [ 2 ], [ 1 ] ]")
+    y = [GAP.evalstr("[ 1 ]"), GAP.evalstr("[ 2 ]")]
+    @test GAP.gap_to_julia(Set{Vector{Int}}, x) == Set([[1], [2], [1]])
+    @test GAP.gap_to_julia(Set{GAP.GapObj}, x, recursive = false) == Set(y)
+    @test GAP.gap_to_julia(Set{Any}, x, recursive = false) == Set(y)
+    @test GAP.gap_to_julia(Set{Any}, x) == Set([[1], [2], [1]])
+
     ## Tuples
     x = GAP.julia_to_gap([1, 2, 3])
     @test GAP.gap_to_julia(Tuple{Int64,Any,Int32}, x) == Tuple{Int64,Any,Int32}([1, 2, 3])

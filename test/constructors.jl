@@ -130,6 +130,12 @@
     @test isa(z[1, 1], GAP.GapObj)
     @test z[1, 1] === z[2, 2]
 
+    ## Sets
+    @test Set{Int}(GAP.evalstr("[1, 3, 1]")) == Set{Int}([1, 3, 1])
+    @test Set{Vector{Int}}(GAP.evalstr("[[1,2],[2,3,4]]")) == Set([[1, 2], [2, 3, 4]])
+    x = GAP.evalstr("SymmetricGroup(3)")
+    @test Set{GAP.GapObj}(x) == Set{GAP.GapObj}(GAP.Globals.AsSet(x))
+
     ## Tuples
     x = GAP.julia_to_gap([1, 2, 3])
     @test Tuple{Int64,Any,Int32}(x) == Tuple{Int64,Any,Int32}([1, 2, 3])
