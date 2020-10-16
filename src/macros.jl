@@ -39,7 +39,7 @@ ERROR: LoadError: Error thrown by GAP: Error, no method found! For debugging hin
 [...]
 
 julia> @gap [ 1,, 2 ]
-ERROR: syntax: unexpected ","
+ERROR: syntax: unexpected \",\"
 [...]
 
 ```
@@ -47,13 +47,13 @@ ERROR: syntax: unexpected ","
 Note also that a string argument gets evaluated with `GAP.evalstr`.
 
 ```jldoctest
-julia> @gap "\\"abc\\""
-GAP: "abc"
+julia> @gap \"\\\"abc\\\"\"
+GAP: \"abc\"
 
-julia> @gap "[1,,2]"
+julia> @gap \"[1,,2]\"
 GAP: [ 1,, 2 ]
 
-julia> @gap "(1,2)(3,4)"
+julia> @gap \"(1,2)(3,4)\"
 GAP: (1,2)(3,4)
 
 ```

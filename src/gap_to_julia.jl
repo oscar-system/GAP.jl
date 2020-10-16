@@ -254,6 +254,32 @@ function gap_to_julia(
     return new_array
 end
 
+## Sets
+## Assume that this function cannot be called inside recursions.
+## Note that Julia does not support `Set{Set{Int}}([[1], [1, 1]])`.
+## Without this assumption, we would have to construct the set
+## in the beginning, and then fill it up using `union!`.
+function gap_to_julia(::Type{Set{T}}, obj::GapObj; recursive = true) where {T}
+    Globals.IsList(obj) || Globals.IsCollection(obj) || throw(ConversionError(obj, Set{T}))
+    obj = Globals.AsSet(obj)
+    len_list = Globals.Length(obj)
+    new_array = Vector{T}(undef, len_list)
+    if recursive
+        recursion_dict = IdDict()
+    end
+    for i = 1:len_list
+        current_obj = ElmList(obj, i)
+        if recursive
+            new_array[i] = get!(recursion_dict, current_obj) do
+                gap_to_julia(T, current_obj, recursion_dict; recursive = true)
+            end
+        else
+            new_array[i] = current_obj
+        end
+    end
+    return Set{T}(new_array)
+end
+
 ## Tuples
 ## Note that the tuple type prescribes the types of the entries,
 ## thus we have to convert at least also the next layer,

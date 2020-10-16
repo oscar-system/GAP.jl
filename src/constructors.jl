@@ -345,6 +345,50 @@ julia> Matrix{Int64}(val)
 Base.Matrix{T}(obj::GapObj; recursive = true) where {T} =
     gap_to_julia(Matrix{T}, obj; recursive = recursive)
 
+## Sets
+@doc """
+    Set{T}(obj::GapObj; recursive = true)
+
+Return the set converted from the
+[GAP list](GAP_ref(ref:Lists)) or [GAP collection](GAP_ref(ref:Collections))
+`obj`.
+The elements of `obj` are converted to the required type `T`,
+using [`gap_to_julia`](@ref).
+If `recursive` is `true` then the elements are
+converted recursively, otherwise non-recursively.
+
+# Examples
+```jldoctest
+julia> s = Set{Int}(GAP.evalstr("[ 1, 2, 1 ]"));
+
+julia> s == Set([1, 2])
+true
+
+julia> s = Set{Vector{Int}}(GAP.evalstr("[[1], [2], [1]]"));
+
+julia> s == Set([[1], [2]])
+true
+
+julia> s = Set{Any}(GAP.evalstr("[[1], [2], [1]]"));
+
+julia> s == Set([[1], [2]])
+true
+
+julia> s = Set{Any}(GAP.evalstr("[[1], [2], [1]]"), recursive = false);
+
+julia> s == Set{Any}([GAP.evalstr("[ 1 ]"), GAP.evalstr("[ 2 ]")])
+true
+
+julia> s = Set{Any}(GAP.evalstr("SymmetricGroup(2)"), recursive = false);
+
+julia> s == Set{Any}([GAP.evalstr("()"), GAP.evalstr("(1,2)")])
+true
+
+```
+"""
+Base.Set{T}(obj::GapObj; recursive = true) where {T} =
+    gap_to_julia(Set{T}, obj; recursive = recursive)
+
 ## Tuples
 (::Type{T})(obj::GapObj; recursive = true) where {T<:Tuple} =
     gap_to_julia(T, obj, recursive = recursive)
@@ -353,7 +397,7 @@ Base.Matrix{T}(obj::GapObj; recursive = true) where {T} =
 
 Return the tuple converted from the
 [GAP list](GAP_ref(ref:Lists)) `obj`.
-The entries of the list are converted to the requires types `Types...`,
+The entries of the list are converted to the required types `Types...`,
 using [`gap_to_julia`](@ref).
 If `recursive` is `true` then the entries of the list are
 converted recursively, otherwise non-recursively.
