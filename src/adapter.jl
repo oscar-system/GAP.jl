@@ -262,5 +262,5 @@ end
 # we must provide a safe `hash` method, otherwise `==` results may be wrong.
 # For example, `==` for `Set`s of GAP objects may erroneously return
 # `false` if the default `hash` is used.
-Base.hash(::GapObj) = 0
-Base.hash(::FFE) = 0
+Base.hash(::GapObj, h::UInt) = h
+Base.hash(::FFE, h::UInt) = h
