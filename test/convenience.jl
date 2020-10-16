@@ -64,6 +64,7 @@ end
     pi = @gap "(1,2,3)(4,17)"
     @test !(pi in sym5)
     @test pi^2 in sym5
+    @test pi^-1 == pi^5
 
     # Julia object in GAP list
     l = [ [ 1 2 ], [ 3 4 ] ]

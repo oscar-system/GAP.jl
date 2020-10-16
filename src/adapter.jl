@@ -264,3 +264,10 @@ end
 # `false` if the default `hash` is used.
 Base.hash(::GapObj, h::UInt) = h
 Base.hash(::FFE, h::UInt) = h
+
+# The following bypasses GAP's redirection of `x^-1` to `INV_MUT(x)`.
+# Installing analogous methods for `x^0` and `x^1` would *not* be allowed,
+# these terms are equivalent to `ONE_MUT(x)` and `x`, respectively,
+# only if `x` is a multiplicative element in the sense of GAP.
+Base.literal_pow(::typeof(^), x::GapObj, ::Val{-1}) = Globals.INV_MUT(x)
+
