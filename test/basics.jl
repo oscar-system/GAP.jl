@@ -38,9 +38,11 @@
 
     # The following would sometimes fail if no dedicated `hash`
     # method would be available for GAP objects.
-    x = Set{Any}([GAP.evalstr("()"), GAP.evalstr("(1,2)")])
-    y = Set{Any}([GAP.evalstr("()"), GAP.evalstr("(1,2)")])
-    @test (x == y)
+    for i in 1:100
+        x = Set{Any}([GAP.evalstr("()"), GAP.evalstr("(1,2)")])
+        y = Set{Any}([GAP.evalstr("()"), GAP.evalstr("(1,2)")])
+        @test (x == y)
+    end
 end
 
 @testset "globals" begin
