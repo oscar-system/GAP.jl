@@ -22,6 +22,25 @@
     @test_throws ErrorException xx[4]
 
     @test string(GAP.julia_to_gap("x")) == "x"
+
+    # equality and hashing
+    x = GAP.evalstr("[]")
+    y = GAP.evalstr("[]")
+    @test !(x === y)
+    @test (x == y)
+    @test hash(x) == 0
+
+    x = GAP.evalstr("Z(2)")
+    y = GAP.evalstr("Z(4)^3")
+    @test !(x === y)
+    @test (x == y)
+    @test hash(x) == 0
+
+    # The following would sometimes fail if no dedicated `hash`
+    # method would be available for GAP objects.
+    x = Set{Any}([GAP.evalstr("()"), GAP.evalstr("(1,2)")])
+    y = Set{Any}([GAP.evalstr("()"), GAP.evalstr("(1,2)")])
+    @test (x == y)
 end
 
 @testset "globals" begin
