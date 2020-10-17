@@ -138,16 +138,27 @@ end
 @testset "randseed!" begin
     G = GAP.Globals.SymmetricGroup(9)
     random = GAP.Globals.Random
+    GMT = GAP.Globals.GlobalMersenneTwister
+    GRS = GAP.Globals.GlobalRandomSource
+
     GAP.randseed!()
-    g = random(G)
+    g1 = random(G)
+    g2 = random(GMT, G)
+    g3 = random(GRS, G)
     GAP.randseed!() # should initialize to a different state than before
-    @test g != random(G)
+    @test g1 != random(G)
+    @test g2 != random(GMT, G)
+    @test g3 != random(GRS, G)
 
     seed = rand(UInt128)
     GAP.randseed!(seed)
-    gs = [random(G) for _=1:30]
+    gs1 = [random(G) for _=1:30]
+    gs2 = [random(GMT, G) for _=1:30]
+    gs3 = [random(GRS, G) for _=1:30]
     GAP.randseed!(seed)
-    gs == [random(G) for _=1:30]
+    @test gs1 == [random(G) for _=1:30]
+    @test gs2 == [random(GMT, G) for _=1:30]
+    @test gs3 == [random(GRS, G) for _=1:30]
 
     @test_throws DomainError GAP.randseed!(-rand(1:1234))
 end

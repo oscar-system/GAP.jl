@@ -435,10 +435,6 @@ function randseed!(seed::Union{Integer,Nothing}=nothing)
     if seed === nothing
         seed = rand(UInt128)
     end
-    if 0 <= seed < typemax(Int) ÷ 2
-        # avoid too small seeds by hashing them
-        seed = hash(seed, 0x886b5530f00038ef % UInt)
-    end
     # Although GAP's `Reset` method can accept directly integers (also negative
     # ones), we harmonize here the behavior with what Julia does, i.e. for two
     # integers with the same value, even of different types, the initialization
@@ -446,9 +442,11 @@ function randseed!(seed::Union{Integer,Nothing}=nothing)
     # `Random.make_seed` internal function (which errors on negative argument)
     # to normalize this, and create a string out of it.
     str = String(reinterpret(UInt8, Random.make_seed(seed)))
-    MT = Globals.GlobalMersenneTwister
-    Globals.Reset(MT, str)
-    MT
+    Globals.Reset(Globals.GlobalMersenneTwister, str)
+    # when GlobalRandomSource is reset, the seed is taken modulo 2^28, so we just
+    # pass an already reduced seed here
+    Globals.Reset(Globals.GlobalRandomSource, seed % Int % 2^28)
+    nothing
 end
 
 include("lowlevel.jl")
