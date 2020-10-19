@@ -271,3 +271,15 @@ Base.hash(::FFE, h::UInt) = h
 # only if `x` is a multiplicative element in the sense of GAP.
 Base.literal_pow(::typeof(^), x::GapObj, ::Val{-1}) = Globals.INV_MUT(x)
 
+# iteration
+
+function Base.iterate(obj::GapObj)
+    Globals.IsList(obj) || Globals.IsCollection(obj) ||
+        throw(ArgumentError("object cannot be iterated"))
+    iterate(obj, (1, Globals.Length(obj)))
+end
+
+function Base.iterate(obj::GapObj, (i, len))
+    i > len && return nothing
+    ElmList(obj, i), (i+1, len)
+end
