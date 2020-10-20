@@ -357,23 +357,39 @@ using [`gap_to_julia`](@ref).
 If `recursive` is `true` then the elements are
 converted recursively, otherwise non-recursively.
 
+This constructor method is intended for situations where the result
+involves only native Julia objects such as integers and strings.
+Dealing with results containing GAP objects will be inefficient.
+
 # Examples
 ```jldoctest
-julia> s = Set{Int}(GAP.evalstr("[ 1, 2, 1 ]"));
+julia> Set{Int}(GAP.evalstr("[ 1, 2, 1 ]"))
+Set{Int64} with 2 elements:
+  2
+  1
 
-julia> s == Set([1, 2])
-true
+julia> Set{Vector{Int}}(GAP.evalstr("[[1], [2], [1]]"))
+Set{Array{Int64,1}} with 2 elements:
+  [1]
+  [2]
 
-julia> s = Set{Vector{Int}}(GAP.evalstr("[[1], [2], [1]]"));
+julia> Set{String}(GAP.evalstr("[\"a\", \"b\"]"))
+Set{String} with 2 elements:
+  "b"
+  "a"
 
-julia> s == Set([[1], [2]])
-true
+julia> Set{Any}(GAP.evalstr("[[1], [2], [1]]"))
+Set{Any} with 2 elements:
+  Any[1]
+  Any[2]
 
-julia> s = Set{Any}(GAP.evalstr("[[1], [2], [1]]"));
+```
 
-julia> s == Set([[1], [2]])
-true
+In the following examples,
+the order in which the Julia output is shown may vary.
 
+# Examples
+```jldoctest
 julia> s = Set{Any}(GAP.evalstr("[[1], [2], [1]]"), recursive = false);
 
 julia> s == Set{Any}([GAP.evalstr("[ 1 ]"), GAP.evalstr("[ 2 ]")])

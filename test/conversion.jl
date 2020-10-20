@@ -163,6 +163,9 @@
     @test GAP.gap_to_julia(Set{GAP.GapObj}, x, recursive = false) == Set(y)
     @test GAP.gap_to_julia(Set{Any}, x, recursive = false) == Set(y)
     @test GAP.gap_to_julia(Set{Any}, x) == Set([[1], [2], [1]])
+    x = GAP.evalstr("[ Z(2), Z(3) ]")  # a non-collection
+    y = [GAP.evalstr("Z(2)"), GAP.evalstr("Z(3)")]
+    @test GAP.gap_to_julia(Set{GAP.FFE}, x) == Set(y)
 
     ## Tuples
     x = GAP.julia_to_gap([1, 2, 3])
