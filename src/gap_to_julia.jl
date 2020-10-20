@@ -202,7 +202,7 @@ function gap_to_julia(
         recursion_dict[obj] = new_array
         for i = 1:len_list
             current_obj = elmlist(obj, i)
-            if recursive
+            if recursive && !isbitstype(typeof(current_obj))
                 new_array[i] = get!(recursion_dict, current_obj) do
                     gap_to_julia(T, current_obj, recursion_dict; recursive = true)
                 end
