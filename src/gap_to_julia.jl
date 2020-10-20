@@ -260,8 +260,14 @@ end
 ## Without this assumption, we would have to construct the set
 ## in the beginning, and then fill it up using `union!`.
 function gap_to_julia(::Type{Set{T}}, obj::GapObj; recursive = true) where {T}
-    Globals.IsList(obj) || Globals.IsCollection(obj) || throw(ConversionError(obj, Set{T}))
-    obj = Globals.AsSet(obj)
+    if Globals.IsCollection(obj)
+        obj = Globals.AsSet(obj)
+    elseif Globals.IsList(obj)
+        # The list entries may be not comparable via `<`.
+        obj = Globals.DuplicateFreeList(obj)
+    else
+        throw(ConversionError(obj, Set{T}))
+    end
     len_list = Globals.Length(obj)
     new_array = Vector{T}(undef, len_list)
     if recursive
