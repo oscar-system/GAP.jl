@@ -187,11 +187,10 @@ function gap_to_julia(
     recursive = true,
 ) where {T}
     if Globals.IsList(obj)
-        elmlist = ElmList  # returns 'nothing' for holes in the list
+        islist = true
     elseif Globals.IsVectorObj(obj)
-        # vector objects aren't lists,
-        # but the function for accessing entries is `ELM_LIST`
-        elmlist = Globals.ELM_LIST
+        islist = false
+        ELM_LIST = Globals.ELM_LIST
     else
         throw(ConversionError(obj, Vector{T}))
     end
@@ -201,7 +200,13 @@ function gap_to_julia(
         new_array = Vector{T}(undef, len_list)
         recursion_dict[obj] = new_array
         for i = 1:len_list
-            current_obj = elmlist(obj, i)
+            if islist
+                current_obj = ElmList(obj, i)  # returns 'nothing' for holes in the list
+            else
+                # vector objects aren't lists,
+                # but the function for accessing entries is `ELM_LIST`
+                current_obj = ELM_LIST(obj, i)
+            end
             if recursive && !isbitstype(typeof(current_obj))
                 new_array[i] = get!(recursion_dict, current_obj) do
                     gap_to_julia(T, current_obj, recursion_dict; recursive = true)
