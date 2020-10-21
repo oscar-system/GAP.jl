@@ -124,12 +124,8 @@ InstallOtherMethod( \[\],
       return Julia.Base.getindex( obj, i, j );
     end );
 
-BindGlobal( "JuliaKnownFiles", [] );
-
 InstallGlobalFunction( "JuliaIncludeFile",
 function( filename, module_name... )
-    local pair;
-
     if Length( module_name ) = 0 then
       module_name:= "Main";
     elif Length( module_name ) = 1 and IsString( module_name[1] ) then
@@ -138,11 +134,7 @@ function( filename, module_name... )
       Error( "usage: JuliaIncludeFile( <filename>[, <module_name>] ) ",
              "where <module_name>, if given, must be a string" );
     fi;
-    pair:= [ module_name, filename ];
-    if not pair in JuliaKnownFiles then
-      JuliaEvalString( Concatenation( "Base.include(", module_name,", \"", filename, "\")" ) );
-      AddSet( JuliaKnownFiles, pair );
-    fi;
+    JuliaEvalString( Concatenation( "Base.include(", module_name,", \"", filename, "\")" ) );
 end );
 
 InstallMethod( ViewString,
