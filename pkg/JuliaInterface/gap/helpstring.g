@@ -380,7 +380,7 @@ end);
 #F  HELP_Info( <string>, <onlyexact> ) . . . . . . . deal with a help request
 #F  HELP_String( <string>, <onlyexact> ) . . . . . . deal with a help request
 ##  
-##  The return value of 'HELP_INFO' is either a list (in cases where just
+##  The return value of 'HELP_Info' is either a list (in cases where just
 ##  one entry shall be shown) or a record with the components 'entries' and
 ##  'menu' (in cases where more than one entry may exist, and where an
 ##  intermediate step via choosing from a menu may be appropriate).
@@ -390,7 +390,7 @@ end);
 ##  and 'start' (the position of the first line to show).
 ##
 ##  The return value of 'HELP_String' is a list that contains the
-##  concatenation of the contents of the result of ''HELP_Info' when this
+##  concatenation of the contents of the result of 'HELP_Info' when this
 ##  is called with the same arguments.
 ##
 DeclareGlobalFunction( "HELP_String" );
