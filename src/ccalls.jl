@@ -101,11 +101,13 @@ function AssignGlobalVariable(name::Union{AbstractString,Symbol}, value::Any)
     _AssignGlobalVariable(name, tmp)
 end
 
-MakeString(val::String) = ccall(:GAP_MakeString, GapObj, (Ptr{UInt8},), val)
+MakeString(val::String) = ccall(:MakeStringWithLen, GapObj, (Ptr{UInt8}, Culong), val, length(val))
+#TODO: As soon as libgap provides :GAP_MakeStringWithLen, use it.
 
 function CSTR_STRING(val::GapObj)
     char_ptr = ccall(:GAP_CSTR_STRING, Ptr{UInt8}, (Any,), val)
-    return deepcopy(unsafe_string(char_ptr))::String
+    len = ccall(:GAP_LenString, Culong, (Any,), val)
+    return deepcopy(unsafe_string(char_ptr, len))::String
 end
 
 function CSTR_STRING_AS_ARRAY(val::GapObj)::Array{UInt8,1}
