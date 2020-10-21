@@ -83,8 +83,11 @@
     @test GAP.gap_to_julia(String, x) == "foo"
     @test GAP.gap_to_julia(AbstractString, x) == "foo"
     @test GAP.gap_to_julia(x) == "foo"
+    x = "abc\000def"
+    @test GAP.gap_to_julia(GAP.julia_to_gap(x)) == x
 
     ## Symbols
+    x = GAP.evalstr("\"foo\"")
     @test GAP.gap_to_julia(Symbol, x) == :foo
     x = GAP.evalstr("(1,2,3)")
     @test_throws GAP.ConversionError GAP.gap_to_julia(AbstractString, x)
@@ -316,6 +319,7 @@ end
     @test GAP.julia_to_gap(:foo) == x
     substr = match(r"a(.*)c", "abc").match  # type is `SubString{String}`
     @test GAP.julia_to_gap(substr) == GAP.julia_to_gap("abc")
+    @test length(GAP.julia_to_gap("abc\000def")) == 7  # contains a null character
 
     ## Arrays
     x = GAP.evalstr("[1,\"foo\",2]")
