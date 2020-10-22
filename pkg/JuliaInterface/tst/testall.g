@@ -33,6 +33,10 @@ end;
 compare:= CompareUpToWhitespaceAndMatches(
     [ [ "Array{Any,1}", "Vector{Any}" ] ] );
 
+# The testfiles assume that no traceback is printed.
+AlwaysPrintTracebackOnError:= false;
+#TODO: This can be removed as soon as GAP's `Test` sets the value to `false`-
+
 TestDirectory(dir, rec(exitGAP := true,
                        testOptions := rec(compareFunction := compare) ) );
 FORCE_QUIT_GAP(1);
