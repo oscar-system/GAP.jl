@@ -265,6 +265,64 @@ end
 Base.hash(::GapObj, h::UInt) = h
 Base.hash(::FFE, h::UInt) = h
 
+### RNGs
+
+using Random: Random, AbstractRNG, rand
+
+abstract type AbstractGAPRNG <: AbstractRNG end
+
+struct MersenneTwisterState state end
+
+struct MersenneTwister <: AbstractGAPRNG
+    ptr::GapObj
+
+    function MersenneTwister(; state::MersenneTwisterState=MersenneTwisterState(nothing))
+        if state.state === true
+            new(Globals.GlobalMersenneTwister)
+        elseif state.state === nothing
+            new(Globals.RandomSource(Globals.IsMersenneTwister))
+        else
+            new(Globals.RandomSource(Globals.IsMersenneTwister, state.state))
+        end
+    end
+
+    MersenneTwister(seed::Integer) = new(Globals.RandomSource(Globals.IsMersenneTwister, seed))
+end
+
+default_rng() = MersenneTwister(state=MersenneTwisterState(true))
+
+function Random.seed!(rng::MersenneTwister, seed::Integer)
+    Globals.Reset(rng.ptr, seed)
+    rng
+end
+
+function Base.copy!(dst::MersenneTwister, src::MersenneTwister)
+    Globals.Reset(dst.ptr, Globals.State(src.ptr))
+    dst
+end
+
+Base.copy(rng::MersenneTwister) = MersenneTwister(state=MersenneTwisterState(Globals.State(rng.ptr)))
+
+## rand methods
+
+Random.rand(rng::AbstractGAPRNG, x::Random.SamplerTrivial{<:Obj}) = Globals.Random(rng.ptr, x[])
+
+Random.rand(rng::AbstractGAPRNG, x::Random.SamplerTrivial{<:AbstractUnitRange}) =
+    Globals.Random(rng.ptr, julia_to_gap(first(x[])), julia_to_gap(last(x[])))
+
+Random.Sampler(::Type{<:AbstractGAPRNG}, x::AbstractUnitRange, ::Random.Repetition) =
+    Random.SamplerTrivial(x)
+
+# avoid ambiguities
+for U in (Base.BitInteger64, Union{Int128,UInt128})
+    @eval Random.Sampler(::Type{<:AbstractGAPRNG}, x::AbstractUnitRange{T}, ::Random.Repetition
+                         ) where {T<:$U} = Random.SamplerTrivial(x)
+end
+
+Random.Sampler(::Type{<:AbstractGAPRNG}, x::AbstractVector, ::Random.Repetition) =
+    Random.SamplerTrivial(julia_to_gap(x, recursive=false))
+
+
 # The following bypasses GAP's redirection of `x^-1` to `INV_MUT(x)`.
 # Installing analogous methods for `x^0` and `x^1` would *not* be allowed,
 # these terms are equivalent to `ONE_MUT(x)` and `x`, respectively,
