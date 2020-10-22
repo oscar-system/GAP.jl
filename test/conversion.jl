@@ -85,6 +85,8 @@
     @test GAP.gap_to_julia(x) == "foo"
     x = "abc\000def"
     @test GAP.gap_to_julia(GAP.julia_to_gap(x)) == x
+    x = "jμΛIα"
+    @test GAP.gap_to_julia(GAP.julia_to_gap(x)) == x
 
     ## Symbols
     x = GAP.evalstr("\"foo\"")
@@ -320,6 +322,11 @@ end
     substr = match(r"a(.*)c", "abc").match  # type is `SubString{String}`
     @test GAP.julia_to_gap(substr) == GAP.julia_to_gap("abc")
     @test length(GAP.julia_to_gap("abc\000def")) == 7  # contains a null character
+    x = GAP.evalstr("\"jμΛIα\"")
+    @test length(x) == 8  # in GAP, the number of bytes
+    @test GAP.julia_to_gap("jμΛIα") == x
+    @test length("jμΛIα") == 5
+    @test sizeof("jμΛIα") == 8
 
     ## Arrays
     x = GAP.evalstr("[1,\"foo\",2]")
