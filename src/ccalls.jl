@@ -101,7 +101,7 @@ function AssignGlobalVariable(name::Union{AbstractString,Symbol}, value::Any)
     _AssignGlobalVariable(name, tmp)
 end
 
-MakeString(val::String) = ccall(:MakeStringWithLen, GapObj, (Ptr{UInt8}, Culong), val, length(val))
+MakeString(val::String) = ccall(:MakeStringWithLen, GapObj, (Ptr{UInt8}, Culong), val, sizeof(val))
 #TODO: As soon as libgap provides :GAP_MakeStringWithLen, use it.
 
 function CSTR_STRING(val::GapObj)
