@@ -524,7 +524,7 @@ true
 </code></pre><h2><a class="nav-anchor" id="Access-to-the-GAP-help-system-1" href="#Access-to-the-GAP-help-system-1">Access to the GAP help system</a></h2><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="GAP.show_gap_help" href="#GAP.show_gap_help"><code>GAP.show_gap_help</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-julia">show_gap_help(topic::String, onlyexact::Bool = false)</code></pre><p>Print the information from the GAP help system about <code>topic</code> to the screen. If <code>onlyexact</code> is <code>true</code> then only exact matches are shown, otherwise all matches. For example, <code>GAP.show_gap_help(&quot;Size&quot;)</code> shows also documentation for <code>SizeScreen</code> and <code>SizesPerfectGroups</code>, whereas <code>GAP.show_gap_help(&quot;Size&quot;, true)</code> shows only documentation for <code>Size</code>.</p><p>For the variant showing all matches, one can also enter <code>?GAP.Globals.Size</code> at the Julia prompt instead of calling <code>show_gap_help</code>.</p><p><strong>Examples</strong></p><pre><code class="language-none">julia&gt; GAP.show_gap_help( &quot;Size&quot; )
 [...]  # more than 50 entries from GAP manuals
 
-hepl?&gt; GAP.Globals.Size
+help?&gt; GAP.Globals.Size
 [...]  # the same
 
 julia&gt; GAP.show_gap_help( &quot;Size&quot;, true )
