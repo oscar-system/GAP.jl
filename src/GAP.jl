@@ -432,17 +432,8 @@ For a fixed seed, the stream of generated numbers is allowed to change between
 different versions of GAP.
 """
 function randseed!(seed::Union{Integer,Nothing}=nothing)
-    if seed === nothing
-        seed = rand(UInt128)
-    end
-    # Although GAP's `Reset` method can accept directly integers (also negative
-    # ones), we harmonize here the behavior with what Julia does, i.e. for two
-    # integers with the same value, even of different types, the initialization
-    # is the same (e.g. with `1` or `0x1`); so we re-use Julia's
-    # `Random.make_seed` internal function (which errors on negative argument)
-    # to normalize this, and create a string out of it.
-    str = String(reinterpret(UInt8, Random.make_seed(seed)))
-    Globals.Reset(Globals.GlobalMersenneTwister, str)
+    seed = something(seed, rand(UInt128))
+    Globals.Reset(Globals.GlobalMersenneTwister, seed)
     # when GlobalRandomSource is reset, the seed is taken modulo 2^28, so we just
     # pass an already reduced seed here
     Globals.Reset(Globals.GlobalRandomSource, seed % Int % 2^28)
