@@ -234,6 +234,9 @@ function regenerate_gaproot()
         __GAP_ARGS__ = ARGS
         using GAP
 
+        # Read the files from the GAP command line.
+        ccall((:Call0ArgsInNewReader, GAP.GAP_jll.libgap), Cvoid, (Any,), GAP.Globals.GAPInfo.LoadInitFiles_GAP_JL)
+
         # GAP.jl passes --norepl to GAP, which means that init.g never
         # starts a GAP session; we now run one "manually". Note that this
         # may throw a "GAP exception", which we need to catch; thus we
@@ -241,7 +244,7 @@ function regenerate_gaproot()
         ccall(:Call0ArgsInNewReader, Cvoid, (Any,), GAP.Globals.SESSION)
 
         # call GAP's "atexit" cleanup functions
-        ccall(:Call0ArgsInNewReader, Cvoid, (Any,), GAP.Globals.PROGRAM_CLEAN_UP)
+        ccall((:Call0ArgsInNewReader, GAP.GAP_jll.libgap), Cvoid, (Any,), GAP.Globals.PROGRAM_CLEAN_UP)
 
         # Finally exit by calling GAP's FORCE_QUIT_GAP(). See comments in GAP.jl for
         # an explanation of why we do it this way.
