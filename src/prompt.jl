@@ -23,7 +23,7 @@ function prompt()
     old_sigint = ccall(:signal, Ptr{Cvoid}, (Cint, Ptr{Cvoid}), Base.SIGINT, C_NULL)
 
     # install GAP's SIGINT handler
-    ccall(:SyInstallAnswerIntr, Cvoid, ())
+    ccall((:SyInstallAnswerIntr, libgap), Cvoid, ())
 
     # restore GAP's error output
     disable_error_handler = true
