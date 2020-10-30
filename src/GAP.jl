@@ -4,22 +4,12 @@
   For more information about GAP see https://www.gap-system.org/
 """ module GAP
 
-# In order to locate the GAP installation, 'deps/build.jl' generate a file
-# 'deps/deps-$(julia_version).jl' for us which sets the variable GAPROOT. We
-# read this file here.
-const julia_version = "$(VERSION.major).$(VERSION.minor)"
-deps_jl = abspath(joinpath(@__DIR__, "..", "deps", "deps-$(julia_version).jl"))
-if !isfile(deps_jl)
-    # HACK: we need to compile GAP once for each Julia version, but Julia only
-    # builds it for us once; so we need to check if the package was actually
-    # built, and if not, trigger a build now. This *seems* to work well in
-    # practice, but I am not sure if we are strictly speaking "allowed" to do
-    # this
-    import Pkg
-    Pkg.build("GAP")
-end
-include(deps_jl)
+using GAP_jll
 
+include("setup.jl")
+
+# always force regeneration of GAPROOT when precompiling
+const GAPROOT = Setup.regenerate_gaproot()
 
 import Base: length, finalize
 import Libdl
@@ -28,26 +18,7 @@ import Random
 
 include("types.jl")
 
-function read_sysinfo_gap(dir::String)
-    d = missing
-    open(joinpath(dir, "sysinfo.gap")) do file
-        d = Dict{String,String}()
-        for ln in eachline(file)
-            if length(ln) == 0 || ln[1] == '#'
-                continue
-            end
-            s = split(ln, "=")
-            if length(s) != 2
-                continue
-            end
-            d[s[1]] = strip(s[2], ['"'])
-        end
-    end
-    return d
-end
-
-const sysinfo = read_sysinfo_gap(GAPROOT)
-
+const sysinfo = Setup.read_sysinfo_gap(GAPROOT)
 
 function reset_GAP_ERROR_OUTPUT()
     # Note: strictly speaking we should close the stream here; but since it is
@@ -77,21 +48,15 @@ end
 error_handlerwrap() = Base.invokelatest(error_handler)
 
 # This will be filled out by __init__(), as it must be done at runtime
-libgap_path = ""
 JuliaInterface_path = ""
 
 # This will be filled out by __init__()
-libgap_handle = C_NULL
 JuliaInterface_handle = C_NULL
 
 # This must be `const` so that we can use it with `ccall()`
-const libgap = "libgap" # extension is automatically added
 const JuliaInterface = "JuliaInterface.so"
 
 function initialize(argv::Array{String,1})
-    global libgap_path = joinpath(GAPROOT, ".libs", libgap)
-    global libgap_handle = Libdl.dlopen(libgap_path, Libdl.RTLD_GLOBAL)
-
     handle_signals = isdefined(Main, :__GAP_ARGS__)  # a bit of a hack...
     error_handler_func = handle_signals ? C_NULL : @cfunction(error_handlerwrap, Cvoid, ())
 
@@ -102,7 +67,7 @@ function initialize(argv::Array{String,1})
     append!(argv, ["-c", """BindGlobal("__JULIAINTERNAL_LOADED_FROM_JULIA", true );"""])
 
     ccall(
-        Libdl.dlsym(libgap_handle, :GAP_Initialize),
+        (:GAP_Initialize, libgap),
         Cvoid,
         (Int32, Ptr{Ptr{UInt8}}, Ptr{Cvoid}, Ptr{Cvoid}, Cuint),
         length(argv),
@@ -118,12 +83,7 @@ function initialize(argv::Array{String,1})
     # (perhaps this could be a return value for GAP_Initialize?), so instead
     # we check for the presence of a global variable which we ensure is
     # declared near the end of init.g via a `-c` command line argument to GAP.
-    val = ccall(
-        Libdl.dlsym(libgap_handle, :GAP_ValueGlobalVariable),
-        Ptr{Cvoid},
-        (Ptr{Cuchar},),
-        "__JULIAINTERNAL_LOADED_FROM_JULIA",
-    )
+    val = _ValueGlobalVariable("__JULIAINTERNAL_LOADED_FROM_JULIA")
     if val == C_NULL
         # Ask GAP to quit. Note that this invokes `jl_atexit_hook` so it
         # should be fine. It might be "nicer" to call Julia's `exit` function
@@ -133,14 +93,9 @@ function initialize(argv::Array{String,1})
         # FORCE_QUIT_GAP with no arguments, which just calls the `exit`
         # function of the  C standard library with the appropriate exit code.
         # But as mentioned, just before that, it runs `jl_atexit_hook`.
-        FORCE_QUIT_GAP = ccall(
-            Libdl.dlsym(libgap_handle, :GAP_ValueGlobalVariable),
-            Ptr{Cvoid},
-            (Ptr{Cuchar},),
-            "FORCE_QUIT_GAP",
-        )
+        FORCE_QUIT_GAP = _ValueGlobalVariable("FORCE_QUIT_GAP")
         ccall(
-            Libdl.dlsym(libgap_handle, :GAP_CallFuncArray),
+            (:GAP_CallFuncArray, libgap),
             Ptr{Cvoid},
             (Ptr{Cvoid}, Culonglong, Ptr{Cvoid}),
             FORCE_QUIT_GAP,
@@ -175,19 +130,13 @@ function initialize(argv::Array{String,1})
     @assert T_HVARS == Base.invokelatest(ValueGlobalVariable,:T_HVARS)
 
     # load JuliaInterface
-    loadpackage_return = ccall(
-        Libdl.dlsym(libgap_handle, :GAP_EvalString),
-        Ptr{Cvoid},
-        (Ptr{UInt8},),
-        "LoadPackage(\"JuliaInterface\");",
-    )
-    if loadpackage_return == Libdl.dlsym(libgap_handle, :GAP_Fail)
+    if !evalstr("LoadPackage(\"JuliaInterface\") = true;")
         error("JuliaInterface could not be loaded")
     end
 
     # If we are in "stand-alone mode", stop here
     if isdefined(Main, :__GAP_ARGS__)
-        ccall(Libdl.dlsym(libgap_handle, :SyInstallAnswerIntr), Cvoid, ())
+        ccall((:SyInstallAnswerIntr, libgap), Cvoid, ())
         return
     end
 
@@ -201,11 +150,16 @@ function initialize(argv::Array{String,1})
 end
 
 function finalize()
-    ccall((:GAP_finalize, "libgap"), Cvoid, ())
+    ccall((:GAP_finalize, libgap), Cvoid, ())
 end
 
 function run_it()
-    gaproots = abspath(joinpath(@__DIR__, "..")) * ";" * sysinfo["GAP_BIN_DIR"] * ";" * sysinfo["GAP_LIB_DIR"]
+    # regenerate GAPROOT if it was removed
+    if !isdir(GAPROOT) || isempty(readdir(GAPROOT))
+        Setup.setup_mutable_gaproot(GAPROOT)
+    end
+
+    gaproots = sysinfo["GAPROOTS"]
     cmdline_options = ["", "-l", gaproots, "--norepl"]
     if isdefined(Main, :__GAP_ARGS__)
         append!(cmdline_options, Main.__GAP_ARGS__)
@@ -224,7 +178,14 @@ function run_it()
         # Do not show the main GAP banner by default.
         push!(cmdline_options, "-b")
     end
-    initialize(cmdline_options)
+
+
+    # The following withenv is needed to get readline input to work right; see also
+    # https://github.com/JuliaPackaging/Yggdrasil/issues/455 and
+    # https://github.com/oscar-system/GAP.jl/issues/415
+    withenv("TERMINFO_DIRS" => joinpath(GAP_jll.Readline_jll.Ncurses_jll.find_artifact_dir(), "share", "terminfo")) do
+        initialize(cmdline_options)
+    end
 
     gap_module = @__MODULE__
 
@@ -252,29 +213,15 @@ end
 
 function __init__()
 
-    # The following is needed to get readline input to work right; see also
-    # https://github.com/JuliaPackaging/Yggdrasil/issues/455 and
-    # https://github.com/oscar-system/GAP.jl/issues/415
-    if !haskey(ENV, "TERMINFO_DIRS")
-        ENV["TERMINFO_DIRS"] = joinpath(@__DIR__, "..", "deps", "usr", "share", "terminfo")
-    end
-
-    ## Older versions of GAP need a pointer to the GAP.jl module during
-    ## initialization, but at this point Main.GAP is not yet bound. So instead
-    ## we assign this module to the name __JULIAGAPMODULE.
-    ## Newer versions of GAP won't need this; however, JuliaInterface still
-    ## uses it.
+    ## At this point, the GAP module has not been completely initialized, and
+    ## hence is not yet available under the global binding "GAP"; but
+    ## JuliaInterface needs to access it. To make that possible, we assign
+    ## this module to the name __JULIAGAPMODULE.
+    ## TODO: find a way to avoid using such a global variable
     gap_module = @__MODULE__
     Base.MainInclude.eval(:(__JULIAGAPMODULE = $gap_module))
 
-    # check if GAP was already loaded
-    try
-        sym = cglobal("GAP_Initialize")
-        ccall(:GAP_register_GapObj, Cvoid, (Any,), GapObj)
-    catch e
-        # GAP was not yet loaded, do so now
-        run_it()
-    end
+    run_it()
 end
 
 """

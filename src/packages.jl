@@ -132,10 +132,6 @@ The function uses [the function `InstallPackage` from GAP's package
 function install(spec::String; interactive::Bool = true, pkgdir::AbstractString = GAPROOT * "/pkg")
     res = load("PackageManager")
     @assert res
-    # FIXME: crude hack to allow PackageManager 1.0 shipped with GAP
-    # 4.11.0 to work with out of tree builds. For a proper fix, see
-    # <https://github.com/gap-packages/PackageManager/pull/55>.
-    Globals.PKGMAN_BuildPackagesScript = julia_to_gap(GAPROOT * "/bin/BuildPackages.sh")
 
     # point PackageManager to our internal pkg dir
     Globals.PKGMAN_CustomPackageDir = julia_to_gap(pkgdir)
