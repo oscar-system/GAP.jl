@@ -5,10 +5,6 @@
 #
 ReadPackage( "JuliaInterface", "gap/JuliaInterface.gi");
 
-if not IsBound( __JULIAINTERNAL_LOADED_FROM_JULIA ) then
-    JuliaEvalString( "Base.MainInclude.include(Base.find_package(\"GAP\"))" );
-fi;
-
 _JULIAINTERFACE_INTERNAL_INIT();
 
 ## The GAP module is also bound to the variable __JULIAGAPMODULE,
