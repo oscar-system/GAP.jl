@@ -98,9 +98,16 @@ function initialize(argv::Array{String,1})
     # Initialize __JULIAINTERNAL_LOADED_FROM_JULIA; this also allows us to
     # detect whether GAP_Initialize and GAP's `init.g` completed successfully
     # (if they didn't, then this GAP code won't be called, which we can easily
-    # detect by checking for the value of __JULIAINTERNAL_LOADED_FROM_JULIA).
-    append!(argv, ["-c", """BindGlobal("__JULIAINTERNAL_LOADED_FROM_JULIA", true );"""])
+    # detect by checking for the value of __JULIAINTERNAL_LOADED_FROM_JULIA_STAND_ALONE).
+    append!(argv, ["-c", """BindGlobal("__JULIAINTERNAL_LOADED_FROM_JULIA_STAND_ALONE", """ * string(handle_signals) * ");"])
 
+    # Tell GAP to read a file during startup (after its `lib/system.g`).
+    append!(argv, ["--systemfile", abspath(joinpath(@__DIR__, "..", "lib", "systemfile.g"))])
+
+    if ! handle_signals
+        # Tell GAP to show some traceback on errors.
+        append!(argv, ["--alwaystrace"])
+    end
     ccall(
         Libdl.dlsym(libgap_handle, :GAP_Initialize),
         Cvoid,
@@ -122,8 +129,9 @@ function initialize(argv::Array{String,1})
         Libdl.dlsym(libgap_handle, :GAP_ValueGlobalVariable),
         Ptr{Cvoid},
         (Ptr{Cuchar},),
-        "__JULIAINTERNAL_LOADED_FROM_JULIA",
+        "__JULIAINTERNAL_LOADED_FROM_JULIA_STAND_ALONE",
     )
+
     if val == C_NULL
         # Ask GAP to quit. Note that this invokes `jl_atexit_hook` so it
         # should be fine. It might be "nicer" to call Julia's `exit` function
@@ -182,7 +190,7 @@ function initialize(argv::Array{String,1})
     @assert T_LVARS == Base.invokelatest(ValueGlobalVariable,:T_LVARS)
     @assert T_HVARS == Base.invokelatest(ValueGlobalVariable,:T_HVARS)
 
-    # load JuliaInterface
+    # check that JuliaInterface has been loaded
     loadpackage_return = ccall(
         Libdl.dlsym(libgap_handle, :GAP_EvalString),
         Ptr{Cvoid},
@@ -253,9 +261,6 @@ function run_it()
             ),
         )
     end
-
-    # Show some traceback on errors.
-    Base.MainInclude.eval(:($gap_module.Globals.AlwaysPrintTracebackOnError = true))
 end
 
 function __init__()
