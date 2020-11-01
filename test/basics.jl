@@ -160,5 +160,4 @@ end
     @test gs2 == [random(GMT, G) for _=1:30]
     @test gs3 == [random(GRS, G) for _=1:30]
 
-    @test_throws DomainError GAP.randseed!(-rand(1:1234))
 end
