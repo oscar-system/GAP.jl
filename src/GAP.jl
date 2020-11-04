@@ -267,11 +267,11 @@ function __init__()
         ENV["TERMINFO_DIRS"] = joinpath(@__DIR__, "..", "deps", "usr", "share", "terminfo")
     end
 
-    ## Older versions of GAP need a pointer to the GAP.jl module during
-    ## initialization, but at this point Main.GAP is not yet bound. So instead
-    ## we assign this module to the name __JULIAGAPMODULE.
-    ## Newer versions of GAP won't need this; however, JuliaInterface still
-    ## uses it.
+    ## At this point, the GAP module has not been completely initialized, and
+    ## hence is not yet available under the global binding "GAP"; but
+    ## JuliaInterface needs to access it. To make that possible, we assign
+    ## this module to the name __JULIAGAPMODULE. 
+    ## TODO: find a way to avoid using such a global variable
     gap_module = @__MODULE__
     Base.MainInclude.eval(:(__JULIAGAPMODULE = $gap_module))
 
