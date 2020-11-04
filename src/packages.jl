@@ -102,16 +102,10 @@ function load(spec::String, version::String = ""; install = false)
     if loaded == true
         return true
     elseif install == true
-        # Check whether an admissible version of the package is installed;
-        # if yes then we do not try to install the package anew.
-        info = Globals.PackageInfo(gspec)
-        available = [i -> info[i].Version for i in 1:length(info)]
-        if all(v -> ! Globals.CompareVersionNumbers(v, gversion), available)
-            # Try to install the package.
-            if Packages.install(spec)
-                # Make sure that the version is admissible.
-                return Globals.LoadPackage(gspec, gversion, false)
-            end
+        # Try to install the package.
+        if Packages.install(spec)
+            # Make sure that the installed version is admissible.
+            return Globals.LoadPackage(gspec, gversion, false)
         end
     end
 
