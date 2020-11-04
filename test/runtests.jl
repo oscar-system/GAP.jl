@@ -10,4 +10,4 @@ include("convert.jl")
 include("macros.jl")
 include("packages.jl")
 include("help.jl")
-# include("testmanual.jl")  # leave this out until doctestfilters can be used here
+# include("testmanual.jl")  # skip this for now, difficult to get to work on all Julia versions

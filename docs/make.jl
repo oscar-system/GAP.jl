@@ -84,7 +84,7 @@ makedocs(
     sitename = "GAP.jl",
     modules = [GAP],
     clean = true,
-    doctest = true,
+    #doctest = true,
     doctestfilters = Regex[
       r"BitVector|BitArray\{1\}",
       r"Matrix\{Int64\}|Array\{Int64,2\}",
