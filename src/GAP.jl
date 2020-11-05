@@ -95,13 +95,12 @@ function initialize(argv::Array{String,1})
     handle_signals = isdefined(Main, :__GAP_ARGS__)  # a bit of a hack...
     error_handler_func = handle_signals ? C_NULL : @cfunction(error_handlerwrap, Cvoid, ())
 
-    # Initialize __JULIAINTERNAL_LOADED_FROM_JULIA; this also allows us to
-    # detect whether GAP_Initialize and GAP's `init.g` completed successfully
-    # (if they didn't, then this GAP code won't be called, which we can easily
-    # detect by checking for the value of __JULIAINTERNAL_LOADED_FROM_JULIA_STAND_ALONE).
-    append!(argv, ["-c", """BindGlobal("__JULIAINTERNAL_LOADED_FROM_JULIA_STAND_ALONE", """ * string(handle_signals) * ");"])
-
-    # Tell GAP to read a file during startup (after its `lib/system.g`).
+    # Tell GAP to read a file during startup (after its `lib/system.g`),
+    # such that `JuliaInterface` is added to the autoloaded GAP packages,
+    # and such that (in GAP standalone mode) files read from the GAP command
+    # line are not read before the Julia module `GAP` is available;
+    # these files will be read via a function call in `gap.sh`
+    # (which is created by `deps/build.jl`).
     append!(argv, ["--systemfile", abspath(joinpath(@__DIR__, "..", "lib", "systemfile.g"))])
 
     if ! handle_signals
@@ -122,14 +121,16 @@ function initialize(argv::Array{String,1})
     # detect if GAP quit early (e.g due `-h` or `-c` command line arguments)
     # TODO: restrict this to "standalone" mode?
     # HACK: GAP resp. libgap currently offers no good way to detect this
-    # (perhaps this could be a return value for GAP_Initialize?), so instead
-    # we check for the presence of a global variable which we ensure is
-    # declared near the end of init.g via a `-c` command line argument to GAP.
+    # (perhaps this could be a return value for GAP_Initialize?),
+    # so instead we check for the presence of the global variable
+    # __JULIAINTERNAL_LOADED_FROM_JULIA which we ensure is declared near the
+    # end of init.g, via a `-c` command line argument to GAP;
+    # this argument is set in `lib/systemfile.g`.
     val = ccall(
         Libdl.dlsym(libgap_handle, :GAP_ValueGlobalVariable),
         Ptr{Cvoid},
         (Ptr{Cuchar},),
-        "__JULIAINTERNAL_LOADED_FROM_JULIA_STAND_ALONE",
+        "__JULIAINTERNAL_LOADED_FROM_JULIA",
     )
 
     if val == C_NULL
@@ -191,18 +192,19 @@ function initialize(argv::Array{String,1})
     @assert T_HVARS == Base.invokelatest(ValueGlobalVariable,:T_HVARS)
 
     # check that JuliaInterface has been loaded
+    # (it binds the GAP variable `Julia`)
     loadpackage_return = ccall(
-        Libdl.dlsym(libgap_handle, :GAP_EvalString),
+        Libdl.dlsym(libgap_handle, :GAP_ValueGlobalVariable),
         Ptr{Cvoid},
-        (Ptr{UInt8},),
-        "LoadPackage(\"JuliaInterface\");",
+        (Ptr{Cuchar},),
+        "Julia",
     )
-    if loadpackage_return == Libdl.dlsym(libgap_handle, :GAP_Fail)
+    if loadpackage_return == C_NULL
         error("JuliaInterface could not be loaded")
     end
 
     # If we are in "stand-alone mode", stop here
-    if isdefined(Main, :__GAP_ARGS__)
+    if handle_signals
         ccall(Libdl.dlsym(libgap_handle, :SyInstallAnswerIntr), Cvoid, ())
         return
     end
