@@ -181,6 +181,7 @@ function initialize(argv::Array{String,1})
     @assert T_FLAGS == Base.invokelatest(ValueGlobalVariable,:T_FLAGS)
     @assert T_LVARS == Base.invokelatest(ValueGlobalVariable,:T_LVARS)
     @assert T_HVARS == Base.invokelatest(ValueGlobalVariable,:T_HVARS)
+    @assert FIRST_EXTERNAL_TNUM == Base.invokelatest(ValueGlobalVariable,:FIRST_EXTERNAL_TNUM)
 
     # load JuliaInterface
     loadpackage_return = ccall(
