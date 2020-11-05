@@ -6,12 +6,18 @@ import Base: getproperty, hasproperty, setproperty!, propertynames
 # low-level GAP -> Julia conversion
 #
 function _GAP_TO_JULIA(ptr::Ptr{Cvoid})
+    ptr == C_NULL && return nothing
     # convert immediate ints and FFEs directly, to void (un)boxing
     as_int = reinterpret(Int, ptr)
-    if as_int & 1 == 1
-        return as_int >> 2
-    elseif as_int & 2 == 2
-        return reinterpret(FFE, ptr)
+    as_int & 1 == 1 && return as_int >> 2
+    as_int & 2 == 2 && return reinterpret(FFE, ptr)
+    tnum = TNUM_OBJ(ptr)
+    if tnum < FIRST_EXTERNAL_TNUM && tnum != T_FUNCTION
+        if tnum == T_BOOL
+            ptr == unsafe_load(cglobal((:GAP_True, libgap), Ptr{Cvoid})) && return true
+            ptr == unsafe_load(cglobal((:GAP_False, libgap), Ptr{Cvoid})) && return false
+        end
+        return unsafe_pointer_to_objref(ptr)
     end
     return ccall(:julia_gap, Any, (Ptr{Cvoid},), ptr)
 end
