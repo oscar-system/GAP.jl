@@ -23,6 +23,8 @@ const T_FLAGS    = 17   # flags list
 const T_LVARS    = 18   # values bag
 const T_HVARS    = 19   # high variables bag
 
+const FIRST_EXTERNAL_TNUM = 82
+
 #
 # functions which directly interact with GAP objects, bypassing the GAP kernel
 #
@@ -33,6 +35,12 @@ end
 
 function TNUM_OBJ(obj::GapObj)
     header = unsafe_load(ADDR_OBJ(obj), 0)
+    return reinterpret(Int, header & 0xFF)
+end
+
+function TNUM_OBJ(ptr::Ptr)
+    mptr = Ptr{Ptr{Csize_t}}(ptr)
+    header = unsafe_load(unsafe_load(mptr), 0)
     return reinterpret(Int, header & 0xFF)
 end
 
