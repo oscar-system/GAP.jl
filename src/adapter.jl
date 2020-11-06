@@ -274,12 +274,26 @@ Base.literal_pow(::typeof(^), x::GapObj, ::Val{-1}) = Globals.INV_MUT(x)
 # iteration
 
 function Base.iterate(obj::GapObj)
-    Globals.IsList(obj) || Globals.IsCollection(obj) ||
+    islist = Globals.IsList(obj)
+    islist || Globals.IsCollection(obj) ||
         throw(ArgumentError("object cannot be iterated"))
-    iterate(obj, (1, Globals.Length(obj)))
+    if islist
+        iterate(obj, (1, Globals.Length(obj)))
+    else
+        iterate(obj, Globals.Iterator(obj))
+    end
 end
 
-function Base.iterate(obj::GapObj, (i, len))
+function Base.iterate(obj::GapObj, (i, len)::Tuple{Int,Any})
     i > len && return nothing
     ElmList(obj, i), (i+1, len)
+end
+
+function Base.iterate(obj::GapObj, iter)
+    if Globals.IsDoneIterator(iter)
+        nothing
+    else
+        x = Globals.NextIterator(iter)
+        (x, iter)
+    end
 end
