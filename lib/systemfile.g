@@ -9,6 +9,11 @@
     APPEND_LIST_INTR( deps, [ [ "JuliaInterface", ">= 0.4.4" ] ] );
     GAPInfo.Dependencies:= MakeImmutable( rec( NeededOtherPackages:= deps ) );
 
+    # force the --norepl option to be on
+    GAPInfo.CommandLineOptions_original := GAPInfo.CommandLineOptions;
+    GAPInfo.CommandLineOptions := SHALLOW_COPY_OBJ( GAPInfo.CommandLineOptions );
+    GAPInfo.CommandLineOptions.norepl := true;
+
     # Delay the handling of the files and "-c" commands mentioned in
     # the GAP command line, since all initializations in GAP.jl must be done
     # before they can use the GAP-Julia integration.

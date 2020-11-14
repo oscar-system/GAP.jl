@@ -171,7 +171,7 @@ function run_it()
     end
 
     gaproots = sysinfo["GAPROOTS"]
-    cmdline_options = ["", "-l", gaproots, "--norepl"]
+    cmdline_options = ["", "-l", gaproots]
     if isdefined(Main, :__GAP_ARGS__)
         append!(cmdline_options, Main.__GAP_ARGS__)
     else
