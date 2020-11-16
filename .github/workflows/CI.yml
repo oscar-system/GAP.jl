@@ -36,9 +36,6 @@ jobs:
             ${{ runner.os }}-test-
             ${{ runner.os }}-
       - uses: julia-actions/julia-buildpkg@latest
-      - run: |
-          git config --global user.name Tester
-          git config --global user.email te@st.er
       - uses: julia-actions/julia-runtest@latest
         continue-on-error: ${{ matrix.version == 'nightly' }}
       - name: GAP tests
@@ -66,11 +63,17 @@ jobs:
       - uses: julia-actions/setup-julia@v1
         with:
           version: '1'
-      - name: Set up environment
-        run: |
-          git config --global user.name name
-          git config --global user.email email
-          git config --global github.user username
+      - uses: actions/cache@v1
+        env:
+          cache-name: cache-artifacts
+        with:
+          path: ~/.julia/artifacts
+          key: ${{ runner.os }}-test-${{ env.cache-name }}-${{ hashFiles('**/Project.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-test-${{ env.cache-name }}-
+            ${{ runner.os }}-test-
+            ${{ runner.os }}-
+      - uses: julia-actions/julia-buildpkg@latest
       - name: Install package
         run: |
           julia --project=docs --color=yes -e '
