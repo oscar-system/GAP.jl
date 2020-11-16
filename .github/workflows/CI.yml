@@ -45,8 +45,8 @@ jobs:
             Pkg.develop(PackageSpec(path=pwd()))
             Pkg.instantiate()
             using GAP
-            GAP.Packages.install("io")
-            GAP.Packages.install("profiling")
+            GAP.Packages.install("io", interactive = false)
+            GAP.Packages.install("profiling", interactive = false)
             '
           gap_sh=$(julia -e 'import GAP; print(GAP.gap_exe())');
           export GAP="$gap_sh -A --quitonbreak --norepl"
