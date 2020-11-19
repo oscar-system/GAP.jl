@@ -30,8 +30,6 @@ DeclareUserPreference( rec(
     ) );
 
 
-ReadPackage( "JuliaInterface", "gap/JuliaTypeDeclarations.gd");
-
 _PATH_SO:=Filename(DirectoriesPackagePrograms("JuliaInterface"), "JuliaInterface.so");
 if _PATH_SO <> fail then
     LoadDynamicModule(_PATH_SO);

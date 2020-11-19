@@ -66,10 +66,6 @@ end);
 BindGlobal("_JL_Dict_Symbol", JuliaEvalString("Dict{Symbol}"));
 BindGlobal("_JL_Dict_AbstractString", JuliaEvalString("Dict{AbstractString}"));
 
-# no longer used in the code, should be marked as obsolescent
-# (it was never documented)
-BindGlobal("_JL_VAL_TRUE", JuliaEvalString("Val(true)"));
-
 InstallMethod(JuliaToGAP, ["IsRecord", "IsJuliaObject"],
     {filter,obj} -> JuliaToGAP(filter,obj,false) );
 

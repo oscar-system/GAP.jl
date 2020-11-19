@@ -151,14 +151,6 @@ function initialize(argv::Array{String,1})
         error("FORCE_QUIT_GAP failed")
     end
 
-    # Unfortunately, the following trick does not work if GAP.jl is
-    # used by another package, such as Oscar.jl; we get errors like this:
-    #   WARNING: eval into closed module GAP:
-    #   Expr(:const, :gap_true = Expr(:call, :cglobal, :(:True)))
-    #     ** incremental compilation may be fatally broken for this module **
-    #@eval const gap_true = cglobal(:True)
-    #@eval const gap_false = cglobal(:False)
-
     # verify our TNUMs are still correct
     # (Base.invokelatest is only needed for Julia 1.3)
     @assert T_INT == Base.invokelatest(ValueGlobalVariable,:T_INT)
