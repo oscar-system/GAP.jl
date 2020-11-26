@@ -224,40 +224,6 @@ BindGlobal( "_JuliaFunctions", rec( ) );
 #! @EndExampleSession
 DeclareGlobalFunction( "JuliaFunction" );
 
-#! @Arguments variable_name[, module_name]
-#! @Returns a &Julia; object
-#! @Description
-#!  Returns the object assigned to the &Julia; variable with name
-#!  <A>variable_name</A> in the &Julia; module <A>module_name</A>.
-#!  Both arguments must be strings. If <A>module_name</A> is not given,
-#!  the variable is taken from &Julia;'s <C>Main</C> module.
-#!  <P/>
-#!  If the variable with name <A>variable_name</A> is not bound in the
-#!  &Julia; module then <K>fail</K> is returned.
-#! @BeginExampleSession
-#! gap> JuliaEvalString( "x = 17" );
-#! 17
-#! gap> JuliaGetGlobalVariable( "x" );
-#! 17
-#! gap> JuliaGetGlobalVariable( "unbound_variable", "GAP" );
-#! fail
-#! @EndExampleSession
-#! Note that the value of a &Julia; variable may be a &GAP; object,
-#! thus the value <K>fail</K> can be returned in a situation where the
-#! &Julia; variable in question is bound.
-#! In order to decide whether a &Julia; variable is bound,
-#! one can use the &Julia; function <C>isdefined</C>.
-#! @BeginExampleSession
-#! gap> JuliaEvalString( "julia_x = GAP.Globals.fail" );;
-#! gap> JuliaGetGlobalVariable( "julia_x" );
-#! fail
-#! gap> Julia.isdefined( Julia.Main, JuliaSymbol( "julia_x" ) );
-#! true
-#! gap> Julia.isdefined( Julia.Main, JuliaSymbol( "julia_y" ) );
-#! false
-#! @EndExampleSession
-DeclareGlobalFunction( "JuliaGetGlobalVariable" );
-
 #! @Description
 #!  This global variable represents the &Julia; module <C>Main</C>,
 #!  see <Ref Filt="IsJuliaModule" Label="for IsJuliaWrapper"/>.
