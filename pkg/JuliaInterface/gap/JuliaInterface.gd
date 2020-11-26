@@ -408,13 +408,6 @@ DeclareGlobalFunction( "CallJuliaFunctionWithKeywordArguments" );
 #!    <Ref Func="JuliaFunction"/> then the function call is executed
 #!    on the C level, using &Julia;'s <C>jl_call</C>.
 #!  </Item>
-#!  <!--
-#!  <Item>
-#!    If we have a &GAP; function that was created with
-#!    <Ref Func="JuliaBindCFunction"/> then calling this function results in
-#!    ...
-#!  </Item>
-#!  -->
 #!  </List>
 #!
 #!  TODO: Add examples.

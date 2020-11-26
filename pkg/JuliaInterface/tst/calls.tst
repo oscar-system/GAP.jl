@@ -178,24 +178,6 @@ gap> g6 := JuliaEvalString("function g6(a,b,c,d,e,f) return f end");;
 gap> g7 := JuliaEvalString("function g7(a,b,c,d,e,f,g) return g end");;
 
 #
-gap> g0C := JuliaBindCFunction("g0", "");
-function(  ) ... end
-gap> g1C := JuliaBindCFunction("g1", "a");
-function( a ) ... end
-gap> g2C := JuliaBindCFunction("g2", "a,b");
-function( a, b ) ... end
-gap> g3C := JuliaBindCFunction("g3", "a,b,c");
-function( a, b, c ) ... end
-gap> g4C := JuliaBindCFunction("g4", "a,b,c,d");
-function( a, b, c, d ) ... end
-gap> g5C := JuliaBindCFunction("g5", "a,b,c,d,e");
-function( a, b, c, d, e ) ... end
-gap> g6C := JuliaBindCFunction("g6", "a,b,c,d,e,f");
-function( a, b, c, d, e, f ) ... end
-gap> g7C := JuliaBindCFunction("g7", "a,b,c,d,e,f,g");
-Error, Only 0-6 arguments are supported
-
-#
 gap> g0();
 <Julia: Ptr{Nothing} @0x0000000000000000>
 gap> g1(true);
@@ -212,21 +194,6 @@ gap> g6(true,2,3,4,5,6);
 6
 
 #
-gap> g0C();
-gap> g1C(true);
-true
-gap> g2C(true,2);
-2
-gap> g3C(true,2,3);
-3
-gap> g4C(true,2,3,4);
-4
-gap> g5C(true,2,3,4,5);
-5
-gap> g6C(true,2,3,4,5,6);
-6
-
-#
 gap> h0 := JuliaEvalString("function h0() end");;
 gap> h1 := JuliaEvalString("function h1(a) end");;
 gap> h2 := JuliaEvalString("function h2(a,b) end");;
@@ -234,54 +201,6 @@ gap> h3 := JuliaEvalString("function h3(a,b,c) end");;
 gap> h4 := JuliaEvalString("function h4(a,b,c,d) end");;
 gap> h5 := JuliaEvalString("function h5(a,b,c,d,e) end");;
 gap> h6 := JuliaEvalString("function h6(a,b,c,d,e,f) end");;
-
-#
-gap> h0C := JuliaBindCFunction("h0", "");;
-gap> h1C := JuliaBindCFunction("h1", "a");;
-gap> h2C := JuliaBindCFunction("h2", "a,b");;
-gap> h3C := JuliaBindCFunction("h3", "a,b,c");;
-gap> h4C := JuliaBindCFunction("h4", "a,b,c,d");;
-gap> h5C := JuliaBindCFunction("h5", "a,b,c,d,e");;
-gap> h6C := JuliaBindCFunction("h6", "a,b,c,d,e,f");;
-
-#@if CompareVersionNumbers(GAPInfo.KernelInfo.JULIA_VERSION, "1.5")
-gap> h0C();
-Error, TypeError: in cfunction, expected Ptr{Nothing}, got a value of type Not
-hing
-gap> h1C(true);
-Error, TypeError: in cfunction, expected Ptr{Nothing}, got a value of type Not
-hing
-gap> h2C(true,2);
-Error, TypeError: in cfunction, expected Ptr{Nothing}, got a value of type Not
-hing
-gap> h3C(true,2,3);
-Error, TypeError: in cfunction, expected Ptr{Nothing}, got a value of type Not
-hing
-gap> h4C(true,2,3,4);
-Error, TypeError: in cfunction, expected Ptr{Nothing}, got a value of type Not
-hing
-gap> h5C(true,2,3,4,5);
-Error, TypeError: in cfunction, expected Ptr{Nothing}, got a value of type Not
-hing
-gap> h6C(true,2,3,4,5,6);
-Error, TypeError: in cfunction, expected Ptr{Nothing}, got a value of type Not
-hing
-#@else
-gap> h0C();
-Error, TypeError: in cfunction, expected Ptr{Nothing}, got Nothing
-gap> h1C(true);
-Error, TypeError: in cfunction, expected Ptr{Nothing}, got Nothing
-gap> h2C(true,2);
-Error, TypeError: in cfunction, expected Ptr{Nothing}, got Nothing
-gap> h3C(true,2,3);
-Error, TypeError: in cfunction, expected Ptr{Nothing}, got Nothing
-gap> h4C(true,2,3,4);
-Error, TypeError: in cfunction, expected Ptr{Nothing}, got Nothing
-gap> h5C(true,2,3,4,5);
-Error, TypeError: in cfunction, expected Ptr{Nothing}, got Nothing
-gap> h6C(true,2,3,4,5,6);
-Error, TypeError: in cfunction, expected Ptr{Nothing}, got Nothing
-#@fi
 
 #
 # handling invalid inputs
@@ -294,12 +213,6 @@ gap> JuliaFunction(fail);
 Error, arguments must be strings function_name[,module_name]
 gap> JuliaFunction("foo_bar_quux_not_defined");
 Error, Function is not defined in julia
-
-#
-gap> _NewJuliaCFunc(fail, fail);
-Error, NewJuliaCFunc: <ptr> must be a Julia object
-gap> _NewJuliaCFunc(JuliaEvalString("'a'"), fail);
-Error, NewJuliaCFunc: <args> must be a plain list (not the value 'fail')
 
 #
 gap> _JuliaFunction(fail);

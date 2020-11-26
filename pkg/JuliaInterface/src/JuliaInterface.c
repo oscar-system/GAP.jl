@@ -96,20 +96,6 @@ int is_gapobj(jl_value_t * v)
     return jl_typeis(v, gap_datatype_mptr);
 }
 
-static Obj Func_NewJuliaCFunc(Obj self, Obj julia_function_ptr, Obj args)
-{
-    BEGIN_GAP_SYNC();
-    if (!IS_JULIA_OBJ(julia_function_ptr)) {
-        ErrorMayQuit("NewJuliaCFunc: <ptr> must be a Julia object", 0, 0);
-    }
-    RequirePlainList("NewJuliaCFunc", args);
-
-    jl_value_t * func_ptr = GET_JULIA_OBJ(julia_function_ptr);
-    void *       ptr = jl_unbox_voidpointer(func_ptr);
-    END_GAP_SYNC();
-    return NewJuliaCFunc(ptr, args);
-}
-
 /*
  * utilities for wrapped Julia objects and functions
  */
@@ -377,7 +363,6 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(_JuliaGetGlobalVariableByModule, 2, "name, module"),
     GVAR_FUNC(JuliaGetFieldOfObject, 2, "obj,name"),
     GVAR_FUNC(JuliaSymbol, 1, "name"),
-    GVAR_FUNC(_NewJuliaCFunc, 2, "ptr, args"),
     GVAR_FUNC(_JULIAINTERFACE_INTERNAL_INIT, 0, ""),
     GVAR_FUNC(STREAM_CALL, 3, "stream, func, obj"),
     { 0 } /* Finish with an empty entry */
