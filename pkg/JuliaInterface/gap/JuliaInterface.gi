@@ -14,16 +14,6 @@ InstallGlobalFunction( JuliaFunction,
     Error( "arguments must be strings function_name[,module_name]" );
 end );
 
-InstallGlobalFunction( JuliaGetGlobalVariable,
-  function( arglist... )
-    if Length( arglist ) = 1 and IsString( arglist[ 1 ] ) then
-        return _JuliaGetGlobalVariable( arglist[ 1 ] );
-    elif Length( arglist ) = 2 and ForAll( arglist, IsString ) then
-        return CallFuncList( _JuliaGetGlobalVariableByModule, arglist );
-    fi;
-    Error( "arguments must be strings function_name[,module_name]" );
-end );
-
 BindGlobal( "_JULIA_MODULE_TYPE", _JuliaGetGlobalVariable( "Module" ) );
 BindGlobal( "_JULIA_FUNCTION_TYPE", _JuliaGetGlobalVariable( "Function" ) );
 BindGlobal( "_JULIA_ISA", JuliaFunction( "isa" ) );

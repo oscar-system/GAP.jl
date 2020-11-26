@@ -27,18 +27,8 @@ Error, JuliaEvalString: <string> must be a string (not the value 'fail')
 gap> JuliaSetVal(fail, 1);
 Error, JuliaSetVal: <name> must be a string (not the value 'fail')
 gap> JuliaSetVal("foo", JuliaEvalString("1"));
-gap> JuliaGetGlobalVariable("foo");
+gap> Julia.Main.foo;
 1
-gap> JuliaGetGlobalVariable("foo_bar_quux_not_defined");
-fail
-gap> JuliaGetGlobalVariable();
-Error, arguments must be strings function_name[,module_name]
-gap> JuliaGetGlobalVariable(fail);
-Error, arguments must be strings function_name[,module_name]
-gap> JuliaGetGlobalVariable("foo", fail);
-Error, arguments must be strings function_name[,module_name]
-gap> JuliaGetGlobalVariable("parse", "Base");
-<Julia: parse>
 
 ##
 gap> Julia.Core.Tuple( GAPToJulia( JuliaEvalString( "Array{Any,1}" ), [] ) );
