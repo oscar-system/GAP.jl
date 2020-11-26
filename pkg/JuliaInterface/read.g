@@ -4,7 +4,6 @@
 # Reading the implementation part of the package.
 #
 ReadPackage( "JuliaInterface", "gap/JuliaInterface.gi");
-ReadPackage( "JuliaInterface", "gap/BindCFunction.gi" );
 
 if not IsBound( __JULIAINTERNAL_LOADED_FROM_JULIA ) then
     JuliaEvalString( "Base.MainInclude.include(Base.find_package(\"GAP\"))" );
