@@ -68,6 +68,14 @@ function initialize(argv::Array{String,1})
     # (which is created by `setup.jl`).
     append!(argv, ["--systemfile", abspath(joinpath(@__DIR__, "..", "lib", "systemfile.g"))])
 
+    ## At this point, the GAP module has not been completely initialized, and
+    ## hence is not yet available under the global binding "GAP"; but
+    ## JuliaInterface needs to access it. To make that possible, we assign
+    ## this module to the name __JULIAGAPMODULE.
+    ## TODO: find a way to avoid using such a global variable
+    gap_module = @__MODULE__
+    Base.MainInclude.eval(:(__JULIAGAPMODULE = $gap_module))
+
     if ! handle_signals
         # Tell GAP to show some traceback on errors.
         append!(argv, ["--alwaystrace"])
@@ -163,7 +171,8 @@ function finalize()
     ccall((:GAP_finalize, libgap), Cvoid, ())
 end
 
-function run_it()
+function __init__()
+
     # regenerate GAPROOT if it was removed
     if !isdir(GAPROOT) || isempty(readdir(GAPROOT))
         Setup.setup_mutable_gaproot(GAPROOT)
@@ -197,13 +206,12 @@ function run_it()
         initialize(cmdline_options)
     end
 
-    gap_module = @__MODULE__
-
     if !show_banner
         # Leave it to GAP's `LoadPackage` whether package banners are shown.
         # Note that a second argument `false` of this function suppresses the
         # package banner,
         # but no package banners can be shown if the `-b` option is `true`.
+        gap_module = @__MODULE__
         Base.MainInclude.eval(
             :(
                 begin
@@ -216,19 +224,6 @@ function run_it()
             ),
         )
     end
-end
-
-function __init__()
-
-    ## At this point, the GAP module has not been completely initialized, and
-    ## hence is not yet available under the global binding "GAP"; but
-    ## JuliaInterface needs to access it. To make that possible, we assign
-    ## this module to the name __JULIAGAPMODULE.
-    ## TODO: find a way to avoid using such a global variable
-    gap_module = @__MODULE__
-    Base.MainInclude.eval(:(__JULIAGAPMODULE = $gap_module))
-
-    run_it()
 end
 
 """
