@@ -79,7 +79,9 @@ export LoadPackageAndExposeGlobals
 
 module Packages
 
-import ...GAP: Globals, julia_to_gap, GAPROOT
+import ...GAP: Globals, julia_to_gap
+
+const DEFAULT_PKGDIR = joinpath(get(ENV, "HOME", ""), ".gap", "pkg")
 
 """
     load(spec::String, version::String = ""; install = false)
@@ -129,7 +131,7 @@ containing a package, or the URL of a `PackageInfo.g` file.
 The function uses [the function `InstallPackage` from GAP's package
 `PackageManager`](GAP_ref(PackageManager:InstallPackage)).
 """
-function install(spec::String; interactive::Bool = true, pkgdir::AbstractString = GAPROOT * "/pkg")
+function install(spec::String; interactive::Bool = true, pkgdir::AbstractString = DEFAULT_PKGDIR)
     res = load("PackageManager")
     @assert res
     # FIXME: crude hack to allow PackageManager 1.0 shipped with GAP
@@ -158,7 +160,7 @@ containing a package, or the URL of a `PackageInfo.g` file.
 The function uses [the function `UpdatePackage` from GAP's package
 `PackageManager`](GAP_ref(PackageManager:UpdatePackage)).
 """
-function update(spec::String; interactive::Bool = true, pkgdir::AbstractString = GAPROOT * "/pkg")
+function update(spec::String; interactive::Bool = true, pkgdir::AbstractString = DEFAULT_PKGDIR)
     res = load("PackageManager")
     @assert res
 
@@ -181,7 +183,7 @@ Return `true` if the removal was successful, and `false` otherwise.
 The function uses [the function `RemovePackage` from GAP's package
 `PackageManager`](GAP_ref(PackageManager:RemovePackage)).
 """
-function remove(spec::String; interactive::Bool = true, pkgdir::AbstractString = GAPROOT * "/pkg")
+function remove(spec::String; interactive::Bool = true, pkgdir::AbstractString = DEFAULT_PKGDIR)
     res = load("PackageManager")
     @assert res
 
