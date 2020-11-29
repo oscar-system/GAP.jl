@@ -87,6 +87,11 @@ function initialize(argv::Vector{String})
         # Tell GAP to show some traceback on errors.
         append!(argv, ["--alwaystrace"])
     end
+
+    # instruct GAP to not load init.g at the end of GAP_Initialize
+    # TODO: turn this into a proper libgap API
+    unsafe_store!(cglobal((:SyLoadSystemInitFile, libgap), Int64), 0)
+
     ccall(
         (:GAP_Initialize, libgap),
         Cvoid,
@@ -97,6 +102,16 @@ function initialize(argv::Vector{String})
         error_handler_func,
         handle_signals,
     )
+
+    # TODO: store a pointer to this module in a GAP variable
+    #...
+
+    # now load init.g
+    @debug "about to read init.g"
+    if ccall((:READ_GAP_ROOT, libgap), Int64, (Ptr{Cchar},), "lib/init.g") == 0
+        error("failed to read lib/init.g")
+    end
+    @debug "finished reading init.g"
 
     # register our ThrowObserver callback
     f = @cfunction(ThrowObserver, Cvoid, (Cint, ))
