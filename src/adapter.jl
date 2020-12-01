@@ -288,7 +288,7 @@ function Base.iterate(obj::GapObj, (i, len)::Tuple{Int,Any})
     ElmList(obj, i), (i+1, len)
 end
 
-function Base.iterate(obj::GapObj, iter)
+function Base.iterate(obj::GapObj, iter::GapObj)
     if Globals.IsDoneIterator(iter)
         nothing
     else
