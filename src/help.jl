@@ -99,3 +99,26 @@ function Base.Docs.getdoc(x::GapObj)
       return nothing
     end
 end
+
+## enable access to Julia's help system from GAP
+function julia_help_string(obj)
+    doc = Base.Docs.doc(obj)
+    io = IOBuffer()
+    ioc = IOContext(io, :color => true)
+    if ! isempty(doc.content)
+      hr = Markdown.HorizontalRule()
+      n = Markdown.cols(io)
+      doc_found = ! isa(doc.content[1], Markdown.Paragraph)
+      for md in doc.content[1:end-1]
+        Markdown.term(ioc, md, n)
+        print(ioc, "\n\n")
+        if doc_found
+          Markdown.term(ioc, hr, n)
+          print(ioc, "\n\n")
+        end
+      end
+      Markdown.term(ioc, doc.content[end], n)
+      println(ioc)
+    end
+    return String(take!(io))
+end

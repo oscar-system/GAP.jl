@@ -1,0 +1,4 @@
+The `help` directory and the file `help/manual.six`
+are needed only because of the `HELP_ADD_BOOK` call
+that makes the Julia help available in a GAP session,
+via a (virtual) book named `Julia`.
