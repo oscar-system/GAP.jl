@@ -203,6 +203,13 @@ function regenerate_gaproot()
             force_symlink(joinpath(GAP_jll.find_artifact_dir(), d[1]), d[2])
         end
 
+        # emulate the "compat mode" of the GAP build system, to help certain
+        # packages like Browse with an outdated build system
+        mkpath(joinpath("bin", sysinfo["GAParch"]))
+        force_symlink("sysinfo.gap", "sysinfo.gap-default64")
+        force_symlink(abspath("gac"), joinpath("bin", sysinfo["GAParch"], "gac"))
+
+        # for building GAP packages
         force_symlink(joinpath(GAP_lib_jll.find_artifact_dir(), "share", "gap", "bin", "BuildPackages.sh"),
                       joinpath("bin", "BuildPackages.sh"))
 
