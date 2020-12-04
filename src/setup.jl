@@ -129,10 +129,16 @@ function regenerate_gaproot()
     # We deliberately drop '-lz -lreadline' here, it should not be needed for packages
     sysinfo["GAP_LIBS"] = """-lgmp -lgap """ * sysinfo["JULIA_LIBS"]
 
+    GAP_VERSION = VersionNumber(sysinfo["GAP_VERSION"])
+    gaproot_packages = joinpath(Base.DEPOT_PATH[1], "gaproot", "v$(GAP_VERSION.major).$(GAP_VERSION.minor)")
+    sysinfo["DEFAULT_PKGDIR"] = joinpath(gaproot_packages, "pkg")
+    mkpath(sysinfo["DEFAULT_PKGDIR"])
     roots = [
             gaproot_gapjl,          # for JuliaInterface and JuliaExperimental
             gaproot_mutable,
-            sysinfo["GAP_LIB_DIR"],     # from GAP_lib_jll
+            gaproot_packages,       # default installation dir for PackageManager
+            sysinfo["GAP_LIB_DIR"], # the actual GAP library, from GAP_lib_jll
+
             # FIXME/HACK: the GAP 4.11.0 package archive contains ._*
             # files, which breaks git tree checksums; so for now we
             # keep using our old hacked gap tarball instead
