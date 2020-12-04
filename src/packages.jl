@@ -79,7 +79,9 @@ export LoadPackageAndExposeGlobals
 
 module Packages
 
-import ...GAP: Globals, julia_to_gap, GAPROOT
+import ...GAP: Globals, julia_to_gap, sysinfo
+
+const DEFAULT_PKGDIR = sysinfo["DEFAULT_PKGDIR"]
 
 """
     load(spec::String, version::String = ""; install = false)
@@ -103,7 +105,7 @@ function load(spec::String, version::String = ""; install = false)
         return true
     elseif install == true
         # Try to install the package.
-        if Packages.install(spec)
+        if Packages.install(spec; interactive = false)
             # Make sure that the installed version is admissible.
             return Globals.LoadPackage(gspec, gversion, false)
         end
@@ -129,12 +131,13 @@ containing a package, or the URL of a `PackageInfo.g` file.
 The function uses [the function `InstallPackage` from GAP's package
 `PackageManager`](GAP_ref(PackageManager:InstallPackage)).
 """
-function install(spec::String; interactive::Bool = true, pkgdir::AbstractString = GAPROOT * "/pkg")
+function install(spec::String; interactive::Bool = true, pkgdir::AbstractString = DEFAULT_PKGDIR)
     res = load("PackageManager")
     @assert res
 
     # point PackageManager to our internal pkg dir
     Globals.PKGMAN_CustomPackageDir = julia_to_gap(pkgdir)
+    mkpath(pkgdir)
 
     return Globals.InstallPackage(julia_to_gap(spec), interactive)
 end
@@ -154,12 +157,13 @@ containing a package, or the URL of a `PackageInfo.g` file.
 The function uses [the function `UpdatePackage` from GAP's package
 `PackageManager`](GAP_ref(PackageManager:UpdatePackage)).
 """
-function update(spec::String; interactive::Bool = true, pkgdir::AbstractString = GAPROOT * "/pkg")
+function update(spec::String; interactive::Bool = true, pkgdir::AbstractString = DEFAULT_PKGDIR)
     res = load("PackageManager")
     @assert res
 
     # point PackageManager to our internal pkg dir
     Globals.PKGMAN_CustomPackageDir = julia_to_gap(pkgdir)
+    mkpath(pkgdir)
 
     return Globals.UpdatePackage(julia_to_gap(spec), interactive)
 end
@@ -177,12 +181,13 @@ Return `true` if the removal was successful, and `false` otherwise.
 The function uses [the function `RemovePackage` from GAP's package
 `PackageManager`](GAP_ref(PackageManager:RemovePackage)).
 """
-function remove(spec::String; interactive::Bool = true, pkgdir::AbstractString = GAPROOT * "/pkg")
+function remove(spec::String; interactive::Bool = true, pkgdir::AbstractString = DEFAULT_PKGDIR)
     res = load("PackageManager")
     @assert res
 
     # point PackageManager to our internal pkg dir
     Globals.PKGMAN_CustomPackageDir = julia_to_gap(pkgdir)
+    mkpath(pkgdir)
 
     return Globals.RemovePackage(julia_to_gap(spec), interactive)
 end

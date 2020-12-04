@@ -19,6 +19,7 @@ import Random
 include("types.jl")
 
 const sysinfo = Setup.read_sysinfo_gap(GAPROOT)
+const GAP_VERSION = VersionNumber(sysinfo["GAP_VERSION"])
 
 function reset_GAP_ERROR_OUTPUT()
     # Note: strictly speaking we should close the stream here; but since it is
