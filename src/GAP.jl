@@ -40,7 +40,7 @@ function error_handler()
     if disable_error_handler
         return
     end
-    str = gap_to_julia(Globals._JULIAINTERFACE_ERROR_OUTPUT)
+    str = String(Globals._JULIAINTERFACE_ERROR_OUTPUT)
     reset_GAP_ERROR_OUTPUT()
     error("Error thrown by GAP: ", str)
 end

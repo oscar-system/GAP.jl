@@ -27,9 +27,9 @@ function prompt()
 
     # restore GAP's error output
     disable_error_handler = true
-    Globals.MakeReadWriteGlobal(julia_to_gap("ERROR_OUTPUT"))
+    Globals.MakeReadWriteGlobal(GapObj("ERROR_OUTPUT"))
     evalstr("""ERROR_OUTPUT:= "*errout*";""")
-    Globals.MakeReadOnlyGlobal(julia_to_gap("ERROR_OUTPUT"))
+    Globals.MakeReadOnlyGlobal(GapObj("ERROR_OUTPUT"))
 
     # enable break loop
     Globals.BreakOnError = true
