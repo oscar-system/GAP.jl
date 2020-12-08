@@ -38,6 +38,8 @@ jobs:
             ${{ runner.os }}-
       - uses: julia-actions/julia-buildpkg@latest
       - uses: julia-actions/julia-runtest@latest
+      - name: Add optional Julia depdencies for GAP tests
+        run: julia -e 'using Pkg; Pkg.add(["Singular", "Nemo"])'
       - name: GAP tests
         run: |
           julia -e '
@@ -51,7 +53,14 @@ jobs:
           gap_sh=$(julia -e 'import GAP; print(GAP.gap_exe())');
           export GAP="$gap_sh -A --quitonbreak --norepl"
           etc/ci_test.sh
+
       - uses: julia-actions/julia-processcoverage@v1
+      - name: Process GAP coverage
+        run: |
+          gap_sh=$(julia -e 'import GAP; print(GAP.gap_exe())');
+          $gap_sh -A --quitonbreak --norepl etc/gather_coverage.g
+          cat gap-lcov.info >> lcov.info
+
       - uses: codecov/codecov-action@v1
         with:
           file: lcov.info
