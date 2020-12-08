@@ -3,6 +3,7 @@ using Test, Documenter, GAP
 DocMeta.setdocmeta!(GAP, :DocTestSetup, :(using GAP); recursive = true)
 
 include("basics.jl")
+include("adapter.jl")
 include("convenience.jl")
 include("conversion.jl")
 include("constructors.jl")
