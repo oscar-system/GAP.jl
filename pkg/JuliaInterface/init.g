@@ -43,6 +43,11 @@ Unbind(_PATH_SO);
 CallFuncList( function()
     local dir, filename, res;
 
+    if JuliaEvalString( "Int64(Base.JLOptions().startupfile)" ) <> 2 then
+      # Julia has already read the file, do not read it again.
+      return;
+    fi;
+
     dir:= UserPreference( "JuliaInterface", "IncludeJuliaStartupFile" );
     if dir = true then
       filename:= Filename( DirectoryHome(), ".julia/config/startup.jl" );
