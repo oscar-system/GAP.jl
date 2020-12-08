@@ -10,7 +10,7 @@ This repository contains the [GAP.jl](src/GAP.jl) Julia package, as well as the 
 developed for the [GAP](https://www.gap-system.org/)-[Julia](https://julialang.org/) integration
 as part of the [OSCAR project](https://oscar.computeralgebra.de).
 
-*WARNING*: This package is intended as a low-level interface between GAP
+*WARNING*: GAP.jl is intended as a low-level interface between GAP
 and Julia. Therefore, for the most part it does not attempt (besides some
 general conveniences) to provide a very “Julia-ish” interface to GAP
 objects and functions, nor a “GAP-ish” interface to Julia objects and
