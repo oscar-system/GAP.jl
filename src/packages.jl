@@ -62,7 +62,7 @@ function LoadPackageAndExposeGlobals(
     if !all_globals
         new_gvar_list = Globals.Difference(new_gvar_list, current_gvar_list)
     end
-    new_symbols = gap_to_julia(Array{Symbol,1}, new_gvar_list)
+    new_symbols = Vector{Symbol}(new_gvar_list)
     for sym in new_symbols
         if overwrite || !isdefined(mod, sym)
             try
@@ -79,7 +79,7 @@ export LoadPackageAndExposeGlobals
 
 module Packages
 
-import ...GAP: Globals, julia_to_gap, sysinfo
+import ...GAP: Globals, GapObj, sysinfo
 
 const DEFAULT_PKGDIR = sysinfo["DEFAULT_PKGDIR"]
 
@@ -98,8 +98,8 @@ the newest released version of the package.
 """
 function load(spec::String, version::String = ""; install = false)
     # Try to load the package.
-    gspec = julia_to_gap(spec)
-    gversion = julia_to_gap(version)
+    gspec = GapObj(spec)
+    gversion = GapObj(version)
     loaded = Globals.LoadPackage(gspec, gversion, false)
     if loaded == true
         return true
@@ -136,10 +136,10 @@ function install(spec::String; interactive::Bool = true, pkgdir::AbstractString 
     @assert res
 
     # point PackageManager to our internal pkg dir
-    Globals.PKGMAN_CustomPackageDir = julia_to_gap(pkgdir)
+    Globals.PKGMAN_CustomPackageDir = GapObj(pkgdir)
     mkpath(pkgdir)
 
-    return Globals.InstallPackage(julia_to_gap(spec), interactive)
+    return Globals.InstallPackage(GapObj(spec), interactive)
 end
 
 """
@@ -162,10 +162,10 @@ function update(spec::String; interactive::Bool = true, pkgdir::AbstractString =
     @assert res
 
     # point PackageManager to our internal pkg dir
-    Globals.PKGMAN_CustomPackageDir = julia_to_gap(pkgdir)
+    Globals.PKGMAN_CustomPackageDir = GapObj(pkgdir)
     mkpath(pkgdir)
 
-    return Globals.UpdatePackage(julia_to_gap(spec), interactive)
+    return Globals.UpdatePackage(GapObj(spec), interactive)
 end
 # note that the updated version cannot be used in the current GAP session,
 # because the older version is already loaded;
@@ -186,10 +186,10 @@ function remove(spec::String; interactive::Bool = true, pkgdir::AbstractString =
     @assert res
 
     # point PackageManager to our internal pkg dir
-    Globals.PKGMAN_CustomPackageDir = julia_to_gap(pkgdir)
+    Globals.PKGMAN_CustomPackageDir = GapObj(pkgdir)
     mkpath(pkgdir)
 
-    return Globals.RemovePackage(julia_to_gap(spec), interactive)
+    return Globals.RemovePackage(GapObj(spec), interactive)
 end
 
 end

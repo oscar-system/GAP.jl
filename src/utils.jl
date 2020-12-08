@@ -71,5 +71,5 @@ end
 ## convenience function
 
 function Display(x::GapObj)
-    print(gap_to_julia(AbstractString, Globals.StringDisplayObj(x)))
+    print(AbstractString(Globals.StringDisplayObj(x)))
 end

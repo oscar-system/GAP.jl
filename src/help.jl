@@ -5,7 +5,7 @@ using REPL
 function gap_help_string(topic::String, onlyexact::Bool = false,
     term::REPL.Terminals.TTYTerminal = REPL.TerminalMenus.terminal)
     # Let GAP collect the information.
-    info = Globals.HELP_Info(julia_to_gap(topic), onlyexact)
+    info = Globals.HELP_Info(GapObj(topic), onlyexact)
 
     if Globals.IsRecord(info)
         len = length(info.entries)
@@ -15,7 +15,7 @@ function gap_help_string(topic::String, onlyexact::Bool = false,
         else
             # If there are several matches then try to present a menu.
             # (This does not work in Jupyter notebooks.)
-            options = [gap_to_julia(x) for x in gap_to_julia(info.menu)]
+            options = Vector{String}(info.menu)
             try
                 pagesize = displaysize(Base.stdout)[1]-2
                 choice = REPL.TerminalMenus.request(
@@ -28,12 +28,12 @@ function gap_help_string(topic::String, onlyexact::Bool = false,
                 end
             catch e
                 # show *all* help entries
-                return gap_to_julia(Globals.HelpString(julia_to_gap(topic), onlyexact))
+                return String(Globals.HelpString(GapObj(topic), onlyexact))
             end
         end
-        return gap_to_julia(Globals.ComposedHelpString(info.entries[choice]))
+        return String(Globals.ComposedHelpString(info.entries[choice]))
     else
-        return gap_to_julia(Globals.HelpStringInner(info))
+        return String(Globals.HelpStringInner(info))
     end
 end
 
@@ -94,7 +94,7 @@ Base.Docs.getdoc(x::GlobalsType) = nothing
 ## (Note that this feature works for Julia objects as well.)
 function Base.Docs.getdoc(x::GapObj)
     if Globals.HasNameFunction(x)
-      return Text(gap_help_string(gap_to_julia(Globals.NameFunction(x))))
+      return Text(gap_help_string(String(Globals.NameFunction(x))))
     else
       return nothing
     end

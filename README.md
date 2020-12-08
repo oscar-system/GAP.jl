@@ -37,22 +37,33 @@ one may call any GAP function by prefixing its name with `GAP.Globals.`. For exa
 julia> GAP.Globals.SymmetricGroup(3)
 GAP: SymmetricGroup( [ 1 .. 3 ] )
 ```
+
 The Julia types `Int64` and `Bool` are automatically converted to GAP objects.
-Several others types of objects can be converted using `GAP.julia_to_gap`:
+Several others basic types of objects can be converted using the `GapObj` constructor:
 ```julia
-julia> x = GAP.julia_to_gap([1,2,3])
+julia> x = GapObj([1,2,3])
 GAP: [ 1, 2, 3 ]
 ```
-Converting back to Julia is done using `GAP.gap_to_julia`.
-However, for this one needs to specify the desired type of the resulting object.
-For example, to convert the GAP list of integers we just defined back to Julia, we might do this:
+For nested objects, one can use the optional `recursive` keyword argument:
 ```julia
-julia> GAP.gap_to_julia(Array{Int64,1}, x)
+julia> GapObj([1,2,[3,4,5]])
+GAP: [ 1, 2, <Julia: [3, 4, 5]> ]
+
+julia> GapObj([1,2,[3,4,5]]; recursive=true)
+GAP: [ 1, 2, [ 3, 4, 5 ] ]
+```
+
+Converting back to Julia can be done using suitable Julia constructors.
+For example, to convert the GAP list of integers we defined earlier back to Julia,
+we might do this:
+```julia
+julia> Vector{Int64}(x)
 3-element Array{Int64,1}:
  1
  2
  3
 ```
+
 
 ## General Disclaimer
 

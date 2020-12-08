@@ -61,10 +61,10 @@ function compute_external_reference(link, meta, page, doc)
             reference = string(reference.captures[1])
             key = split(reference, ":")
             if length(key) == 2
-                key = GAP.julia_to_gap(string(key[2]))
+                key = GapObj(string(key[2]))
                 # Find all matches of `"<bookname>:<label>"`.
-                urls = GAP.Globals.MatchURLs(GAP.julia_to_gap(reference),
-                           GAP.julia_to_gap("https://www.gap-system.org/Manuals/"))
+                urls = GAP.Globals.MatchURLs(GapObj(reference),
+                           GapObj("https://www.gap-system.org/Manuals/"))
                 # Take only exact matches, this should be unique.
                 urls = GAP.Globals.Filtered(urls, x -> x[2] == key)
                 if length(urls) == 1

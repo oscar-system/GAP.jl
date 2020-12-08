@@ -213,7 +213,7 @@ function julia_to_gap(
     elseif Globals.IsRecord(obj)
         ret_val = NewPrecord(0)
         recursion_dict[obj] = ret_val
-        for x in gap_to_julia(Globals.RecNames(obj))
+        for x in Vector{String}(Globals.RecNames(obj))
             Globals.ASS_REC(ret_val, x, julia_to_gap(Globals.ELM_REC(obj, x), recursion_dict; recursive = true))
         end
     else

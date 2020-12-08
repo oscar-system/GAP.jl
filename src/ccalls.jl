@@ -172,8 +172,7 @@ function call_gap_func(func::GapObj, args...; kwargs...)
     global Globals
     options = false
     if length(kwargs) > 0
-        kwargs_dict = Dict(kwargs)
-        kwargs_rec = julia_to_gap(kwargs_dict)
+        kwargs_rec = GapObj(Dict(kwargs))
         Globals.PushOptions(kwargs_rec)
         options = true
     end
@@ -387,4 +386,4 @@ function setproperty!(::GlobalsType, name::Symbol, val::Any)
     _AssignGlobalVariable(name, tmp)
 end
 
-propertynames(::GlobalsType) = gap_to_julia(Vector{Symbol}, Globals.NamesGVars())
+propertynames(::GlobalsType) = Vector{Symbol}(Globals.NamesGVars())
