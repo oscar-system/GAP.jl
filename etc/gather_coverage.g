@@ -43,6 +43,9 @@ if not IsBound(OutputLcovCoverage) then
     end);
 fi;
 
+prefix := UserHomeExpand("~/.julia");
+r.line_info := Filtered(r.line_info, file -> not StartsWith(file[1], prefix));
+
 Print("Outputting LCOV\n");
 OutputLcovCoverage(r, "gap-lcov.info");;
 QUIT_GAP(0);
