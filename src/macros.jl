@@ -30,7 +30,7 @@ not all expressions representing valid GAP code can be processed.
 For example, the GAP syntax of permutations consisting of more than one cycle
 cause problems, as well as the GAP syntax of non-dense lists.
 
-```jldoctest
+```
 julia> @gap (1,2,3)
 GAP: (1,2,3)
 
