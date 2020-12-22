@@ -413,12 +413,8 @@ static Int InitKernel(StructInitInfo * module)
         }
     }
 
-    // import mptr type from GAP
-    jl_module_t * gap_module =
-        (jl_module_t *)jl_get_global(jl_main_module, jl_symbol("ForeignGAP"));
-    GAP_ASSERT(gap_module);
-    gap_datatype_mptr =
-        (jl_datatype_t *)jl_get_global(gap_module, jl_symbol("MPtr"));
+    // import mptr type from GAP, by getting the Julia type of any GAP object
+    gap_datatype_mptr = (jl_datatype_t *)jl_typeof(True);
     GAP_ASSERT(gap_datatype_mptr);
 
     ImportFuncFromLibrary("IsJuliaWrapper", &JULIAINTERFACE_IsJuliaWrapper);
