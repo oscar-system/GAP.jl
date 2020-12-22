@@ -247,7 +247,7 @@ function regenerate_gaproot()
         # But you can always instead load this file as if it was a .jl file via any
         # other Julia executable.
         #=
-        exec $(Base.julia_exename()) --startup-file=no --project=$(gaproot_mutable) -- "$(gap_sh_path)" "\$@"
+        exec $(joinpath(Sys.BINDIR, Base.julia_exename())) --startup-file=no --project=$(gaproot_mutable) -- "$(gap_sh_path)" "\$@"
         =#
 
         # pass command line arguments to GAP.jl via a small hack
