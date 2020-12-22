@@ -1,5 +1,5 @@
-/deps/gaproot*/
-/gap/
+/gaproot/
 /gh-pages/
 /Manifest.toml
 /tags
+*.log
