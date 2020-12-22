@@ -38,14 +38,14 @@ jobs:
             ${{ runner.os }}-
       - uses: julia-actions/julia-buildpkg@latest
       - uses: julia-actions/julia-runtest@latest
-      - name: Add optional Julia depdencies for GAP tests
+      - name: "Add optional Julia dependencies for GAP tests"
         run: |
           julia -e '
             using Pkg
             Pkg.add(PackageSpec(name="AbstractAlgebra", version="0.10"))
             Pkg.add(["Singular", "Nemo"])
             '
-      - name: GAP tests
+      - name: "GAP tests"
         run: |
           julia -e '
             using Pkg
@@ -60,7 +60,7 @@ jobs:
           etc/ci_test.sh
 
       - uses: julia-actions/julia-processcoverage@v1
-      - name: Process GAP coverage
+      - name: "Process GAP coverage"
         run: |
           gap_sh=$(julia -e 'import GAP; print(GAP.gap_exe())');
           $gap_sh -A --quitonbreak --norepl etc/gather_coverage.g
@@ -69,7 +69,7 @@ jobs:
       - uses: codecov/codecov-action@v1
         with:
           file: lcov.info
-      - name: Coveralls Parallel
+      - name: "Coveralls Parallel"
         uses: coverallsapp/github-action@master
         with:
           path-to-lcov: lcov.info
@@ -81,14 +81,14 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     steps:
-    - name: Coveralls Finished
+    - name: "Coveralls Finished"
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         parallel-finished: true
 
   docs:
-    name: Documentation
+    name: "Documentation"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -106,16 +106,16 @@ jobs:
             ${{ runner.os }}-test-
             ${{ runner.os }}-
       - uses: julia-actions/julia-buildpkg@latest
-      - name: Install package
+      - name: "Install package"
         run: |
           julia --project=docs --color=yes -e '
             using Pkg
             Pkg.develop(PackageSpec(path=pwd()))
             Pkg.instantiate()'
-      - name: Run doctests
+      - name: "Run doctests"
         run: |
           julia --project=docs --color=yes test/doctest.jl
-      - name: Deploy documentation
+      - name: "Deploy documentation"
         run: julia --project=docs --color=yes docs/make.jl
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
