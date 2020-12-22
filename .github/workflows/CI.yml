@@ -39,7 +39,12 @@ jobs:
       - uses: julia-actions/julia-buildpkg@latest
       - uses: julia-actions/julia-runtest@latest
       - name: Add optional Julia depdencies for GAP tests
-        run: julia -e 'using Pkg; Pkg.add(["Singular", "Nemo"])'
+        run: |
+          julia -e '
+            using Pkg
+            Pkg.add(PackageSpec(name="AbstractAlgebra", version="0.10"))
+            Pkg.add(["Singular", "Nemo"])
+            '
       - name: GAP tests
         run: |
           julia -e '
