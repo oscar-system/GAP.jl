@@ -228,7 +228,7 @@ function regenerate_gaproot()
         @info "Generating custom Julia project ..."
         relative_pkgdir = joinpath("..", "..")
         @assert abspath(joinpath(gaproot_mutable, relative_pkgdir)) == gaproot_gapjl
-        run(pipeline(`$(Base.julia_cmd()) --project=$(gaproot_mutable) -e "using Pkg; Pkg.develop(PackageSpec(path=\"$(relative_pkgdir)\")); Pkg.resolve()"`, stdout=devnull, stderr=devnull))
+        run(pipeline(`$(Base.julia_cmd()) --startup-file=no --project=$(gaproot_mutable) -e "using Pkg; Pkg.develop(PackageSpec(path=\"$(relative_pkgdir)\")); Pkg.resolve()"`))
 
     end # cd
 
