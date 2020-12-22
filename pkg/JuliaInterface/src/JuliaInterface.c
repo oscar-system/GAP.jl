@@ -375,12 +375,6 @@ static StructGVarFunc GVarFuncs[] = {
 */
 static Int InitKernel(StructInitInfo * module)
 {
-    if (getenv("JULIA_TRACK_COVERAGE") != 0) {
-        fprintf(stderr, "JULIA_TRACK_COVERAGE enabled\n");
-        jl_options.code_coverage = JL_LOG_USER;
-        jl_options.can_inline = 0;
-    }
-
     InitGapSync();
 
     // init filters and functions
