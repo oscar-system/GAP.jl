@@ -115,7 +115,7 @@ function initialize(argv::Array{String,1})
         ccall(
             (:GAP_CallFuncArray, libgap),
             Ptr{Cvoid},
-            (Ptr{Cvoid}, Culonglong, Ptr{Cvoid}),
+            (Any, Culonglong, Ptr{Cvoid}),
             FORCE_QUIT_GAP,
             0,
             C_NULL,

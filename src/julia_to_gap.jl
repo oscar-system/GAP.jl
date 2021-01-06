@@ -35,9 +35,7 @@ julia_to_gap(x::Bool) = x   # Default for actual GAP objects is to do nothing
 ## which avoids the conversion to BigInt, if we wanted to.
 function julia_to_gap(x::Integer)
     # if it fits into a GAP immediate integer, convert x to Int64
-    if x in -1<<60:(1<<60-1)
-        return Int64(x)
-    end
+    x in -1<<60:(1<<60-1) && return Int64(x)
     # for the general case, fall back to BigInt
     return julia_to_gap(BigInt(x))
 end
@@ -54,10 +52,8 @@ julia_to_gap(x::UInt8) = Int64(x)
 
 ## BigInts are converted via a ccall
 function julia_to_gap(x::BigInt)
-    if x in -1<<60:(1<<60-1)
-        return Int64(x)
-    end
-    return ccall(:MakeObjInt, GapObj, (Ptr{UInt64}, Cint), x.d, x.size)
+    x in -1<<60:(1<<60-1) && return Int64(x)
+    return GC.@preserve x ccall(:MakeObjInt, GapObj, (Ptr{UInt64}, Cint), x.d, x.size)
 end
 
 ## Rationals

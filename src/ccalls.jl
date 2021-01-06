@@ -39,7 +39,7 @@ end
 
 
 function evalstr_ex(cmd::String)
-    res = ccall((:GAP_EvalString, libgap), GapObj, (Ptr{UInt8},), cmd)
+    res = ccall((:GAP_EvalString, libgap), GapObj, (Cstring,), cmd)
     return res
 end
 
@@ -83,7 +83,7 @@ end
 # Retrieve the value of a global GAP variable given its name. This function
 # returns a raw Ptr value, and should only be called by plumbing code.
 function _ValueGlobalVariable(name::Union{AbstractString,Symbol})
-    return ccall((:GAP_ValueGlobalVariable, libgap), Ptr{Cvoid}, (Ptr{UInt8},), name)
+    return ccall((:GAP_ValueGlobalVariable, libgap), Ptr{Cvoid}, (Cstring,), name)
 end
 
 function ValueGlobalVariable(name::Union{AbstractString,Symbol})
@@ -93,13 +93,13 @@ end
 
 # Test whether the global GAP variable with the given name can be assigned to.
 function CanAssignGlobalVariable(name::Union{AbstractString,Symbol})
-    ccall((:GAP_CanAssignGlobalVariable, libgap), Bool, (Ptr{UInt8},), name)
+    ccall((:GAP_CanAssignGlobalVariable, libgap), Bool, (Cstring,), name)
 end
 
 # Assign a value to the global GAP variable with the given name. This function
 # assigns a raw Ptr value, and should only be called by plumbing code.
 function _AssignGlobalVariable(name::Union{AbstractString,Symbol}, value::Ptr{Cvoid})
-    ccall((:GAP_AssignGlobalVariable, libgap), Cvoid, (Ptr{UInt8}, Ptr{Cvoid}), name, value)
+    ccall((:GAP_AssignGlobalVariable, libgap), Cvoid, (Cstring, Ptr{Cvoid}), name, value)
 end
 
 # Assign a value to the global GAP variable with the given name.
@@ -111,7 +111,7 @@ function AssignGlobalVariable(name::Union{AbstractString,Symbol}, value::Any)
     _AssignGlobalVariable(name, tmp)
 end
 
-MakeString(val::String) = ccall((:MakeStringWithLen, libgap), GapObj, (Ptr{UInt8}, Culong), val, sizeof(val))
+MakeString(val::String) = GC.@preserve val ccall((:MakeStringWithLen, libgap), GapObj, (Ptr{UInt8}, Culong), val, sizeof(val))
 #TODO: As soon as libgap provides :GAP_MakeStringWithLen, use it.
 
 function CSTR_STRING(val::GapObj)
