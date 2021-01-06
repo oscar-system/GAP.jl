@@ -7,7 +7,7 @@ import Base: getproperty, hasproperty, setproperty!, propertynames
 #
 function _GAP_TO_JULIA(ptr::Ptr{Cvoid})
     ptr == C_NULL && return nothing
-    # convert immediate ints and FFEs directly, to void (un)boxing
+    # convert immediate ints and FFEs directly, to avoid (un)boxing
     as_int = reinterpret(Int, ptr)
     as_int & 1 == 1 && return as_int >> 2
     as_int & 2 == 2 && return reinterpret(FFE, ptr)

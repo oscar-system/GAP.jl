@@ -19,7 +19,7 @@ manual of the GAP package JuliaInterface.
 If `x` is another `GAP.Obj` (for example a `Int64`) then the result is
 defined in Julia by `type`.
 
-The parameter `recursion_dict` is meant to preseve the identity
+The parameter `recursion_dict` is meant to preserve the identity
 of converted subobjects and should never be given by the user.
 
 For GAP lists and records, it makes sense to convert also the subobjects
