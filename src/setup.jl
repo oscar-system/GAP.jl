@@ -68,8 +68,8 @@ julia_config_jl = joinpath(Sys.BINDIR, Base.DATAROOTDIR, "julia", "julia-config.
 include_string(@__MODULE__, replace(read(julia_config_jl, String), "\nmain()\n" => "\n"))
 
 function regenerate_gaproot()
-    gaproot_gapjl = abspath(joinpath(@__DIR__, ".."))
-    gaproot_mutable = abspath(joinpath(@__DIR__, "..", "gaproot", "v$(VERSION.major).$(VERSION.minor)"))
+    gaproot_gapjl = abspath(@__DIR__, "..")
+    gaproot_mutable = abspath(@__DIR__, "..", "gaproot", "v$(VERSION.major).$(VERSION.minor)")
     @info "Set up gaproot at $(gaproot_mutable)"
 
     # load the existing sysinfo.gap
@@ -94,7 +94,7 @@ function regenerate_gaproot()
 
     #
     sysinfo["GAP_BIN_DIR"] = gaproot_mutable
-    sysinfo["GAP_LIB_DIR"] = abspath(joinpath(GAP_lib_jll.find_artifact_dir(), "share", "gap"))
+    sysinfo["GAP_LIB_DIR"] = abspath(GAP_lib_jll.find_artifact_dir(), "share", "gap")
 
     # Locate C compiler (for use by GAP packages)
     cc_candidates = [ "gcc", "clang", "cc" ]
@@ -227,7 +227,7 @@ function regenerate_gaproot()
         ##
         @info "Generating custom Julia project ..."
         relative_pkgdir = joinpath("..", "..")
-        @assert abspath(joinpath(gaproot_mutable, relative_pkgdir)) == gaproot_gapjl
+        @assert abspath(gaproot_mutable, relative_pkgdir) == gaproot_gapjl
         run(pipeline(`$(Base.julia_cmd()) --startup-file=no --project=$(gaproot_mutable) -e "using Pkg; Pkg.develop(PackageSpec(path=\"$(relative_pkgdir)\")); Pkg.resolve()"`))
 
     end # cd

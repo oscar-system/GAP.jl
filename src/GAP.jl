@@ -67,7 +67,7 @@ function initialize(argv::Array{String,1})
     # line are not read before the Julia module `GAP` is available;
     # these files will be read via a function call in `gap.sh`
     # (which is created by `setup.jl`).
-    append!(argv, ["--systemfile", abspath(joinpath(@__DIR__, "..", "lib", "systemfile.g"))])
+    append!(argv, ["--systemfile", abspath(@__DIR__, "..", "lib", "systemfile.g")])
 
     ## At this point, the GAP module has not been completely initialized, and
     ## hence is not yet available under the global binding "GAP"; but
