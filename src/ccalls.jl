@@ -47,7 +47,8 @@ end
     evalstr(cmd::String)
 
 Let GAP execute the command(s) given by `cmd`;
-if the last command has a result then return it,
+if an error occurs then report this error,
+otherwise if the last command has a result then return it,
 otherwise return `nothing`.
 
 # Examples
@@ -68,7 +69,10 @@ GAP: [ 1 ]
 function evalstr(cmd::String)
     res = evalstr_ex(cmd * ";")
     res = res[end]
-    if Globals.ISB_LIST(res, 2)
+    if res[1] == false
+      # error
+      GAP.error_handler()
+    elseif Globals.ISB_LIST(res, 2)
       return res[2]
     else
       return

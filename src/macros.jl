@@ -101,8 +101,7 @@ not all strings representing valid GAP strings can be processed.
 
 ```jldoctest
 julia> g"\\\\"
-ERROR: LoadError: failed to convert to GapObj:
- \\
+ERROR: LoadError: Error thrown by GAP: Syntax error: String must end with " before end of file in stream:1
 [...]
 
 ```
