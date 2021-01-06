@@ -1,7 +1,9 @@
 name: CI
+
 on:
   - push
   - pull_request
+
 jobs:
   test:
     name: Julia ${{ matrix.julia-version }} - ${{ matrix.os }}
@@ -20,13 +22,20 @@ jobs:
         os:
           - ubuntu-latest
           - macOS-latest
+
     steps:
       - uses: actions/checkout@v2
-      - uses: julia-actions/setup-julia@v1
+        with:
+          # For Codecov, we must also fetch the parent of the HEAD commit to
+          # be able to properly deal with PRs / merges
+          fetch-depth: 2
+      - name: "Set up Julia"
+        uses: julia-actions/setup-julia@v1
         with:
           version: ${{ matrix.julia-version }}
           arch: ${{ matrix.julia-arch }}
-      - uses: actions/cache@v1
+      - name: Cache artifacts
+        uses: actions/cache@v1
         env:
           cache-name: cache-artifacts
         with:
@@ -36,8 +45,10 @@ jobs:
             ${{ runner.os }}-test-${{ env.cache-name }}-
             ${{ runner.os }}-test-
             ${{ runner.os }}-
-      - uses: julia-actions/julia-buildpkg@latest
-      - uses: julia-actions/julia-runtest@latest
+      - name: "Build package"
+        uses: julia-actions/julia-buildpkg@latest
+      - name: "Run tests"
+        uses: julia-actions/julia-runtest@latest
       - name: "Add optional Julia dependencies for GAP tests"
         run: |
           julia -e '
@@ -59,17 +70,19 @@ jobs:
           export GAP="$gap_sh -A --quitonbreak --norepl"
           etc/ci_test.sh
 
-      - uses: julia-actions/julia-processcoverage@v1
-      - name: "Process GAP coverage"
+      - name: "Process Julia code coverage"
+        uses: julia-actions/julia-processcoverage@v1
+      - name: "Process GAP code coverage"
         run: |
           gap_sh=$(julia -e 'import GAP; print(GAP.gap_exe())');
           $gap_sh -A --quitonbreak --norepl etc/gather_coverage.g
           cat gap-lcov.info >> lcov.info
 
-      - uses: codecov/codecov-action@v1
-        with:
-          file: lcov.info
-      - name: "Coveralls Parallel"
+      - name: "Upload coverage data to Codecov"
+        continue-on-error: true
+        uses: codecov/codecov-action@v1
+      - name: "Upload coverage data to Coveralls"
+        continue-on-error: true
         uses: coverallsapp/github-action@master
         with:
           path-to-lcov: lcov.info
@@ -81,11 +94,11 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     steps:
-    - name: "Coveralls Finished"
-      uses: coverallsapp/github-action@master
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        parallel-finished: true
+      - name: "Finish Coveralls coverage upload"
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          parallel-finished: true
 
   docs:
     name: "Documentation"
