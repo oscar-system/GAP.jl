@@ -24,6 +24,7 @@ jl_value_t * call_gap_func(Obj func, jl_value_t * args)
     size_t len = jl_nfields(args);
     Obj    return_value = NULL;
     BEGIN_GAP_SYNC();
+    JL_GC_PUSH1(&args);
     if (IS_FUNC(func) && len <= 6) {
         switch (len) {
         case 0:
@@ -73,6 +74,7 @@ jl_value_t * call_gap_func(Obj func, jl_value_t * args)
         }
         return_value = CallFuncList(func, arg_list);
     }
+    JL_GC_POP();
     END_GAP_SYNC();
     if (return_value == NULL) {
         return jl_nothing;

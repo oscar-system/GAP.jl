@@ -39,8 +39,7 @@ end
 
 
 function evalstr_ex(cmd::String)
-    res = ccall((:GAP_EvalString, libgap), GapObj, (Ptr{UInt8},), cmd)
-    return res
+    return GC.@preserve cmd ccall((:GAP_EvalString, libgap), GapObj, (Ptr{UInt8},), cmd)
 end
 
 """
@@ -79,7 +78,7 @@ end
 # Retrieve the value of a global GAP variable given its name. This function
 # returns a raw Ptr value, and should only be called by plumbing code.
 function _ValueGlobalVariable(name::Union{AbstractString,Symbol})
-    return ccall((:GAP_ValueGlobalVariable, libgap), Ptr{Cvoid}, (Ptr{UInt8},), name)
+    return GC.@preserve name ccall((:GAP_ValueGlobalVariable, libgap), Ptr{Cvoid}, (Ptr{UInt8},), name)
 end
 
 function ValueGlobalVariable(name::Union{AbstractString,Symbol})
@@ -89,13 +88,13 @@ end
 
 # Test whether the global GAP variable with the given name can be assigned to.
 function CanAssignGlobalVariable(name::Union{AbstractString,Symbol})
-    ccall((:GAP_CanAssignGlobalVariable, libgap), Bool, (Ptr{UInt8},), name)
+    return GC.@preserve name ccall((:GAP_CanAssignGlobalVariable, libgap), Bool, (Ptr{UInt8},), name)
 end
 
 # Assign a value to the global GAP variable with the given name. This function
 # assigns a raw Ptr value, and should only be called by plumbing code.
 function _AssignGlobalVariable(name::Union{AbstractString,Symbol}, value::Ptr{Cvoid})
-    ccall((:GAP_AssignGlobalVariable, libgap), Cvoid, (Ptr{UInt8}, Ptr{Cvoid}), name, value)
+    return GC.@preserve name ccall((:GAP_AssignGlobalVariable, libgap), Cvoid, (Ptr{UInt8}, Ptr{Cvoid}), name, value)
 end
 
 # Assign a value to the global GAP variable with the given name.
@@ -107,13 +106,13 @@ function AssignGlobalVariable(name::Union{AbstractString,Symbol}, value::Any)
     _AssignGlobalVariable(name, tmp)
 end
 
-MakeString(val::String) = ccall((:MakeStringWithLen, libgap), GapObj, (Ptr{UInt8}, Culong), val, sizeof(val))
+MakeString(val::String) = GC.@preserve val ccall((:MakeStringWithLen, libgap), GapObj, (Ptr{UInt8}, Culong), val, sizeof(val))
 #TODO: As soon as libgap provides :GAP_MakeStringWithLen, use it.
 
 function CSTR_STRING(val::GapObj)
     char_ptr = ccall((:GAP_CSTR_STRING, libgap), Ptr{UInt8}, (Any,), val)
     len = ccall((:GAP_LenString, libgap), Culong, (Any,), val)
-    return deepcopy(unsafe_string(char_ptr, len))::String
+    return GC.@preserve val deepcopy(unsafe_string(char_ptr, len))::String
 end
 
 function CSTR_STRING_AS_ARRAY(val::GapObj)::Array{UInt8,1}
@@ -128,7 +127,7 @@ NewPrecord(capacity::Int64) = ccall((:GAP_NewPrecord, libgap), GapObj, (Int64,),
 NEW_MACFLOAT(x::Float64) = ccall((:NEW_MACFLOAT, libgap), GapObj, (Cdouble,), x)
 ValueMacFloat(x::GapObj) = ccall((:GAP_ValueMacFloat, libgap), Cdouble, (Any,), x)
 CharWithValue(x::Cuchar) = ccall((:GAP_CharWithValue, libgap), GapObj, (Cuchar,), x)
-NewJuliaFunc(x::Function) = ccall(:NewJuliaFunc, GapObj, (Any,), x)
+NewJuliaFunc(x::Function) = GC.@preserve x ccall(:NewJuliaFunc, GapObj, (Any,), x)
 
 function ElmList(x::GapObj, position)
     o = ccall((:GAP_ElmList, libgap), Ptr{Cvoid}, (Any, Culong), x, Culong(position))

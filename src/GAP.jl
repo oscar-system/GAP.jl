@@ -81,7 +81,7 @@ function initialize(argv::Array{String,1})
         # Tell GAP to show some traceback on errors.
         append!(argv, ["--alwaystrace"])
     end
-    ccall(
+    GC.@preserve argv ccall(
         (:GAP_Initialize, libgap),
         Cvoid,
         (Int32, Ptr{Ptr{UInt8}}, Ptr{Cvoid}, Ptr{Cvoid}, Cuint),
