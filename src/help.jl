@@ -21,7 +21,7 @@ function gap_help_string(topic::String, onlyexact::Bool = false,
                 choice = REPL.TerminalMenus.request(
                     term,
                     "Choose an entry (out of $len) to view, 'q' for none:",
-                    REPL.TerminalMenus.RadioMenu(options, pagesize = pagesize))
+                    REPL.TerminalMenus.RadioMenu(options, pagesize = pagesize, charset = :ascii))
                 if choice == -1
                     # canceled
                     return ""
