@@ -22,21 +22,32 @@ HELP_BOOK_HANDLER.juliahelpformat:= rec(
     ShowSection:= book -> "",   # This feature is not supported for Julia.
 
     SearchMatches:= function( book, topic, frombegin )
-      local module, start, pos, sub, func, res;
+      local orig_topic, start, module, pos, sub, func, res;
 
-      # `topic` may contain a prefix that describes a Julia module.
+      # Access the original (case sensitive) search string.
+      # Note that `HELP` has turned `topic` to lowercase,
+      # and has removed the prefix that specifies the help book.
+      orig_topic:= ValueOption( "HELP_TOPIC" );
+      if not IsString( orig_topic ) then
+        # GAP's `HELP` has not set the option,
+        # we are using a too old GAP version.
+        return [ [], [] ];
+      fi;
+
+      # `orig_topic` is case sensitive,
+      # and it includes the given `<book>:` prefix.
+      # We accept the search string only if `Julia:` occurs.
+      start:= PositionSublist( orig_topic, "Julia:" );
+      if start = fail then
+        return [ [], [] ];
+      fi;
+      orig_topic:= orig_topic{ [ start + 6 .. Length( orig_topic ) ] };
+
+      # `orig_topic` may have a prefix that describes a (nested) Julia module.
       module:= Julia;
       start:= 1;
-      for pos in Positions( topic, '.' ) do
-        sub:= topic{ [ start .. pos-1 ] };
-        # hack:
-        # 'topic' was turned to lowercase in 'HELP' (by 'SIMPLE_STRING')
-        # but module names involve uppercase letters.
-        if sub = "gap" then
-          sub:= "GAP";
-        else
-          sub[1]:= UppercaseChar( sub[1] );
-        fi;
+      for pos in Positions( orig_topic, '.' ) do
+        sub:= orig_topic{ [ start .. pos-1 ] };
         if not IsBound( module.( sub ) ) then
           return [ [], [] ];
         fi;
@@ -46,7 +57,7 @@ HELP_BOOK_HANDLER.juliahelpformat:= rec(
         fi;
         start:= pos + 1;
       od;
-      func:= topic{ [ start .. Length( topic ) ] };
+      func:= orig_topic{ [ start .. Length( orig_topic ) ] };
       if not IsBound( module.( func ) ) then
         # Give up.
         return [ [], [] ];
@@ -56,8 +67,8 @@ HELP_BOOK_HANDLER.juliahelpformat:= rec(
                 Julia.GAP.julia_help_string( module.( func ) ) );
 
       # Store the information such that `HelpData` will find it.
-      HELP_BOOKS_INFO.julia.entries:= [ [ topic, res ] ];
-      HELP_BOOKS_INFO.julia.topic:= topic;
+      HELP_BOOKS_INFO.julia.entries:= [ [ orig_topic, res ] ];
+      HELP_BOOKS_INFO.julia.topic:= orig_topic;
 
       # Return the result, meaning that there is one (non-exact) match
       # at position 1, which has been set in the `entries` list.
