@@ -77,7 +77,7 @@ GAP: [ [ 1, 2 ], [ 3, 4 ] ]
 
 ```
 """
-abstract type GapObj end
+const GapObj = GAP_jll.MPtr
 
 # TODO: should we document Obj? What about ForeignGAP.MPtr?
 const Obj = Union{GapObj,FFE,Int64,Bool,Nothing}
