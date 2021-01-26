@@ -172,7 +172,24 @@ function finalize()
     ccall((:GAP_finalize, libgap), Cvoid, ())
 end
 
+# Show a more helpful error message for users on Windows.
+windows_error() = error("""
+
+    This package unfortunately does not run natively under Windows.
+    Please install Julia using Windows subsystem for Linux and try again.
+    See also https://oscar.computeralgebra.de/install/.
+    """)
+
+# error message at precompile time
+if Sys.iswindows()
+  windows_error()
+end
+
 function __init__()
+    # error message at runtime
+    if Sys.iswindows()
+        windows_error()
+    end
 
     # regenerate GAPROOT if it was removed
     if !isdir(GAPROOT) || isempty(readdir(GAPROOT))
