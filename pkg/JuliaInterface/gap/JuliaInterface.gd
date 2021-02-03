@@ -426,7 +426,7 @@ DeclareGlobalFunction( "CallJuliaFunctionWithKeywordArguments" );
 #!    <Ref Oper="\-" BookName="ref"/>,
 #!    <Ref Oper="\*" BookName="ref"/>,
 #!    <Ref Oper="\/" BookName="ref"/>,
-#!    <Ref Oper="LQuo" BookName="ref"/>,
+#!    <Ref Oper="LeftQuotient" BookName="ref"/>,
 #!    <Ref Oper="\^" BookName="ref"/>,
 #!    <Ref Oper="\=" BookName="ref"/>,
 #!    <Ref Oper="\&lt;" BookName="ref"/>,
@@ -456,3 +456,5 @@ DeclareGlobalFunction( "CallJuliaFunctionWithKeywordArguments" );
 #! gap> m + m;
 #! <Julia: [2 4; 6 8]>
 #! @EndExampleSession
+
+#! @InsertChunk JuliaHelpInGAP
