@@ -34,142 +34,135 @@ test
 gap> R:= Integers;;
 gap> c:= ContextGAPNemo( R );
 <context for Integers>
-gap> x:= GAPToNemo( c, 1 );
-<<Julia: 1>>
+gap> x:= GAPToNemo( c, 1 );;
 gap> JuliaTypeInfo( JuliaPointer( x ) );
 "Nemo.fmpz"
-gap> NemoToGAP( c, x );
-1
-gap> vec:= GAPToNemo( c, [ 1, 2 ] );
-<<Julia: [1 2]>>
+gap> NemoToGAP( c, x ) = 1;
+true
+gap> gap_vec:= [ 1, 2 ];;
+gap> vec:= GAPToNemo( c, gap_vec );;
 gap> JuliaTypeInfo( JuliaPointer( vec ) );
 "Nemo.fmpz_mat"
-gap> NemoToGAP( c, vec );
-[ 1, 2 ]
-gap> mat:= GAPToNemo( c, [ [ 1, 2 ], [ 3, 4 ] ] );
-<<Julia: [1 2; 3 4]>>
+gap> NemoToGAP( c, vec ) = gap_vec;
+true
+gap> gap_mat:= [ [ 1, 2 ], [ 3, 4 ] ];;
+gap> mat:= GAPToNemo( c, gap_mat );;
 gap> JuliaTypeInfo( JuliaPointer( mat ) );
 "Nemo.fmpz_mat"
-gap> NemoToGAP( c, mat );
-[ [ 1, 2 ], [ 3, 4 ] ]
+gap> NemoToGAP( c, mat ) = gap_mat;
+true
 
 # Nemo conversion: Integers mod n
 gap> R:= Integers mod 6;;
 gap> c:= ContextGAPNemo( R );
 <context for Integers mod 6>
-gap> x:= GAPToNemo( c, One( R ) );
-<<Julia: 1>>
-gap> x:= GAPToNemo( c, 1 );
-<<Julia: 1>>
+gap> gap_x:= One( R );;
+gap> x:= GAPToNemo( c, gap_x );;
+gap> x = GAPToNemo( c, 1 );
+true
 gap> JuliaTypeInfo( JuliaPointer( x ) );
 "Nemo.nmod"
-gap> NemoToGAP( c, x );
-ZmodnZObj( 1, 6 )
-gap> vec:= GAPToNemo( c, [ 1, 2 ] * One( R ) );
-<<Julia: [1 2]>>
-gap> vec:= GAPToNemo( c, [ 1, 2 ] );
-<<Julia: [1 2]>>
+gap> NemoToGAP( c, x ) = gap_x;
+true
+gap> gap_vec:= [ 1, 2 ] * One( R );;
+gap> vec:= GAPToNemo( c, gap_vec );;
+gap> vec = GAPToNemo( c, [ 1, 2 ] );
+true
 gap> JuliaTypeInfo( JuliaPointer( vec ) );
 "Nemo.nmod_mat"
-gap> NemoToGAP( c, vec );
-[ ZmodnZObj( 1, 6 ), ZmodnZObj( 2, 6 ) ]
-gap> mat:= GAPToNemo( c, [ [ 1, 2 ], [ 3, 4 ] ] * One( R ) );
-<<Julia: [1 2; 3 4]>>
-gap> mat:= GAPToNemo( c, [ [ 1, 2 ], [ 3, 4 ] ] );
-<<Julia: [1 2; 3 4]>>
+gap> NemoToGAP( c, vec ) = gap_vec;
+true
+gap> gap_mat:= [ [ 1, 2 ], [ 3, 4 ] ] * One( R );;
+gap> mat:= GAPToNemo( c, gap_mat );;
+gap> mat = GAPToNemo( c, [ [ 1, 2 ], [ 3, 4 ] ] );
+true
 gap> JuliaTypeInfo( JuliaPointer( mat ) );
 "Nemo.nmod_mat"
-gap> NemoToGAP( c, mat );
-[ [ ZmodnZObj( 1, 6 ), ZmodnZObj( 2, 6 ) ], 
-  [ ZmodnZObj( 3, 6 ), ZmodnZObj( 4, 6 ) ] ]
+gap> NemoToGAP( c, mat ) = gap_mat;
+true
 
 # Nemo conversion: Rationals
 gap> R:= Rationals;;
 gap> c:= ContextGAPNemo( R );
 <context for Rationals>
-gap> x:= GAPToNemo( c, 1/2 );
-<<Julia: 1//2>>
+gap> gap_x:= 1/2;;
+gap> x:= GAPToNemo( c, gap_x );;
 gap> JuliaTypeInfo( JuliaPointer( x ) );
 "Nemo.fmpq"
-gap> NemoToGAP( c, x );
-1/2
-gap> vec:= GAPToNemo( c, [ 1/2, 2 ] );
-<<Julia: [1//2 2]>>
+gap> NemoToGAP( c, x ) = gap_x;
+true
+gap> gap_vec:= [ 1/2, 2 ];;
+gap> vec:= GAPToNemo( c, gap_vec );;
 gap> JuliaTypeInfo( JuliaPointer( vec ) );
 "Nemo.fmpq_mat"
-gap> NemoToGAP( c, vec );
-[ 1/2, 2 ]
-gap> mat:= GAPToNemo( c, [ [ 1/2, 2 ], [ 3, 4/3 ] ] );
-<<Julia: [1//2 2; 3 4//3]>>
+gap> NemoToGAP( c, vec ) = gap_vec;
+true
+gap> gap_mat:= [ [ 1/2, 2 ], [ 3, 4/3 ] ];;
+gap> mat:= GAPToNemo( c, gap_mat );;
 gap> JuliaTypeInfo( JuliaPointer( mat ) );
 "Nemo.fmpq_mat"
-gap> NemoToGAP( c, mat );
-[ [ 1/2, 2 ], [ 3, 4/3 ] ]
+gap> NemoToGAP( c, mat ) = gap_mat;
+true
 
 # Nemo conversion: univariate polynomial ring over Rationals
 gap> R:= PolynomialRing( Rationals, 1 );
 Rationals[x_1]
 gap> c:= ContextGAPNemo( R );
 <context for pol. ring over Rationals, with 1 indeterminates>
-gap> indets:= IndeterminatesOfPolynomialRing( R );
-[ x_1 ]
+gap> indets:= IndeterminatesOfPolynomialRing( R );;
 gap> x:= indets[1];;
-gap> pol:= GAPToNemo( c, x^3 + x + 1 );
-<<Julia: x_1^3 + x_1 + 1>>
+gap> gap_pol:= x^3 + x + 1;;
+gap> pol:= GAPToNemo( c, gap_pol );;
 gap> JuliaTypeInfo( JuliaPointer( pol ) );
 "Nemo.fmpq_poly"
-gap> NemoToGAP( c, pol );
-x_1^3+x_1+1
-gap> vec:= GAPToNemo( c, [ x+1, x-1 ] );
-<<Julia: [x_1 + 1 x_1 - 1]>>
+gap> NemoToGAP( c, pol ) = gap_pol;
+true
+gap> gap_vec:= [ x+1, x-1 ];;
+gap> vec:= GAPToNemo( c, gap_vec );;
 
 #gap> JuliaTypeInfo( JuliaPointer( vec ) );
 #"AbstractAlgebra.Generic.Mat{Nemo.fmpq_poly}"
-gap> NemoToGAP( c, vec );
-[ x_1+1, x_1-1 ]
-gap> mat:= GAPToNemo( c, [ [ x, x+1 ], [ 2*x, x^2+1] ] );
-<<Julia: [x_1 x_1 + 1; 2*x_1 x_1^2 + 1]>>
+gap> NemoToGAP( c, vec ) = gap_vec;
+true
+gap> gap_mat:= [ [ x, x+1 ], [ 2*x, x^2+1 ] ];;
+gap> mat:= GAPToNemo( c, gap_mat );;
 
 #gap> JuliaTypeInfo( JuliaPointer( mat ) );
 #"AbstractAlgebra.Generic.Mat{Nemo.fmpq_poly}"
-gap> NemoToGAP( c, mat );
-[ [ x_1, x_1+1 ], [ 2*x_1, x_1^2+1 ] ]
+gap> NemoToGAP( c, mat ) = gap_mat;
+true
 
 # Nemo conversion: number fields
-gap> x:= X( Rationals );
-x_1
-gap> f:= AlgebraicExtension( Rationals, x^2+1 );
-<algebraic extension over the Rationals of degree 2>
+gap> x:= X( Rationals );;
+gap> f:= AlgebraicExtension( Rationals, x^2+1 );;
 gap> c:= ContextGAPNemo( f );
 <context for alg. ext. field over Rationals, w.r.t. polynomial x_1^2+1>
-gap> elm:= GAPToNemo( c, One( f ) );
-<<Julia: 1>>
+gap> gap_elm:= One( f );;
+gap> elm:= GAPToNemo( c, gap_elm );;
 gap> JuliaTypeInfo( JuliaPointer( elm ) );
 "Nemo.nf_elem"
-gap> NemoToGAP( c, elm );
-!1
-gap> a:= RootOfDefiningPolynomial( f );
-a
-gap> elm:= GAPToNemo( c, a );
-<<Julia: a>>
+gap> NemoToGAP( c, elm ) = gap_elm;
+true
+gap> a:= RootOfDefiningPolynomial( f );;
+gap> elm:= GAPToNemo( c, a );;
 gap> JuliaTypeInfo( JuliaPointer( elm ) );
 "Nemo.nf_elem"
-gap> NemoToGAP( c, elm );
-a
-gap> vec:= GAPToNemo( c, [ a+1, a-1 ] );
-<<Julia: [(a+1) (a-1)]>>
+gap> NemoToGAP( c, elm ) = a;
+true
+gap> gap_vec:= [ a+1, a-1 ];;
+gap> vec:= GAPToNemo( c, gap_vec );;
 
 #gap> JuliaTypeInfo( JuliaPointer( vec ) );
 #"AbstractAlgebra.Generic.Mat{Nemo.nf_elem}"
-gap> NemoToGAP( c, vec );
-[ a+1, a-1 ]
-gap> mat:= GAPToNemo( c, [ [ a, a+1 ], [ 2*a, a^2+1] ] );
-<<Julia: [a (a+1); 2*a 0]>>
+gap> NemoToGAP( c, vec ) = gap_vec;
+true
+gap> gap_mat:= [ [ a, a+1 ], [ 2*a, a^2+1 ] ];;
+gap> mat:= GAPToNemo( c, gap_mat );;
 
 #gap> JuliaTypeInfo( JuliaPointer( mat ) );
 #"AbstractAlgebra.Generic.Mat{Nemo.nf_elem}"
-gap> NemoToGAP( c, mat );
-[ [ a, a+1 ], [ 2*a, !0 ] ]
+gap> NemoToGAP( c, mat ) = gap_mat;
+true
 
 ##
 gap> STOP_TEST( "context.tst" );
