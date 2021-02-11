@@ -4,22 +4,46 @@
 # Reading the declaration part of the package.
 #
 
-##
-##  If the value is <K>true</K> then the file
-##  <F>~/.julia/config/startup.jl</F>
-##  gets imported into &Julia; after startup.
-##  If the value is a nonempty string that is the name of a directory
-##  then the <F>startup.jl</F> file in this directory gets imported into
-##  &Julia;.
-##  Otherwise no <F>startup.jl</F> file will be imported automatically,
-##  since apparently <C>libjulia</C> does not import such a file.
+#! @BeginChunk IncludeJuliaStartupFile
+#! @Chapter Introduction to <Package>JuliaInterface</Package>
+#! @Section User preferences in the <Package>JuliaInterface</Package> package
+#!  <Subsection Label="subsect:IncludeJuliaStartupFile">
+#!  <Heading>User preference <C>IncludeJuliaStartupFile</C></Heading>
+#!  <Index Key="IncludeJuliaStartupFile"><C>IncludeJuliaStartupFile</C></Index>
+#!
+#!  When one starts an interactive &Julia; session,
+#!  the &Julia; startup file <F>~/.julia/config/startup.jl</F> gets
+#!  included automatically by default,
+#!  see the section <Q>The Julia REPL</Q> in the &Julia; documentation.
+#!  Hence the effects of this inclusion can be used in a &GAP; session
+#!  which one gets via the input <C>using GAP; GAP.prompt()</C>.
+#!  <P/>
+#!  However,
+#!  this &Julia; startup file is <E>not</E> included into &Julia; by default
+#!  when &GAP; gets started via the <F>gap.sh</F> script that is created
+#!  during the installation of &GAP; (controlled by &Julia;).
+#!  <P/>
+#!  The user preference <C>IncludeJuliaStartupFile</C> can be used to
+#!  force that the startup file gets included also in the latter situation,
+#!  as follows.
+#!  <P/>
+#!  If the value is <K>true</K> then the file
+#!  <F>~/.julia/config/startup.jl</F>
+#!  gets included into &Julia; after startup.
+#!  If the value is a nonempty string that is the name of a directory
+#!  then the <F>startup.jl</F> file in this directory gets included into
+#!  &Julia;.
+#!  Otherwise (this is the default) no <F>startup.jl</F> file will be
+#!  included automatically.
+#!  </Subsection>
+#! @EndChunk IncludeJuliaStartupFile
 ##
 DeclareUserPreference( rec(
     package:= "JuliaInterface",
     name:= "IncludeJuliaStartupFile",
     description:= [
       "If the value is 'true' then the file '~/.julia/config/startup.jl'",
-      "gets imported into Julia after startup.",
+      "gets included into Julia after startup.",
       "If the value is a nonempty string that is the name of a directory",
       "then the 'startup.jl' file in this directory gets imported into",
       "Julia.",

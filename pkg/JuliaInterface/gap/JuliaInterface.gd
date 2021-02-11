@@ -11,7 +11,86 @@
 #!  The &GAP; package <Package>JuliaInterface</Package> is part of
 #!  a bidirectional interface between &GAP; and &Julia;.
 #!
-#!  TODO: state the aims, describe the installation
+#! @Section Aims of the <Package>JuliaInterface</Package> package
+#!  The low level interface between &GAP; and &Julia; allows one
+#!  to access &GAP; objects and to call &GAP; functions
+#!  in a &Julia; session,
+#!  to access &Julia; objects and to call &Julia; functions
+#!  in a &GAP; session,
+#!  and to convert low level data such as integers, Booleans, strings,
+#!  arrays/lists, dictionaries/records between the two systems.
+#!
+#!  In particular, this interface is <E>not</E> intended to provide
+#!  a very <Q>&Julia;-ish</Q> interface to &GAP; objects and functions,
+#!  nor a <Q>&GAP;-ish</Q> interface to &Julia; objects and functions.
+#!
+#!  Also, the interface does not provide conversions to &GAP;
+#!  for &Julia; objects whose types are defined in &Julia; packages
+#!  (that is, not in the <Q>core &Julia;</Q>).
+#!  For example, the &Julia; package <Package>Nemo.jl</Package> defines
+#!  an integer type <C>fmpz</C>.
+#!  The conversion of integers of type <C>fmpz</C> between &Julia; and &GAP;
+#!  is handled in the context of the <Package>Oscar</Package> system,
+#!  which uses both &GAP; and <Package>Nemo.jl</Package>,
+#!  but <Package>JuliaInterface</Package> does not deal with it.
+#!
+#!  The interface consists of
+#!
+#!  <List>
+#!  <Item>
+#!    the integration of &Julia;'s garbage collector into &GAP;
+#!    (which belongs to the &GAP; core system),
+#!  </Item>
+#!  <Item>
+#!    <C>C</C> code for converting and wrapping low level objects
+#!    (which belongs to <Package>JuliaInterface</Package>),
+#!  </Item>
+#!  <Item>
+#!    &Julia; code for converting low level objects
+#!    (which belongs to the &Julia; package <C>GAP.jl</C>,
+#!    see <URL>https://github.com/oscar-system/GAP.jl</URL>),
+#!  </Item>
+#!  <Item>
+#!    and &GAP; code (again in <Package>JuliaInterface</Package>)
+#!    which is described in this manual.
+#!  </Item>
+#!  </List>
+#!
+#!  The <Package>JuliaInterface</Package> manual takes the viewpoint
+#!  of a &GAP; session from where one wants to use &Julia; functionality.
+#!  The opposite direction, using &GAP; functionality in a &Julia; session,
+#!  is described in the documentation of the &Julia; package <C>GAP.jl</C>.
+#!
+#! @Section Installation of the <Package>JuliaInterface</Package> package
+#!  The package can be used only when the underlying &GAP; has been
+#!  compiled with the &Julia; garbage collector,
+#!  and the recommended way to install such a &GAP; is to install &Julia;
+#!  first (see <URL>https://julialang.org/downloads/</URL>)
+#!  and then to ask &Julia;'s package manager to download and install &GAP;,
+#!  by entering
+#!  <Listing Type="Julia">using Pkg; Pkg.add( "GAP" )</Listing>
+#!  at the &Julia; prompt.
+#!
+#!  One way to start a &GAP; session from the &Julia; session is to enter
+#!  <Listing Type="Julia">using GAP; GAP.prompt()</Listing>
+#!  at the &Julia; prompt,
+#!  afterwards the package <Package>JuliaInterface</Package> is already
+#!  installed and loaded.
+#!
+#!  Alternatively, one can start &GAP; in the traditional way,
+#!  by executing a shell script.
+#!  Such a script is generated automatically during the installation of
+#!  &GAP; via &Julia;,
+#!  its location is returned in a &Julia; session by
+#!  <Listing Type="Julia">using GAP; GAP.gap_exe()</Listing>
+#!
+#!  Note that the <Package>JuliaInterface</Package> code belongs to
+#!  <URL><Link>https://github.com/oscar-system/GAP.jl</Link>
+#!  <LinkText>the &Julia; package <C>GAP.jl</C></LinkText></URL>,
+#!  hence it can be found there.
+#!
+#! @Section User preferences in the <Package>JuliaInterface</Package> package
+#! @InsertChunk IncludeJuliaStartupFile
 
 #! @Chapter Using &Julia; from &GAP;
 #! @Section Filters for <Package>JuliaInterface</Package>
@@ -21,7 +100,7 @@
 #! @Description
 #!  The result is <K>true</K> if and only if <A>obj</A> is a pointer to a
 #!  &Julia; object.
-#!  <P/>
+#!
 #!  The results of <Ref Func="JuliaModule"/> are always in
 #!  <Ref Filt="IsJuliaObject" Label="for IsObject"/>.
 #!  The results of <Ref Func="JuliaEvalString"/> are in
@@ -61,11 +140,11 @@ BindGlobal("TheTypeJuliaObject", NewType( JuliaObjectFamily, IsJuliaObject ));
 #!  for &Julia; objects that behave just like the &Julia; objects
 #!  when used as arguments in calls to &Julia; functions.
 #!  <!-- No other functionality is implemented for IsJuliaWrapper -->
-#!  <P/>
+#!
 #!  Objects in <Ref Filt="IsJuliaWrapper" Label="for IsObject"/>
 #!  should <E>not</E> be in the filter
 #!  <Ref Filt="IsJuliaObject" Label="for IsObject"/>.
-#!  <P/>
+#!
 #!  Examples of objects in <Ref Filt="IsJuliaWrapper" Label="for IsObject"/>
 #!  are the return values of <Ref Func="JuliaModule"/>.
 DeclareCategory( "IsJuliaWrapper", IsObject );
@@ -173,19 +252,19 @@ DeclareGlobalFunction( "JuliaIncludeFile" );
 #!  for the &Julia; package with name <A>pkgname</A>.
 #!  It returns <K>true</K> if the call was successful,
 #!  and <K>false</K> otherwise.
-#!  <P/>
+#!
 #!  Note that we just want to load the package into &Julia;,
 #!  we do <E>not</E> want to import variable names from the package
 #!  into &Julia;'s <C>Main</C> module, because the &Julia; variables must be
 #!  referenced relative to their modules if we want to be sure to access
 #!  the correct values.
-#!  <P/>
+#!
 #!  Why is this function needed?
-#!  <P/>
+#!
 #!  Apparently <C>libjulia</C> throws an error
 #!  when trying to compile the package, which happens when some files from
 #!  the package have been modified since compilation.
-#!  <P/>
+#!
 #!  Thus &GAP; has to check whether the &Julia; package has been loaded
 #!  successfully, and can then safely load and execute code
 #!  that relies on this &Julia; package.
@@ -210,10 +289,7 @@ BindGlobal( "_JuliaFunctions", rec( ) );
 #! the function is taken from &Julia;'s <C>Main</C> module.
 #! The returned function can be called on arguments in
 #! <Ref Func="IsArgumentForJuliaFunction"/>.
-#! <!-- The result is not in IsJuliaObject, note that JuliaFunction calls
-#!      _JuliaFunction, which calls NewJuliaFunc;
-#!      and this returns a GAP function that delegates to
-#!      DoCallJuliaFunc0Arg and eventually to jl_call. -->
+#!
 #! @BeginExampleSession
 #! gap> fun:= JuliaFunction( "sqrt" );
 #! <Julia: sqrt>
@@ -221,31 +297,75 @@ BindGlobal( "_JuliaFunctions", rec( ) );
 #! function ( arg... )
 #!     <<kernel code>> from Julia:sqrt
 #! end
+#! gap> IsFunction( fun );
+#! true
+#! gap> IsJuliaObject( fun );
+#! false
+#! @EndExampleSession
+#!
+#! Alternatively, one can access &Julia; functions also via the global object
+#! <Ref Var="Julia"/>, as follows.
+#!
+#! @BeginExampleSession
+#! gap> Julia.sqrt;
+#! <Julia: sqrt>
+#! @EndExampleSession
+#!
+#! Note that each call to <Ref Func="JuliaFunction"/> and each component
+#! access to <Ref Var="Julia"/> create a <E>new</E> &GAP; object.
+#!
+#! @BeginExampleSession
+#! gap> IsIdenticalObj( JuliaFunction( "sqrt" ), JuliaFunction( "sqrt" ) );
+#! false
+#! gap> IsIdenticalObj( Julia.sqrt, Julia.sqrt );
+#! false
 #! @EndExampleSession
 DeclareGlobalFunction( "JuliaFunction" );
 
 #! @Description
 #!  This global variable represents the &Julia; module <C>Main</C>,
 #!  see <Ref Filt="IsJuliaModule" Label="for IsJuliaWrapper"/>.
+#!
+#!  The variables from the underlying &Julia; session can be accessed via
+#!  <Ref Var="Julia"/>, as follows.
+#!
+#! @BeginExampleSession
+#! gap> Julia.sqrt;  # a Julia function
+#! <Julia: sqrt>
+#! gap> JuliaEvalString( "x = 1" );  # an assignment in the Julia session
+#! 1
+#! gap> Julia.x;  # access to the value that was just assigned
+#! 1
+#! gap> Julia.Main.x;
+#! 1
+#! @EndExampleSession
 DeclareGlobalVariable( "Julia" );
 
 #! @Arguments name
 #! @Returns nothing.
 #! @Description
-#!  The aim of this function is to make those global variables
-#!  that are exported by the &Julia; module with name <A>name</A>
-#!  available in the global object <Ref Var="Julia"/>.
-#!  After the call, the <A>name</A> component of <Ref Var="Julia"/>
-#!  will be bound to a record that contains the variables from the
-#!  &Julia; module.
+#!  The aim of this function is to make the &Julia; module with name
+#!  <A>name</A> available in the current &GAP; session.
+#!  After the call,
+#!  the <A>name</A> component of the global object <Ref Var="Julia"/> will be
+#!  bound, and one can access the module as a component of <Ref Var="Julia"/>
+#!  or via <Ref Func="JuliaModule"/>.
+#! @BeginExampleSession
+#! gap> ImportJuliaModuleIntoGAP( "GAP" );
+#! gap> Julia.GAP;
+#! <Julia module GAP>
+#! @EndExampleSession
+#!  The &Julia; modules <C>Base</C>, <C>Core</C>, and <C>GAP</C>
+#!  have in fact already been imported when the
+#!  <Package>JuliaInterface</Package> package got loaded.
 DeclareGlobalFunction( "ImportJuliaModuleIntoGAP" );
 
 #! @Arguments name
 #! @Returns a &Julia; object
 #! @Description
-#!  Returns the &Julia; object that points to the module
+#!  Returns the &Julia; object that points to the &Julia; module
 #!  with name <A>name</A>.
-#!  Note that the module needs to be imported before being present,
+#!  Note that this module needs to be imported before being present,
 #!  see <Ref Func="ImportJuliaModuleIntoGAP"/>.
 #! @BeginExampleSession
 #! gap> gapmodule:= JuliaModule( "GAP" );
@@ -267,6 +387,8 @@ DeclareGlobalFunction( "JuliaModule" );
 #! "Module"
 #! gap> JuliaTypeInfo( JuliaEvalString( "sqrt(2)" ) );
 #! "Float64"
+#! gap> JuliaTypeInfo( 1 );
+#! "Int64"
 #! @EndExampleSession
 DeclareGlobalFunction( "JuliaTypeInfo" );
 
@@ -308,7 +430,7 @@ DeclareGlobalFunction( "CallJuliaFunctionWithCatch" );
 #!  and keyword arguments given by the component names (keys) and values
 #!  of the record <A>arec</A>,
 #!  and returns the function value.
-#!  <P/>
+#!
 #!  Note that the entries of <A>arguments</A> and the components of
 #!  <A>arec</A> are not implicitly converted to &Julia;.
 #! @BeginExampleSession
@@ -357,26 +479,41 @@ DeclareGlobalFunction( "CallJuliaFunctionWithKeywordArguments" );
 #! gap> jsqrt( 2 );
 #! <Julia: 1.4142135623730951>
 #! @EndExampleSession
-#!  In fact, there are slightly different ways to achieve this.
-#!
-#!  <List>
-#!  <Item>
-#!    If we have an object <C>obj</C> in
-#!    <Ref Filt="IsJuliaObject" Label="for IsObject"/>
-#!    that points to a &Julia; function then we can call <C>obj</C> with
-#!    suitable arguments.
-#!    In this situation, the function call is executed via
-#!    the applicable <Ref Oper="CallFuncList" BookName="ref"/> method,
-#!    which calls &Julia;'s <C>Core._apply</C>.
-#!  </Item>
-#!  <Item>
-#!    If we have a &GAP; function that was created with
-#!    <Ref Func="JuliaFunction"/> then the function call is executed
-#!    on the C level, using &Julia;'s <C>jl_call</C>.
-#!  </Item>
-#!  </List>
-#!
-#!  TODO: Add examples.
+#!  In fact, there are slightly different kinds of function calls.
+#!  A &Julia; function such as <C>Julia.sqrt</C>
+#!  (or equivalently <C>JuliaFunction( "sqrt" )</C>) is represented by
+#!  a &GAP; function object,
+#!  and calls to it are executed on the C level,
+#!  using &Julia;'s <C>jl_call</C>.
+#! @BeginExampleSession
+#! gap> fun:= Julia.sqrt;
+#! <Julia: sqrt>
+#! gap> IsJuliaObject( fun );
+#! false
+#! gap> IsFunction( fun );
+#! true
+#! gap> fun( 2 );
+#! <Julia: 1.4142135623730951>
+#! @EndExampleSession
+#!  There are also callable &Julia; objects which aren't represented by
+#!  &GAP; functions, for example &Julia; types can be called like functions.
+#!  In this situation, the function call is executed via
+#!  the applicable <Ref Oper="CallFuncList" BookName="ref"/> method,
+#!  which calls &Julia;'s <C>Core._apply</C>.
+#! @BeginExampleSession
+#! gap> smalltype:= Julia.Int32;
+#! <Julia: Int32>
+#! gap> IsJuliaObject( smalltype );
+#! true
+#! gap> IsFunction( smalltype );
+#! false
+#! gap> val:= smalltype( 1 );
+#! <Julia: 1>
+#! gap> JuliaTypeInfo( val );
+#! "Int32"
+#! gap> JuliaTypeInfo( 1 );
+#! "Int64"
+#! @EndExampleSession
 
 #! @Subsection Convenience methods for &Julia; objects
 #!  For the following operations, methods are installed that require
