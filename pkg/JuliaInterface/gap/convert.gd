@@ -361,7 +361,16 @@
 #!
 #!  For recursive structures (&GAP; lists and records),
 #!  only the outermost level is converted except if the optional argument
-#!  <A>recursive</A> is given and has the value <K>true</K>.
+#!  <A>recursive</A> is given and has the value <K>true</K>,
+#!  in this case all layers are converted recursively.
+#!
+#!  Note that this default is different from the default in the other
+#!  direction (see <Ref Func="GAPToJulia"/>).
+#!  The idea behind this choice is that from the viewpoint of a &GAP; session,
+#!  it is more likely to use plain &Julia; objects for computations on the
+#!  &Julia; side than &Julia; objects that contain &GAP; subobjects,
+#!  whereas <Q>shallow conversion</Q> of &Julia; objects to &GAP; yields
+#!  something useful on the &GAP; side.
 #!
 #! @BeginExampleSession
 #! gap> s:= GAPToJulia( "abc" );
@@ -401,11 +410,11 @@ DeclareConstructor("JuliaToGAP", [IsObject, IsObject, IsBool]);
 #!  such that a corresponding &Julia; object with type <A>juliatype</A>
 #!  can be constructed.
 #!  Then <Ref Func="GAPToJulia"/> returns this &Julia; object.
-#!  <P/>
+#!
 #!  If <A>juliatype</A> is not given then a default type is chosen.
 #!  The function is implemented via the &Julia; function
 #!  <C>GAP.gap_to_julia</C>.
-#!  <P/>
+#!
 #! <!-- Note that the Julia output contains the "forbidden" sequence "]]>",
 #!      thus the CDATA syntax cannot be used. -->
 #!<Example>
@@ -427,12 +436,19 @@ DeclareConstructor("JuliaToGAP", [IsObject, IsObject, IsBool]);
 #!gap> GAPToJulia( r );
 #!&lt;Julia: Dict{Symbol,Any}(:a => 1,:b => Any[1, 2, 3])>
 #!</Example>
-#! If <A>gapobj</A> is a list or a record, one may want that its subobjects
-#! are also converted to &Julia; or that they are kept as they are,
-#! which can be decided by entering <K>true</K> or <K>false</K> as the value
-#! of the optional argument <A>recursive</A>;
-#! the default is <K>true</K>, that is, the subobjects of <A>gapobj</A> are
-#! converted recursively.
+#!
+#!  If <A>gapobj</A> is a list or a record, one may want that its subobjects
+#!  are also converted to &Julia; or that they are kept as they are,
+#!  which can be decided by entering <K>true</K> or <K>false</K> as the value
+#!  of the optional argument <A>recursive</A>;
+#!  the default is <K>true</K>, that is, the subobjects of <A>gapobj</A> are
+#!  converted recursively.
+#!
+#!  Note that this default is different from the default in the other
+#!  direction,
+#!  see the description of
+#!  <Ref Constr="JuliaToGAP" Label="for IsObject, IsObject"/>.
+#!
 #!<Example>
 #!gap> jl:= GAPToJulia( m, false );
 #!&lt;Julia: Any[GAP: [ 1, 2 ], GAP: [ 3, 4 ]]>
@@ -452,17 +468,6 @@ DeclareGlobalFunction("GAPToJulia");
 #!   kinds, e.g.:
 #!   <List>
 #!   <Item>
-#!     Add a custom <C>big</C> or <C>BigInt</C> method (or both?)
-#!     which converts &GAP; integers to &Julia;;
-#!     similar for &GAP; rationals, but there we may want to let the user
-#!     choose which integer type to use on the &Julia; side for numerator
-#!     and denominator.
-#!   </Item>
-#!   <Item>
-#!     Add conversions from &Julia; bigints and rationals over
-#!     various integer types, including bigints, to &GAP;.
-#!   </Item>
-#!   <Item>
 #!     There could be a &Julia; type hierarchy of wrappers, e.g.,
 #!     <C>GAPInt &lt;: GAPRat &lt;: GAPCyc</C>;
 #!     those types would wrap the corresponding &GAP; objects,
@@ -472,32 +477,12 @@ DeclareGlobalFunction("GAPToJulia");
 #!     or nicer printing (w/o the <C>GAP:</C> prefix even?).
 #!     Not really sure whether this is useful, though.
 #!   </Item>
-#!   <Item>
-#!     How do other types of integers, e.g., fmpz from FLINT,
-#!     enter this setup? Are &Julia;'s <C>Big</C> really useful?
-#!   </Item>
 #!   </List>
 #! </Item>
 #! <Item>
-#!   Should we restrict the automatic FFE conversion to <C>IsInternalRep</C>?
-#! </Item>
-#! <Item>
-#!   Why is <Ref Func="GAPToJulia"/> always recursive?
-#! </Item>
-#! <Item>
-#!   Should we allow the three argument case of <C>JuliaToGAP</C> in all
-#!   cases, e.g., <C>JuliaToGAP( IsInt, 1, true )</C>?
-#! </Item>
-#! <Item>
-#!   Would it make sense to show &Julia; help in a &GAP; session,
-#!   for example via <C>?Julia:length</C> or <C>?Julia:Base.length</C>?
-#!   (What is the easiest way to regard <C>"Julia"</C> as a &GAP; help book?)
-#!   <!-- see REPL/src/docview.jl in Julia -->
-#! </Item>
-#! <Item>
-#!   The introductory chapter/section
-#!   (see <Ref Chap="Chapter_Introduction_to_PackageJuliaInterfacePackage"/>)
-#!   is missing.
+#!   Should we allow the three argument case of
+#!   <Ref Constr="JuliaToGAP" Label="for IsObject, IsObject"/> in all cases,
+#!   e.g., <C>JuliaToGAP( IsInt, 1, true )</C>?
 #! </Item>
 #! <Item>
 #!   Many tests of conversions are missing.

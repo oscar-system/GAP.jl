@@ -16,6 +16,24 @@ License := "GPL-2.0-or-later",
 
 Persons := [
   rec(
+    LastName := "Breuer",
+    FirstNames := "Thomas",
+    IsAuthor := true,
+    IsMaintainer := true,
+    Email := "sam@math.rwth-aachen.de",
+    WWWHome := "http://www.math.rwth-aachen.de/~Thomas.Breuer",
+    PostalAddress := Concatenation( [
+                       "Thomas Breuer\n",
+                       "Lehrstuhl für Algebra und Zahlentheorie\n",
+                       "RWTH Aachen\n",
+                       "Pontdriesch 14/16\n",
+                       "52062 Aachen\n",
+                       "Germany"
+      ] ),
+    Place := "Aachen",
+    Institution := "RWTH Aachen",
+  ),
+  rec(
     IsAuthor := true,
     IsMaintainer := true,
     FirstNames := "Sebastian",
@@ -117,7 +135,22 @@ end,
 
 TestFile := "tst/testall.g",
 
-#Keywords := [ "TODO" ],
+Keywords := [ "GAP-Julia integration" ],
 
+AutoDoc := rec(
+  TitlePage := rec(
+    Abstract := Concatenation(
+      "The &GAP; package <Package>JuliaInterface</Package> is part of ",
+      "a bidirectional interface between &GAP; and &Julia;.\n"
+    ),
+    Acknowledgements := Concatenation(
+      "The development of this &GAP; package has been supported ",
+      "by the <URL><Link>https://www.computeralgebra.de/sfb/</Link>",
+      "<LinkText>SFB-TRR 195 ",
+      "<Q>Symbolic Tools in Mathematics and their Applications</Q>",
+      "</LinkText></URL> (from 2017 until 2020).\n",
+      "<P/>\n"
+    ),
+  ),
+),
 ));
-
