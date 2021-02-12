@@ -533,8 +533,10 @@ DeclareGlobalFunction( "CallJuliaFunctionWithKeywordArguments" );
 #!    access to and assignment of entries of arrays, via
 #!    <Ref Oper="\[\]" BookName="ref"/>,
 #!    <Ref Oper="\[\]\:\=" BookName="ref"/>,
-#!    <Ref Oper="MatElm" BookName="ref"/>, and
-#!    <Ref Oper="SetMatElm" BookName="ref"/>,
+#!    <!-- <Ref Oper="MatElm" BookName="ref"/>, and
+#!    <Ref Oper="SetMatElm" BookName="ref"/>, -->
+#!    and the (up to &GAP; 4.11 undocumented) operations <C>MatElm</C> and
+#!    <C>SetMatElm</C>,
 #!    delegating to
 #!    <C>Julia.Base.getindex</C> and
 #!    <C>Julia.Base.setindex</C>,
@@ -593,5 +595,6 @@ DeclareGlobalFunction( "CallJuliaFunctionWithKeywordArguments" );
 #! gap> m + m;
 #! <Julia: [2 4; 6 8]>
 #! @EndExampleSession
+#TODO: add the cross-references to MatElm, SetMatElm when they are documented
 
 #! @InsertChunk JuliaHelpInGAP

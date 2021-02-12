@@ -148,7 +148,7 @@ AutoDoc := rec(
       "by the <URL><Link>https://www.computeralgebra.de/sfb/</Link>",
       "<LinkText>SFB-TRR 195 ",
       "<Q>Symbolic Tools in Mathematics and their Applications</Q>",
-      "</LinkText></URL> (from 2017 until 2020).\n",
+      "</LinkText></URL> (from 2017 until 2021).\n",
       "<P/>\n"
     ),
   ),
