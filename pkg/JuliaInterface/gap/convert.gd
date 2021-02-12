@@ -39,7 +39,7 @@
 #!   On the &Julia; side, there is usually no need for a wrapper,
 #!   as (thanks to the shared garbage collector)
 #!   most &GAP; objects are valid &Julia; objects of type
-#!   <C>GAP_jll.MPtr</C>.
+#!   <C>GAP.GapObj</C>.
 #!   The exception to that rule are immediate &GAP; objects,
 #!   more on that in the next section.
 #! </Item>
@@ -84,7 +84,7 @@
 #!  <Ref Chap="Integers" BookName="ref"/> in the &GAP; Reference Manual.
 #!  Since these are not valid pointers, &Julia; cannot treat them like other
 #!  &GAP; objects, which are simply &Julia; objects of type
-#!  <C>GAP_jll.MPtr</C>.
+#!  <C>GAP.GapObj</C>.
 #!  Instead, a conversion is unavoidable, at least when immediate objects
 #!  are passed as stand-alone arguments to a function.
 #!  <P/>
@@ -135,7 +135,7 @@
 #!    &Julia; function wrapper to &Julia; function,
 #!  </Item>
 #!  <Item>
-#!    other &GAP; objects to <C>GAP_jll.MPtr</C>.
+#!    other &GAP; objects to <C>GAP.GapObj</C>.
 #!  </Item>
 #!  </List>
 #!
@@ -156,7 +156,7 @@
 #!    &Julia; <C>false</C> to &GAP; <K>false</K>,
 #!  </Item>
 #!  <Item>
-#!    <C>GAP_jll.MPtr</C> to <C>Obj</C>,
+#!    <C>GAP.GapObj</C> to <C>Obj</C>,
 #!  </Item>
 #!  <Item>
 #!    other &Julia; objects to &Julia; object wrapper.
