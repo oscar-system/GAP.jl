@@ -12,9 +12,11 @@
 #!  When one starts an interactive &Julia; session,
 #!  the &Julia; startup file <F>~/.julia/config/startup.jl</F> gets
 #!  included automatically by default,
-#!  see the section <Q>The Julia REPL</Q> in the &Julia; documentation.
+#!  see <URL><Link>https://docs.julialang.org/en/v1/stdlib/REPL</Link>
+#!  <LinkText>the section <Q>The Julia REPL</Q> in the &Julia; documentation</LinkText></URL>.
 #!  Hence the effects of this inclusion can be used in a &GAP; session
-#!  which one gets via the input <C>using GAP; GAP.prompt()</C>.
+#!  which one gets via the following input.
+#!  <Listing Type="Julia">using GAP; GAP.prompt()</Listing>
 #!  <P/>
 #!  However,
 #!  this &Julia; startup file is <E>not</E> included into &Julia; by default
