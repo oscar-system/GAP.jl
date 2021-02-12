@@ -5,8 +5,6 @@
 #
 
 #! @BeginChunk IncludeJuliaStartupFile
-#! @Chapter Introduction to <Package>JuliaInterface</Package>
-#! @Section User preferences in the <Package>JuliaInterface</Package> package
 #!  <Subsection Label="subsect:IncludeJuliaStartupFile">
 #!  <Heading>User preference <C>IncludeJuliaStartupFile</C></Heading>
 #!  <Index Key="IncludeJuliaStartupFile"><C>IncludeJuliaStartupFile</C></Index>

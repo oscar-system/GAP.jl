@@ -79,7 +79,9 @@
 #!  whose values are stored inside the <Q>pointer</Q> referencing them.
 #!  &GAP; uses this to store small integers
 #!  and elements of small finite fields,
-#!  (see <Ref Chap="Immediate Integers and FFEs" BookName="dev"/>).
+#!  <!-- (see <Ref Chap="Immediate Integers and FFEs" BookName="dev"/>). -->
+#!  see for example the beginning of Chapter
+#!  <Ref Chap="Integers" BookName="ref"/> in the &GAP; Reference Manual.
 #!  Since these are not valid pointers, &Julia; cannot treat them like other
 #!  &GAP; objects, which are simply &Julia; objects of type
 #!  <C>Main.ForeignGAP.MPtr</C>.
@@ -160,6 +162,7 @@
 #!    other &Julia; objects to &Julia; object wrapper.
 #!  </Item>
 #!  </List>
+#TODO: re-enter the cross-reference to the "dev" manual when this is possible
 
 #! @Subsection Manual (explicit) conversions
 #!  Manual conversion in &GAP; is done via the functions
