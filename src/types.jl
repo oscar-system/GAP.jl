@@ -76,6 +76,17 @@ julia> GapObj([1 2; 3 4])
 GAP: [ [ 1, 2 ], [ 3, 4 ] ]
 
 ```
+
+For technical reasons, `GapObj` is created inside the Julia module `GAP_jll`,
+before the module `GAP` gets loaded.
+Thus Julia prints it as `GAP_jll.MPtr`.
+
+# Examples
+```jldoctest
+julia> GapObj
+GAP_jll.MPtr
+
+```
 """
 const GapObj = GAP_jll.MPtr
 
