@@ -35,7 +35,7 @@ Persons := [
   ),
   rec(
     IsAuthor := true,
-    IsMaintainer := true,
+    IsMaintainer := false,
     FirstNames := "Sebastian",
     LastName := "Gutsche",
     WWWHome := "https://sebasguts.github.io",

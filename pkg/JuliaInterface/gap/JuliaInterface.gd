@@ -17,7 +17,7 @@
 #!  in a &Julia; session,
 #!  to access &Julia; objects and to call &Julia; functions
 #!  in a &GAP; session,
-#!  and to convert low level data such as integers, Booleans, strings,
+#!  and to convert low level data such as integers, booleans, strings,
 #!  arrays/lists, dictionaries/records between the two systems.
 #!
 #!  In particular, this interface is <E>not</E> intended to provide

@@ -21,7 +21,7 @@ primitive type FFE 64 end
     GapObj
 
 This is the Julia type of all those GAP objects that are not
-"immediate" (Booleans, small integers, FFEs).
+"immediate" (booleans, small integers, FFEs).
 
 # Examples
 ```jldoctest
@@ -43,7 +43,7 @@ Int64
 julia> typeof( GAP.evalstr( "Z(2)" ) )          # a GAP FFE
 FFE
 
-julia> typeof( GAP.evalstr( "true" ) )          # a Boolean
+julia> typeof( GAP.evalstr( "true" ) )          # a boolean
 Bool
 
 ```
