@@ -1,6 +1,6 @@
 module GapFunctionPerform
 
-import Main.ForeignGAP: MPtr
+import GAP_jll: MPtr
 
 function typed_func(a::MPtr, b::MPtr)
     return a
