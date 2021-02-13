@@ -60,7 +60,6 @@ jobs:
         run: |
           julia -e '
             using Pkg
-            Pkg.add(PackageSpec(name="AbstractAlgebra", version="0.10"))
             Pkg.add(["Singular", "Nemo"])
             '
       - name: "GAP tests"
