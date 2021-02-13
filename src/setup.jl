@@ -62,10 +62,7 @@ function select_compiler(lang, candidates, extension)
     return nothing
 end
 
-# load the code in julia-config.jl (but strip the call to main() at the end,
-# so that no code is executed, and so that it doesn't call exit())
-julia_config_jl = joinpath(Sys.BINDIR, Base.DATAROOTDIR, "julia", "julia-config.jl")
-include_string(@__MODULE__, replace(read(julia_config_jl, String), "\nmain()\n" => "\n"))
+include("julia-config.jl")
 
 function regenerate_gaproot()
     gaproot_gapjl = abspath(@__DIR__, "..")
@@ -85,9 +82,9 @@ function regenerate_gaproot()
     # paths involve spaces, but then we likely will haves problem in other
     # places; in any case, if anybody ever cares about this, we can work on
     # finding a better solution.
-    sysinfo["JULIA_CPPFLAGS"] = filter(c -> c != '\'', cflags(false))
-    sysinfo["JULIA_LDFLAGS"] = filter(c -> c != '\'', ldflags(false))
-    sysinfo["JULIA_LIBS"] = filter(c -> c != '\'', ldlibs(false))
+    sysinfo["JULIA_CPPFLAGS"] = filter(c -> c != '\'', cflags())
+    sysinfo["JULIA_LDFLAGS"] = filter(c -> c != '\'', ldflags())
+    sysinfo["JULIA_LIBS"] = filter(c -> c != '\'', ldlibs())
 
     # path to the currently used Julia executable 
     sysinfo["JULIA"] = joinpath(Sys.BINDIR, Base.julia_exename())
