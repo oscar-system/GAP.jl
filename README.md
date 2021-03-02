@@ -64,6 +64,11 @@ julia> Vector{Int64}(x)
  3
 ```
 
+## Contact
+
+Issues should be reported via our [issue tracker](https://github.com/oscar-system/GAP.jl/issues).
+
+Responsible for GAP.jl within the OSCAR project are Thomas Breuer and Max Horn.
 
 ## General Disclaimer
 
