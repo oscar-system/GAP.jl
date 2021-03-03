@@ -403,6 +403,7 @@ function gap_to_julia(x::GapObj; recursive = true)
     Globals.IsMatrixObj(x) && return gap_to_julia(Array{Any,2}, x; recursive = recursive)
     Globals.IsVectorObj(x) && return gap_to_julia(Vector{Any}, x; recursive = recursive)
     Globals.IsRecord(x) && return gap_to_julia(Dict{Symbol,Any}, x; recursive = recursive)
+    Globals.IS_JULIA_FUNC(x) && return UnwrapJuliaFunc(x)
     throw(ConversionError(x, "any known type"))
 end
 
