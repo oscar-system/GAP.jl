@@ -12,7 +12,7 @@ function _GAP_TO_JULIA(ptr::Ptr{Cvoid})
     as_int & 1 == 1 && return as_int >> 2
     as_int & 2 == 2 && return reinterpret(FFE, ptr)
     tnum = TNUM_OBJ(ptr)
-    if tnum < FIRST_EXTERNAL_TNUM && tnum != T_FUNCTION
+    if tnum < FIRST_EXTERNAL_TNUM
         if tnum == T_BOOL
             ptr == unsafe_load(cglobal((:GAP_True, libgap), Ptr{Cvoid})) && return true
             ptr == unsafe_load(cglobal((:GAP_False, libgap), Ptr{Cvoid})) && return false
