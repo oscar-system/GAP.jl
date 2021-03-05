@@ -219,4 +219,4 @@ function julia_to_gap(
     return ret_val
 end
 
-julia_to_gap(func::Function) = NewJuliaFunc(func)
+julia_to_gap(func::Function) = WrapJuliaFunc(func)
