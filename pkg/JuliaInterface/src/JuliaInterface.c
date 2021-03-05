@@ -172,7 +172,7 @@ jl_function_t * get_function_from_obj_or_string(Obj func)
 static Obj Func_JuliaFunction(Obj self, Obj func)
 {
     jl_function_t * f = get_function_from_obj_or_string(func);
-    return NewJuliaFunc(f);
+    return WrapJuliaFunc(f);
 }
 
 /*
@@ -192,7 +192,7 @@ static Obj Func_JuliaFunctionByModule(Obj self, Obj funcName, Obj moduleName)
     if (f == 0)
         ErrorMayQuit("Function is not defined in julia", 0, 0);
     END_GAP_SYNC();
-    return NewJuliaFunc(f);
+    return WrapJuliaFunc(f);
 }
 
 // Export 'IS_JULIA_FUNC' to the GAP level.

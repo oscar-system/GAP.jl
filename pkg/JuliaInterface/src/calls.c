@@ -189,7 +189,7 @@ static Obj DoCallJuliaFuncXArg(Obj func, Obj args)
 //
 //
 //
-Obj NewJuliaFunc(jl_function_t * function)
+Obj WrapJuliaFunc(jl_function_t * function)
 {
     BEGIN_GAP_SYNC();
     Obj name = MakeImmString(jl_symbol_name(jl_gf_name(function)));

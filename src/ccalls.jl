@@ -132,7 +132,8 @@ NewPrecord(capacity::Int64) = ccall((:GAP_NewPrecord, libgap), GapObj, (Int64,),
 NEW_MACFLOAT(x::Float64) = ccall((:NEW_MACFLOAT, libgap), GapObj, (Cdouble,), x)
 ValueMacFloat(x::GapObj) = ccall((:GAP_ValueMacFloat, libgap), Cdouble, (Any,), x)
 CharWithValue(x::Cuchar) = ccall((:GAP_CharWithValue, libgap), GapObj, (Cuchar,), x)
-NewJuliaFunc(x::Function) = ccall(:NewJuliaFunc, GapObj, (Any,), x)
+
+WrapJuliaFunc(x::Function) = ccall(:WrapJuliaFunc, GapObj, (Any,), x)
 
 function ElmList(x::GapObj, position)
     o = ccall((:GAP_ElmList, libgap), Ptr{Cvoid}, (Any, Culong), x, Culong(position))
