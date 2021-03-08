@@ -134,6 +134,8 @@ ValueMacFloat(x::GapObj) = ccall((:GAP_ValueMacFloat, libgap), Cdouble, (Any,), 
 CharWithValue(x::Cuchar) = ccall((:GAP_CharWithValue, libgap), GapObj, (Cuchar,), x)
 
 WrapJuliaFunc(x::Function) = ccall(:WrapJuliaFunc, GapObj, (Any,), x)
+UnwrapJuliaFunc(x::Function) = x
+UnwrapJuliaFunc(x::GapObj) = ccall(:GET_JULIA_FUNC, Function, (GapObj,), x)
 
 function ElmList(x::GapObj, position)
     o = ccall((:GAP_ElmList, libgap), Ptr{Cvoid}, (Any, Culong), x, Culong(position))
