@@ -63,7 +63,7 @@ gap> x * 2;
 gap> 2 * x;
 <<Julia: 2*x>>
 gap> x / 2;
-<<Julia: 1/2*x>>
+<<Julia: 1//2*x>>
 gap> (x + y)^3;
 <<Julia: x^3+3*x^2*y+3*x*y^2+y^3>>
 
