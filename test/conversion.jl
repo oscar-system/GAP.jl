@@ -436,3 +436,12 @@ end
     @test GAP.Globals.List(list, return_first_gap) == list
 
 end
+
+@testset "(Un)WrapJuliaFunc" begin
+    f = x -> x^2
+    g = GAP.WrapJuliaFunc(f)
+    @test g isa GapObj
+    @test GAP.TNUM_OBJ(g) == GAP.T_FUNCTION
+    @test g(2) == 4
+    @test GAP.UnwrapJuliaFunc(g) === f
+end
