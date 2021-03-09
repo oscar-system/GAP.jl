@@ -296,3 +296,20 @@ function Base.iterate(obj::GapObj, iter::GapObj)
         (x, iter)
     end
 end
+
+# copy and deepcopy:
+# The following is just a preliminary solution,
+# in order to avoid Julia crashes when one calls `deepcopy` for a `GapObj`.
+# Eventually we want to handle also nested objects such as GAP lists of
+# Julia objects having GAP subobjects,
+# see 'https://github.com/oscar-system/GAP.jl/issues/197'.
+Base.copy(obj::GapObj) = GAP.Globals.ShallowCopy(obj)
+
+function Base.deepcopy_internal(obj::GapObj, stackdict::IdDict)
+    if haskey(stackdict, obj)
+        return stackdict[obj]
+    end
+    sc = GAP.Globals.StructuralCopy(obj)
+    stackdict[obj] = sc
+    return sc
+end

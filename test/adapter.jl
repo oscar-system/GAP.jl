@@ -14,3 +14,30 @@
     end
     @test length(xs) == 6
 end
+
+@testset "deepcopy" begin
+    p = GAP.evalstr("(1,2,3)")
+    @test copy(p) === p
+
+    l = GAP.evalstr("[[]]")
+    @test !(copy(l) === l)
+    @test copy(l)[1] === l[1]
+    @test !(deepcopy(l)[1] === l[1])
+
+    l = [p, p]
+    cp = deepcopy(l)
+    @test !(l === cp)
+    @test cp[1] === cp[2]
+
+    # The following is NOT what we want,
+    # eventually we want that `deepcopy` to be applied
+    # also to Julia subobjects of GAP objects.
+    # As soon as this changed behaviour is available,
+    # `deepcopy` for GAP objects should become documented.
+    l = GAP.evalstr("[]")
+    li = [1, 2, 3]
+    l[1] = li
+    cp = deepcopy(l)
+    @test !(deepcopy( li ) === li)
+    @test cp[1] === l[1]
+end
