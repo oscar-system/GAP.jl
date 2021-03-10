@@ -306,10 +306,7 @@ end
 Base.copy(obj::GapObj) = GAP.Globals.ShallowCopy(obj)
 
 function Base.deepcopy_internal(obj::GapObj, stackdict::IdDict)
-    if haskey(stackdict, obj)
-        return stackdict[obj]
+    return get!(stackdict, obj) do
+        GAP.Globals.StructuralCopy(obj)
     end
-    sc = GAP.Globals.StructuralCopy(obj)
-    stackdict[obj] = sc
-    return sc
 end
