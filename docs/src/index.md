@@ -49,6 +49,7 @@ GapObj
 ```@docs
 @gap
 @g_str
+@gapwrap
 ```
 
 ## Conversions

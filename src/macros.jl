@@ -120,3 +120,69 @@ macro g_str(str)
 end
 
 export @g_str
+
+import MacroTools
+
+"""
+    @gapwrap
+
+When applied to a method definition that involves access to entries of
+`GAP.Globals`, this macro rewrites the code (using `@generated`)
+such that the relevant entries are cached at compile time,
+and need not be fetched again and again at runtime.
+
+# Examples
+```jldoctest
+julia> @gapwrap isevenint(x) = GAP.Globals.IsEvenInt(x)::Bool;
+
+julia> isevenint(1)
+false
+
+julia> isevenint(2)
+true
+
+```
+"""
+macro gapwrap(ex)
+    # split the method definition
+    def_dict = try
+        MacroTools.splitdef(ex)
+    catch
+        error("@gapwrap must be applied to a method definition")
+    end
+
+    # take the body of the function
+    body = def_dict[:body]
+
+    # find, record and substitute all occurrences of GAP.Global.*
+    symdict = IdDict{Symbol,Symbol}()
+    body = MacroTools.postwalk(body) do x
+        MacroTools.@capture(x, GAP.Globals.sym_) || return x
+        new_sym = get!(() -> gensym(sym), symdict, sym)
+        return Expr(:$, new_sym)
+    end
+
+    # now quote the old body, and prepend a list of assignments of
+    # this form:
+    #   ##XYZ##123 = GAP.Globals.XYZ
+    def_dict[:body] = Expr(
+        :block,
+        # first the list of initializations ...
+        (:(local $v = GAP.Globals.$k) for (k, v) in symdict)...,
+        # ... then the quoted original-with-substitutions body
+        Meta.quot(body),
+    )
+
+    # assemble the method definition again
+    ex = MacroTools.combinedef(def_dict)
+    ex2 = :(@generated $ex)
+
+    # we must prevent Julia from applying gensym to all locals, as these
+    # substitutions do not get applied to the quoted part of the new body,
+    # leading to trouble if the wrapped function has arguments (as the
+    # argument names will be replaced, but not their uses in the quoted part
+    # of the body)
+    return esc(ex2)
+end
+
+export @gapwrap
