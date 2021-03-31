@@ -26,6 +26,9 @@ InstallGlobalFunction( CallJuliaFunctionWithCatch,
     local res;
 
     args := GAPToJulia( _JL_Vector_Any, args, false );
+    if IsFunction( julia_obj ) then
+      julia_obj:= Julia.GAP.UnwrapJuliaFunc( julia_obj );
+    fi;
     res:= Julia.GAP.call_with_catch( julia_obj, args );
     if res[1] then
       return rec( ok:= true, value:= res[2] );

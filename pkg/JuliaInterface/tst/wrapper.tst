@@ -18,7 +18,7 @@ Error, MethodError: objects of type BigInt are not callable
 ## wrap a Julia function
 gap> f := Objectify(type, rec());;
 gap> SetJuliaPointer(f, Julia.Base.sqrt);
-gap> Julia.Base.typeof(f);
+gap> Julia.Base.typeof(Julia.GAP.UnwrapJuliaFunc(f));
 <Julia: typeof(sqrt)>
 gap> f(4);
 <Julia: 2.0>
