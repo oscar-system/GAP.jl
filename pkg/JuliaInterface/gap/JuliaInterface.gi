@@ -191,8 +191,13 @@ end );
 
 
 InstallGlobalFunction( JuliaTypeInfo,
-    juliaobj -> JuliaToGAP( IsString,
-                    Julia.Base.string( Julia.Core.typeof( juliaobj ) ) ) );
+    function( juliaobj )
+    if IsFunction( juliaobj ) then
+      juliaobj:= Julia.GAP.UnwrapJuliaFunc( juliaobj );
+    fi;
+    return JuliaToGAP( IsString,
+                       Julia.Base.string( Julia.Core.typeof( juliaobj ) ) );
+end );
 
 
 InstallGlobalFunction( JuliaModule,
