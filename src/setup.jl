@@ -248,7 +248,7 @@ function regenerate_gaproot()
         =#
 
         # pass command line arguments to GAP.jl via a small hack
-        ENV["GAP_SHOW_BANNER"] = "true"
+        ENV["GAP_PRINT_BANNER"] = "true"
         __GAP_ARGS__ = ARGS
         using GAP
 
