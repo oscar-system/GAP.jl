@@ -204,8 +204,8 @@ function __init__()
         append!(cmdline_options, ["--nointeract"])
     end
 
-    if haskey(ENV, "GAP_SHOW_BANNER")
-        show_banner = ENV["GAP_SHOW_BANNER"] == "true"
+    if haskey(ENV, "GAP_PRINT_BANNER")
+        show_banner = ENV["GAP_PRINT_BANNER"] == "true"
     else
         show_banner =
             isinteractive() && !any(x -> x.name in ["Oscar"], keys(Base.package_locks))
