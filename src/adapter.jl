@@ -368,3 +368,78 @@ function Base.deepcopy_internal(obj::GapObj, stackdict::IdDict)
         GAP.Globals.StructuralCopy(obj)
     end
 end
+
+
+# Wrap a Julia random number generator into a GAP random source.
+# Cache this GAP object in a global dictionary,
+# in order to avoid creating such GAP objects again and again.
+# We expect that the total number of different random number generators
+# in a Julia session is small.
+#
+# The cache needs a dictionary that compares keys w.r.t. identity,
+# in order to regard two copies of a random source as different.
+# We would like to use weak keys, in order not to keep objects alive
+# that are no longer reachable in the Julia session,
+# but the `WeakKeyDict` type compares keys w.r.t. `isequal`.
+# (We could introduce a new type `WeakKeyIdDict`, the only difference
+# to `WeakKeyDict` would be that the `ht` field is an `IdDict`.)
+
+const _wrapped_random_sources = IdDict{Any,GapObj}()
+
+"""
+    wrap_rng(rng::Random.AbstractRNG)
+
+Return a GAP object in the filter `IsRandomSource` that uses `rng`
+in calls to GAP's `Random` function.
+The idea is that GAP's `Random` methods for high level objects will just
+hand over the given random source to subfunctions until `Random` gets
+called for a list or the bounds of a range,
+and then `Base.rand` gets called with `rng`.
+
+# Examples
+```jldoctest
+julia> rng1 = Random.default_rng();
+
+julia> rng2 = copy(rng1);
+
+julia> rng1 == rng2
+true
+
+julia> rng1 === rng2
+false
+
+julia> gap_rng1 = GAP.wrap_rng(rng1)
+GAP: <RandomSource in IsRandomSourceJulia>
+
+julia> gap_rng2 = GAP.wrap_rng(rng2)
+GAP: <RandomSource in IsRandomSourceJulia>
+
+julia> res1 = GAP.Globals.Random(gap_rng1, 1, 10);
+
+julia> rng1 == rng2   # the two rngs have diverged
+false
+
+julia> res1 == GAP.Globals.Random(gap_rng2, GAP.GapObj(1:10))
+true
+
+julia> rng1 == rng2   # now the two rngs are again in sync
+true
+
+julia> g = GAP.Globals.SymmetricGroup(10);
+
+julia> p = GAP.Globals.Random(gap_rng1, g);
+
+julia> p in g
+true
+
+julia> GAP.Globals.Random(gap_rng1, GAP.Globals.GF(2)^10)
+GAP: <a GF2 vector of length 10>
+
+```
+"""
+function wrap_rng(rng::Random.AbstractRNG)
+    # Create a new GAP object only if `rng` has not yet been wrapped.
+    return get!(_wrapped_random_sources, rng) do
+        GAP.Globals.RandomSourceJulia(rng)
+    end
+end

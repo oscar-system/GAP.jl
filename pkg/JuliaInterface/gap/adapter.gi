@@ -119,5 +119,45 @@ InstallOtherMethod( \.\:\=,
 
 #############################################################################
 ##
+##  Create random numbers via Julia random number generators.
+##
+##  The following filter is currently used mainly for printing the object.
+##  (We could use it as the first argument in a `RandomSource` method,
+##  but this would not really fit to the meaning of this operation;
+##  `RandomSource` could be turned into a constructor.)
+##
+DeclareCategory( "IsRandomSourceJulia", IsRandomSource );
+
+InstallGlobalFunction( "RandomSourceJulia",
+    function( julia_rng... )
+    if Length( julia_rng ) = 0 then
+      ImportJuliaModuleIntoGAP( "Random" );
+      julia_rng:= [ Julia.Random.default_rng() ];
+    fi;
+    return ObjectifyWithAttributes( rec(),
+               NewType( RandomSourcesFamily,
+                        IsRandomSourceJulia and IsAttributeStoringRep ),
+               JuliaPointer, julia_rng[1] );
+    end );
+
+InstallOtherMethod( Random,
+    [ "IsRandomSourceJulia and HasJuliaPointer", "IsDenseList" ],
+    { rng, list } -> list[ Random( rng, 1, Length( list ) ) ] );
+
+InstallOtherMethod( Random,
+    [ "IsRandomSourceJulia and HasJuliaPointer", "IsInt and IsSmallIntRep",
+      "IsInt and IsSmallIntRep" ],
+    { rng, from, to } -> Julia.Base.rand( JuliaPointer( rng ),
+                             Julia.Base.UnitRange( from, to ) ) );
+
+InstallOtherMethod( Random,
+    [ "IsRandomSourceJulia and HasJuliaPointer", "IsInt", "IsInt" ],
+    { rng, from, to } -> JuliaToGAP( IsInt,
+        Julia.Base.rand( JuliaPointer( rng ),
+            Julia.Base.UnitRange( GAPToJulia( from ), GAPToJulia( to ) ) ) ) );
+
+
+#############################################################################
+##
 #E
 

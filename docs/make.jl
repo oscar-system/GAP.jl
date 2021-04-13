@@ -77,7 +77,7 @@ function compute_external_reference(link, meta, page, doc)
     return true
 end
 
-DocMeta.setdocmeta!(GAP, :DocTestSetup, :(using GAP); recursive = true)
+DocMeta.setdocmeta!(GAP, :DocTestSetup, :(using GAP, Random); recursive = true)
 
 makedocs(
     format = Documenter.HTML(),
