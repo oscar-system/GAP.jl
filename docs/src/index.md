@@ -139,6 +139,7 @@ setindex!
 getproperty
 setproperty!
 hasproperty
+wrap_rng
 ```
 
 For the following Julia functions, methods are provided that deal with the

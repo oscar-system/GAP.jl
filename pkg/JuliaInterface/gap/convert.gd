@@ -464,6 +464,42 @@ DeclareConstructor("JuliaToGAP", [IsObject, IsObject, IsBool]);
 #!</Example>
 DeclareGlobalFunction("GAPToJulia");
 
+#! @Section Using &Julia; random number generators in &GAP;
+#! @Arguments [julia_rng]
+#! @Description
+#!  Called with a &Julia; random number generator <A>julia_rng</A>,
+#!  this function returns a random source
+#!  (see <Ref Sect="Random Sources" BookName="ref"/>)
+#!  that uses <A>julia_rng</A> for creating the random numbers.
+#!  <P/>
+#!  Called without arguments, a &GAP; random source is constructed that
+#!  uses &Julia;'s default random number generator
+#!  <C>Julia.Random.default_rng()</C>.
+#!  Note that different calls without arguments yield different random
+#!  sources.
+#! @BeginExampleSession
+#! gap> rs1:= RandomSourceJulia();
+#! <RandomSource in IsRandomSourceJulia>
+#! gap> rs2:= RandomSourceJulia( Julia.Random.default_rng() );
+#! <RandomSource in IsRandomSourceJulia>
+#! gap> IsIdenticalObj( JuliaPointer( rs1 ), JuliaPointer( rs2 ) );
+#! false
+#! gap> repeat
+#! >   x:= Random( rs1, [ 1 .. 100 ] );
+#! >   y:= Random( rs2, [ 1 .. 100 ] );
+#! > until x <> y;
+#! gap> Random( rs1, 1, 100 ) in [ 1 .. 100 ];
+#! true
+#! gap> from:= 2^70;;  to:= from + 100;;
+#! gap> x:= Random( rs1, from, to );;
+#! gap> from <= x and x <= to;
+#! true
+#! gap> g:= SymmetricGroup( 10 );;
+#! gap> Random( rs1, g ) in g;
+#! true
+#! @EndExampleSession
+DeclareGlobalFunction( "RandomSourceJulia" );
+
 #! @Section Open items
 #! <List>
 #! <Item>
