@@ -18,12 +18,17 @@ CompareUpToWhitespaceAndMatches:= function( pairs )
         if ForAll( [ a, b ],
                str -> ForAny( pair,
                           x -> PositionSublist( str, x ) <> fail ) ) then
-          a:= ReplacedString( a, pair[1], "" );
-          a:= ReplacedString( a, pair[2], "" );
-          b:= ReplacedString( b, pair[1], "" );
-          b:= ReplacedString( b, pair[2], "" );
+          if pair[1] <> "" then
+            a:= ReplacedString( a, pair[1], "" );
+            b:= ReplacedString( b, pair[1], "" );
+          fi;
+          if pair[2] <> "" then
+            a:= ReplacedString( a, pair[2], "" );
+            b:= ReplacedString( b, pair[2], "" );
+          fi;
         fi;
       od;
+
       return TEST.compareFunctions.uptowhitespace( a, b );
     end;
 end;
@@ -31,7 +36,8 @@ end;
 # Several Julia types are shown differently in Julia 1.6.0-DEV
 # and older Julia versions.
 compare:= CompareUpToWhitespaceAndMatches(
-    [ [ "Array{Any,1}", "Vector{Any}" ] ] );
+    [ [ "Array{Any,1}", "Vector{Any}" ],
+      [ "Maybe you forgot to use an operator such as *, ^, %, / etc. ?", "" ] ] );
 
 # The testfiles assume that no traceback is printed.
 AlwaysPrintTracebackOnError:= false;
