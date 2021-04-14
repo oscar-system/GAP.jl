@@ -37,7 +37,7 @@ void handle_jl_exception(void)
         jl_call1(JULIA_FUNC_take_inplace, JULIA_ERROR_IOBuffer);
     string_object = jl_call1(JULIA_FUNC_String_constructor, string_object);
     BEGIN_GAP_SYNC();
-    ErrorMayQuit(jl_string_data(string_object), 0, 0);
+    ErrorMayQuit("%s", (Int)jl_string_data(string_object), 0);
     END_GAP_SYNC();
 }
 
