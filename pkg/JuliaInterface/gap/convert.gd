@@ -465,25 +465,41 @@ DeclareConstructor("JuliaToGAP", [IsObject, IsObject, IsBool]);
 DeclareGlobalFunction("GAPToJulia");
 
 #! @Section Using &Julia; random number generators in &GAP;
-#! @Arguments [julia_rng]
+#! @Arguments obj
 #! @Description
-#!  Called with a &Julia; random number generator <A>julia_rng</A>,
-#!  this function returns a random source
-#!  (see <Ref Sect="Random Sources" BookName="ref"/>)
-#!  that uses <A>julia_rng</A> for creating the random numbers.
+#!  This filter allows one to use &Julia;'s random number generators in &GAP;,
+#!  see <Ref Sect="Random Sources" BookName="ref"/> for the background.
+#!  Calling <Ref Oper="RandomSource" BookName="ref"/> with only argument
+#!  <Ref Filt="IsRandomSourceJulia" Label="for IsRandomSource"/> yields a
+#!  &GAP; random source that uses a copy of &Julia;'s default random number
+#!  generator <C>Julia.Random.default_rng()</C>.
+#!  Note that different calls with only argument
+#!  <Ref Filt="IsRandomSourceJulia" Label="for IsRandomSource"/> yield
+#!  different random sources.
 #!  <P/>
-#!  Called without arguments, a &GAP; random source is constructed that
-#!  uses &Julia;'s default random number generator
-#!  <C>Julia.Random.default_rng()</C>.
-#!  Note that different calls without arguments yield different random
-#!  sources.
+#!  Called with <Ref Filt="IsRandomSourceJulia" Label="for IsRandomSource"/>
+#!  and a positive integer,
+#!  <Ref Oper="RandomSource" BookName="ref"/> returns a random source that is
+#!  based on a copy of <C>Julia.Random.default_rng()</C> but got initialized
+#!  with the given integer as a seed.
+#!  <P/>
+#!  Called with <Ref Filt="IsRandomSourceJulia" Label="for IsRandomSource"/>
+#!  and a &Julia; random number generator,
+#!  <Ref Oper="RandomSource" BookName="ref"/> returns a random source
+#!  that uses this random number generator.
+#!  Note that we do <E>not</E> make a copy of the second argument,
+#!  in order to be able to use the given random number generator both on the
+#!  &GAP; side and the &Julia; side.
+#!  <P/>
+#!  <Ref Oper="State" BookName="ref"/> for random sources in
+#!  <Ref Filt="IsRandomSourceJulia" Label="for IsRandomSource"/> returns
+#!  a copy of the underlying &Julia; random number generator.
 #! @BeginExampleSession
-#! gap> rs1:= RandomSourceJulia();
+#! gap> rs1:= RandomSource( IsRandomSourceJulia );
 #! <RandomSource in IsRandomSourceJulia>
-#! gap> rs2:= RandomSourceJulia( Julia.Random.default_rng() );
+#! gap> rs2:= RandomSource( IsRandomSourceJulia,
+#! >                        Julia.Random.default_rng() );
 #! <RandomSource in IsRandomSourceJulia>
-#! gap> IsIdenticalObj( JuliaPointer( rs1 ), JuliaPointer( rs2 ) );
-#! false
 #! gap> repeat
 #! >   x:= Random( rs1, [ 1 .. 100 ] );
 #! >   y:= Random( rs2, [ 1 .. 100 ] );
@@ -497,8 +513,10 @@ DeclareGlobalFunction("GAPToJulia");
 #! gap> g:= SymmetricGroup( 10 );;
 #! gap> Random( rs1, g ) in g;
 #! true
+#! gap> State( rs1 ) = JuliaPointer( rs1 );
+#! true
 #! @EndExampleSession
-DeclareGlobalFunction( "RandomSourceJulia" );
+DeclareCategory( "IsRandomSourceJulia", IsRandomSource );
 
 #! @Section Open items
 #! <List>
