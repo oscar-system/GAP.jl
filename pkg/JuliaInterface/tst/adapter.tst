@@ -119,4 +119,92 @@ gap> foo;
 <Julia: Foo(42)>
 
 #
+# use Julia's random sources
+#
+gap> G:= SymmetricGroup( 100 );;
+gap> l:= Elements( SylowSubgroup( G, 97 ) );;
+gap> rs:= RandomSource( IsRandomSourceJulia );  # default rng, default seed
+<RandomSource in IsRandomSourceJulia>
+gap> state:= State( rs );;
+gap> state = JuliaPointer( rs );
+true
+gap> res1:= List( [ 1 .. 10 ], i -> Random( rs, l ) );;
+gap> res2:= List( [ 1 .. 10 ], i -> Random( rs, G ) );;
+gap> res3:= List( [ 1 .. 10 ], i -> Random( rs, 1, 1000 ) );;
+gap> res4:= List( [ 1 .. 10 ], i -> Random( rs, 2^70, 2^70 + 999 ) );;
+gap> Reset( rs, state );;
+gap> res1 = List( [ 1 .. 10 ], i -> Random( rs, l ) );
+true
+gap> res2 = List( [ 1 .. 10 ], i -> Random( rs, G ) );
+true
+gap> res3 = List( [ 1 .. 10 ], i -> Random( rs, 1, 1000 ) );
+true
+gap> res4 = List( [ 1 .. 10 ], i -> Random( rs, 2^70, 2^70 + 999 ) );
+true
+
+# re-initialize does not change the object
+gap> rs2:= Init( rs, state );
+<RandomSource in IsRandomSourceJulia>
+gap> IsIdenticalObj( rs, rs2 );
+true
+gap> Julia.Base.\=\=( JuliaPointer( rs ), state );
+true
+
+# re-initialize resets the state
+gap> res1 = List( [ 1 .. 10 ], i -> Random( rs, l ) );
+true
+
+# create a random source with prescribed state
+gap> state2:= Reset( rs, state );;  # returns old state
+gap> rs2:= RandomSource( IsRandomSourceJulia, state2 );
+<RandomSource in IsRandomSourceJulia>
+gap> List( [ 1 .. 10 ], i -> Random( rs, l ) );; # now both are in sync
+gap> Julia.Base.\=\=( JuliaPointer( rs ), JuliaPointer( rs2 ) );
+true
+gap> Julia.Base.\=\=\=( JuliaPointer( rs ), JuliaPointer( rs2 ) );
+false
+gap> ForAll( [ 1 .. 100 ], i -> Random( rs, G ) = Random( rs2, G ) );
+true
+
+# create a random source with prescribed seed
+gap> rs2:= RandomSource( IsRandomSourceJulia, 1234 );
+<RandomSource in IsRandomSourceJulia>
+gap> ForAny( [ 1 .. 10000 ], i -> Random( rs, G ) <> Random( rs2, G ) );
+true
+
+# create a random source by an explicit Julia rng
+gap> rs3:= RandomSource( IsRandomSourceJulia, Julia.Random.default_rng() );
+<RandomSource in IsRandomSourceJulia>
+gap> state3:= State( rs3 );;
+gap> res1:= List( [ 1 .. 10 ], i -> Random( rs3, l ) );;
+gap> res2:= List( [ 1 .. 10 ], i -> Random( rs3, G ) );;
+gap> res3:= List( [ 1 .. 10 ], i -> Random( rs3, 1, 1000 ) );;
+gap> Reset( rs3, state3 );;
+gap> res1 = List( [ 1 .. 10 ], i -> Random( rs3, l ) );
+true
+gap> res2 = List( [ 1 .. 10 ], i -> Random( rs3, G ) );
+true
+gap> res3 = List( [ 1 .. 10 ], i -> Random( rs3, 1, 1000 ) );
+true
+
+# different calls with the same seed (e.g., without prescribed seed)
+# yield the same sequences of random numbers
+gap> rs:= RandomSource( IsRandomSourceJulia );;
+gap> rs2:= RandomSource( IsRandomSourceJulia );;
+gap> ForAll( [ 1 .. 100 ], i -> Random( rs, G ) = Random( rs2, G ) );
+true
+
+# reset and re-initialize using an integer seed
+gap> Reset( rs, 1 );;
+gap> Init( rs2, 1 );;
+gap> ForAll( [ 1 .. 100 ], i -> Random( rs, G ) = Random( rs2, G ) );
+true
+
+# possible errors
+gap> RandomSource( IsRandomSourceJulia, -1 );
+Error, <seed> must be a nonnegative integer or a Julia random number generator
+gap> Reset( rs, -1 );;
+Error, <seed> must be a nonnegative integer or a Julia random number generator
+
+#
 gap> STOP_TEST( "adapter.tst", 1 );
