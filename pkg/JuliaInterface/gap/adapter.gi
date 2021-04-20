@@ -138,8 +138,9 @@ InstallMethod( Init,
     [ "IsRandomSourceJulia", "IsObject" ],
     function( rng, seed )
     ImportJuliaModuleIntoGAP( "Random" );
-    if IsInt( seed ) and 0 <= seed then
-      # This means a prescribed seed.
+    if IsInt( seed ) then
+      # This means a prescribed seed.  (Negative seeds are not supported.)
+      seed:= AbsInt( seed );
       if HasJuliaPointer( rng ) then
         Julia.Random.seed\!( JuliaPointer( rng ), GAPToJulia( seed ) );
       else
