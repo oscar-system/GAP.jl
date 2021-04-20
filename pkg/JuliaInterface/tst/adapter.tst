@@ -201,9 +201,9 @@ gap> ForAll( [ 1 .. 100 ], i -> Random( rs, G ) = Random( rs2, G ) );
 true
 
 # possible errors
-gap> RandomSource( IsRandomSourceJulia, -1 );
+gap> RandomSource( IsRandomSourceJulia, "random" );
 Error, <seed> must be a nonnegative integer or a Julia random number generator
-gap> Reset( rs, -1 );;
+gap> Reset( rs, "random" );;
 Error, <seed> must be a nonnegative integer or a Julia random number generator
 
 #
