@@ -123,27 +123,8 @@ export @g_str
 
 import MacroTools
 
-"""
-    @gapwrap
-
-When applied to a method definition that involves access to entries of
-`GAP.Globals`, this macro rewrites the code (using `@generated`)
-such that the relevant entries are cached at compile time,
-and need not be fetched again and again at runtime.
-
-# Examples
-```jldoctest
-julia> @gapwrap isevenint(x) = GAP.Globals.IsEvenInt(x)::Bool;
-
-julia> isevenint(1)
-false
-
-julia> isevenint(2)
-true
-
-```
-"""
-macro gapwrap(ex)
+# The following function is used by @gapwrap and @gapattribute.
+function gapwrap_fun(ex::Expr)
     # split the method definition
     def_dict = try
         MacroTools.splitdef(ex)
@@ -175,14 +156,35 @@ macro gapwrap(ex)
 
     # assemble the method definition again
     ex = MacroTools.combinedef(def_dict)
-    ex2 = :(@generated $ex)
+    return :(@generated $ex)
+end
 
+"""
+    @gapwrap
+
+When applied to a method definition that involves access to entries of
+`GAP.Globals`, this macro rewrites the code (using `@generated`)
+such that the relevant entries are cached at compile time,
+and need not be fetched again and again at runtime.
+
+# Examples
+```jldoctest
+julia> @gapwrap isevenint(x) = GAP.Globals.IsEvenInt(x)::Bool;
+
+julia> isevenint(1)
+false
+
+julia> isevenint(2)
+true
+
+```
+"""
+macro gapwrap(ex)
     # we must prevent Julia from applying gensym to all locals, as these
     # substitutions do not get applied to the quoted part of the new body,
     # leading to trouble if the wrapped function has arguments (as the
     # argument names will be replaced, but not their uses in the quoted part
-    # of the body)
-    return esc(ex2)
+    return esc(gapwrap_fun(ex))
 end
 
 export @gapwrap
@@ -206,13 +208,41 @@ method definition says,
 calls `GAP.Globals.SetSomething(X, obj)`.
 
 In order to avoid runtime access via `GAP.Globals.Something` etc.,
-the macro defines global variables `_cached_GAP_Something`,
-`_cached_GAP_HasSomething`, and `_cached_GAP_SetSomething` that point to
-the GAP functions `GAP.Globals.Something`, `GAP.Globals.HasSomething`, and
-`GAP.Globals.SetSomething`, respectively.
+the same modifications are applied in the construction of the three functions
+that are applied by [`@gapwrap`](@ref).
 
-All the variables that are created by the macro belong to the Julia module
+The variables that are created by the macro belong to the Julia module
 in whose scope the macro is called.
+
+# Examples
+```jldoctest
+julia> @gapattribute isstrictlysortedlist(obj::GAP.GapObj) = GAP.Globals.IsSSortedList(obj)
+
+julia> l = GAP.evalstr( "[ 1, 3, 7 ]" );
+
+julia> hasisstrictlysortedlist( l )
+false
+
+julia> isstrictlysortedlist( l )
+true
+
+julia> hasisstrictlysortedlist( l )
+true
+
+julia> l = GAP.evalstr( "[ 1, 3, 7 ]" );
+
+julia> hasisstrictlysortedlist( l )
+false
+
+julia> setisstrictlysortedlist( l, true )
+
+julia> hasisstrictlysortedlist( l )
+true
+
+julia> isstrictlysortedlist( l )
+true
+
+```
 """
 macro gapattribute(ex)
     def_dict = try
@@ -222,57 +252,46 @@ macro gapattribute(ex)
     end
 
     # The global variables will belong to the module
-    # in whose scope the macro s called.
+    # in whose scope the macro is called.
     enclmodule = __module__
 
-    # the method must have exactly one argument
+    # The method must have exactly one argument.
     length(def_dict[:args]) == 1 || error("the method must have exactly one argument")
 
     # take the body of the function
     body = def_dict[:body]
 
-    # find the (unique) occurrence of GAP.Globals.<name>(<arg>),
-    # record <name> and <arg>,
-    # replace <name> by _cached_GAP_<name>
-    fundict = IdDict{Symbol,Symbol}()
+    # Find the (unique) occurrence of GAP.Globals.<name>(<arg>),
+    # and record <name> and <arg>.
     fun_arg = Set{Tuple{Symbol,Any}}()
     body = MacroTools.postwalk(body) do x
         MacroTools.@capture(x, GAP.Globals.sym_(arg_)) || return x
-        new_sym = get!(() -> Symbol("_cached_GAP_" * String(sym)), fundict, sym)
         push!(fun_arg, (sym, arg))
-        return Expr(:call, new_sym, arg)
+        return x
     end
     length(fun_arg) == 1 || error("there must be a unique call to a function in GAP.Globals")
     pair = pop!(fun_arg)
     gapname = string(pair[1])
     gaparg = pair[2]
 
-    # assign the global caches for the getter, ...
-    gapgetter = Symbol(gapname)
-    juliagetter = Symbol("_cached_GAP_" * gapname)
-    Core.eval( enclmodule, :(const $juliagetter = GAP.Globals.$gapgetter) )
-
-    # ... the tester, ...
+    # Define the function names on the GAP side ...
     gaptester = Symbol("Has" * gapname)
-    juliatester = Symbol("_cached_GAP_Has" * gapname)
-    Core.eval( enclmodule, :(const $juliatester = GAP.Globals.$gaptester) )
-
-    # ... and the setter
     gapsetter = Symbol("Set" * gapname)
-    juliasetter = Symbol("_cached_GAP_Set" * gapname)
-    Core.eval( enclmodule, :(const $juliasetter = GAP.Globals.$gapsetter) )
 
-    # assign the tester and setter
+    # ... and on the Julia side.
     julianame = string(def_dict[:name])
     juliaarg = def_dict[:args][1]
     testername = Symbol("has" * julianame)
-    Core.eval( enclmodule, :($testername($juliaarg)::Bool = $juliatester($gaparg)) )
     settername = Symbol("set" * julianame)
-    Core.eval( enclmodule, :($settername($juliaarg, val) = $juliasetter($gaparg, val)) )
 
-    # assemble the method definition (for the getter) again,
-    # using the modified body
-    def_dict[:body] = body
-    ex = MacroTools.combinedef(def_dict)
-    return esc(ex)
+    # For the getter, we rewrite the given input as @gapwrap does.
+    Core.eval(enclmodule, gapwrap_fun(ex))
+
+    # Default tester and setter are given by the variable names.
+    Core.eval(enclmodule, gapwrap_fun(:(($testername($juliaarg)::Bool = GAP.Globals.$gaptester($gaparg)))))
+    Core.eval(enclmodule, gapwrap_fun(:(($settername($juliaarg, val) = GAP.Globals.$gapsetter($gaparg, val)))))
+
+    return
 end
+
+export @gapattribute

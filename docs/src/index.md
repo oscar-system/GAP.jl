@@ -50,6 +50,7 @@ GapObj
 @gap
 @g_str
 @gapwrap
+@gapattribute
 ```
 
 ## Conversions
