@@ -154,7 +154,7 @@ macro gapwrap(ex)
     # take the body of the function
     body = def_dict[:body]
 
-    # find, record and substitute all occurrences of GAP.Global.*
+    # find, record and substitute all occurrences of GAP.Globals.*
     symdict = IdDict{Symbol,Symbol}()
     body = MacroTools.postwalk(body) do x
         MacroTools.@capture(x, GAP.Globals.sym_) || return x
@@ -186,3 +186,93 @@ macro gapwrap(ex)
 end
 
 export @gapwrap
+
+"""
+    macro gapattribute
+
+This macro is intended to be applied to a method definition
+for a unary function called `attr`, say,
+where the argument has the type `T`, say,
+the code contains exactly one call of the form `GAP.Globals.Something(X)`,
+where `Something` is a GAP attribute such as `Centre` or `IsSolvableGroup`,
+and `attr` returns the corresponding attribute value for its argument.
+
+The macro defines three functions `attr`, `hasattr`, and `setattr`, where
+`attr` takes an argument of type `T` and returns what the given
+method definition says,
+`hasattr` takes an argument of type `T` and returns the result of
+`GAP.Globals.HasSomething(X)` (which is either `true` or `false`),
+`setattr` takes an argument of type `T` and an object `obj` and
+calls `GAP.Globals.SetSomething(X, obj)`.
+
+In order to avoid runtime access via `GAP.Globals.Something` etc.,
+the macro defines global variables `_cached_GAP_Something`,
+`_cached_GAP_HasSomething`, and `_cached_GAP_SetSomething` that point to
+the GAP functions `GAP.Globals.Something`, `GAP.Globals.HasSomething`, and
+`GAP.Globals.SetSomething`, respectively.
+
+All the variables that are created by the macro belong to the Julia module
+in whose scope the macro is called.
+"""
+macro gapattribute(ex)
+    def_dict = try
+        MacroTools.splitdef(ex)
+    catch
+        error("@gapattribute must be applied to a method definition")
+    end
+
+    # The global variables will belong to the module
+    # in whose scope the macro s called.
+    enclmodule = __module__
+
+    # the method must have exactly one argument
+    length(def_dict[:args]) == 1 || error("the method must have exactly one argument")
+
+    # take the body of the function
+    body = def_dict[:body]
+
+    # find the (unique) occurrence of GAP.Globals.<name>(<arg>),
+    # record <name> and <arg>,
+    # replace <name> by _cached_GAP_<name>
+    fundict = IdDict{Symbol,Symbol}()
+    fun_arg = Set{Tuple{Symbol,Any}}()
+    body = MacroTools.postwalk(body) do x
+        MacroTools.@capture(x, GAP.Globals.sym_(arg_)) || return x
+        new_sym = get!(() -> Symbol("_cached_GAP_" * String(sym)), fundict, sym)
+        push!(fun_arg, (sym, arg))
+        return Expr(:call, new_sym, arg)
+    end
+    length(fun_arg) == 1 || error("there must be a unique call to a function in GAP.Globals")
+    pair = pop!(fun_arg)
+    gapname = string(pair[1])
+    gaparg = pair[2]
+
+    # assign the global caches for the getter, ...
+    gapgetter = Symbol(gapname)
+    juliagetter = Symbol("_cached_GAP_" * gapname)
+    Core.eval( enclmodule, :(const $juliagetter = GAP.Globals.$gapgetter) )
+
+    # ... the tester, ...
+    gaptester = Symbol("Has" * gapname)
+    juliatester = Symbol("_cached_GAP_Has" * gapname)
+    Core.eval( enclmodule, :(const $juliatester = GAP.Globals.$gaptester) )
+
+    # ... and the setter
+    gapsetter = Symbol("Set" * gapname)
+    juliasetter = Symbol("_cached_GAP_Set" * gapname)
+    Core.eval( enclmodule, :(const $juliasetter = GAP.Globals.$gapsetter) )
+
+    # assign the tester and setter
+    julianame = string(def_dict[:name])
+    juliaarg = def_dict[:args][1]
+    testername = Symbol("has" * julianame)
+    Core.eval( enclmodule, :($testername($juliaarg)::Bool = $juliatester($gaparg)) )
+    settername = Symbol("set" * julianame)
+    Core.eval( enclmodule, :($settername($juliaarg, val) = $juliasetter($gaparg, val)) )
+
+    # assemble the method definition (for the getter) again,
+    # using the modified body
+    def_dict[:body] = body
+    ex = MacroTools.combinedef(def_dict)
+    return esc(ex)
+end
