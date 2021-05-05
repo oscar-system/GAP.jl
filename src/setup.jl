@@ -4,6 +4,7 @@ using Pkg
 using Pkg.Artifacts
 using GAP_jll
 using GAP_lib_jll
+using GMP_jll
 
 #############################################################################
 #
@@ -64,13 +65,36 @@ end
 
 include("julia-config.jl")
 
+# In Julia >= 1.6, there is a "fake" GMP_jll which does not include header files;
+# see <https://github.com/JuliaLang/julia/pull/38797#issuecomment-741953480>
+function gmp_artifact_dir()
+    artifacts_toml = joinpath(dirname(dirname(Base.pathof(GMP_jll))), "StdlibArtifacts.toml")
+
+    # If this file exists, it's a stdlib JLL and we must download the artifact ourselves
+    if isfile(artifacts_toml)
+        meta = artifact_meta("GMP", artifacts_toml)
+        hash = Base.SHA1(meta["git-tree-sha1"])
+        if !artifact_exists(hash)
+            dl_info = first(meta["download"])
+            download_artifact(hash, dl_info["url"], dl_info["sha256"])
+        end
+        return artifact_path(hash)
+    end
+
+    # Otherwise, we can just use the artifact directory given to us by GMP_jll
+    return GMP_jll.find_artifact_dir()
+end
+
 function regenerate_gaproot()
     gaproot_gapjl = abspath(@__DIR__, "..")
     gaproot_mutable = abspath(@__DIR__, "..", "gaproot", "v$(VERSION.major).$(VERSION.minor)")
     @info "Set up gaproot at $(gaproot_mutable)"
 
+    gap_prefix = GAP_jll.find_artifact_dir()
+    gmp_prefix = gmp_artifact_dir()
+
     # load the existing sysinfo.gap
-    sysinfo = read_sysinfo_gap(joinpath(GAP_jll.find_artifact_dir(), "share", "gap"))
+    sysinfo = read_sysinfo_gap(joinpath(gap_prefix, "share", "gap"))
 
     #
     # now we modify sysinfo for our needs
@@ -110,15 +134,15 @@ function regenerate_gaproot()
 
     # set include flags -- since some GAP packages expect to be able to use gmp.h,
     # make sure to also add that
-    gmp_include = joinpath(GAP_jll.GMP_jll.find_artifact_dir(), "include")
-    gap_include = joinpath(GAP_jll.find_artifact_dir(), "include", "gap")
+    gmp_include = joinpath(gmp_prefix, "include")
+    gap_include = joinpath(gap_prefix, "include", "gap")
     gap_include2 = joinpath(gaproot_mutable) # FIXME: for code doing `#include "src/compiled.h"`
     sysinfo["GAP_CPPFLAGS"] = "-I$(gmp_include) -I$(gap_include) -I$(gap_include2) -DHAVE_CONFIG_H"
 
     # set linker flags; since these are meant for use for GAP packages, add the necessary
     # flags to link against libgap
-    gmp_lib = joinpath(GAP_jll.GMP_jll.find_artifact_dir(), "lib")
-    gap_lib = joinpath(GAP_jll.find_artifact_dir(), "lib")
+    gmp_lib = joinpath(gmp_prefix, "lib")
+    gap_lib = joinpath(gap_prefix, "lib")
     sysinfo["GAP_LDFLAGS"] = "-L$(gmp_lib) -L$(gap_lib) -lgap " * sysinfo["JULIA_LDFLAGS"]
     
     # set library flags; note that for many packages (e.g. Browse) one really needs
@@ -169,7 +193,7 @@ function regenerate_gaproot()
         # is a nice side effect)
         # TODO: backport as many as possible of these or similar changes to GAP itself
         gac = read(joinpath(gaproot_gapjl, "etc", "gac"), String)
-        #gac = read(joinpath(GAP_jll.find_artifact_dir(), "share", "gap", "gac"), String)
+        #gac = read(joinpath(gap_prefix, "share", "gap", "gac"), String)
 
         # abs_top_builddir, abs_top_srcdir and libdir must always be reset to ensure
         # relocatability of this package
@@ -203,7 +227,7 @@ function regenerate_gaproot()
         # 
         mkpath("bin")
         for d in (("include/gap", "src"), ("lib", "lib"), ("bin/gap", "gap"))
-            force_symlink(joinpath(GAP_jll.find_artifact_dir(), d[1]), d[2])
+            force_symlink(joinpath(gap_prefix, d[1]), d[2])
         end
 
         # emulate the "compat mode" of the GAP build system, to help certain
