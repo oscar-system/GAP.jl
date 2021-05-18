@@ -156,14 +156,9 @@ function regenerate_gaproot()
     mkpath(sysinfo["DEFAULT_PKGDIR"])
     roots = [
             gaproot_gapjl,          # for JuliaInterface and JuliaExperimental
-            gaproot_mutable,
             gaproot_packages,       # default installation dir for PackageManager
+            gaproot_mutable,
             sysinfo["GAP_LIB_DIR"], # the actual GAP library, from GAP_lib_jll
-
-            # FIXME/HACK: the GAP 4.11.0 package archive contains ._*
-            # files, which breaks git tree checksums; so for now we
-            # keep using our old hacked gap tarball instead
-            joinpath(artifact"gap", "gap-4.11.0"),  # GAP package archive
             ]
     sysinfo["GAPROOTS"] = join(roots, ";")
 
@@ -240,8 +235,8 @@ function regenerate_gaproot()
         force_symlink(joinpath(GAP_lib_jll.find_artifact_dir(), "share", "gap", "bin", "BuildPackages.sh"),
                       joinpath("bin", "BuildPackages.sh"))
 
-        # create an empty `pkg` directory for PackageManager to play in
-        mkpath("pkg")
+        # create a `pkg` symlink to the GAP packages artifact
+        force_symlink(artifact"gap_packages", "pkg")
 
         ##
         ## Create Project.toml & Manifest.toml for use by gap.sh
