@@ -117,7 +117,7 @@ function load(spec::String, version::String = ""; install = false)
 end
 
 """
-    install(spec::String, interactive::Bool = true)
+    install(spec::String; interactive::Bool = true, quiet::Bool = false)
 
 Download and install the newest released version of the GAP package
 given by `spec` in the `pkg` subdirectory of GAP's build directory
@@ -130,8 +130,10 @@ containing a package, or the URL of a `PackageInfo.g` file.
 
 The function uses [the function `InstallPackage` from GAP's package
 `PackageManager`](GAP_ref(PackageManager:InstallPackage)).
+The info messages shown by  this function can be suppressed by entering
+`true` as the value of `quiet`.
 """
-function install(spec::String; interactive::Bool = true, pkgdir::AbstractString = DEFAULT_PKGDIR)
+function install(spec::String; interactive::Bool = true, pkgdir::AbstractString = DEFAULT_PKGDIR, quiet::Bool = false)
     res = load("PackageManager")
     @assert res
 
@@ -139,11 +141,19 @@ function install(spec::String; interactive::Bool = true, pkgdir::AbstractString 
     Globals.PKGMAN_CustomPackageDir = GapObj(pkgdir)
     mkpath(pkgdir)
 
-    return Globals.InstallPackage(GapObj(spec), interactive)
+    if quiet
+      oldlevel = Globals.InfoLevel(Globals.InfoPackageManager)
+      Globals.SetInfoLevel(Globals.InfoPackageManager, 0)
+      res = Globals.InstallPackage(GapObj(spec), interactive)
+      Globals.SetInfoLevel(Globals.InfoPackageManager, oldlevel)
+      return res
+    else
+      return Globals.InstallPackage(GapObj(spec), interactive)
+    end
 end
 
 """
-    update(spec::String)
+    update(spec::String; quiet::Bool = false)
 
 Update the GAP package given by `spec` that is installed in the
 `pkg` subdirectory of GAP's build directory (variable `GAP.GAPROOT`),
@@ -156,8 +166,10 @@ containing a package, or the URL of a `PackageInfo.g` file.
 
 The function uses [the function `UpdatePackage` from GAP's package
 `PackageManager`](GAP_ref(PackageManager:UpdatePackage)).
+The info messages shown by  this function can be suppressed by entering
+`true` as the value of `quiet`.
 """
-function update(spec::String; interactive::Bool = true, pkgdir::AbstractString = DEFAULT_PKGDIR)
+function update(spec::String; interactive::Bool = true, pkgdir::AbstractString = DEFAULT_PKGDIR, quiet::Bool = false)
     res = load("PackageManager")
     @assert res
 
@@ -165,14 +177,22 @@ function update(spec::String; interactive::Bool = true, pkgdir::AbstractString =
     Globals.PKGMAN_CustomPackageDir = GapObj(pkgdir)
     mkpath(pkgdir)
 
-    return Globals.UpdatePackage(GapObj(spec), interactive)
+    if quiet
+      oldlevel = Globals.InfoLevel(Globals.InfoPackageManager)
+      Globals.SetInfoLevel(Globals.InfoPackageManager, 0)
+      res = Globals.UpdatePackage(GapObj(spec), interactive)
+      Globals.SetInfoLevel(Globals.InfoPackageManager, oldlevel)
+      return res
+    else
+      return Globals.UpdatePackage(GapObj(spec), interactive)
+    end
 end
 # note that the updated version cannot be used in the current GAP session,
 # because the older version is already loaded;
 # thus nec. to start Julia anew
 
 """
-    remove(spec::String)
+    remove(spec::String; quiet::Bool = false)
 
 Remove the GAP package with name `spec` that is installed in the
 `pkg` subdirectory of GAP's build directory (variable `GAP.GAPROOT`).
@@ -180,8 +200,10 @@ Return `true` if the removal was successful, and `false` otherwise.
 
 The function uses [the function `RemovePackage` from GAP's package
 `PackageManager`](GAP_ref(PackageManager:RemovePackage)).
+The info messages shown by  this function can be suppressed by entering
+`true` as the value of `quiet`.
 """
-function remove(spec::String; interactive::Bool = true, pkgdir::AbstractString = DEFAULT_PKGDIR)
+function remove(spec::String; interactive::Bool = true, pkgdir::AbstractString = DEFAULT_PKGDIR, quiet::Bool = false)
     res = load("PackageManager")
     @assert res
 
@@ -189,7 +211,15 @@ function remove(spec::String; interactive::Bool = true, pkgdir::AbstractString =
     Globals.PKGMAN_CustomPackageDir = GapObj(pkgdir)
     mkpath(pkgdir)
 
-    return Globals.RemovePackage(GapObj(spec), interactive)
+    if quiet
+      oldlevel = Globals.InfoLevel(Globals.InfoPackageManager)
+      Globals.SetInfoLevel(Globals.InfoPackageManager, 0)
+      res = Globals.RemovePackage(GapObj(spec), interactive)
+      Globals.SetInfoLevel(Globals.InfoPackageManager, oldlevel)
+      return res
+    else
+      return Globals.RemovePackage(GapObj(spec), interactive)
+    end
 end
 
 end
