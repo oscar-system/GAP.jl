@@ -19,13 +19,13 @@ function _GAP_TO_JULIA(ptr::Ptr{Cvoid})
         end
         return unsafe_pointer_to_objref(ptr)
     end
-    return ccall(:julia_gap, Any, (Ptr{Cvoid},), ptr)
+    return ccall((:julia_gap, JuliaInterface_path), Any, (Ptr{Cvoid},), ptr)
 end
 
 #
 # low-level Julia -> GAP conversion
 #
-_JULIA_TO_GAP(val::Any) = ccall(:gap_julia, Ptr{Cvoid}, (Any,), val)
+_JULIA_TO_GAP(val::Any) = ccall((:gap_julia, JuliaInterface_path), Ptr{Cvoid}, (Any,), val)
 #_JULIA_TO_GAP(x::Bool) = x ? gap_true : gap_false
 _JULIA_TO_GAP(x::FFE) = reinterpret(Ptr{Cvoid}, x)
 _JULIA_TO_GAP(x::GapObj) = pointer_from_objref(x)
@@ -133,9 +133,9 @@ NEW_MACFLOAT(x::Float64) = ccall((:NEW_MACFLOAT, libgap), GapObj, (Cdouble,), x)
 ValueMacFloat(x::GapObj) = ccall((:GAP_ValueMacFloat, libgap), Cdouble, (Any,), x)
 CharWithValue(x::Cuchar) = ccall((:GAP_CharWithValue, libgap), GapObj, (Cuchar,), x)
 
-WrapJuliaFunc(x::Function) = ccall(:WrapJuliaFunc, GapObj, (Any,), x)
+WrapJuliaFunc(x::Function) = ccall((:WrapJuliaFunc, JuliaInterface_path), GapObj, (Any,), x)
 UnwrapJuliaFunc(x::Function) = x
-UnwrapJuliaFunc(x::GapObj) = ccall(:GET_JULIA_FUNC, Function, (GapObj,), x)
+UnwrapJuliaFunc(x::GapObj) = ccall((:GET_JULIA_FUNC, JuliaInterface_path), Function, (GapObj,), x)
 
 function ElmList(x::GapObj, position)
     o = ccall((:GAP_ElmList, libgap), Ptr{Cvoid}, (Any, Culong), x, Culong(position))
@@ -187,7 +187,7 @@ function call_gap_func(func::GapObj, args...; kwargs...)
         if TNUM_OBJ(func) == T_FUNCTION && length(args) <= 6
             result = _call_gap_func(func, args...)
         else
-            result = ccall(:call_gap_func, Any, (Any, Any), func, args)
+            result = ccall((:call_gap_func, JuliaInterface_path), Any, (Any, Any), func, args)
         end
         if options
             Globals.PopOptions()
@@ -206,7 +206,7 @@ function call_gap_func_nokw(func::GapObj, args...)
     if TNUM_OBJ(func) == T_FUNCTION && length(args) <= 6
         _call_gap_func(func, args...)
     else
-        ccall(:call_gap_func, Any, (Any, Any), func, args)
+        ccall((:call_gap_func, JuliaInterface_path), Any, (Any, Any), func, args)
     end
 end
 
