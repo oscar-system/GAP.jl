@@ -192,13 +192,13 @@ function regenerate_gaproot()
 
         # abs_top_builddir, abs_top_srcdir and libdir must always be reset to ensure
         # relocatability of this package
-        gac = replace(gac, r"\nabs_top_builddir=.+" => "\nabs_top_builddir=\"$(gaproot_mutable)\"")
-        gac = replace(gac, r"\nabs_top_srcdir=.+" => "\nabs_top_srcdir=\"$(gaproot_mutable)\"")
-        gac = replace(gac, r"\nlibdir=.+" => "\nlibdir=\"$(gaproot_mutable)/lib\"")
+        gac = replace(gac, r"^abs_top_builddir=.+$"m => "\nabs_top_builddir=\"$(gaproot_mutable)\"")
+        gac = replace(gac, r"^abs_top_srcdir=.+$"m => "\nabs_top_srcdir=\"$(gaproot_mutable)\"")
+        gac = replace(gac, r"^libdir=.+$"m => "\nlibdir=\"$(gaproot_mutable)/lib\"")
 
         # normally GAP extensions do not use backlinking; but we need this, as GAP_jll
         # does not use RTLD_GLOBAL by default
-        gac = replace(gac, r"\nc_addlibs=.+" => "\nc_addlibs=\"-lgap\"")
+        gac = replace(gac, r"^c_addlibs=.+$"m => "\nc_addlibs=\"-lgap\"")
 
         # determine compiler & linker (and ignore libtool for all this)
         if Sys.islinux() || Sys.isfreebsd()
@@ -211,9 +211,9 @@ function regenerate_gaproot()
         else
             error("OS not supported")
         end
-        gac = replace(gac, r"\nc_compiler=.+" => "\nc_compiler=\"$(c_compiler)\"")
-        gac = replace(gac, r"\nc_dyn_linker=.+" => "\nc_dyn_linker=\"$(c_dyn_linker) -lgap\"")
-        gac = replace(gac, r"\nc_linker=.+" => "\nc_linker=\"echo static linking not supported ; exit 1 ;\"")
+        gac = replace(gac, r"^c_compiler=.+$"m => "\nc_compiler=\"$(c_compiler)\"")
+        gac = replace(gac, r"^c_dyn_linker=.+$"m => "\nc_dyn_linker=\"$(c_dyn_linker) -lgap\"")
+        gac = replace(gac, r"^c_linker=.+$"m => "\nc_linker=\"echo static linking not supported ; exit 1 ;\"")
 
         # write it all out and fix the access permissions
         write("gac", gac)
