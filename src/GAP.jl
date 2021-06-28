@@ -48,14 +48,9 @@ end
 # The following hack is needed only in Julia 1.3, not in later versions.
 error_handlerwrap() = Base.invokelatest(error_handler)
 
-# This will be filled out by __init__(), as it must be done at runtime
-JuliaInterface_path = ""
-
-# This will be filled out by __init__()
-JuliaInterface_handle = C_NULL
-
 # This must be `const` so that we can use it with `ccall()`
 const JuliaInterface = "JuliaInterface.so"
+const JuliaInterface_path = normpath(joinpath(@__DIR__, "..", "pkg", "JuliaInterface", "bin", sysinfo["GAParch"], JuliaInterface))
 
 function initialize(argv::Array{String,1})
     handle_signals = isdefined(Main, :__GAP_ARGS__)  # a bit of a hack...
@@ -158,11 +153,6 @@ function initialize(argv::Array{String,1})
         ccall((:SyInstallAnswerIntr, libgap), Cvoid, ())
         return
     end
-
-    # open JuliaInterface.so, too
-    #global JuliaInterface_path = CSTR_STRING(EvalString("""Filename(DirectoriesPackagePrograms("JuliaInterface"), "JuliaInterface.so");"""))
-    global JuliaInterface_path = normpath(joinpath(@__DIR__, "..", "pkg", "JuliaInterface", "bin", sysinfo["GAParch"], JuliaInterface))
-    global JuliaInterface_handle = Libdl.dlopen(JuliaInterface_path)
 
     # Redirect error messages, in order not to print them to the screen.
     Base.invokelatest(reset_GAP_ERROR_OUTPUT)
