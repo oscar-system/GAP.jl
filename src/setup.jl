@@ -85,9 +85,8 @@ function gmp_artifact_dir()
     return GMP_jll.find_artifact_dir()
 end
 
-function regenerate_gaproot()
+function regenerate_gaproot(gaproot_mutable)
     gaproot_gapjl = abspath(@__DIR__, "..")
-    gaproot_mutable = abspath(@__DIR__, "..", "gaproot", "v$(VERSION.major).$(VERSION.minor)")
     @info "Set up gaproot at $(gaproot_mutable)"
 
     gap_prefix = GAP_jll.find_artifact_dir()

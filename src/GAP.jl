@@ -9,7 +9,8 @@ using GAP_jll
 include("setup.jl")
 
 # always force regeneration of GAPROOT when precompiling
-const GAPROOT = Setup.regenerate_gaproot()
+const GAPROOT = abspath(@__DIR__, "..", "gaproot", "v$(VERSION.major).$(VERSION.minor)")
+Setup.regenerate_gaproot(GAPROOT)
 
 import Base: length, finalize
 import Libdl
@@ -183,7 +184,7 @@ function __init__()
 
     # regenerate GAPROOT if it was removed
     if !isdir(GAPROOT) || isempty(readdir(GAPROOT))
-        Setup.setup_mutable_gaproot(GAPROOT)
+        Setup.regenerate_gaproot(GAPROOT)
     end
 
     gaproots = sysinfo["GAPROOTS"]
