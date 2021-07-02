@@ -21,7 +21,7 @@ function(obj)
   str := "";
   out := OutputTextString(str, false);
   SetPrintFormattingStatus(out, false);
-  STREAM_CALL(out, Display, obj);
+  CALL_WITH_STREAM(out, Display, [obj]);
   CloseStream(out);
   return str;
 end );
@@ -32,7 +32,7 @@ function(obj)
   str := "";
   out := OutputTextString(str, false);
   SetPrintFormattingStatus(out, false);
-  STREAM_CALL(out, ViewObj, obj);
+  CALL_WITH_STREAM(out, ViewObj, [obj]);
   CloseStream(out);
   return str;
 end );

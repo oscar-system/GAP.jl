@@ -1,7 +1,7 @@
 name = "GAP"
 uuid = "c863536a-3901-11e9-33e7-d5cd0df7b904"
 authors = ["Thomas Breuer <sam@math.rwth-aachen.de>", "Sebastian Gutsche <gutsche@mathematik.uni-siegen.de>", "Max Horn <horn@mathematik.uni-kl.de>"]
-version = "0.5.2"
+version = "0.6-DEV"
 
 [deps]
 GAP_jll = "5cd7a574-2c56-5be2-91dc-c8bc375b9ddf"
@@ -15,8 +15,8 @@ REPL = "3fa0cd96-eef1-5676-8a61-b3b8758bbffb"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 
 [compat]
-GAP_jll = "~400.1100.1"
-GAP_lib_jll = "~400.1100"
+GAP_jll = "~400.1190.4"
+GAP_lib_jll = "~400.1190.4"
 MacroTools = "0.5"
 julia = "1.3"
 

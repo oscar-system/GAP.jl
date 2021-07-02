@@ -47,7 +47,11 @@ function error_handler()
 end
 
 # The following hack is needed only in Julia 1.3, not in later versions.
-error_handlerwrap() = Base.invokelatest(error_handler)
+if VERSION >= v"1.4"
+    const error_handlerwrap = error_handler
+else
+    error_handlerwrap() = Base.invokelatest(error_handler)
+end
 
 # This must be `const` so that we can use it with `ccall()`
 const JuliaInterface = "JuliaInterface.so"
@@ -99,25 +103,7 @@ function initialize(argv::Array{String,1})
     val = _ValueGlobalVariable("__JULIAINTERNAL_LOADED_FROM_JULIA")
 
     if val == C_NULL
-        # Ask GAP to quit. Note that this invokes `jl_atexit_hook` so it
-        # should be fine. It might be "nicer" to call Julia's `exit` function
-        # here; but unfortunately we can't access GAP's exit code, which is
-        # stored in `SystemErrorCode`, a statically linked (and hence
-        # invisible to us) GAP C kernel variable. Hence we instead call
-        # FORCE_QUIT_GAP with no arguments, which just calls the `exit`
-        # function of the  C standard library with the appropriate exit code.
-        # But as mentioned, just before that, it runs `jl_atexit_hook`.
-        FORCE_QUIT_GAP = _ValueGlobalVariable("FORCE_QUIT_GAP")
-        ccall(
-            (:GAP_CallFuncArray, libgap),
-            Ptr{Cvoid},
-            (Any, Culonglong, Ptr{Cvoid}),
-            FORCE_QUIT_GAP,
-            0,
-            C_NULL,
-        )
-        # we shouldn't get here, but just in case....
-        error("FORCE_QUIT_GAP failed")
+        exit(exit_code())
     end
 
     # verify our TNUMs are still correct
@@ -161,6 +147,17 @@ end
 
 function finalize()
     ccall((:GAP_finalize, libgap), Cvoid, ())
+end
+
+function exit_code()
+    return ccall(
+            (:GAP_CallFuncArray, libgap),
+            Int,
+            (Ptr{Cvoid}, Culonglong, Ptr{Cvoid}),
+            _ValueGlobalVariable("GapExitCode"),
+            0,
+            C_NULL,
+        ) >> 2
 end
 
 # Show a more helpful error message for users on Windows.

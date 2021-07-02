@@ -139,8 +139,8 @@
     @test GAP.gap_to_julia(Array{Tuple{Int64},2}, n) == xt
     n = GAP.julia_to_gap(big(2)^100)
     @test_throws GAP.ConversionError GAP.gap_to_julia(Array{Int64,2}, n)
-    n = GAP.evalstr("[[1,2],[,4]]")
-    @test GAP.gap_to_julia(Array{Union{Int64,Nothing},2}, n) == [1 2; nothing 4]
+    #n = GAP.evalstr("[[1,2],[,4]]")
+    #@test GAP.gap_to_julia(Array{Union{Int64,Nothing},2}, n) == [1 2; nothing 4]
     x = [1, 2]
     m = Any[1 2; 3 4]
     m[1, 1] = x
