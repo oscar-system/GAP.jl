@@ -161,6 +161,10 @@ function regenerate_gaproot(gaproot_mutable)
             ]
     sysinfo["GAPROOTS"] = join(roots, ";")
 
+    # path to gap & gac (used by some package build systems)
+    sysinfo["GAP"] = joinpath(gaproot_mutable, "bin", "gap.sh")
+    sysinfo["GAC"] = joinpath(gaproot_mutable, "gac")
+
     # create the mutable gaproot
     rm(gaproot_mutable, recursive=true, force=true)
     mkpath(gaproot_mutable)
@@ -202,17 +206,20 @@ function regenerate_gaproot(gaproot_mutable)
         # determine compiler & linker (and ignore libtool for all this)
         if Sys.islinux() || Sys.isfreebsd()
             c_compiler = "$(CC) -fPIC -DPIC"
+            cxx_compiler = "$(CXX) -fPIC -DPIC"
             c_dyn_linker = "$(CC) -shared -fPIC -DPIC" # FIXME: what about `-Wl,-soname -Wl,FOOBAR.so`
         elseif Sys.isapple()
             c_compiler = "$(CC) -fno-common -DPIC"
+            cxx_compiler = "$(CXX) -fno-common -DPIC"
             c_dyn_linker = "$(CC) -bundle" # FIXME: -Wl,-undefined -Wl,dynamic_lookup
             #c_dyn_linker = "$(CC) -Wl,-undefined -Wl,dynamic_lookup -bundle"
         else
             error("OS not supported")
         end
-        gac = replace(gac, r"^c_compiler=.+$"m => "\nc_compiler=\"$(c_compiler)\"")
-        gac = replace(gac, r"^c_dyn_linker=.+$"m => "\nc_dyn_linker=\"$(c_dyn_linker) -lgap\"")
-        gac = replace(gac, r"^c_linker=.+$"m => "\nc_linker=\"echo static linking not supported ; exit 1 ;\"")
+        gac = replace(gac, r"^c_compiler=.+$"m => "c_compiler=\"$(c_compiler)\"")
+        gac = replace(gac, r"^cxx_compiler=.+$"m => "cxx_compiler=\"$(cxx_compiler)\"")
+        gac = replace(gac, r"^c_dyn_linker=.+$"m => "c_dyn_linker=\"$(c_dyn_linker) -lgap\"")
+        gac = replace(gac, r"^c_linker=.+$"m => "c_linker=\"echo static linking not supported ; exit 1 ;\"")
 
         # write it all out and fix the access permissions
         write("gac", gac)
@@ -284,9 +291,8 @@ function regenerate_gaproot(gaproot_mutable)
         # call GAP's "atexit" cleanup functions
         ccall((:Call0ArgsInNewReader, GAP.GAP_jll.libgap), Cvoid, (Any,), GAP.Globals.PROGRAM_CLEAN_UP)
 
-        # Finally exit by calling GAP's FORCE_QUIT_GAP(). See comments in GAP.jl for
-        # an explanation of why we do it this way.
-        GAP.Globals.FORCE_QUIT_GAP()
+        # Finally exit
+        exit(GAP.exit_code())
         """,
         )
     chmod(gap_sh_path, 0o755)

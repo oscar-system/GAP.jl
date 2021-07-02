@@ -315,33 +315,6 @@ static Obj FuncJuliaGetFieldOfObject(Obj self, Obj super_obj, Obj field_name)
     return gap_julia(field_value);
 }
 
-static Obj IsOutputStream;
-
-static Obj FuncSTREAM_CALL(Obj self, Obj stream, Obj func, Obj obj)
-{
-    syJmp_buf readJmpError;
-
-    BEGIN_GAP_SYNC();
-
-    if (CALL_1ARGS(IsOutputStream, stream) != True) {
-        ErrorQuit("STREAM_CALL: <outstream> must be an output stream", 0, 0);
-    }
-    if (!OpenOutputStream(stream)) {
-        ErrorQuit("STREAM_CALL: cannot open stream for output", 0, 0);
-    }
-
-    // call the function, but suppress any errors
-    Call1ArgsInNewReader(func, obj);
-
-    // close the output file again, and return nothing
-    if (!CloseOutput()) {
-        ErrorQuit("STREAM_CALL: cannot close output", 0, 0);
-    }
-    END_GAP_SYNC();
-
-    return 0;
-}
-
 // Mark the Julia pointer inside the GAP JuliaObj
 static void MarkJuliaObject(Bag bag)
 {
@@ -364,7 +337,6 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(JuliaGetFieldOfObject, 2, "obj,name"),
     GVAR_FUNC(JuliaSymbol, 1, "name"),
     GVAR_FUNC(_JULIAINTERFACE_INTERNAL_INIT, 0, ""),
-    GVAR_FUNC(STREAM_CALL, 3, "stream, func, obj"),
     { 0 } /* Finish with an empty entry */
 
 };
@@ -419,7 +391,6 @@ static Int InitKernel(StructInitInfo * module)
 
     ImportFuncFromLibrary("IsJuliaWrapper", &JULIAINTERFACE_IsJuliaWrapper);
     ImportFuncFromLibrary("JuliaPointer", &JULIAINTERFACE_JuliaPointer);
-    ImportFuncFromLibrary("IsOutputStream", &IsOutputStream);
 
     // return success
     return 0;

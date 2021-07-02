@@ -65,18 +65,18 @@ libdir="@libdir@"
 # path to the GAP executable
 gap_compiler="${abs_top_builddir}/gap"
 
-libtool="@SHELL@ $abs_top_builddir/libtool"
-CC="@CC@"
+libtool="@SHELL@ ${abs_top_builddir}/libtool"
 
-# These three should be filled in by the standard autoconf procedures 
-c_compiler="$libtool --mode=compile $CC"
-c_linker="$libtool --mode=link $CC -export-dynamic"
-
-# read sysinfo.gap, which should set GAP_CFLAGS, GAP_CPPFLAGS, GAP_LDFLAGS, GAP_LIBS
+# read sysinfo.gap, which should set GAP_CFLAGS, GAP_CPPFLAGS, etc.
 . "${abs_top_builddir}/sysinfo.gap"
 
+# These three should be filled in by the standard autoconf procedures
+c_compiler="$libtool --mode=compile $GAP_CC"
+cxx_compiler="$libtool --mode=compile $GAP_CXX"
+c_linker="$libtool --mode=link $GAP_CC -export-dynamic"
+
 # These will need special care
-c_dyn_linker="$libtool --mode=link $CC -module -avoid-version -rpath $libdir"
+c_dyn_linker="$libtool --mode=link $GAP_CC -module -avoid-version -rpath $libdir"
 c_addlibs=""
 
 SYS_IS_CYGWIN32=@SYS_IS_CYGWIN32@
@@ -106,6 +106,17 @@ c_compile () {
     mkdir -p $(dirname $1)
     echo ${c_compiler} $3 -o $1 ${GAP_CPPFLAGS} -c $2
     ${c_compiler} $3 -o $1 ${GAP_CPPFLAGS} -c $2 || exit 1
+}
+
+
+#############################################################################
+##
+#F  cxx_compile <output> <input> <options>
+##
+cxx_compile () {
+    mkdir -p $(dirname $1)
+    echo ${cxx_compiler} $3 -o $1 ${GAP_CPPFLAGS} -c $2
+    ${cxx_compiler} $3 -o $1 ${GAP_CPPFLAGS} -c $2 || exit 1
 }
 
 
@@ -165,20 +176,44 @@ process_o_file () {
 process_c_file () {
     name=$1
     c_file=$2
-    extra_cflags=$3
 
     if [ $comp_howfar != "object" ]; then
        o_file=${gactmp}/$$_${name}.o
-        temps_o="${temps_o} ${o_file}"
+       temps_o="${temps_o} ${o_file}"
     elif [ "X$output" != "X" ]; then
        o_file=$output
     else 
        o_file=${name}.o
     fi
-    c_compile $o_file $c_file "$GAP_CFLAGS $extra_cflags"
+    c_compile $o_file $c_file "$GAP_CFLAGS"
     if [ $comp_howfar = "link" ]; then
       process_o_file $name $o_file
     fi 
+}
+
+#############################################################################
+##
+#F process_cxx_file <basename> <filename>
+##
+## Similar to process_c_file, just for C++ files.
+##
+
+process_cxx_file () {
+  name=$1
+  cxx_file=$2
+
+  if [ $comp_howfar != "object" ]; then
+    o_file=${gactmp}/$$_${name}.o
+    temps_o="${temps_o} ${o_file}"
+  elif [ "X$output" != "X" ]; then
+    o_file=$output
+  else
+    o_file=${name}.o
+  fi
+  cxx_compile $o_file $cxx_file "$GAP_CXXFLAGS"
+  if [ $comp_howfar = "link" ]; then
+    process_o_file $name $o_file
+  fi
 }
 
 #############################################################################
@@ -276,7 +311,10 @@ while [ $# -gt 0 ]; do
 
     -k|--gap-compiler)    shift; gap_compiler="$1";;
 
-    -p)                   shift; GAP_CFLAGS="${GAP_CFLAGS} $1";;
+    -p)                   shift;
+                          GAP_CFLAGS="${GAP_CFLAGS} $1"
+                          GAP_CXXFLAGS="${GAP_CXXFLAGS} $1"
+                          ;;
 
     -P)                   shift; GAP_LDFLAGS="${GAP_LDFLAGS} $1";;
 
@@ -312,20 +350,16 @@ make_compstat () {
         echo     "/* made by 'gac', can be thrown away */"
         echo     "#include \"compiled.h\""
 
-        echo     "#ifndef AVOID_PRECOMPILED"
         echo     "extern StructInitInfo * Init__type1 ( void );"
         echo     "extern StructInitInfo * Init__oper1( void );"
-        echo     "#endif"
 
         for name in ${names}; do
             echo "extern StructInitInfo * Init__${name} ( void );"
         done
 
-        echo     "InitInfoFunc CompInitFuncs [] = {"
-        echo     "#ifndef AVOID_PRECOMPILED"
+        echo     "InitInfoFunc CompInitFuncs[] = {"
         echo     "    Init__type1,"
         echo     "    Init__oper1,"
-        echo     "#endif"
 
         for name in ${names}; do
             echo "    Init__${name},"
@@ -378,11 +412,15 @@ for input in ${inputs}; do
 
         *.cc) # compile '.cc' source files (C++)
             name=$(basename ${input} .cc)
-            process_c_file $name $input "-x c++";;
+            process_cxx_file $name $input;;
 
         *.cpp) # compile '.cpp' source files (also C++)
             name=$(basename ${input} .cpp)
-            process_c_file $name $input "-x c++";;
+            process_cxx_file $name $input;;
+
+        *.cxx) # compile '.cxx' source files (also C++)
+            name=$(basename ${input} .cxx)
+            process_cxx_file $name $input;;
 
         *.s) # compile '.s' source files (assembler)
             name=$(basename ${input} .s)
@@ -408,7 +446,7 @@ if [ $comp_howfar = "link" ]; then
         if [ "X${output}" = "X" ]; then output="gacout"; fi
 
         for object in $GAP_OBJS;  do
-            if [ ${object} != "obj/src/compstat.lo" ]; then
+            if [ ${object} != "build/obj/src/compstat.c.lo" ]; then
                 objects="${abs_top_builddir}/${object} ${objects}"
             fi
         done
