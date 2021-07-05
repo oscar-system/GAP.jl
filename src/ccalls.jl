@@ -134,7 +134,7 @@ ValueMacFloat(x::GapObj) = ccall((:GAP_ValueMacFloat, libgap), Cdouble, (Any,), 
 CharWithValue(x::Cuchar) = ccall((:GAP_CharWithValue, libgap), GapObj, (Cuchar,), x)
 
 WrapJuliaFunc(x::Function) = ccall((:WrapJuliaFunc, JuliaInterface_path), GapObj, (Any,), x)
-UnwrapJuliaFunc(x::Function) = x
+UnwrapJuliaFunc(x::Any) = x  # Note that callable Julia objects (for which `UnwrapJuliaFunc` is likely to be applied) need not have the type `Function`.
 UnwrapJuliaFunc(x::GapObj) = ccall((:UnwrapJuliaFunc, JuliaInterface_path), Function, (GapObj,), x)
 
 function ElmList(x::GapObj, position)
