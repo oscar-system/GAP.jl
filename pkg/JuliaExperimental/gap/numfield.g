@@ -707,7 +707,7 @@ InstallMethod( RootOfDefiningPolynomial, [ "IsNemoField" ],
 #T TODO: Unify this with the Singular case, as far as possible?
 #T       On the other hand, 'Julia.Base' is responsible not in many cases.
 ##
-InstallOtherMethod( ViewString, [ "IsNemoObject" ],
+InstallOtherMethod( ViewString, [ "IsNemoObject" ], NEMO_RANK_SHIFT,
     x -> Concatenation( "<", ViewString( JuliaPointer( x ) ), ">" ) );
 
 InstallOtherMethod( \=, [ "IsNemoObject", "IsNemoObject" ], NEMO_RANK_SHIFT,
@@ -797,7 +797,7 @@ InstallMethod( \^,
 
 
 InstallOtherMethod( IsZero,
-    [ "IsNemoObject" ],
+    [ "IsNemoObject" ], NEMO_RANK_SHIFT,
     Julia.Base.iszero );
 
 InstallMethod( Characteristic,
@@ -836,7 +836,7 @@ InstallMethod( ZeroSameMutability,
 
 
 InstallOtherMethod( IsOne,
-    [ "IsNemoObject" ],
+    [ "IsNemoObject" ], NEMO_RANK_SHIFT,
     Julia.Base.isone );
 
 InstallOtherMethod( OneSameMutability,
