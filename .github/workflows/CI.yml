@@ -57,22 +57,10 @@ jobs:
       - name: "Run tests"
         uses: julia-actions/julia-runtest@latest
       - name: "Add optional Julia dependencies for GAP tests"
-        run: |
-          julia -e '
-            using Pkg
-            Pkg.add(["Singular", "Nemo"])
-            '
+        run: julia --color=yes -e 'using Pkg ; Pkg.add(["Singular", "Nemo"])'
       - name: "GAP tests"
         run: |
-          julia -e '
-            using Pkg
-            Pkg.develop(PackageSpec(path=pwd()))
-            Pkg.instantiate()
-            using GAP
-            GAP.Packages.install("io", interactive = false)
-            GAP.Packages.install("profiling", interactive = false)
-            '
-          gap_sh=$(julia -e 'import GAP; print(GAP.gap_exe())');
+          gap_sh=$(julia --project=. -e 'import GAP; print(GAP.gap_exe())');
           export GAP="$gap_sh -A --quitonbreak --norepl"
           etc/ci_test.sh
 
@@ -80,7 +68,11 @@ jobs:
         uses: julia-actions/julia-processcoverage@v1
       - name: "Process GAP code coverage"
         run: |
-          gap_sh=$(julia -e 'import GAP; print(GAP.gap_exe())');
+          julia --color=yes --project=. -e '
+            using GAP
+            GAP.Packages.install("profiling", interactive = false) || exit(1)
+            '
+          gap_sh=$(julia --project=. -e 'import GAP; print(GAP.gap_exe())');
           $gap_sh -A --quitonbreak --norepl etc/gather_coverage.g
           cat gap-lcov.info >> lcov.info
 
