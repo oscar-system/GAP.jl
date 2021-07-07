@@ -135,7 +135,7 @@ CharWithValue(x::Cuchar) = ccall((:GAP_CharWithValue, libgap), GapObj, (Cuchar,)
 
 WrapJuliaFunc(x::Function) = ccall((:WrapJuliaFunc, JuliaInterface_path), GapObj, (Any,), x)
 UnwrapJuliaFunc(x::Function) = x
-UnwrapJuliaFunc(x::GapObj) = ccall((:GET_JULIA_FUNC, JuliaInterface_path), Function, (GapObj,), x)
+UnwrapJuliaFunc(x::GapObj) = ccall((:UnwrapJuliaFunc, JuliaInterface_path), Function, (GapObj,), x)
 
 function ElmList(x::GapObj, position)
     o = ccall((:GAP_ElmList, libgap), Ptr{Cvoid}, (Any, Culong), x, Culong(position))
