@@ -86,10 +86,10 @@ inline Int IS_JULIA_FUNC(Obj obj)
     return IS_FUNC(obj) && (HDLR_FUNC(obj, 0) == DoCallJuliaFunc0Arg);
 }
 
-inline jl_function_t * GET_JULIA_FUNC(Obj func)
+inline jl_value_t * GET_JULIA_FUNC(Obj func)
 {
     GAP_ASSERT(IS_JULIA_FUNC(func));
-    return (jl_function_t *)GET_JULIA_OBJ(
+    return GET_JULIA_OBJ(
         ((const JuliaFuncBag *)CONST_ADDR_OBJ(func))->juliaFunc);
 }
 
@@ -101,7 +101,7 @@ static ALWAYS_INLINE Obj DoCallJuliaFunc(Obj func, const int narg, Obj * a)
         a[i] = (Obj)julia_gap(a[i]);
     }
 
-    jl_function_t * f = GET_JULIA_FUNC(func);
+    jl_function_t * f = (jl_function_t *)GET_JULIA_FUNC(func);
     switch (narg) {
     case 0:
         result = jl_call0(f);
@@ -220,4 +220,18 @@ Obj WrapJuliaFunc(jl_function_t * function)
     END_GAP_SYNC();
 
     return func;
+}
+
+//
+//
+//
+jl_value_t * UnwrapJuliaFunc(Obj func)
+{
+    // if it is a wrapped Julia function, return that
+    if (IS_JULIA_FUNC(func))
+        return GET_JULIA_FUNC(func);
+
+    // otherwise return the input object (all non-immediate GAP objects are
+    // Julia objects)
+    return (jl_value_t *)func;
 }
