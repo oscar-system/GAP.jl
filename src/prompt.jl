@@ -18,8 +18,9 @@ function prompt()
     global disable_error_handler
 
     # save the current SIGINT handler
-    # HACK: the hardcoded value for SIG_DFL is not portable, revise this
-    # install GAP's SIGINT handler
+    # (we pass NULL as signal handler; strictly speaking, we should be passing `SIG_DFL`
+    # but it's not clearly how to access this from here, and anyway on the list
+    # of platforms we support, it is NULL)
     old_sigint = ccall(:signal, Ptr{Cvoid}, (Cint, Ptr{Cvoid}), Base.SIGINT, C_NULL)
 
     # install GAP's SIGINT handler
