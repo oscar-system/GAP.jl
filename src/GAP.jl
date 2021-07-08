@@ -98,8 +98,7 @@ function initialize(argv::Array{String,1})
     # (perhaps this could be a return value for GAP_Initialize?),
     # so instead we check for the presence of the global variable
     # __JULIAINTERNAL_LOADED_FROM_JULIA which we ensure is declared near the
-    # end of init.g, via a `-c` command line argument to GAP;
-    # this argument is set in `lib/systemfile.g`.
+    # end of init.g; this is done in `lib/systemfile.g`.
     val = _ValueGlobalVariable("__JULIAINTERNAL_LOADED_FROM_JULIA")
 
     if val == C_NULL

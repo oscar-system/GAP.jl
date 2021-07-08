@@ -67,7 +67,7 @@ Persons := [
   ),
 ],
 
-PackageWWWHome := "http://TODO/",
+PackageWWWHome := "https://github.com/oscar-system/GAP.jl",
 
 ArchiveURL     := Concatenation( ~.PackageWWWHome, "JuliaInterface-", ~.Version ),
 README_URL     := Concatenation( ~.PackageWWWHome, "README" ),
@@ -135,7 +135,7 @@ end,
 
 TestFile := "tst/testall.g",
 
-Keywords := [ "GAP-Julia integration" ],
+Keywords := [ "GAP-Julia integration", "Julia", "Interface" ],
 
 AutoDoc := rec(
   TitlePage := rec(

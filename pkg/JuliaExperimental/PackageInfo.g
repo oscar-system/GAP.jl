@@ -49,7 +49,7 @@ Persons := [
   ),
 ],
 
-PackageWWWHome := "http://TODO/",
+PackageWWWHome := "https://github.com/oscar-system/GAP.jl",
 
 ArchiveURL     := Concatenation( ~.PackageWWWHome, "JuliaExperimental-", ~.Version ),
 README_URL     := Concatenation( ~.PackageWWWHome, "README" ),
@@ -89,8 +89,6 @@ Dependencies := rec(
 AvailabilityTest := ReturnTrue,
 
 TestFile := "tst/testall.g",
-
-#Keywords := [ "TODO" ],
 
 ));
 

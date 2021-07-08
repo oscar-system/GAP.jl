@@ -135,7 +135,7 @@ function regenerate_gaproot(gaproot_mutable)
     # make sure to also add that
     gmp_include = joinpath(gmp_prefix, "include")
     gap_include = joinpath(gap_prefix, "include", "gap")
-    gap_include2 = joinpath(gaproot_mutable) # FIXME: for code doing `#include "src/compiled.h"`
+    gap_include2 = joinpath(gaproot_mutable) # for code doing `#include "src/compiled.h"`
     sysinfo["GAP_CPPFLAGS"] = "-I$(gmp_include) -I$(gap_include) -I$(gap_include2) -DHAVE_CONFIG_H"
 
     # set linker flags; since these are meant for use for GAP packages, add the necessary
@@ -207,12 +207,11 @@ function regenerate_gaproot(gaproot_mutable)
         if Sys.islinux() || Sys.isfreebsd()
             c_compiler = "$(CC) -fPIC -DPIC"
             cxx_compiler = "$(CXX) -fPIC -DPIC"
-            c_dyn_linker = "$(CC) -shared -fPIC -DPIC" # FIXME: what about `-Wl,-soname -Wl,FOOBAR.so`
+            c_dyn_linker = "$(CC) -shared -fPIC -DPIC"
         elseif Sys.isapple()
             c_compiler = "$(CC) -fno-common -DPIC"
             cxx_compiler = "$(CXX) -fno-common -DPIC"
-            c_dyn_linker = "$(CC) -bundle" # FIXME: -Wl,-undefined -Wl,dynamic_lookup
-            #c_dyn_linker = "$(CC) -Wl,-undefined -Wl,dynamic_lookup -bundle"
+            c_dyn_linker = "$(CC) -bundle"
         else
             error("OS not supported")
         end
