@@ -125,9 +125,9 @@ gap> GAPDescriptionOfNemoPolynomial( c, npol );
 gap> mat:= [ [ One( R ), f ], [ Zero( R ), One( R ) ] ];
 [ [ 1, x*y+1 ], [ 0, 1 ] ]
 gap> nmat:= GAPToNemo( c, mat );
-<<Julia: [1 x*y + 1; 0 1]>>
+<<Julia: [1 x*y+1; 0 1]>>
 gap> nmat^2;
-<<Julia: [1 2*x*y + 2; 0 1]>>
+<<Julia: [1 2*x*y+2; 0 1]>>
 gap> NemoToGAP( c, nmat );
 [ [ 1, x*y+1 ], [ 0, 1 ] ]
 
