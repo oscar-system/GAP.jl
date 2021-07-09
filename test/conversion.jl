@@ -438,10 +438,22 @@ end
 end
 
 @testset "(Un)WrapJuliaFunc" begin
+    # wrap a Julia function
     f = x -> x^2
     g = GAP.WrapJuliaFunc(f)
     @test g isa GapObj
     @test GAP.TNUM_OBJ(g) == GAP.T_FUNCTION
     @test g(2) == 4
     @test GAP.UnwrapJuliaFunc(g) === f
+
+    # "wrap" a callable Julia object that is not a function
+    struct Callable data::Int end
+    (obj::Callable)() = obj.data
+    x = Callable(17)
+    @test x() == 17
+    @test !(x isa Function)
+    @test !(x isa Base.Callable)
+    wx = GAP.WrapJuliaFunc(x)
+    @test x === GAP.UnwrapJuliaFunc(wx)
+    @test GAP.Globals.CallFuncList(wx, GAP.evalstr("[]")) == x()
 end
