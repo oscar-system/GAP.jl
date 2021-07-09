@@ -133,8 +133,25 @@ NEW_MACFLOAT(x::Float64) = ccall((:NEW_MACFLOAT, libgap), GapObj, (Cdouble,), x)
 ValueMacFloat(x::GapObj) = ccall((:GAP_ValueMacFloat, libgap), Cdouble, (Any,), x)
 CharWithValue(x::Cuchar) = ccall((:GAP_CharWithValue, libgap), GapObj, (Cuchar,), x)
 
+# `WrapJuliaFunc` and `UnwrapJuliaFunc` are intended to create a GAP function
+# object that wraps a given Julia function, and to unwrap such a GAP function,
+# respectively.
+# Note that we do not *automatically* wrap Julia functions into GAP functions
+# when they are accessed from the GAP side,
+# and do not automatically unwrap Julia functions that are wrapped into
+# GAP functions when they are accessed from the GAP side.
+# For convenience, also non-`Function` Julia objects can be passed to
+# `WrapJuliaFunc`, which then returns the input;
+# the idea is that many callable Julia objects aren't `Function`s
+# (and in general also aren't `Base.Callable`s),
+# and that these objects can be called on the GAP side like functions.
+# Thus the result of `WrapJuliaFunc` for a callable object is something
+# that can be called on the GAP side.
+# In the other direction, `UnwrapJuliaFunc` extracts the underlying Julia
+# function from its argument if applicable, and otherwise returns the input.
+WrapJuliaFunc(x::Any) = x
 WrapJuliaFunc(x::Function) = ccall((:WrapJuliaFunc, JuliaInterface_path), GapObj, (Any,), x)
-UnwrapJuliaFunc(x::Any) = x  # Note that callable Julia objects (for which `UnwrapJuliaFunc` is likely to be applied) need not have the type `Function`.
+UnwrapJuliaFunc(x::Any) = x
 UnwrapJuliaFunc(x::GapObj) = ccall((:UnwrapJuliaFunc, JuliaInterface_path), Function, (GapObj,), x)
 
 function ElmList(x::GapObj, position)
