@@ -43,5 +43,10 @@ end
 end
 
 @testset "GapObj" begin
-    @test string(GAP.GapObj) == "GapObj"
+    io = IOBuffer();
+    print(io, GAP.GapObj)
+    @test String(take!(io)) == "GapObj"
+    ioc = IOContext(io, :module => nothing);
+    print(ioc, GAP.GapObj)
+    @test String(take!(io)) == "GAP.GapObj"
 end
