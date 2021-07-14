@@ -41,3 +41,7 @@ end
     @test !(deepcopy( li ) === li)
     @test cp[1] === l[1]
 end
+
+@testset "GapObj" begin
+    @test string(GAP.GapObj) == "GapObj"
+end
