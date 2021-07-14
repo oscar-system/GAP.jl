@@ -229,6 +229,10 @@ function __init__()
             ),
         )
     end
+
+    # hack: Let `GAP_jll.MPtr` print itself as `GAP.GapObj`.
+    GAP_jll.MPtr.name.module = GAP
+    GAP_jll.MPtr.name.name = :GapObj
 end
 
 """
