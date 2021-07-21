@@ -4,23 +4,10 @@
 ##  Install methods for 'IsJuliaObject' objects.
 ##
 
-InstallOtherMethod( AdditiveInverseOp,
-    [ "IsJuliaObject" ],
-    function( obj )
-      return Julia.Base.("-")( obj );
-    end );
-
-InstallOtherMethod( ZeroOp,
-    [ "IsJuliaObject" ],
-    function( obj )
-      return Julia.Base.zero( obj );
-    end );
-
-InstallOtherMethod( OneOp,
-    [ "IsJuliaObject" ],
-    function( obj )
-      return Julia.Base.one( obj );
-    end );
+InstallOtherMethod( AdditiveInverseOp, [ "IsJuliaObject" ], Julia.Base.\- );
+InstallOtherMethod( InverseOp, [ "IsJuliaObject" ], Julia.Base.inv );
+InstallOtherMethod( ZeroOp, [ "IsJuliaObject" ], Julia.Base.zero );
+InstallOtherMethod( OneOp, [ "IsJuliaObject" ], Julia.Base.one );
 
 Perform([[ "IsJuliaObject", "IsJuliaObject" ],
          [ "IsJuliaObject", "IsInt and IsSmallIntRep" ],

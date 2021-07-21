@@ -19,9 +19,11 @@ gap> zero := Zero(N);
 gap> one := One(N);
 <Julia: 1>
 
-#
+# additive and multiplicative inverses
 gap> -N;
 <Julia: -1267650600228229401496703205376>
+gap> N * Inverse(N);
+<Julia: 1.0>
 
 #
 gap> N + 1;
