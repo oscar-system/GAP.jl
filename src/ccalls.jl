@@ -201,20 +201,11 @@ function call_gap_func(func::GapObj, args...; kwargs...)
         options = true
     end
     try
-        if TNUM_OBJ(func) == T_FUNCTION && length(args) <= 6
-            result = _call_gap_func(func, args...)
-        else
-            result = ccall((:call_gap_func, JuliaInterface_path), Any, (Any, Any), func, args)
-        end
+        return call_gap_func_nokw(func, args...)
+    finally
         if options
             Globals.PopOptions()
         end
-        return result
-    catch
-        if options
-            Globals.ResetOptionsStack()
-        end
-        rethrow()
     end
 end
 
