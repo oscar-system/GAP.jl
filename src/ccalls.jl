@@ -68,11 +68,18 @@ GAP: [ 1 ]
 """
 function evalstr(cmd::String)
     res = evalstr_ex(cmd * ";")
-    res = res[end]
-    if res[1] == false
+    if any(x->x[1] == false, res)
       # error
-      GAP.error_handler()
-    elseif Globals.ISB_LIST(res, 2)
+      global last_error
+      # HACK HACK HACK: if there is an error string on the GAP side, call
+      # error_handler to copy it into `last_error`
+      if !GAP.Globals.IsEmpty(GAP.Globals._JULIAINTERFACE_ERROR_OUTPUT)
+        error_handler()
+      end
+      error("Error thrown by GAP: $(last_error[])")
+    end
+    res = res[end]
+    if Globals.ISB_LIST(res, 2)
       return res[2]
     else
       return
