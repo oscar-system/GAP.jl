@@ -34,16 +34,23 @@ function reset_GAP_ERROR_OUTPUT()
     Globals.MakeReadOnlyGlobal(julia_to_gap("ERROR_OUTPUT"))
 end
 
-disable_error_handler = false
+const last_error = Ref{String}("")
 
 function error_handler()
-    global disable_error_handler
-    if disable_error_handler
-        return
+    last_error[] = String(Globals._JULIAINTERFACE_ERROR_OUTPUT)
+    ccall((:SET_LEN_STRING, libgap), Cvoid, (GapObj, Cuint), Globals._JULIAINTERFACE_ERROR_OUTPUT, 0)
+end
+
+function ThrowObserver(depth::Cint)
+    # signal to the GAP interpreter that errors are handled
+    ccall((:ClearError, libgap), Cvoid, ())
+    # reset global execution context
+    ccall((:SWITCH_TO_BOTTOM_LVARS, libgap), Cvoid, ())
+    # at the top of GAP's exception handler chain, turn the GAP exception
+    # into a Julia exception
+    if depth <= 0
+        error("Error thrown by GAP: $(last_error[])")
     end
-    str = String(Globals._JULIAINTERFACE_ERROR_OUTPUT)
-    reset_GAP_ERROR_OUTPUT()
-    error("Error thrown by GAP: ", str)
 end
 
 # The following hack is needed only in Julia 1.3, not in later versions.
@@ -91,6 +98,10 @@ function initialize(argv::Array{String,1})
         error_handler_func,
         handle_signals,
     )
+
+    # register our ThrowObserver callback
+    f = @cfunction(ThrowObserver, Cvoid, (Cint, ))
+    ccall((:RegisterThrowObserver, libgap), Cvoid, (Ptr{Cvoid},), f)
 
     # detect if GAP quit early (e.g due `-h` or `-c` command line arguments)
     # TODO: restrict this to "standalone" mode?
