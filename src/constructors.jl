@@ -249,7 +249,7 @@ julia> val = GAP.evalstr("[ true, false, true ]")
 GAP: [ true, false, true ]
 
 julia> BitArray{1}(val)
-3-element BitArray{1}:
+3-element BitVector:
  1
  0
  1
@@ -479,7 +479,7 @@ julia> r = StepRange{Int8,Int8}(val)
 1:2:11
 
 julia> typeof(r)
-StepRange{Int8,Int8}
+StepRange{Int8, Int8}
 
 ```
 """ StepRange
@@ -500,7 +500,7 @@ julia> val = GAP.evalstr("rec( a:= 1, b:= 2 )")
 GAP: rec( a := 1, b := 2 )
 
 julia> Dict{Symbol,Int}(val)
-Dict{Symbol,Int64} with 2 entries:
+Dict{Symbol, Int64} with 2 entries:
   :a => 1
   :b => 2
 
@@ -508,15 +508,15 @@ julia> val = GAP.evalstr("rec( l:= [ 1, 2 ] )")
 GAP: rec( l := [ 1, 2 ] )
 
 julia> Dict{Symbol,Any}(val, recursive = false)
-Dict{Symbol,Any} with 1 entry:
+Dict{Symbol, Any} with 1 entry:
   :l => GAP: [ 1, 2 ]
 
 julia> Dict{Symbol,Any}(val, recursive = true)
-Dict{Symbol,Any} with 1 entry:
+Dict{Symbol, Any} with 1 entry:
   :l => Any[1, 2]
 
 julia> Dict{Symbol,Vector{Int}}(val, recursive = true)
-Dict{Symbol,Vector{Int64}} with 1 entry:
+Dict{Symbol, Vector{Int64}} with 1 entry:
   :l => [1, 2]
 
 ```
