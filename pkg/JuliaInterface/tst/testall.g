@@ -36,7 +36,7 @@ end;
 # Several Julia types are shown differently in Julia 1.6.0-DEV
 # and older Julia versions.
 compare:= CompareUpToWhitespaceAndMatches(
-    [ [ "Array{Any,1}", "Vector{Any}" ],
+    [ [ "Vector{Any}", "Vector{Any}" ],
       [ "Maybe you forgot to use an operator such as *, ^, %, / etc. ?", "" ] ] );
 
 # The testfiles assume that no traceback is printed.

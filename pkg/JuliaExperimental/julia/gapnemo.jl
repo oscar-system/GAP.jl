@@ -39,14 +39,14 @@ function CompanionMatrix( pol )
 end
 
 """
-    CoefficientsNumDenOfFmpqArray( arr::Array{Nemo.fmpq,1}[, tryint::Bool = true] )
+    CoefficientsNumDenOfFmpqArray( arr::Vector{Nemo.fmpq}[, tryint::Bool = true] )
 > Return a tuple `(<kind>, <arrnum>, <arrden>)` where <arrnum>, <arrden>
 > are 1-dim. arrays of the numerators and denominators of the values in <arr>,
 > and <kind> is either `"int"` (the entries are small integers)
 > or `"string"` (the entries are hex strings).
 > This format is suitable for calling `JuliaToGAP` from GAP.
 """
-function CoefficientsNumDenOfFmpqArray( arr::Array{Nemo.fmpq,1}, tryint::Bool = true )
+function CoefficientsNumDenOfFmpqArray( arr::Vector{Nemo.fmpq}, tryint::Bool = true )
     n = length( arr )
     coeffsnum = map( i -> numerator( arr[i] ), 1:n )
     coeffsden = map( i -> denominator( arr[i] ), 1:n )

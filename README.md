@@ -58,7 +58,7 @@ For example, to convert the GAP list of integers we defined earlier back to Juli
 we might do this:
 ```julia
 julia> Vector{Int64}(x)
-3-element Array{Int64,1}:
+3-element Vector{Int64}:
  1
  2
  3

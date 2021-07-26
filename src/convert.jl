@@ -24,12 +24,12 @@ julia> val = @gap [ [ 1 ], [ 2 ] ]
 GAP: [ [ 1 ], [ 2 ] ]
 
 julia> convert(Vector{Any}, val)
-2-element Array{Any,1}:
+2-element Vector{Any}:
  Any[1]
  Any[2]
 
 julia> convert(Vector{Any}, val, recursive = false)
-2-element Array{Any,1}:
+2-element Vector{Any}:
  GAP: [ 1 ]
  GAP: [ 2 ]
 

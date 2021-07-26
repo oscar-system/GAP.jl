@@ -6,8 +6,8 @@ gap> JuliaTypeInfo( 1 );
 "Int64"
 gap> JuliaTypeInfo( 0 );
 "Int64"
-gap> JuliaTypeInfo( GAPToJulia( JuliaEvalString( "Array{Any,1}" ), [ 1, 2, 3 ] ) );
-"Array{Any,1}"
+gap> JuliaTypeInfo( GAPToJulia( JuliaEvalString( "Vector{Any}" ), [ 1, 2, 3 ] ) );
+"Vector{Any}"
 gap> JuliaTypeInfo( Julia.Base.parse );
 "typeof(parse)"
 
@@ -31,11 +31,11 @@ gap> Julia.Main.foo;
 1
 
 ##
-gap> Julia.Core.Tuple( GAPToJulia( JuliaEvalString( "Array{Any,1}" ), [] ) );
+gap> Julia.Core.Tuple( GAPToJulia( JuliaEvalString( "Vector{Any}" ), [] ) );
 <Julia: ()>
-gap> Julia.Core.Tuple( GAPToJulia( JuliaEvalString( "Array{Any,1}" ), [1] ) );
+gap> Julia.Core.Tuple( GAPToJulia( JuliaEvalString( "Vector{Any}" ), [1] ) );
 <Julia: (1,)>
-gap> Julia.Core.Tuple( GAPToJulia( JuliaEvalString( "Array{GAP.Obj,1}" ), [1,true,fail] ));
+gap> Julia.Core.Tuple( GAPToJulia( JuliaEvalString( "Vector{GAP.Obj}" ), [1,true,fail] ));
 <Julia: (1, true, GAP: fail)>
 gap> Julia.Core.Tuple(1);
 <Julia: (1,)>

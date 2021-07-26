@@ -90,7 +90,7 @@ julia_to_gap(obj::Any, recursion_dict::IdDict{Any,Any}; recursive = true) = juli
 
 ## Arrays (including BitArray{1})
 function julia_to_gap(
-    obj::Array{T,1},
+    obj::Vector{T},
     recursion_dict::IdDict{Any,Any} = IdDict();
     recursive = false,
 ) where {T}
@@ -117,7 +117,7 @@ end
 
 ## Convert two dimensional arrays
 function julia_to_gap(
-    obj::Array{T,2},
+    obj::Matrix{T},
     recursion_dict::IdDict{Any,Any} = IdDict();
     recursive::Bool = false,
 ) where {T}

@@ -412,7 +412,7 @@ DeclareGlobalFunction( "JuliaTypeInfo" );
 #! gap> res.value{ [ 1 .. Position( res.value, '(' )-1 ] };
 #! "DomainError"
 #! gap> inv:= Julia.inv;;
-#! gap> m:= GAPToJulia( JuliaEvalString( "Array{Int,2}" ), [[1,2],[2,4]] );
+#! gap> m:= GAPToJulia( JuliaEvalString( "Matrix{Int}" ), [[1,2],[2,4]] );
 #! <Julia: [1 2; 2 4]>
 #! gap> res:= CallJuliaFunctionWithCatch( inv, [ m ] );;
 #! gap> res.ok;
@@ -440,7 +440,7 @@ DeclareGlobalFunction( "CallJuliaFunctionWithCatch" );
 #! gap> CallJuliaFunctionWithKeywordArguments(
 #! >        Julia.Base.range, [ 2 ], rec( length:= 5, step:= 2 ) );
 #! <Julia: 2:2:10>
-#! gap> m:= GAPToJulia( JuliaEvalString( "Array{Int,2}" ),
+#! gap> m:= GAPToJulia( JuliaEvalString( "Matrix{Int}" ),
 #! >            [ [ 1, 2 ], [ 3, 4 ] ] );
 #! <Julia: [1 2; 3 4]>
 #! gap> CallJuliaFunctionWithKeywordArguments(
@@ -585,7 +585,7 @@ DeclareGlobalFunction( "CallJuliaFunctionWithKeywordArguments" );
 #!  </List>
 #!
 #! @BeginExampleSession
-#! gap> m:= GAPToJulia( JuliaEvalString( "Array{Int,2}" ),
+#! gap> m:= GAPToJulia( JuliaEvalString( "Matrix{Int}" ),
 #! >            [ [ 1, 2 ], [ 3, 4 ] ] );
 #! <Julia: [1 2; 3 4]>
 #! gap> m[1,2];

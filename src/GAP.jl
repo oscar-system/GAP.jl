@@ -57,7 +57,7 @@ end
 const JuliaInterface = "JuliaInterface.so"
 const JuliaInterface_path = normpath(joinpath(@__DIR__, "..", "pkg", "JuliaInterface", "bin", sysinfo["GAParch"], JuliaInterface))
 
-function initialize(argv::Array{String,1})
+function initialize(argv::Vector{String})
     handle_signals = isdefined(Main, :__GAP_ARGS__)  # a bit of a hack...
     error_handler_func = handle_signals ? C_NULL : @cfunction(error_handlerwrap, Cvoid, ())
 

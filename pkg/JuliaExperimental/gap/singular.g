@@ -171,7 +171,7 @@ InstallMethod( ContextGAPSingular,
     if Length( indetnames ) = 1 then
       names:= GAPToJulia( indetnames[1] );
     else
-      names:= Julia.Base.convert( JuliaEvalString( "Array{String,1}" ),
+      names:= Julia.Base.convert( JuliaEvalString( "Vector{String}" ),
                                   GAPToJulia( indetnames ) );
     fi;
 

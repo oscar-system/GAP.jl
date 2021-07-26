@@ -173,7 +173,7 @@ gap> JuliaToGAP( IsRange, JuliaEvalString( "[ 1, 2, 4 ]" ) );
 Error, <obj> must be a Julia range
 
 ##  empty list vs. empty string
-gap> emptylist:= GAPToJulia( JuliaEvalString( "Array{Any,1}"), [] );
+gap> emptylist:= GAPToJulia( JuliaEvalString( "Vector{Any}"), [] );
 <Julia: Any[]>
 gap> emptystring:= GAPToJulia( Julia.Base.AbstractString, "" );
 <Julia: "">
@@ -185,7 +185,7 @@ gap> JuliaToGAP( IsString, emptystring );
 ##  'GAPToJulia' for Julia functions (inside arrays)
 gap> parse:= JuliaFunction( "parse", "Base" );
 <Julia: parse>
-gap> list:= GAPToJulia( JuliaEvalString( "Array{Any,1}"), [ 1, parse, 3 ] );
+gap> list:= GAPToJulia( JuliaEvalString( "Vector{Any}"), [ 1, parse, 3 ] );
 <Julia: Any[1, parse, 3]>
 gap> list2:= JuliaToGAP( IsList, list );
 [ 1, <Julia: parse>, 3 ]

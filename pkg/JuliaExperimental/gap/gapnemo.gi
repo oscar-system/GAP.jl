@@ -156,7 +156,7 @@ BindGlobal( "GAPDescriptionOfNemoPolynomial", function( C, pol )
     if IsUnivariatePolynomialRing( R ) then
       info:= Julia.GAPNemoExperimental.CoefficientsOfUnivarateNemoPolynomial(
                  pol );
-      # This is "Array{Nemo.fmpq,1}", but we need "Nemo.fmpq_mat".
+      # This is "Vector{Nemo.fmpq}", but we need "Nemo.fmpq_mat".
       info:= Julia.Nemo.matrix( Julia.Nemo.parent( info[1] ), 1,
                  Julia.Base.length( info ), info );
       FC:= ContextGAPNemo( LeftActingDomain( R ) );

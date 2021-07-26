@@ -234,7 +234,7 @@
 #!    <C>AbstractString</C> (default),
 #!    <C>String</C>,
 #!    <C>Symbol</C>,
-#!    <C>Array{UInt8,1}</C>,
+#!    <C>Vector{UInt8}</C>,
 #!    or types available for <C>IsList</C>,
 #!  </Item>
 #!  <Item>
@@ -251,9 +251,9 @@
 #!  </Item>
 #!  <Item>
 #!    <C>IsList</C> to
-#!    <C>Array{Union{Any,Nothing},1}</C> (default),
-#!    <C>Array{T,1}</C>,
-#!    <C>Array{T,2}</C>,
+#!    <C>Vector{Union{Any,Nothing}}</C> (default),
+#!    <C>Vector{T}</C>,
+#!    <C>Matrix{T}</C>,
 #!    <C>T &lt;: Tuple</C>,
 #!  </Item>
 #!  <Item>
@@ -321,12 +321,12 @@
 #!      <Item>strings</Item>
 #!    </Row>
 #!    <Row>
-#!      <Item><C>Array{T,1}</C></Item>
+#!      <Item><C>Vector{T}</C></Item>
 #!      <Item><C>IsList</C></Item>
 #!      <Item>plain lists</Item>
 #!    </Row>
 #!    <Row>
-#!      <Item><C>Array{Bool,1}</C>, <C>BitArray{1}</C></Item>
+#!      <Item><C>Vector{Bool}</C>, <C>BitArray{1}</C></Item>
 #!      <Item><C>IsBList</C></Item>
 #!      <Item>bit lists</Item>
 #!    </Row>
@@ -428,12 +428,12 @@ DeclareConstructor("JuliaToGAP", [IsObject, IsObject, IsBool]);
 #!gap> l:= [ 1, 3, 4 ];;
 #!gap> GAPToJulia( l );
 #!&lt;Julia: Any[1, 3, 4]>
-#!gap> GAPToJulia( JuliaEvalString( "Array{Int,1}" ), l );
+#!gap> GAPToJulia( JuliaEvalString( "Vector{Int}" ), l );
 #!&lt;Julia: [1, 3, 4]>
 #!gap> m:= [ [ 1, 2 ], [ 3, 4 ] ];;
 #!gap> GAPToJulia( m );
 #!&lt;Julia: Any[Any[1, 2], Any[3, 4]]>
-#!gap> GAPToJulia( JuliaEvalString( "Array{Int,2}" ), m );
+#!gap> GAPToJulia( JuliaEvalString( "Matrix{Int}" ), m );
 #!&lt;Julia: [1 2; 3 4]>
 #!gap> r:= rec( a:= 1, b:= [ 1, 2, 3 ] );;
 #!gap> GAPToJulia( r );

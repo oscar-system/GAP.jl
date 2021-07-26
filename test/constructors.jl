@@ -75,7 +75,7 @@
     x = GAP.evalstr("(1,2,3)")
     @test_throws GAP.ConversionError AbstractString(x)
 
-    # Convert GAP string to Vector{UInt8} (==Array{UInt8,1})
+    # Convert GAP string to Vector{UInt8} (==Vector{UInt8})
     x = GAP.evalstr("\"foo\"")
     @test Vector{UInt8}(x) == UInt8[0x66, 0x6f, 0x6f]
     x = GAP.evalstr("[1,2,3]")

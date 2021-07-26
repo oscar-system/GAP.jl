@@ -258,7 +258,7 @@ julia> BitArray{1}(val)
 """ BitArray
 
 ## Arrays
-## (special case: convert GAP string to Array{UInt8,1} (== Array{UInt8,1}))
+## (special case: convert GAP string to Vector{UInt8} (== Vector{UInt8}))
 """
     Vector{T}(obj::GapObj; recursive = true)
 
@@ -278,12 +278,12 @@ julia> val = GAP.evalstr("[ [ 1 ], [ 2 ] ]")
 GAP: [ [ 1 ], [ 2 ] ]
 
 julia> Vector{Any}(val)
-2-element Array{Any,1}:
+2-element Vector{Any}:
  Any[1]
  Any[2]
 
 julia> Vector{Any}(val, recursive = false)
-2-element Array{Any,1}:
+2-element Vector{Any}:
  GAP: [ 1 ]
  GAP: [ 2 ]
 
@@ -291,7 +291,7 @@ julia> val = GAP.evalstr( "NewVector( IsPlistVectorRep, Integers, [ 0, 2, 5 ] )"
 GAP: <plist vector over Integers of length 3>
 
 julia> Vector{Int64}( val )
-3-element Array{Int64,1}:
+3-element Vector{Int64}:
  0
  2
  5
@@ -300,7 +300,7 @@ julia> val = GAP.evalstr("\\"abc\\"")
 GAP: "abc"
 
 julia> Vector{UInt8}(val)
-3-element Array{UInt8,1}:
+3-element Vector{UInt8}:
  0x61
  0x62
  0x63
@@ -328,7 +328,7 @@ julia> val = GAP.evalstr("[ [ 1, 2 ], [ 3, 4 ] ]")
 GAP: [ [ 1, 2 ], [ 3, 4 ] ]
 
 julia> Matrix{Int64}(val)
-2×2 Array{Int64,2}:
+2×2 Matrix{Int64}:
  1  2
  3  4
 
@@ -336,7 +336,7 @@ julia> val = GAP.evalstr( "NewMatrix( IsPlistMatrixRep, Integers, 2, [ 0, 1, 2, 
 GAP: <2x2-matrix over Integers>
 
 julia> Matrix{Int64}(val)
-2×2 Array{Int64,2}:
+2×2 Matrix{Int64}:
  0  1
  2  3
 
@@ -369,7 +369,7 @@ Set{Int64} with 2 elements:
   1
 
 julia> Set{Vector{Int}}(GAP.evalstr("[[1], [2], [1]]"))
-Set{Array{Int64,1}} with 2 elements:
+Set{Vector{Int64}} with 2 elements:
   [1]
   [2]
 
@@ -515,8 +515,8 @@ julia> Dict{Symbol,Any}(val, recursive = true)
 Dict{Symbol,Any} with 1 entry:
   :l => Any[1, 2]
 
-julia> Dict{Symbol,Array{Int,1}}(val, recursive = true)
-Dict{Symbol,Array{Int64,1}} with 1 entry:
+julia> Dict{Symbol,Vector{Int}}(val, recursive = true)
+Dict{Symbol,Vector{Int64}} with 1 entry:
   :l => [1, 2]
 
 ```

@@ -25,7 +25,7 @@ gap> Julia.Base.parent( R(12) );
 <Julia: Residue Ring of Integer Ring modulo 23>
 
 ##  polynomial rings, polynomials
-gap> indetnames:= Julia.Base.convert( JuliaEvalString( "Array{String,1}" ),
+gap> indetnames:= Julia.Base.convert( JuliaEvalString( "Vector{String}" ),
 >                     GAPToJulia( [ "x", "y", "z", "t" ] ) );
 <Julia: ["x", "y", "z", "t"]>
 gap> Rinfo:= Julia.Singular.PolynomialRing( Julia.Singular.QQ, indetnames );
