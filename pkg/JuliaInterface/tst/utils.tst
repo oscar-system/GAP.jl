@@ -6,8 +6,8 @@ gap> JuliaTypeInfo( 1 );
 "Int64"
 gap> JuliaTypeInfo( 0 );
 "Int64"
-gap> JuliaTypeInfo( GAPToJulia( JuliaEvalString( "Vector{Any}" ), [ 1, 2, 3 ] ) );
-"Vector{Any}"
+gap> JuliaTypeInfo( GAPToJulia( JuliaEvalString( "Tuple{Int64, Int64, Int64}" ), [ 1, 2, 3 ] ) );
+"Tuple{Int64, Int64, Int64}"
 gap> JuliaTypeInfo( Julia.Base.parse );
 "typeof(parse)"
 
