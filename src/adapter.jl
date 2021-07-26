@@ -116,7 +116,7 @@ julia> l[8] = -1
 -1
 
 julia> l[2:4] = [ 7, 7, 7 ]
-3-element Array{Int64,1}:
+3-element Vector{Int64}:
  7
  7
  7

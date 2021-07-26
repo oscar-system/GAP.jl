@@ -3,7 +3,7 @@ import REPL.REPLCompletions: completions
 ## These two functions are used on the GAP side.
 
 """
-    get_symbols_in_module(m::Module) :: Array{Symbol,1}
+    get_symbols_in_module(m::Module) :: Vector{Symbol}
 
 Return all symbols in the module `m`.
 This is used in the GAP function `ImportJuliaModuleIntoGAP`.
@@ -45,7 +45,7 @@ function call_with_catch(juliafunc, arguments)
 end
 
 """
-    kwarg_wrapper(func, args::Array{T1,1}, kwargs::Dict{Symbol,T2}) where {T1, T2}
+    kwarg_wrapper(func, args::Vector{T1}, kwargs::Dict{Symbol,T2}) where {T1, T2}
 
 Call the function `func` with arguments `args` and keyword arguments
 given by the keys and values of `kwargs`.
@@ -64,7 +64,7 @@ julia> GAP.kwarg_wrapper( range, [ 2 ], Dict( :length => 5, :step => 2 ) )
 
 ```
 """
-function kwarg_wrapper(func, args::Array{T1,1}, kwargs::Dict{Symbol,T2}) where {T1,T2}
+function kwarg_wrapper(func, args::Vector{T1}, kwargs::Dict{Symbol,T2}) where {T1,T2}
     func = UnwrapJuliaFunc(func)
     return func(args...; [k => kwargs[k] for k in keys(kwargs)]...)
 end

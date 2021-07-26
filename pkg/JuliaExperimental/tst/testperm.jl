@@ -9,7 +9,7 @@ using GAPPermutations
 IdentityPerm
 
 imgsarray = [ 1, 2, 3 ]
-ccc = convert( Array{UInt16,1}, imgsarray )
+ccc = convert( Vector{UInt16}, imgsarray )
 
 p1 = Permutation( ccc )
 

@@ -13,25 +13,25 @@ import Base: abs, convert, copy, deepcopy, haskey, inv, lcm, length,
              map, push!, sign, size, sum, trunc, zero, zeros
 
 raw"""
-    LLLReducedGramMat( grammatrix::Array{Int,2}, y::Rational{Int} = 3//4 )
+    LLLReducedGramMat( grammatrix::Matrix{Int}, y::Rational{Int} = 3//4 )
 > Return a dictionary with the following components.
->   `remainder`:      the reduced Gram matrix (`Array{Rational{Int},2}`)
->   `relations`:      basechange matrix `H` (`Array{Rational{Int},2}`)
->   `transformation`: basechange matrix `H` (`Array{Rational{Int},2}`)
->   `mue`:            matrix of scalar products (`Array{Rational{Int},2}`)
->   `B`:              list of norms of $b^{\ast}$ (`Array{Rational{Int},1}`)
+>   `remainder`:      the reduced Gram matrix (`Matrix{Rational{Int}}`)
+>   `relations`:      basechange matrix `H` (`Matrix{Rational{Int}}`)
+>   `transformation`: basechange matrix `H` (`Matrix{Rational{Int}}`)
+>   `mue`:            matrix of scalar products (`Matrix{Rational{Int}}`)
+>   `B`:              list of norms of $b^{\ast}$ (`Vector{Rational{Int}}`)
 """
-function LLLReducedGramMat( grammatrix::Array{Int,2}, y::Rational{Int} = 3//4 )
+function LLLReducedGramMat( grammatrix::Matrix{Int}, y::Rational{Int} = 3//4 )
 
-    local gram::Array{Rational{Int},2},      # the Gram matrix
+    local gram::Matrix{Rational{Int}},      # the Gram matrix
           mmue::Rational{Int},      # buffer $\mue$
           kmax::Int,      # $k_{max}$
-          H::Array{Rational{Int},2},         # basechange matrix $H$
-          mue::Array{Rational{Int},2},       # matrix $\mue$ of scalar products
-          B::Array{Rational{Int},1},         # list $B$ of norms of $b^{\ast}$
+          H::Matrix{Rational{Int}},         # basechange matrix $H$
+          mue::Matrix{Rational{Int}},       # matrix $\mue$ of scalar products
+          B::Vector{Rational{Int}},         # list $B$ of norms of $b^{\ast}$
           BB::Rational{Int},        # buffer $B$
           q::Rational{Int},         # buffer $q$ for function `RED'
-          qr::Array{Rational{Int},1},
+          qr::Vector{Rational{Int}},
           i::Int,         # loop variable $i$
           j::Int,         # loop variable $j$
           k::Int,         # loop variable $k$
@@ -39,7 +39,7 @@ function LLLReducedGramMat( grammatrix::Array{Int,2}, y::Rational{Int} = 3//4 )
           n::Int,         # length of `gram'
           RED,       # reduction subprocedure; `RED( l )'
                      # means `RED( k, l )' in Cohen's book
-          ak::Array{Rational{Int},1}, # buffer vector in Gram-Schmidt procedure
+          ak::Vector{Rational{Int}}, # buffer vector in Gram-Schmidt procedure
           r::Int          # number of zero vectors found up to now
 
     function RED( l )
@@ -98,8 +98,8 @@ function LLLReducedGramMat( grammatrix::Array{Int,2}, y::Rational{Int} = 3//4 )
 #   mue  = zeros( gram ) # this worked in earlier Julia versions ...
     mue  = zeros( Rational{Int}, n, n )
     r    = 0
-    ak   = Array{Rational{Int},1}( undef, n )
-#   H    = Array{Array{Rational{Int},1},1}( undef, n )
+    ak   = Vector{Rational{Int}}( undef, n )
+#   H    = Vector{Vector{Rational{Int}}}( undef, n )
 #    for i = 1:n
 #      H[i] = zeros( Rational{Int}, n )
 #      H[i][i] = 1
@@ -140,7 +140,7 @@ function LLLReducedGramMat( grammatrix::Array{Int,2}, y::Rational{Int} = 3//4 )
 
     end
 
-    B = Array{Rational{Int},1}( undef, n )
+    B = Vector{Rational{Int}}( undef, n )
     B[1] = gram[1,1]
 
     while k <= n
@@ -334,10 +334,10 @@ end
 
 
 """
-    ShortestVectors( grammat::Array{Int,2}, bound::Int, positive::String = "" )
+    ShortestVectors( grammat::Matrix{Int}, bound::Int, positive::String = "" )
 > Return a dictionary with the following components.
->   `vectors`:        shortest vectors (`Array{Array{Int,1},1}`),
->   `norms`:          norms of vectors (`Array{Rational{Int},1}`).
+>   `vectors`:        shortest vectors (`Vector{Vector{Int}}`),
+>   `norms`:          norms of vectors (`Vector{Rational{Int}}`).
 > (The code corresponds to the GAP code in `lib/zlattice.gi`.)
 > 
 > Example:
@@ -346,24 +346,24 @@ end
 >   julia> size( sv[ "norms" ], 1 )
 >   12
 """
-function ShortestVectors( grammat::Array{Int,2}, bound::Int, positive::String = "" )
+function ShortestVectors( grammat::Matrix{Int}, bound::Int, positive::String = "" )
     local n::Int,
-          c_vectors::Array{Array{Int,1},1},
-          c_norms::Array{Rational{Int},1},
-          v::Array{Int,1},
-          nullv::Array{Int,1},
+          c_vectors::Vector{Vector{Int}},
+          c_norms::Vector{Rational{Int}},
+          v::Vector{Int},
+          nullv::Vector{Int},
           checkpositiv::Bool,
           con::Bool,
           srt,
           vschr,
-          mue::Array{Rational{Int},2},
-          B::Array{Rational{Int},1},
-          transformation::Array{Rational{Int},2}
+          mue::Matrix{Rational{Int}},
+          B::Vector{Rational{Int}},
+          transformation::Matrix{Rational{Int}}
 
     n = size( grammat, 1 )
 
-    c_vectors = Array{Int,1}[]
-    c_norms = Array{Rational{Int},1}[]
+    c_vectors = Vector{Int}[]
+    c_norms = Vector{Rational{Int}}[]
     v = zeros( Int, n )
     nullv = zeros( Int, n )
 
@@ -428,7 +428,7 @@ function ShortestVectors( grammat::Array{Int,2}, bound::Int, positive::String = 
             j::Int,
             w::Int,
             neg::Bool,
-            newv::Array{Int,1}
+            newv::Vector{Int}
 
       newv = zeros( Int, n )  # Int because the *result* shall consist
                               # of integer vectors
@@ -468,10 +468,10 @@ end
 # A = [ 2 -1 -1 -1 ; -1 2 0 0 ; -1 0 2 0 ; -1 0 0 2 ];
 
 """
-    OrthogonalEmbeddings( A::Array{Int,2}, arec::Dict )
+    OrthogonalEmbeddings( A::Matrix{Int}, arec::Dict )
 > ...
 """
-function OrthogonalEmbeddings( A::Array{Int,2}, arec::Dict )
+function OrthogonalEmbeddings( A::Matrix{Int}, arec::Dict )
 
     local ExtendAtPosition,
           maxdim::Int,
@@ -480,33 +480,33 @@ function OrthogonalEmbeddings( A::Array{Int,2}, arec::Dict )
           onesolution::Bool,
           checkdim::Bool,
           n::Int,
-          Adiag::Array{Int,1},
-          Ainv::Array{Rational{Int},2},
-          AinvI::Array{Int,2},
+          Adiag::Vector{Int},
+          Ainv::Matrix{Rational{Int}},
+          AinvI::Matrix{Int},
           denom::Int,
           sv,
-          x::Array{Array{Int,1},1},
-          x2::Array{Array{Int,1},1},
-          norms::Array{Rational{Int},1},
+          x::Vector{Vector{Int}},
+          x2::Vector{Vector{Int}},
+          norms::Vector{Rational{Int}},
           m::Int,
-          M::Array{Array{Rational{Int},1},1},
-          increaserank::Array{Bool,1},
-          D::Array{Rational{Int},1},
-          f::Array{Int,1},
-          sol::Array{Array{Int,1}},
-          soldim::Array{Int,1},
+          M::Vector{Vector{Rational{Int}}},
+          increaserank::Vector{Bool},
+          D::Vector{Rational{Int}},
+          f::Vector{Int},
+          sol::Array{Vector{Int}},
+          soldim::Vector{Int},
           s::Int,
           k::Int,
-          iota::Array{Int,1},
-          mult::Array{Int,1},
-          sumg::Array{Int,1},
-          sumh::Array{Int,1},
+          iota::Vector{Int},
+          mult::Vector{Int},
+          sumg::Vector{Int},
+          sumh::Vector{Int},
           solcount::Int,
           tosort,
-          phi::Array{Rational{Int},2},
+          phi::Matrix{Rational{Int}},
           i::Int,
           ij::Int,
-          prod::Array{Rational{Int},1},
+          prod::Vector{Rational{Int}},
           res::Rational{Int},
           j::Int,
           l::Int,
@@ -519,11 +519,11 @@ function OrthogonalEmbeddings( A::Array{Int,2}, arec::Dict )
     ExtendAtPosition = function( i )
 # s and normdiff are scalars that shall be treated as globals!
 
-      local v::Array{Rational{Int},1},
+      local v::Vector{Rational{Int}},
             k1::Int,
             ii::Int,
             summ::Rational{Int},
-            row::Array{Rational{Int},1},
+            row::Vector{Rational{Int}},
             iii::Int,
             j::Int,
             r::Rational{Int}
@@ -626,7 +626,7 @@ row = M[ii]
     # 'Ainv' is an integer matrix and 'denom' is an integer
     # such that 'Ainv = denom * Inverse( A )'.
     Adiag = [ A[i,i] for i in 1:n ]
-    Ainv = inv( convert( Array{Rational{Int},2}, A ) )
+    Ainv = inv( convert( Matrix{Rational{Int}}, A ) )
     denom = lcm( map( denominator, Ainv ) )
     AinvI = denom * Ainv
 
@@ -662,7 +662,7 @@ row = M[ii]
     increaserank = Bool[]
     D = Rational{Int}[]
     f = Int[]
-    sol = Array{Int,1}[]
+    sol = Vector{Int}[]
     soldim = Int[]
     s = 1
     k = 1

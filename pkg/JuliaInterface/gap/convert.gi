@@ -122,7 +122,7 @@ function(filter, obj, recursive)
     Error("<obj> must be a Julia range");
 end);
 
-BindGlobal("_JL_Array_Bool_1", JuliaEvalString("Array{Bool,1}"));
+BindGlobal("_JL_Array_Bool_1", JuliaEvalString("Vector{Bool}"));
 BindGlobal("_JL_BitArray_1", JuliaEvalString("BitArray{1}"));
 
 InstallMethod(JuliaToGAP, ["IsBlist", "IsJuliaObject"],
@@ -140,7 +140,7 @@ function(filter, obj, recursive)
             return Julia.GAP.julia_to_gap(obj);
         fi;
     fi;
-    Error("<obj> must be a Julia Array{Bool,1} or BitArray{1}");
+    Error("<obj> must be a Julia Vector{Bool} or BitArray{1}");
 end);
 
 InstallMethod(JuliaToGAP, ["IsString", "IsJuliaObject"],

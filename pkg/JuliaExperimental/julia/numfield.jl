@@ -61,7 +61,7 @@ end
 function CoefficientVectorOfNumberFieldElement( elm::Nemo.nf_elem, d::Int )
     local arr, i
 
-    arr = Array{Nemo.fmpq,1}( undef, d )
+    arr = Vector{Nemo.fmpq}( undef, d )
     for i = 1:d
       arr[i] = Nemo.coeff( elm, i-1 )
     end
@@ -80,8 +80,8 @@ end
 function CoefficientVectorsNumDenOfNumberFieldElement( elm, d )
     local num, den, i, onecoeff
 
-    num = Array{Nemo.fmpz,1}( undef, d )
-    den = Array{Nemo.fmpz,1}( undef, d )
+    num = Vector{Nemo.fmpz}( undef, d )
+    den = Vector{Nemo.fmpz}( undef, d )
     for i = 1:d
       onecoeff = Nemo.coeff( elm, i-1 )
       num[i] = numerator( onecoeff )
@@ -102,8 +102,8 @@ function MatricesOfCoefficientVectorsNumDen( nemomat, d )
     local m, n, num, den, i, j, resnum, resden
 
     m, n = size( nemomat )
-    num = Array{Any,1}( undef, 0 )
-    den = Array{Any,1}( undef, 0 )
+    num = Vector{Any}( undef, 0 )
+    den = Vector{Any}( undef, 0 )
     for i = 1:m
       for j = 1:n
         resnum, resden = CoefficientVectorsNumDenOfNumberFieldElement(

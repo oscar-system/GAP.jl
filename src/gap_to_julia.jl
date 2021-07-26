@@ -37,12 +37,12 @@ julia> GAP.gap_to_julia( GAP.evalstr( "\\"abc\\"" ) )
 julia> val = GAP.evalstr( "[ [ 1, 2 ], [ 3, 4 ] ]" );
 
 julia> GAP.gap_to_julia( val )
-2-element Array{Any,1}:
+2-element Vector{Any}:
  Any[1, 2]
  Any[3, 4]
 
 julia> GAP.gap_to_julia( val, recursive = false )
-2-element Array{Any,1}:
+2-element Vector{Any}:
  GAP: [ 1, 2 ]
  GAP: [ 3, 4 ]
 
@@ -55,11 +55,11 @@ function gap_to_julia(t::T, x::Any) where {T<:Type}
     ## otherwise, explicitly reject the conversion.
     ## As an example why this is useful, suppose you have a GAP list x (i.e., an
     ## object of type GapObj) containing a bunch of Julia tuples. Then this method
-    ## enables conversion of that list to a Julia array of type Array{Tuple,1},
+    ## enables conversion of that list to a Julia array of type Vector{Tuple},
     ## like this:
-    ##    gap_to_julia(Array{Tuple{Int64},1},xx)
+    ##    gap_to_julia(Vector{Tuple{Int64}},xx)
     ## This works because first the gap_to_julia method with signature
-    ## (::Type{Array{T,1}}, :: GapObj) is invoked, with T = Tuple{Int64}; this then
+    ## (::Type{Vector{T}}, :: GapObj) is invoked, with T = Tuple{Int64}; this then
     ## invokes gap_to_julia recursively with signature (::Tuple{Int64},::Any),
     ## which ends up selecting the method below.
     if !(typeof(x) <: t)
@@ -161,7 +161,7 @@ gap_to_julia(::Type{T}, obj::GapObj) where {T<:AbstractString} =
 ## Symbols
 gap_to_julia(::Type{Symbol}, obj::GapObj) = Symbol(gap_to_julia(String, obj))
 
-## Convert GAP string to Vector{UInt8} (==Array{UInt8,1})
+## Convert GAP string to Vector{UInt8} (==Vector{UInt8})
 function gap_to_julia(::Type{Vector{UInt8}}, obj::GapObj)
     Globals.IsStringRep(obj) && return CSTR_STRING_AS_ARRAY(obj)
     Globals.IsList(obj) && return [gap_to_julia(UInt8, obj[i]) for i = 1:length(obj)]
@@ -400,7 +400,7 @@ function gap_to_julia(x::GapObj; recursive = true)
     # Do not choose this conversion for other lists in 'IsBlist'.
     Globals.IsBlistRep(x) && return gap_to_julia(BitArray{1}, x)
     Globals.IsList(x) && return gap_to_julia(Vector{Any}, x; recursive = recursive)
-    Globals.IsMatrixObj(x) && return gap_to_julia(Array{Any,2}, x; recursive = recursive)
+    Globals.IsMatrixObj(x) && return gap_to_julia(Matrix{Any}, x; recursive = recursive)
     Globals.IsVectorObj(x) && return gap_to_julia(Vector{Any}, x; recursive = recursive)
     Globals.IsRecord(x) && return gap_to_julia(Dict{Symbol,Any}, x; recursive = recursive)
     Globals.IS_JULIA_FUNC(x) && return UnwrapJuliaFunc(x)

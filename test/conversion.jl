@@ -94,11 +94,11 @@
     x = GAP.evalstr("(1,2,3)")
     @test_throws GAP.ConversionError GAP.gap_to_julia(AbstractString, x)
 
-    # Convert GAP string to Vector{UInt8} (==Array{UInt8,1})
+    # Convert GAP string to Vector{UInt8} (==Vector{UInt8})
     x = GAP.evalstr("\"foo\"")
-    @test GAP.gap_to_julia(Array{UInt8,1}, x) == UInt8[0x66, 0x6f, 0x6f]
+    @test GAP.gap_to_julia(Vector{UInt8}, x) == UInt8[0x66, 0x6f, 0x6f]
     x = GAP.evalstr("[1,2,3]")
-    @test GAP.gap_to_julia(Array{UInt8,1}, x) == UInt8[1, 2, 3]
+    @test GAP.gap_to_julia(Vector{UInt8}, x) == UInt8[1, 2, 3]
 
     ## BitArrays
     x = GAP.evalstr("[ true, false, false, true ]")
@@ -108,17 +108,17 @@
 
     ## Vectors
     x = GAP.julia_to_gap([1, 2, 3])
-    @test GAP.gap_to_julia(Array{Any,1}, x) == Array{Any,1}([1, 2, 3])
-    @test GAP.gap_to_julia(x) == Array{Any,1}([1, 2, 3])
-    @test GAP.gap_to_julia(Array{Int64,1}, x) == [1, 2, 3]
-    @test GAP.gap_to_julia(Array{BigInt,1}, x) == [1, 2, 3]
+    @test GAP.gap_to_julia(Vector{Any}, x) == Vector{Any}([1, 2, 3])
+    @test GAP.gap_to_julia(x) == Vector{Any}([1, 2, 3])
+    @test GAP.gap_to_julia(Vector{Int64}, x) == [1, 2, 3]
+    @test GAP.gap_to_julia(Vector{BigInt}, x) == [1, 2, 3]
     n = GAP.julia_to_gap(big(2)^100)
-    @test_throws GAP.ConversionError GAP.gap_to_julia(Array{Int64,1}, n)
-    @test_throws GAP.ConversionError GAP.gap_to_julia(Array{BigInt,1}, n)
+    @test_throws GAP.ConversionError GAP.gap_to_julia(Vector{Int64}, n)
+    @test_throws GAP.ConversionError GAP.gap_to_julia(Vector{BigInt}, n)
     x = GAP.evalstr("[ [ 1, 2 ], [ 3, 4 ] ]")
-    nonrec1 = GAP.gap_to_julia(Array{GAP.GapObj,1}, x)
-    nonrec2 = GAP.gap_to_julia(Array{Any,1}, x; recursive = false)
-    rec = GAP.gap_to_julia(Array{Any,1}, x; recursive = true)
+    nonrec1 = GAP.gap_to_julia(Vector{GAP.GapObj}, x)
+    nonrec2 = GAP.gap_to_julia(Vector{Any}, x; recursive = false)
+    rec = GAP.gap_to_julia(Vector{Any}, x; recursive = true)
     @test all(x -> isa(x, GAP.GapObj), nonrec1)
     @test nonrec1 == nonrec2
     @test nonrec1 != rec
@@ -128,33 +128,33 @@
     z = GAP.gap_to_julia(Vector{Any}, y)
     @test z[1] === z[2]
     x = GAP.evalstr( "NewVector( IsPlistVectorRep, Integers, [ 0, 2, 5 ] )" )
-    @test GAP.gap_to_julia(x) == Array{Any,1}([0, 2, 5])
-    @test GAP.gap_to_julia(Array{Int,1}, x) == Array{Int,1}([0, 2, 5])
+    @test GAP.gap_to_julia(x) == Vector{Any}([0, 2, 5])
+    @test GAP.gap_to_julia(Vector{Int}, x) == Vector{Int}([0, 2, 5])
 
     ## Matrices
     n = GAP.evalstr("[[1,2],[3,4]]")
-    @test GAP.gap_to_julia(Array{Int64,2}, n) == [1 2; 3 4]
+    @test GAP.gap_to_julia(Matrix{Int64}, n) == [1 2; 3 4]
     xt = [(1,) (2,); (3,) (4,)]
     n = GAP.julia_to_gap(xt; recursive = false)
-    @test GAP.gap_to_julia(Array{Tuple{Int64},2}, n) == xt
+    @test GAP.gap_to_julia(Matrix{Tuple{Int64}}, n) == xt
     n = GAP.julia_to_gap(big(2)^100)
-    @test_throws GAP.ConversionError GAP.gap_to_julia(Array{Int64,2}, n)
+    @test_throws GAP.ConversionError GAP.gap_to_julia(Matrix{Int64}, n)
     #n = GAP.evalstr("[[1,2],[,4]]")
-    #@test GAP.gap_to_julia(Array{Union{Int64,Nothing},2}, n) == [1 2; nothing 4]
+    #@test GAP.gap_to_julia(Matrix{Union{Int64,Nothing}}, n) == [1 2; nothing 4]
     x = [1, 2]
     m = Any[1 2; 3 4]
     m[1, 1] = x
     m[2, 2] = x
     x = GAP.julia_to_gap(m; recursive = true)
-    y = GAP.gap_to_julia(Array{Any,2}, x)
+    y = GAP.gap_to_julia(Matrix{Any}, x)
     @test !isa(y[1, 1], GAP.GapObj)
     @test y[1, 1] === y[2, 2]
-    z = GAP.gap_to_julia(Array{Any,2}, x; recursive = false)
+    z = GAP.gap_to_julia(Matrix{Any}, x; recursive = false)
     @test isa(z[1, 1], GAP.GapObj)
     @test z[1, 1] === z[2, 2]
     m = GAP.evalstr( "NewMatrix( IsPlistMatrixRep, Integers, 2, [ 0, 1, 2, 3 ] )" )
-    @test GAP.gap_to_julia(m) == Array{Any,2}([0 1; 2 3])
-    @test GAP.gap_to_julia(Array{Int,2}, m) == Array{Int,2}([0 1; 2 3])
+    @test GAP.gap_to_julia(m) == Matrix{Any}([0 1; 2 3])
+    @test GAP.gap_to_julia(Matrix{Int}, m) == Matrix{Int}([0 1; 2 3])
 
     ## Sets
     x = GAP.evalstr("[ [ 1 ], [ 2 ], [ 1 ] ]")
@@ -249,18 +249,18 @@
     ## Test converting GAP lists with holes in them
     xx = GAP.evalstr("[1,,1]")
     @test GAP.gap_to_julia(xx) == Any[1, nothing, 1]
-    @test GAP.gap_to_julia(Array{Any,1}, xx) == Any[1, nothing, 1]
-    @test_throws MethodError GAP.gap_to_julia(Array{Int64,1}, xx)
-    @test GAP.gap_to_julia(Array{Union{Nothing,Int64},1}, xx) ==
+    @test GAP.gap_to_julia(Vector{Any}, xx) == Any[1, nothing, 1]
+    @test_throws MethodError GAP.gap_to_julia(Vector{Int64}, xx)
+    @test GAP.gap_to_julia(Vector{Union{Nothing,Int64}}, xx) ==
           Union{Nothing,Int64}[1, nothing, 1]
-    @test GAP.gap_to_julia(Array{Union{Int64,Nothing},1}, xx) ==
+    @test GAP.gap_to_julia(Vector{Union{Int64,Nothing}}, xx) ==
           Union{Nothing,Int64}[1, nothing, 1]
 
     ## GAP lists with Julia objects
     xx = GAP.julia_to_gap([(1,)])
-    yy = GAP.gap_to_julia(Array{Tuple{Int64},1}, xx)
+    yy = GAP.gap_to_julia(Vector{Tuple{Int64}}, xx)
     @test [(1,)] == yy
-    @test typeof(yy) == Array{Tuple{Int64},1}
+    @test typeof(yy) == Vector{Tuple{Int64}}
 
 end
 
@@ -391,11 +391,11 @@ end
     @test conv[1] === conv[2]
     # ... non-recursive conversion
     conv = GAP.julia_to_gap(yy; recursive = false)
-    @test isa(conv[1], Array{Int64,1})
+    @test isa(conv[1], Vector{Int64})
     @test conv[1] === conv[2]
 
     ## converting a list with circular refs
-    yy = Array{Any,1}(undef, 2)
+    yy = Vector{Any}(undef, 2)
     yy[1] = yy
     yy[2] = yy
     # ... recursive conversion

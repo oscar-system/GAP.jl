@@ -17,55 +17,55 @@ import Base: length, similar, zeros, ==, isless, *, one, inv, ^, /
 # create the julia types
 struct Permutation2 # means permutations of positive 16 bit integers
     degree::UInt16
-    imgs::Array{UInt16,1}
+    imgs::Vector{UInt16}
 end
 
 struct Permutation4 # means permutations of positive 32 bit integers 
     degree::UInt32
-    imgs::Array{UInt32,1}
+    imgs::Vector{UInt32}
 end
 
 Permutation2or4 = Union{ Permutation2, Permutation4 }
 
 
 #T *check* the input?
-function Permutation( degree::UInt16, imgsarray::Array{UInt16,1} )
+function Permutation( degree::UInt16, imgsarray::Vector{UInt16} )
     return Permutation2( degree, imgsarray )
    end
 
-function Permutation( degree::UInt32, imgsarray::Array{UInt32,1} )
+function Permutation( degree::UInt32, imgsarray::Vector{UInt32} )
     return Permutation4( degree, imgsarray )
    end
 
-function Permutation( imgsarray::Array{UInt16,1} )
+function Permutation( imgsarray::Vector{UInt16} )
     return Permutation2( length( imgsarray ), imgsarray )
    end
 
-function Permutation( imgsarray::Array{UInt32,1} )
+function Permutation( imgsarray::Vector{UInt32} )
     return Permutation4( length( imgsarray ), imgsarray )
    end
 
-function Permutation( imgsarray::Array{Int,1} )
+function Permutation( imgsarray::Vector{Int} )
         local conv16, conv32
 
         if length( imgsarray ) <= 2^16
-          conv16::Array{UInt16,1} = convert( Array{UInt16,1}, imgsarray )
+          conv16::Vector{UInt16} = convert( Vector{UInt16}, imgsarray )
           return Permutation2( length( conv16 ), conv16 )
         else
-          conv32::Array{UInt32,1} = convert( Array{UInt32,1}, imgsarray )
+          conv32::Vector{UInt32} = convert( Vector{UInt32}, imgsarray )
           return Permutation4( length( conv32 ), conv32 )
         end
     end
 
-# Note that 'GAPToJulia' creates Array{Any,1}.
-function Permutation( imgsarray::Array{Any,1} )
+# Note that 'GAPToJulia' creates Vector{Any}.
+function Permutation( imgsarray::Vector{Any} )
         local conv16, conv32
 
         if length( imgsarray ) <= 2^16
-          conv16::Array{UInt16,1} = convert( Array{UInt16,1}, imgsarray )
+          conv16::Vector{UInt16} = convert( Vector{UInt16}, imgsarray )
           return Permutation2( length( conv16 ), conv16 )
         else
-          conv32::Array{UInt32,1} = convert( Array{UInt32,1}, imgsarray )
+          conv32::Vector{UInt32} = convert( Vector{UInt32}, imgsarray )
           return Permutation4( length( conv32 ), conv32 )
         end
     end
@@ -515,8 +515,8 @@ end
 # function PermutationFromMeatAxeFile( filename::String )
 #     local l::HttpCommon,
 #           str::String,
-#           spl::Array{String,1},
-#           header::Array{String,1},
+#           spl::Vector{String},
+#           header::Vector{String},
 #           n::Integer,
 #           imgs
 # 

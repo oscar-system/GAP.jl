@@ -120,10 +120,10 @@ function CSTR_STRING(val::GapObj)
     return deepcopy(unsafe_string(char_ptr, len))::String
 end
 
-function CSTR_STRING_AS_ARRAY(val::GapObj)::Array{UInt8,1}
+function CSTR_STRING_AS_ARRAY(val::GapObj)::Vector{UInt8}
     string_len = Int64(ccall((:GAP_LenString, libgap), Cuint, (Any,), val))
     char_ptr = ccall((:GAP_CSTR_STRING, libgap), Ptr{UInt8}, (Any,), val)
-    return deepcopy(unsafe_wrap(Array{UInt8,1}, char_ptr, string_len))
+    return deepcopy(unsafe_wrap(Vector{UInt8}, char_ptr, string_len))
 end
 
 
