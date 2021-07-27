@@ -26,7 +26,17 @@ The latter works because we have set up a GitHub Action for
 make the release automatically.
 
 
-## Using GAP.jl with a different version of GAP than what GAP_jll provides
+## Updating `GAP_jll` resp. `GAP_lib_jll`
+
+To do this, open a pull request for <https://github.com/JuliaPackaging/Yggdrasil>.
+The files to edit there are in `G/GAP` (produces a JLL with compiled code for
+the GAP kernel) and `G/GAP_lib` (produces a JLL with the GAP library code, no
+binaries). Usually, those two JLLs should be updated simultaneously; but if
+one knows that only the kernel resp. only the GAP library, one can also
+deviate from this.
+
+
+## Using GAP.jl with a different version of GAP than what `GAP_jll` provides
 
 This can be useful for various reasons e.g.,
 
