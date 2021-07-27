@@ -4,6 +4,9 @@
 length(ARGS) >= 1 || error("must provide path of GAP override directory as first argument")
 gapoverride = popfirst!(ARGS)
 
+isdir(gapoverride) || error("The given override path '$(gapoverride)' is not a valid directory")
+gapoverride = abspath(gapoverride)
+
 #
 #
 #

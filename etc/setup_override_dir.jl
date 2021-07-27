@@ -15,8 +15,18 @@ debugmode = length(ARGS) > 0 && ARGS[1] == "--debug"
 # TODO: should the user be allowed to provide a tmp_gap_build_dir ? that might
 # be handy for incremental updates
 
-# TODO: check whether prefix already exists; if so either refuse to run, or offer
-# the user to delete it
+
+# validate arguments
+isdir(gap_prefix) || error("The given GAP prefix '$(gap_prefix)' is not a valid directory")
+if ispath(prefix)
+    error("installation prefix '$(prefix)' already exists, please remove it before running this script")
+    # TODO: prompt the user for whether to delete the dir or abort
+end
+
+# convert into absolute paths
+mkpath(prefix)
+prefix = abspath(prefix)
+gap_prefix = abspath(gap_prefix)
 
 #
 # Install needed packages
