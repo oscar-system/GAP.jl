@@ -1,5 +1,7 @@
 /gaproot/
 /gh-pages/
-/Manifest.toml
+Manifest.toml
 /tags
 *.log
+
+proj*
