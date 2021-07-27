@@ -235,12 +235,11 @@ julia> Symbol(str)
 """
 Core.Symbol(obj::GapObj) = Symbol(String(obj))
 
-## BitArrays
-BitArray{1}(obj::GapObj) = gap_to_julia(BitArray{1}, obj)
+## BitVectors
 @doc """
-    BitArray{1}(obj::GapObj)
+    BitVector(obj::GapObj)
 
-Return the 1-dimensional bit array converted from the
+Return the bit vector converted from the
 [GAP list of booleans](GAP_ref(ref:Boolean Lists)) `obj`.
 
 # Examples
@@ -248,14 +247,15 @@ Return the 1-dimensional bit array converted from the
 julia> val = GAP.evalstr("[ true, false, true ]")
 GAP: [ true, false, true ]
 
-julia> BitArray{1}(val)
+julia> BitVector(val)
 3-element BitVector:
  1
  0
  1
 
 ```
-""" BitArray
+"""
+BitVector(obj::GapObj) = gap_to_julia(BitVector, obj)
 
 ## Arrays
 ## (special case: convert GAP string to Vector{UInt8} (== Vector{UInt8}))

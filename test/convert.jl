@@ -71,11 +71,11 @@
     x = GAP.evalstr("[1,2,3]")
     @test convert(Vector{UInt8}, x) == UInt8[1, 2, 3]
 
-    ## BitArrays
+    ## BitVectors
     x = GAP.evalstr("[ true, false, false, true ]")
-    @test convert(BitArray{1}, x) == [true, false, false, true]
+    @test convert(BitVector, x) == [true, false, false, true]
     x = GAP.evalstr("[ 1, 0, 0, 1 ]")
-    @test_throws GAP.ConversionError convert(BitArray{1}, x)
+    @test_throws GAP.ConversionError convert(BitVector, x)
 
     ## Vectors
     x = GAP.julia_to_gap([1, 2, 3])
