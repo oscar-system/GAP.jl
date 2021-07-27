@@ -15,6 +15,8 @@ This GAP prompt allows to quickly switch between writing Julia and GAP code in
 a session where all data is shared.
 """
 function prompt()
+    global disable_error_handler
+
     # save the current SIGINT handler
     # (we pass NULL as signal handler; strictly speaking, we should be passing `SIG_DFL`
     # but it's not clearly how to access this from here, and anyway on the list
@@ -25,6 +27,7 @@ function prompt()
     ccall((:SyInstallAnswerIntr, libgap), Cvoid, ())
 
     # restore GAP's error output
+    disable_error_handler = true
     Globals.MakeReadWriteGlobal(GapObj("ERROR_OUTPUT"))
     evalstr("""ERROR_OUTPUT:= "*errout*";""")
     Globals.MakeReadOnlyGlobal(GapObj("ERROR_OUTPUT"))
@@ -42,5 +45,6 @@ function prompt()
     ccall(:signal, Ptr{Cvoid}, (Cint, Ptr{Cvoid}), Base.SIGINT, old_sigint)
 
     # restore GAP.jl error handler
+    disable_error_handler = false
     reset_GAP_ERROR_OUTPUT()
 end
