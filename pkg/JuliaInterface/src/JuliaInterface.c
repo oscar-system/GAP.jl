@@ -73,7 +73,11 @@ Obj Func_JULIAINTERFACE_INTERNAL_INIT(Obj self)
 
 jl_value_t * gap_box_gapffe(Obj value)
 {
-    jl_ptls_t    ptls = jl_get_ptls_states();
+#if (JULIA_VERSION_MAJOR * 100 + JULIA_VERSION_MINOR) <= 106
+    jl_ptls_t ptls = jl_get_ptls_states();
+#else
+    jl_ptls_t ptls = jl_get_current_task()->ptls;
+#endif
     jl_value_t * v = jl_gc_alloc_typed(ptls, sizeof(Obj), JULIA_GAPFFE_type);
     *(Obj *)jl_data_ptr(v) = value;
     return v;
