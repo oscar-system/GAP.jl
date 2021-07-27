@@ -119,7 +119,7 @@ Symbol
 UnitRange
 StepRange
 Tuple
-BitArray
+BitVector
 Vector{T}
 Matrix{T}
 Set{T}

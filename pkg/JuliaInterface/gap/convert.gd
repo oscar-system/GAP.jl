@@ -246,7 +246,7 @@
 #!  </Item>
 #!  <Item>
 #!    <C>IsBlist</C> to
-#!    <C>BitArray{1}</C> (default),
+#!    <C>BitVector</C> (default),
 #!    or types available for <C>IsList</C>,
 #!  </Item>
 #!  <Item>
@@ -326,7 +326,7 @@
 #!      <Item>plain lists</Item>
 #!    </Row>
 #!    <Row>
-#!      <Item><C>Vector{Bool}</C>, <C>BitArray{1}</C></Item>
+#!      <Item><C>Vector{Bool}</C>, <C>BitVector</C></Item>
 #!      <Item><C>IsBList</C></Item>
 #!      <Item>bit lists</Item>
 #!    </Row>

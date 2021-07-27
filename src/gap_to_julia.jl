@@ -168,11 +168,11 @@ function gap_to_julia(::Type{Vector{UInt8}}, obj::GapObj)
     throw(ConversionError(obj, Vector{UInt8}))
 end
 
-## BitArrays
-function gap_to_julia(::Type{BitArray{1}}, obj::GapObj)
-    !Globals.IsBlist(obj) && throw(ConversionError(obj, BitArray{1}))
+## BitVectors
+function gap_to_julia(::Type{BitVector}, obj::GapObj)
+    !Globals.IsBlist(obj) && throw(ConversionError(obj, BitVector))
     len = Globals.Length(obj)
-    result = BitArray(undef, len)
+    result = BitVector(undef, len)
     for i = 1:len
         result[i] = obj[i]
     end
@@ -398,7 +398,7 @@ function gap_to_julia(x::GapObj; recursive = true)
     # Do not choose this conversion for other lists in 'IsRange'.
     Globals.IsRangeRep(x) && return gap_to_julia(StepRange{Int64,Int64}, x)
     # Do not choose this conversion for other lists in 'IsBlist'.
-    Globals.IsBlistRep(x) && return gap_to_julia(BitArray{1}, x)
+    Globals.IsBlistRep(x) && return gap_to_julia(BitVector, x)
     Globals.IsList(x) && return gap_to_julia(Vector{Any}, x; recursive = recursive)
     Globals.IsMatrixObj(x) && return gap_to_julia(Matrix{Any}, x; recursive = recursive)
     Globals.IsVectorObj(x) && return gap_to_julia(Vector{Any}, x; recursive = recursive)
