@@ -26,11 +26,37 @@ The latter works because we have set up a GitHub Action for
 make the release automatically.
 
 
-## Using GAP.jl with a different version of GAP than is bundled
+## Using GAP.jl with a different version of GAP than what GAP_jll provides
 
-For various reasons you may wish to use GAP.jl with a different GAP version than
-the one bundled with it via `Artifacts.toml`; e.g. to test GAP.jl against the
-GAP master branch.
+This can be useful for various reasons e.g.,
 
-To do so, you can use a `Overrides.toml` file, as described in the `Pkg.jl` manual:
-<https://julialang.github.io/Pkg.jl/dev/artifacts/#Overriding-artifact-locations-1>
+- you need to test GAP.jl with a newer GAP version, perhaps even its master branch
+- you need to test with a newer Julia version that breaks binary compatibility
+- you need to test with a Julia debug build
+
+For this to work, follow these instructions:
+
+1. Obtain a copy of the GAP sources, probably from a clone of the GAP git repository.
+   Let's say this is in directory `GAPROOT`.
+
+2. Compiled GAP inside GAPROOT once (this is to ensure `build/c_oper1.c` and
+  `build/c_type1.c` are present).
+
+3. Build GAP with the Julia version of your choice by executing the `etc/setup_override_dir.jl`
+   script. It takes as first argument the GAPROOT, and as second argument the places where
+   the result shall be installed. I recommend to execute this in a separate
+   environment, as it may need to install a few things.
+
+   To give a concrete example, supposed you have a Julia executable named `julia-1.6`. Then
+   you could invoke
+
+        julia-1.6 --proj=override-1.6 etc/setup_override_dir.jl GAPROOT /tmp/gap_jll_override-1.6
+
+4. Use the `etc/run_with_override.jl` script with the exact same Julia executable
+   and the override environment we just prepared.
+
+        julia-1.6 --proj=override-1.6 etc/run_with_override.jl /tmp/gap_jll_override-1.6
+
+5. This opens a Julia session with the override in effect. You can now e.g. load GAP.jl
+   via `using GAP`, or install other packages (such as Oscar) and test with them.
+
