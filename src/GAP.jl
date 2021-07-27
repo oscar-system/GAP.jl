@@ -36,12 +36,23 @@ end
 
 const last_error = Ref{String}("")
 
+disable_error_handler = false
+
 function error_handler()
+    global disable_error_handler
+    if disable_error_handler
+        return
+    end
     last_error[] = String(Globals._JULIAINTERFACE_ERROR_OUTPUT)
     ccall((:SET_LEN_STRING, libgap), Cvoid, (GapObj, Cuint), Globals._JULIAINTERFACE_ERROR_OUTPUT, 0)
 end
 
 function ThrowObserver(depth::Cint)
+    global disable_error_handler
+    if disable_error_handler
+        return
+    end
+
     # signal to the GAP interpreter that errors are handled
     ccall((:ClearError, libgap), Cvoid, ())
     # reset global execution context
