@@ -104,8 +104,8 @@ function load(spec::String, version::String = ""; install = false)
     if loaded == true
         return true
     elseif install == true
-        # Try to install the package.
-        if Packages.install(spec; interactive = false)
+        # Try to install the package, without showing messages.
+        if Packages.install(spec; interactive = false, quiet = true)
             # Make sure that the installed version is admissible.
             return Globals.LoadPackage(gspec, gversion, false)
         end
