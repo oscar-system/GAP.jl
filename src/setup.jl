@@ -303,7 +303,7 @@ function regenerate_gaproot(gaproot_mutable)
 
     cd(joinpath(gaproot_gapjl, "pkg", "JuliaInterface")) do
         run(pipeline(`./configure $gaproot_mutable`, stdout="build.log"))
-        run(pipeline(`make -j$(Sys.CPU_THREADS)`, stdout="build.log", append=true))
+        run(pipeline(`make V=1 -j$(Sys.CPU_THREADS)`, stdout="build.log", append=true))
     end
 
     return gaproot_mutable
