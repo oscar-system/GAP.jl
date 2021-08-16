@@ -243,22 +243,55 @@ function regenerate_gaproot(gaproot_mutable)
         # create a `pkg` symlink to the GAP packages artifact
         force_symlink(artifact"gap_packages", "pkg")
 
-        ##
-        ## Create Project.toml & Manifest.toml for use by gap.sh
-        ##
-        @info "Generating custom Julia project ..."
-        relative_pkgdir = joinpath("..", "..")
-        @assert abspath(gaproot_mutable, relative_pkgdir) == gaproot_gapjl
-        run(pipeline(`$(Base.julia_cmd()) --startup-file=no --project=$(gaproot_mutable) -e "using Pkg; Pkg.develop(PackageSpec(path=\"$(relative_pkgdir)\"))"`))
+    end # cd(gaproot_mutable)
 
-    end # cd
+    ##
+    ## Compile JuliaInterface
+    ##
+    @info "Compiling JuliaInterface ..."
+
+    cd(joinpath(gaproot_gapjl, "pkg", "JuliaInterface")) do
+        run(pipeline(`./configure $gaproot_mutable`, stdout="build.log"))
+        run(pipeline(`make V=1 -j$(Sys.CPU_THREADS)`, stdout="build.log", append=true))
+    end
+
+    ##
+    ## Create custom gap.sh
+    ##
+    create_gap_sh(joinpath(gaproot_mutable, "bin"))
+
+    return gaproot_mutable
+end # function
+
+
+"""
+    create_gap_sh(dstdir::String)
+
+Given a directory path, create three files in that directory:
+- a shell script named `gap.sh` which acts like the `gap.sh` shipped with a
+  regular GAP installation, but which behind the scenes launches GAP via Julia.
+- two TOML files, `Manifest.toml` and `Project.toml`, which are required by
+  `gap.sh` to function (they record the precise versions of GAP.jl and other
+  Julia packages involved)
+"""
+function create_gap_sh(dstdir::String)
+
+    mkpath(dstdir)
+
+    gaproot_gapjl = abspath(@__DIR__, "..")
+
+    ##
+    ## Create Project.toml & Manifest.toml for use by gap.sh
+    ##
+    @info "Generating custom Julia project ..."
+    run(pipeline(`$(Base.julia_cmd()) --startup-file=no --project=$(dstdir) -e "using Pkg; Pkg.develop(PackageSpec(path=\"$(gaproot_gapjl)\"))"`))
 
     ##
     ## Create custom gap.sh
     ##
     @info "Generating gap.sh ..."
 
-    gap_sh_path = joinpath(gaproot_mutable, "bin", "gap.sh")
+    gap_sh_path = joinpath(dstdir, "gap.sh")
     write(gap_sh_path,
         """
         #!/bin/sh
@@ -268,7 +301,7 @@ function regenerate_gaproot(gaproot_mutable)
         # But you can always instead load this file as if it was a .jl file via any
         # other Julia executable.
         #=
-        exec $(joinpath(Sys.BINDIR, Base.julia_exename())) --startup-file=no --project=$(gaproot_mutable) -- "$(gap_sh_path)" "\$@"
+        exec $(joinpath(Sys.BINDIR, Base.julia_exename())) --startup-file=no --project=$(dstdir) -- "$(gap_sh_path)" "\$@"
         =#
 
         # pass command line arguments to GAP.jl via a small hack
@@ -296,17 +329,8 @@ function regenerate_gaproot(gaproot_mutable)
         )
     chmod(gap_sh_path, 0o755)
 
-    ##
-    ## Finally, compile JuliaInterface
-    ##
-    @info "Compiling JuliaInterface ..."
-
-    cd(joinpath(gaproot_gapjl, "pkg", "JuliaInterface")) do
-        run(pipeline(`./configure $gaproot_mutable`, stdout="build.log"))
-        run(pipeline(`make V=1 -j$(Sys.CPU_THREADS)`, stdout="build.log", append=true))
-    end
-
-    return gaproot_mutable
 end # function
 
 end # module
+
+const create_gap_sh = Setup.create_gap_sh
