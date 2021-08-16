@@ -1,7 +1,7 @@
 name = "GAP"
 uuid = "c863536a-3901-11e9-33e7-d5cd0df7b904"
 authors = ["Thomas Breuer <sam@math.rwth-aachen.de>", "Sebastian Gutsche <gutsche@mathematik.uni-siegen.de>", "Max Horn <horn@mathematik.uni-kl.de>"]
-version = "0.6.0"
+version = "0.6.1"
 
 [deps]
 GAP_jll = "5cd7a574-2c56-5be2-91dc-c8bc375b9ddf"
