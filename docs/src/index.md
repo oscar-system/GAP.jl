@@ -260,6 +260,7 @@ GAP.Packages.remove
 
 ```@docs
 GAP.prompt
+GAP.create_gap_sh
 ```
 
 
