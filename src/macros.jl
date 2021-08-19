@@ -124,7 +124,7 @@ export @g_str
 import MacroTools
 
 # The following function is used by @gapwrap and @gapattribute.
-function gapwrap_fun(ex::Expr)
+function gapwrap_fun(ex::Expr, lno = nothing)
     # split the method definition
     def_dict = try
         MacroTools.splitdef(ex)
@@ -134,6 +134,11 @@ function gapwrap_fun(ex::Expr)
 
     # take the body of the function
     body = def_dict[:body]
+
+    # extract the location of the original method
+    if lno === nothing
+        lno = body.args[1]
+    end
 
     # find, record and substitute all occurrences of GAP.Globals.*
     symdict = IdDict{Symbol,Symbol}()
@@ -148,6 +153,7 @@ function gapwrap_fun(ex::Expr)
     #   ##XYZ##123 = GAP.Globals.XYZ
     def_dict[:body] = Expr(
         :block,
+        lno,
         # first the list of initializations ...
         (:(local $v = GAP.Globals.$k) for (k, v) in symdict)...,
         # ... then the quoted original-with-substitutions body
@@ -261,6 +267,9 @@ macro gapattribute(ex)
     # take the body of the function
     body = def_dict[:body]
 
+    # extract the location of the original method
+    lno = body.args[1]
+
     # Find the (unique) occurrence of GAP.Globals.<name>(<arg>),
     # and record <name> and <arg>.
     fun_arg = Set{Tuple{Symbol,Any}}()
@@ -288,8 +297,8 @@ macro gapattribute(ex)
     Core.eval(enclmodule, gapwrap_fun(ex))
 
     # Default tester and setter are given by the variable names.
-    Core.eval(enclmodule, gapwrap_fun(:(($testername($juliaarg)::Bool = GAP.Globals.$gaptester($gaparg)))))
-    Core.eval(enclmodule, gapwrap_fun(:(($settername($juliaarg, val) = GAP.Globals.$gapsetter($gaparg, val)))))
+    Core.eval(enclmodule, gapwrap_fun(:(($testername($juliaarg)::Bool = GAP.Globals.$gaptester($gaparg))), lno))
+    Core.eval(enclmodule, gapwrap_fun(:(($settername($juliaarg, val) = GAP.Globals.$gapsetter($gaparg, val))), lno))
 
     return
 end
