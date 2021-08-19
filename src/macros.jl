@@ -124,21 +124,13 @@ export @g_str
 import MacroTools
 
 # The following function is used by @gapwrap and @gapattribute.
-function gapwrap_fun(ex::Expr, lno = nothing)
-    # split the method definition
-    def_dict = try
-        MacroTools.splitdef(ex)
-    catch
-        error("@gapwrap must be applied to a method definition")
-    end
+function gapwrap_fun(def_dict)
 
     # take the body of the function
     body = def_dict[:body]
 
     # extract the location of the original method
-    if lno === nothing
-        lno = body.args[1]
-    end
+    lno = body.args[1]
 
     # find, record and substitute all occurrences of GAP.Globals.*
     symdict = IdDict{Symbol,Symbol}()
@@ -153,8 +145,9 @@ function gapwrap_fun(ex::Expr, lno = nothing)
     #   ##XYZ##123 = GAP.Globals.XYZ
     def_dict[:body] = Expr(
         :block,
+        # first the location of the method
         lno,
-        # first the list of initializations ...
+        # now the list of initializations ...
         (:(local $v = GAP.Globals.$k) for (k, v) in symdict)...,
         # ... then the quoted original-with-substitutions body
         Meta.quot(body),
@@ -186,11 +179,18 @@ true
 ```
 """
 macro gapwrap(ex)
+    # split the method definition
+    def_dict = try
+        MacroTools.splitdef(ex)
+    catch
+        error("@gapwrap must be applied to a method definition")
+    end
+
     # we must prevent Julia from applying gensym to all locals, as these
     # substitutions do not get applied to the quoted part of the new body,
     # leading to trouble if the wrapped function has arguments (as the
     # argument names will be replaced, but not their uses in the quoted part
-    return esc(gapwrap_fun(ex))
+    return esc(gapwrap_fun(def_dict))
 end
 
 export @gapwrap
@@ -267,13 +267,10 @@ macro gapattribute(ex)
     # take the body of the function
     body = def_dict[:body]
 
-    # extract the location of the original method
-    lno = body.args[1]
-
     # Find the (unique) occurrence of GAP.Globals.<name>(<arg>),
     # and record <name> and <arg>.
     fun_arg = Set{Tuple{Symbol,Any}}()
-    body = MacroTools.postwalk(body) do x
+    MacroTools.postwalk(body) do x
         MacroTools.@capture(x, GAP.Globals.sym_(arg_)) || return x
         push!(fun_arg, (sym, arg))
         return x
@@ -294,11 +291,30 @@ macro gapattribute(ex)
     settername = Symbol("set" * julianame)
 
     # For the getter, we rewrite the given input as @gapwrap does.
-    Core.eval(enclmodule, gapwrap_fun(ex))
+    Core.eval(enclmodule, gapwrap_fun(def_dict))
 
-    # Default tester and setter are given by the variable names.
-    Core.eval(enclmodule, gapwrap_fun(:(($testername($juliaarg)::Bool = GAP.Globals.$gaptester($gaparg))), lno))
-    Core.eval(enclmodule, gapwrap_fun(:(($settername($juliaarg, val) = GAP.Globals.$gapsetter($gaparg, val))), lno))
+    # extract the location of the original method, and use it to inform Julia that
+    # the tester and setter are declared in the same place
+    lno = body.args[1]
+
+    # Tester
+    def_dict = Dict{Symbol, Any}(
+            :name => testername,
+            :args => Any[juliaarg],
+            :kwargs => Any[],
+            :body => Expr(:block, lno, :(GAP.Globals.$gaptester($gaparg))),
+            :rtype => :Bool,
+            :whereparams => ())
+    Core.eval(enclmodule, gapwrap_fun(def_dict))
+
+    # Setter
+    def_dict = Dict{Symbol, Any}(
+            :name => settername,
+            :args => Any[juliaarg, :val],
+            :kwargs => Any[],
+            :body => Expr(:block, lno, :(GAP.Globals.$gapsetter($gaparg, val))),
+            :whereparams => ())
+    Core.eval(enclmodule, gapwrap_fun(def_dict))
 
     return
 end
