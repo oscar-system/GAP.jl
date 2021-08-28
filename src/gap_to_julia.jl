@@ -1,8 +1,8 @@
 
 ## Show a specific error on conversion failure.
 struct ConversionError <: Base.Exception
-    obj::Any
-    jl_type::Any
+    obj::Obj
+    jl_type::Union{String,Type}
 end
 
 Base.showerror(io::IO, e::ConversionError) =
@@ -48,7 +48,8 @@ julia> GAP.gap_to_julia( val, recursive = false )
 
 ```
 """
-function gap_to_julia(t::T, x::Any) where {T<:Type}
+function gap_to_julia(T::Type, x::Any)
+    @nospecialize T, x
     ## Default for conversion:
     ## Base case for conversion (least specialized method): Allow converting any
     ## Julia object x to type T, provided that the type of x is a subtype of T;
@@ -62,15 +63,12 @@ function gap_to_julia(t::T, x::Any) where {T<:Type}
     ## (::Type{Vector{T}}, :: GapObj) is invoked, with T = Tuple{Int64}; this then
     ## invokes gap_to_julia recursively with signature (::Tuple{Int64},::Any),
     ## which ends up selecting the method below.
-    if !(typeof(x) <: t)
+    if !(typeof(x) <: T)
         throw(ErrorException(
-            "Don't know how to convert value of type " *
-            string(typeof(x)) *
-            " to type " *
-            string(t),
+            "Don't know how to convert value of type $(typeof(x)) to type $(T)"
         ))
     end
-    return x
+    return x::T
 end
 
 ## Switch recursion on by default.

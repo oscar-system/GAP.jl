@@ -579,7 +579,7 @@ InstallMethod( ContextGAPNemo,
         numden:= Julia.GAPNumberFields.CoefficientVectorsNumDenOfNumberFieldElement(
                      obj, Dimension( C!.GAPDomain ) );
 
-        convert:= Julia.Base.convert;
+        convert:= JuliaEvalString( "Vector{Int}" );
         num:= JuliaToGAP( IsList,
               convert( JuliaEvalString( "Vector{Int}" ), numden[1] ), true );
         den:= JuliaToGAP( IsList,
