@@ -156,6 +156,8 @@ function initialize(argv::Vector{String})
         error("JuliaInterface could not be loaded")
     end
 
+    GAP.Globals.Read(GapObj(joinpath(@__DIR__, "..", "lib", "pkg.g")))
+
     # If we are in "stand-alone mode", stop here
     if handle_signals
         ccall((:SyInstallAnswerIntr, libgap), Cvoid, ())
