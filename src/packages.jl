@@ -149,9 +149,6 @@ The info messages shown by  this function can be suppressed by entering
 `true` as the value of `quiet`.
 """
 function install(spec::String; interactive::Bool = true, pkgdir::AbstractString = DEFAULT_PKGDIR, quiet::Bool = false)
-    res = load("PackageManager")
-    @assert res
-
     # point PackageManager to our internal pkg dir
     Globals.PKGMAN_CustomPackageDir = GapObj(pkgdir)
     mkpath(pkgdir)
@@ -185,9 +182,6 @@ The info messages shown by  this function can be suppressed by entering
 `true` as the value of `quiet`.
 """
 function update(spec::String; interactive::Bool = true, pkgdir::AbstractString = DEFAULT_PKGDIR, quiet::Bool = false)
-    res = load("PackageManager")
-    @assert res
-
     # point PackageManager to our internal pkg dir
     Globals.PKGMAN_CustomPackageDir = GapObj(pkgdir)
     mkpath(pkgdir)
@@ -219,9 +213,6 @@ The info messages shown by  this function can be suppressed by entering
 `true` as the value of `quiet`.
 """
 function remove(spec::String; interactive::Bool = true, pkgdir::AbstractString = DEFAULT_PKGDIR, quiet::Bool = false)
-    res = load("PackageManager")
-    @assert res
-
     # point PackageManager to our internal pkg dir
     Globals.PKGMAN_CustomPackageDir = GapObj(pkgdir)
     mkpath(pkgdir)
