@@ -42,6 +42,7 @@ The viewpoint of an interface from GAP to Julia is described in
 ```@docs
 FFE
 GapObj
+GAP.Obj
 ```
 
 ## Macros
@@ -102,7 +103,7 @@ julia_to_gap
 ### Constructor Methods for GAP-to-Julia Conversions
 
 (For Julia-to-GAP conversions,
-one can use [`GapObj`](@ref) as a constructor.)
+one can use [`GapObj`](@ref) and [`GAP.Obj`](@ref) as constructors.)
 
 ```@docs
 Int128

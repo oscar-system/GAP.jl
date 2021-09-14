@@ -18,6 +18,12 @@ changes compared to the 0.6.x release:
   be necessary.
 - Remove GAP function `ImportJuliaModuleIntoGAP`. As a replacement, use
   `JuliaEvalString("import MODULENAME")`.
+- Restrict `GapObj` constructor by adding a return type annotation that
+  ensures only values of type `GapObj` are returned. If you relied on this
+  also returning `Int`, `Bool` or `FFE`, please use the `GAP.Obj` constructor
+  instead. If you relied on also Julia objects being returned, you should
+  probably revise your code; but if you determine that you still really
+  *really* have to do this, you can by using `julia_to_gap`.
 
 Other changes:
 
