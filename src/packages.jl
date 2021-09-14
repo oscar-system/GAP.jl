@@ -79,9 +79,24 @@ export LoadPackageAndExposeGlobals
 
 module Packages
 
+using Downloads
 import ...GAP: Globals, GapObj, sysinfo
 
 const DEFAULT_PKGDIR = sysinfo["DEFAULT_PKGDIR"]
+
+function init_packagemanager()
+    res = load("PackageManager")
+    @assert res
+
+    # overwrite PKGMAN_DownloadURL
+    Globals.MakeReadWriteGlobal(GapObj("PKGMAN_DownloadURL"))
+    Globals.PKGMAN_DownloadURL = function(url)
+        # exception handling is omitted by concept, i.e. errors occuring during the download are shown to the user
+        buffer = Downloads.download(String(url), IOBuffer())
+        return GapObj(Dict{Symbol, Any}(:success => true, :result => String(take!(buffer))), recursive=true)
+    end
+    Globals.MakeReadOnlyGlobal(GapObj("PKGMAN_DownloadURL"))
+end
 
 """
     load(spec::String, version::String = ""; install = false)

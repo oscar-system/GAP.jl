@@ -253,6 +253,8 @@ function __init__()
             ),
         )
     end
+
+    Packages.init_packagemanager()
 end
 
 """
