@@ -1,38 +1,42 @@
 @testset "conversion from GAP using constructors" begin
 
-    ## Analogous tests for conversion using convert are in convert.jl.
+  ## Analogous tests for conversion using convert are in convert.jl.
 
-    ## Conversion to GAP.Obj and GAP.GapObj.
+  @testset "Conversion to GAP.Obj and GAP.GapObj" begin
     x = GAP.evalstr("2^100")
     @test GAP.GapObj(x) == x
     @test GAP.Obj(true) == true
     x = GAP.evalstr("Z(3)")
     @test GAP.Obj(x) == x
     @test GAP.Obj(0) == 0
+  end
 
-    ## Border cases
+  @testset "Border cases" begin
     x = GAP.evalstr("2^100")
     @test_throws InexactError Int64(x)
     @test Int128(x) == BigInt(2)^100
     @test BigInt(x) == BigInt(2)^100
     x = GAP.evalstr("2^62")  # not an immediate integer
     @test Int64(x) == 2^62
+  end
 
-    ## BigInts
+  @testset "BigInts" begin
     x = GAP.evalstr("2^100")
     @test BigInt(x) == BigInt(2)^100
     x = GAP.evalstr("1/2")
     @test_throws GAP.ConversionError BigInt(x)
+  end
 
-    ## Rationals
+  @testset "Rationals" begin
     x = GAP.evalstr("2^100")
     @test Rational{BigInt}(x) == BigInt(2)^100 // 1
     x = GAP.evalstr("2^100/3")
     @test Rational{BigInt}(x) == BigInt(2)^100 // 3
     x = GAP.evalstr("(1,2,3)")
     @test_throws GAP.ConversionError Rational{BigInt}(x)
+  end
 
-    ## Floats
+  @testset "Floats" begin
     x = GAP.evalstr("2.")
     @test Float64(x) == 2.0
     @test Float32(x) == Float32(2.0)
@@ -40,8 +44,9 @@
     @test BigFloat(x) == BigFloat(2.0)
     x = GAP.evalstr("(1,2,3)")
     @test_throws GAP.ConversionError Float64(x)
+  end
 
-    ## big (is not a constructor but fits here)
+  @testset "big (is not a constructor but fits here)" begin
     x = GAP.evalstr("2^100")
     @test big(x) == BigInt(2)^100
     x = GAP.evalstr("2^100/3")
@@ -50,14 +55,16 @@
     @test big(x) == BigFloat(2.0)
     x = GAP.evalstr("[]")
     @test_throws GAP.ConversionError big(x)
+  end
 
-    ## Chars
+  @testset "Chars" begin
     x = GAP.evalstr("'x'")
     @test Cuchar(x) == Cuchar('x')
     x = GAP.evalstr("(1,2,3)")
     @test_throws GAP.ConversionError Cuchar(x)
+  end
 
-    ## Strings
+  @testset "Strings" begin
     x = GAP.evalstr("[]")
     @test GAP.Globals.IsString(x) == true
     @test GAP.Globals.IsStringRep(x) == false
@@ -69,8 +76,10 @@
     x = GAP.evalstr("\"foo\"")
     @test String(x) == "foo"
     @test AbstractString(x) == "foo"
+  end
 
-    ## Symbols
+  @testset "Symbols" begin
+    x = GAP.evalstr("\"foo\"")
     @test Symbol(x) == :foo
     x = GAP.evalstr("(1,2,3)")
     @test_throws GAP.ConversionError AbstractString(x)
@@ -80,14 +89,16 @@
     @test Vector{UInt8}(x) == UInt8[0x66, 0x6f, 0x6f]
     x = GAP.evalstr("[1,2,3]")
     @test Vector{UInt8}(x) == UInt8[1, 2, 3]
+  end
 
-    ## BitVectors
+  @testset "BitVectors" begin
     x = GAP.evalstr("[ true, false, false, true ]")
     @test BitVector(x) == [true, false, false, true]
     x = GAP.evalstr("[ 1, 0, 0, 1 ]")
     @test_throws GAP.ConversionError BitVector(x)
+  end
 
-    ## Vectors
+  @testset "Vectors" begin
     x = GAP.julia_to_gap([1, 2, 3])
     @test Vector{Any}(x) == Vector{Any}([1, 2, 3])
     @test Vector{Int64}(x) == [1, 2, 3]
@@ -107,8 +118,9 @@
     y = GAP.julia_to_gap([x, x]; recursive = true)
     z = Vector{Any}(y)
     @test z[1] === z[2]
+  end
 
-    ## Matrices
+  @testset "Matrices" begin
     n = GAP.evalstr("[[1,2],[3,4]]")
     @test Matrix{Int64}(n) == [1 2; 3 4]
     xt = [(1,) (2,); (3,) (4,)]
@@ -129,15 +141,17 @@
     z = Matrix{Any}(x; recursive = false)
     @test isa(z[1, 1], GAP.GapObj)
     @test z[1, 1] === z[2, 2]
+  end
 
-    ## Sets
+  @testset "Sets" begin
     @test Set{Int}(GAP.evalstr("[1, 3, 1]")) == Set{Int}([1, 3, 1])
     @test Set{Vector{Int}}(GAP.evalstr("[[1,2],[2,3,4]]")) == Set([[1, 2], [2, 3, 4]])
     @test Set{String}(GAP.evalstr("[\"b\", \"a\", \"b\"]")) == Set(["b", "a", "b"])
     x = GAP.evalstr("SymmetricGroup(3)")
     @test Set{GAP.GapObj}(x) == Set{GAP.GapObj}(GAP.Globals.AsSet(x))
+  end
 
-    ## Tuples
+  @testset "Tuples" begin
     x = GAP.julia_to_gap([1, 2, 3])
     @test Tuple{Int64,Any,Int32}(x) == Tuple{Int64,Any,Int32}([1, 2, 3])
     @test_throws ArgumentError Tuple{Any,Any}(x)
@@ -155,8 +169,9 @@
     @test isa(y[1], GAP.Obj)
     @test isa(y[2], Array)
     @test isa(y[2][2], GAP.Obj)
+  end
 
-    ## Ranges
+  @testset "Ranges" begin
     r = GAP.evalstr("[]")
     @test UnitRange{Int64}(r) == 1:0
     @test StepRange{Int64,Int64}(r) == 1:1:0
@@ -175,8 +190,9 @@
     r = GAP.evalstr("rec()")
     @test_throws GAP.ConversionError UnitRange{Int64}(r)
     @test_throws GAP.ConversionError StepRange{Int64,Int64}(r)
+  end
 
-    ## Dictionaries
+  @testset "Dictionaries" begin
     x = GAP.evalstr("rec( foo := 1, bar := \"foo\" )")
     y = Dict{Symbol,Any}(:foo => 1, :bar => "foo")
     @test Dict{Symbol,Any}(x) == y
@@ -191,23 +207,27 @@
     y = Dict{Symbol,Any}(x; recursive = false)
     @test isa(y[:a], GAP.Obj)
     @test isa(y[:b], GAP.Obj)
+  end
 
-    ## Conversions involving circular references
+  @testset "Conversions involving circular references" begin
     xx = GAP.evalstr("l:=[1];x:=[l,l];")
     conv = Tuple{Tuple{Int64},Tuple{Int64}}(xx)
     @test conv[1] === conv[2]
+  end
 
-    ## Test converting GAP lists with holes in them
+  @testset "Test converting GAP lists with holes in them" begin
     xx = GAP.evalstr("[1,,1]")
     @test Vector{Any}(xx) == Any[1, nothing, 1]
     @test_throws MethodError Vector{Int64}(xx)
     @test Vector{Union{Nothing,Int64}}(xx) == Union{Nothing,Int64}[1, nothing, 1]
     @test Vector{Union{Int64,Nothing}}(xx) == Union{Nothing,Int64}[1, nothing, 1]
+  end
 
-    ## GAP lists with Julia objects
+  @testset "GAP lists with Julia objects" begin
     xx = GAP.julia_to_gap([(1,)])
     yy = Vector{Tuple{Int64}}(xx)
     @test [(1,)] == yy
     @test typeof(yy) == Vector{Tuple{Int64}}
+  end
 
 end
