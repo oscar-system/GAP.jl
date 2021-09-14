@@ -11,7 +11,7 @@ Base.showerror(io::IO, e::ConversionError) =
 
 ## Conversion from GAP to Julia
 """
-    gap_to_julia(type, x, recursion_dict=nothing; recursive=true)
+    gap_to_julia(type, x, recursion_dict=nothing; recursive::Bool=true)
 
 Try to convert the object `x` to a Julia object of type `type`.
 If `x` is a `GAP.GapObj` then the conversion rules are defined in the
@@ -76,12 +76,12 @@ end
 ## Switch recursion on by default.
 ## If no method for the given arguments supports 'recursion_dict'
 ## then assume that it is not needed.
-gap_to_julia(type_obj, obj, recursion_dict; recursive = true) =
+gap_to_julia(type_obj, obj, recursion_dict; recursive::Bool = true) =
     gap_to_julia(type_obj, obj; recursive = recursive)
-gap_to_julia(type_obj, obj; recursive = true) = gap_to_julia(type_obj, obj)
+gap_to_julia(type_obj, obj; recursive::Bool = true) = gap_to_julia(type_obj, obj)
 
 ## Default
-gap_to_julia(::Type{Any}, x::GapObj; recursive = true) =
+gap_to_julia(::Type{Any}, x::GapObj; recursive::Bool = true) =
     gap_to_julia(x; recursive = recursive)
 gap_to_julia(::Type{Any}, x::Any) = x
 gap_to_julia(::T, x::Nothing) where {T<:Type} = nothing
@@ -184,7 +184,7 @@ function gap_to_julia(
     ::Type{Vector{T}},
     obj::GapObj,
     recursion_dict = IdDict();
-    recursive = true,
+    recursive::Bool = true,
 ) where {T}
     if Globals.IsList(obj)
         islist = true
@@ -224,7 +224,7 @@ function gap_to_julia(
     type::Type{Matrix{T}},
     obj::GapObj,
     recursion_dict = IdDict();
-    recursive = true,
+    recursive::Bool = true,
 ) where {T}
     if haskey(recursion_dict, obj)
         return recursion_dict[obj]
@@ -264,7 +264,7 @@ end
 ## Note that Julia does not support `Set{Set{Int}}([[1], [1, 1]])`.
 ## Without this assumption, we would have to construct the set
 ## in the beginning, and then fill it up using `union!`.
-function gap_to_julia(::Type{Set{T}}, obj::GapObj; recursive = true) where {T}
+function gap_to_julia(::Type{Set{T}}, obj::GapObj; recursive::Bool = true) where {T}
     if Globals.IsCollection(obj)
         obj = Globals.AsSet(obj)
     elseif Globals.IsList(obj)
@@ -299,7 +299,7 @@ function gap_to_julia(
     ::Type{T},
     obj::GapObj,
     recursion_dict = IdDict();
-    recursive = true,
+    recursive::Bool = true,
 ) where {T<:Tuple}
     !Globals.IsList(obj) && throw(ConversionError(obj, T))
     if !haskey(recursion_dict, obj)
@@ -363,7 +363,7 @@ function gap_to_julia(
     ::Type{Dict{Symbol,T}},
     obj::GapObj,
     recursion_dict = IdDict();
-    recursive = true,
+    recursive::Bool = true,
 ) where {T}
     !Globals.IsRecord(obj) && throw(ConversionError(obj, Dict{Symbol,T}))
     if !haskey(recursion_dict, obj)
@@ -388,7 +388,7 @@ end
 ## Generic conversions
 gap_to_julia(x::Any) = x
 
-function gap_to_julia(x::GapObj; recursive = true)
+function gap_to_julia(x::GapObj; recursive::Bool = true)
     Globals.IsInt(x) && return gap_to_julia(BigInt, x)
     Globals.IsRat(x) && return gap_to_julia(Rational{BigInt}, x)
     Globals.IsFloat(x) && return gap_to_julia(Float64, x)
