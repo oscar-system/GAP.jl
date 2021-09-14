@@ -3,7 +3,8 @@ Obj(x::Obj) = x
 GapObj(x::GapObj) = x
 
 ## Handle conversion of Julia objects to GAP objects
-GapObj(obj; recursive::Bool = false) = julia_to_gap(obj, IdDict(), recursive = recursive)
+Obj(obj; recursive::Bool = false) = julia_to_gap(obj, IdDict(), recursive = recursive)::Obj
+GapObj(obj; recursive::Bool = false) = julia_to_gap(obj, IdDict(), recursive = recursive)::GapObj
 
 ## Integer, BigInt
 """
