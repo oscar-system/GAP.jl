@@ -124,8 +124,8 @@ end
 function gap_to_julia(::Type{Rational{T}}, x::GapObj) where {T<:Integer}
     GAP_IS_INT(x) && return gap_to_julia(T, x) // T(1)
     !GAP_IS_RAT(x) && throw(ConversionError(x, Rational{T}))
-    numer = Globals.NumeratorRat(x)
-    denom = Globals.DenominatorRat(x)
+    numer = Wrappers.NumeratorRat(x)
+    denom = Wrappers.DenominatorRat(x)
     return gap_to_julia(T, numer) // gap_to_julia(T, denom)
 end
 
@@ -140,19 +140,19 @@ gap_to_julia(::Type{T}, obj::GapObj) where {T<:AbstractFloat} =
 
 ## Chars
 function gap_to_julia(::Type{Char}, obj::GapObj)
-    GAP_IS_CHAR(obj) && return Char(Globals.INT_CHAR(obj))
+    GAP_IS_CHAR(obj) && return Char(Wrappers.INT_CHAR(obj))
     throw(ConversionError(obj, Char))
 end
 
 function gap_to_julia(::Type{Cuchar}, obj::GapObj)
-    GAP_IS_CHAR(obj) && return trunc(Cuchar, Globals.INT_CHAR(obj))
+    GAP_IS_CHAR(obj) && return trunc(Cuchar, Wrappers.INT_CHAR(obj))
     throw(ConversionError(obj, Cuchar))
 end
 
 ## Strings
 function gap_to_julia(::Type{String}, obj::GapObj)
-    Globals.IsStringRep(obj) && return CSTR_STRING(obj)
-    Globals.IsString(obj) && return CSTR_STRING(Globals.CopyToStringRep(obj))
+    Wrappers.IsStringRep(obj) && return CSTR_STRING(obj)
+    Wrappers.IsString(obj) && return CSTR_STRING(Wrappers.CopyToStringRep(obj))
     throw(ConversionError(obj, String))
 end
 gap_to_julia(::Type{T}, obj::GapObj) where {T<:AbstractString} =
@@ -163,15 +163,15 @@ gap_to_julia(::Type{Symbol}, obj::GapObj) = Symbol(gap_to_julia(String, obj))
 
 ## Convert GAP string to Vector{UInt8} (==Vector{UInt8})
 function gap_to_julia(::Type{Vector{UInt8}}, obj::GapObj)
-    Globals.IsStringRep(obj) && return CSTR_STRING_AS_ARRAY(obj)
-    Globals.IsList(obj) && return [gap_to_julia(UInt8, obj[i]) for i = 1:length(obj)]
+    Wrappers.IsStringRep(obj) && return CSTR_STRING_AS_ARRAY(obj)
+    Wrappers.IsList(obj) && return [gap_to_julia(UInt8, obj[i]) for i = 1:length(obj)]
     throw(ConversionError(obj, Vector{UInt8}))
 end
 
 ## BitVectors
 function gap_to_julia(::Type{BitVector}, obj::GapObj)
-    !Globals.IsBlist(obj) && throw(ConversionError(obj, BitVector))
-    len = Globals.Length(obj)
+    !Wrappers.IsBlist(obj) && throw(ConversionError(obj, BitVector))
+    len = Wrappers.Length(obj)
     result = BitVector(undef, len)
     for i = 1:len
         result[i] = obj[i]
@@ -186,11 +186,11 @@ function gap_to_julia(
     recursion_dict = IdDict();
     recursive::Bool = true,
 ) where {T}
-    if Globals.IsList(obj)
+    if Wrappers.IsList(obj)
         islist = true
-    elseif Globals.IsVectorObj(obj)
+    elseif Wrappers.IsVectorObj(obj)
         islist = false
-        ELM_LIST = Globals.ELM_LIST
+        ELM_LIST = Wrappers.ELM_LIST
     else
         throw(ConversionError(obj, Vector{T}))
     end
@@ -229,17 +229,17 @@ function gap_to_julia(
     if haskey(recursion_dict, obj)
         return recursion_dict[obj]
     end
-    if Globals.IsMatrixObj(obj)
-        nrows = Globals.NumberRows(obj)
-        ncols = Globals.NumberColumns(obj)
-    elseif Globals.IsList(obj)
+    if Wrappers.IsMatrixObj(obj)
+        nrows = Wrappers.NumberRows(obj)
+        ncols = Wrappers.NumberColumns(obj)
+    elseif Wrappers.IsList(obj)
         nrows = length(obj)
         ncols = nrows == 0 ? 0 : length(obj[1])
     else
         throw(ConversionError(obj, type))
     end
 
-    elm = Globals.MatElm
+    elm = Wrappers.ELM_MAT
     new_array = type(undef, nrows, ncols)
     if recursive
         recursion_dict[obj] = new_array
@@ -265,15 +265,15 @@ end
 ## Without this assumption, we would have to construct the set
 ## in the beginning, and then fill it up using `union!`.
 function gap_to_julia(::Type{Set{T}}, obj::GapObj; recursive::Bool = true) where {T}
-    if Globals.IsCollection(obj)
-        obj = Globals.AsSet(obj)
-    elseif Globals.IsList(obj)
+    if Wrappers.IsCollection(obj)
+        obj = Wrappers.AsSet(obj)
+    elseif Wrappers.IsList(obj)
         # The list entries may be not comparable via `<`.
-        obj = Globals.DuplicateFreeList(obj)
+        obj = Wrappers.DuplicateFreeList(obj)
     else
         throw(ConversionError(obj, Set{T}))
     end
-    len_list = Globals.Length(obj)
+    len_list = Wrappers.Length(obj)
     new_array = Vector{T}(undef, len_list)
     if recursive
         recursion_dict = IdDict()
@@ -301,11 +301,11 @@ function gap_to_julia(
     recursion_dict = IdDict();
     recursive::Bool = true,
 ) where {T<:Tuple}
-    !Globals.IsList(obj) && throw(ConversionError(obj, T))
+    !Wrappers.IsList(obj) && throw(ConversionError(obj, T))
     if !haskey(recursion_dict, obj)
         parameters = T.parameters
         len = length(parameters)
-        Globals.Length(obj) == len ||
+        Wrappers.Length(obj) == len ||
             throw(ArgumentError("length of $obj does not match type $T"))
         list = [
             gap_to_julia(parameters[i], obj[i], recursion_dict; recursive = recursive)
@@ -318,8 +318,8 @@ end
 
 ## Ranges
 function gap_to_julia(::Type{T}, obj::GapObj) where {T<:UnitRange}
-    !Globals.IsRange(obj) && throw(ConversionError(obj, T))
-    len = Globals.Length(obj)
+    !Wrappers.IsRange(obj) && throw(ConversionError(obj, T))
+    len = Wrappers.Length(obj)
     if len == 0
         # construct an empty UnitRange object
         result = 1:0
@@ -335,8 +335,8 @@ function gap_to_julia(::Type{T}, obj::GapObj) where {T<:UnitRange}
 end
 
 function gap_to_julia(::Type{T}, obj::GapObj) where {T<:StepRange}
-    !Globals.IsRange(obj) && throw(ConversionError(obj, T))
-    len = Globals.Length(obj)
+    !Wrappers.IsRange(obj) && throw(ConversionError(obj, T))
+    len = Wrappers.Length(obj)
     if len == 0
         # construct an empty StepRange object
         start = 1
@@ -365,9 +365,9 @@ function gap_to_julia(
     recursion_dict = IdDict();
     recursive::Bool = true,
 ) where {T}
-    !Globals.IsRecord(obj) && throw(ConversionError(obj, Dict{Symbol,T}))
+    !Wrappers.IsRecord(obj) && throw(ConversionError(obj, Dict{Symbol,T}))
     if !haskey(recursion_dict, obj)
-        names = Globals.RecNames(obj)
+        names = Wrappers.RecNames(obj)
         names_list = Vector{Symbol}(names)
         dict = Dict{Symbol,T}()
         recursion_dict[obj] = dict
@@ -394,16 +394,16 @@ function gap_to_julia(x::GapObj; recursive::Bool = true)
     GAP_IS_MACFLOAT(x) && return gap_to_julia(Float64, x)
     GAP_IS_CHAR(x) && return gap_to_julia(Cuchar, x)
     # Do not choose this conversion for other lists in 'IsString'.
-    Globals.IsStringRep(x) && return gap_to_julia(AbstractString, x)
+    Wrappers.IsStringRep(x) && return gap_to_julia(AbstractString, x)
     # Do not choose this conversion for other lists in 'IsRange'.
-    Globals.IsRangeRep(x) && return gap_to_julia(StepRange{Int64,Int64}, x)
+    Wrappers.IsRangeRep(x) && return gap_to_julia(StepRange{Int64,Int64}, x)
     # Do not choose this conversion for other lists in 'IsBlist'.
-    Globals.IsBlistRep(x) && return gap_to_julia(BitVector, x)
-    Globals.IsList(x) && return gap_to_julia(Vector{Any}, x; recursive = recursive)
-    Globals.IsMatrixObj(x) && return gap_to_julia(Matrix{Any}, x; recursive = recursive)
-    Globals.IsVectorObj(x) && return gap_to_julia(Vector{Any}, x; recursive = recursive)
-    Globals.IsRecord(x) && return gap_to_julia(Dict{Symbol,Any}, x; recursive = recursive)
-    Globals.IS_JULIA_FUNC(x) && return UnwrapJuliaFunc(x)
+    Wrappers.IsBlistRep(x) && return gap_to_julia(BitVector, x)
+    Wrappers.IsList(x) && return gap_to_julia(Vector{Any}, x; recursive = recursive)
+    Wrappers.IsMatrixObj(x) && return gap_to_julia(Matrix{Any}, x; recursive = recursive)
+    Wrappers.IsVectorObj(x) && return gap_to_julia(Vector{Any}, x; recursive = recursive)
+    Wrappers.IsRecord(x) && return gap_to_julia(Dict{Symbol,Any}, x; recursive = recursive)
+    Wrappers.IS_JULIA_FUNC(x) && return UnwrapJuliaFunc(x)
     throw(ConversionError(x, "any known type"))
 end
 

@@ -276,8 +276,11 @@ end
 
 include("lowlevel.jl")
 include("ccalls.jl")
-include("adapter.jl")
+
 include("macros.jl")
+include("wrappers.jl")
+
+include("adapter.jl")
 include("gap_to_julia.jl")
 include("constructors.jl")
 include("julia_to_gap.jl")

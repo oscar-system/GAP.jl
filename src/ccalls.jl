@@ -75,13 +75,13 @@ function evalstr(cmd::String)
       global last_error
       # HACK HACK HACK: if there is an error string on the GAP side, call
       # error_handler to copy it into `last_error`
-      if !GAP.Globals.IsEmpty(Globals._JULIAINTERFACE_ERROR_BUFFER)
+      if !Wrappers.IsEmpty(Globals._JULIAINTERFACE_ERROR_BUFFER)
         error_handler()
       end
       error("Error thrown by GAP: $(last_error[])")
     end
     res = res[end]
-    if Globals.ISB_LIST(res, 2)
+    if Wrappers.ISB_LIST(res, 2)
       return res[2]
     else
       return
@@ -200,20 +200,19 @@ GAP: "2xD8"
 ```
 """
 function call_gap_func(func::GapObj, args...; kwargs...)
-# this is the generic method which supports keyword arguments (mapped to GAP options)
-# and goes through JuliaInterface, which is convenient but a bit slow.
-    global Globals
+    # this is the generic method which supports keyword arguments (mapped to GAP options)
+    # and goes through JuliaInterface, which is convenient but a bit slow.
     options = false
     if length(kwargs) > 0
         kwargs_rec = GapObj(Dict(kwargs))
-        Globals.PushOptions(kwargs_rec)
+        Wrappers.PushOptions(kwargs_rec)
         options = true
     end
     try
         return call_gap_func_nokw(func, args...)
     finally
         if options
-            Globals.PopOptions()
+            Wrappers.PopOptions()
         end
     end
 end
