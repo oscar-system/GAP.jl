@@ -12,16 +12,3 @@
 #    @test GAP.Packages.remove("io", interactive = false, pkgdir = pkgdir)
 
 end
-
-@testset "LoadPackageAndExposeGlobals" begin
-
-    LoadPackageAndExposeGlobals("GAPDoc", "test1")
-    @test isdefined(test1, :SymmetricGroup) == false
-
-    LoadPackageAndExposeGlobals("GAPDoc", "test2", all_globals = true)
-    @test isdefined(test2, :SymmetricGroup) == true
-
-    LoadPackageAndExposeGlobals("GAPDoc", test3, all_globals = true)
-    @test test3.SymmetricGroup == 5
-
-end
