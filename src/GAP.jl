@@ -230,18 +230,11 @@ function __init__()
         # Note that a second argument `false` of this function suppresses the
         # package banner,
         # but no package banners can be shown if the `-b` option is `true`.
-        gap_module = @__MODULE__
-        Base.MainInclude.eval(
-            :(
-                begin
-                    record = $gap_module.Globals.GAPInfo
-                    record.CommandLineOptions =
-                        $gap_module.Globals.ShallowCopy(record.CommandLineOptions)
-                    record.CommandLineOptions.b = false
-                    $gap_module.Globals.MakeImmutable(record.CommandLineOptions)
-                end
-            ),
-        )
+        evalstr_ex("""
+            GAPInfo.CommandLineOptions := ShallowCopy(GAPInfo.CommandLineOptions);
+            GAPInfo.CommandLineOptions.b = false;
+            MakeImmutable(GAPInfo.CommandLineOptions);
+        """)
     end
 
     Packages.init_packagemanager()
