@@ -27,7 +27,7 @@ function prompt()
     ccall((:SyInstallAnswerIntr, libgap), Cvoid, ())
 
     # restore GAP's error output
-    disable_error_handler = true
+    disable_error_handler[] = true
     Globals.MakeReadWriteGlobal(GapObj("ERROR_OUTPUT"))
     evalstr("""ERROR_OUTPUT:= "*errout*";""")
     Globals.MakeReadOnlyGlobal(GapObj("ERROR_OUTPUT"))
@@ -45,6 +45,6 @@ function prompt()
     ccall(:signal, Ptr{Cvoid}, (Cint, Ptr{Cvoid}), Base.SIGINT, old_sigint)
 
     # restore GAP.jl error handler
-    disable_error_handler = false
+    disable_error_handler[] = false
     reset_GAP_ERROR_OUTPUT()
 end

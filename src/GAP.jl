@@ -22,34 +22,24 @@ include("types.jl")
 const sysinfo = Setup.read_sysinfo_gap(GAPROOT)
 const GAP_VERSION = VersionNumber(sysinfo["GAP_VERSION"])
 
-function reset_GAP_ERROR_OUTPUT()
-    # Note: strictly speaking we should close the stream here; but since it is
-    # a string stream, this does nothing. So we don't do it, which saves us
-    # some hassle when calling reset_GAP_ERROR_OUTPUT from `initialize`
-    #Globals.CloseStream(Globals.ERROR_OUTPUT)
-    evalstr("_JULIAINTERFACE_ERROR_OUTPUT:= \"\";")
-    Globals.MakeReadWriteGlobal(julia_to_gap("ERROR_OUTPUT"))
-    evalstr("ERROR_OUTPUT:= OutputTextString( _JULIAINTERFACE_ERROR_OUTPUT, true );")
-    evalstr("SetPrintFormattingStatus( ERROR_OUTPUT, false )")
-    Globals.MakeReadOnlyGlobal(julia_to_gap("ERROR_OUTPUT"))
-end
-
+const last_error_gap = Ref{GapObj}()
 const last_error = Ref{String}("")
 
-disable_error_handler = false
+const disable_error_handler = Ref{Bool}(false)
+
 
 function error_handler()
     global disable_error_handler
-    if disable_error_handler
+    if disable_error_handler[]
         return
     end
-    last_error[] = String(Globals._JULIAINTERFACE_ERROR_OUTPUT)
-    ccall((:SET_LEN_STRING, libgap), Cvoid, (GapObj, Cuint), Globals._JULIAINTERFACE_ERROR_OUTPUT, 0)
+    last_error[] = String(last_error_gap[])
+    ccall((:SET_LEN_STRING, libgap), Cvoid, (GapObj, Cuint), last_error_gap[], 0)
 end
 
 function ThrowObserver(depth::Cint)
     global disable_error_handler
-    if disable_error_handler
+    if disable_error_handler[]
         return
     end
 
@@ -165,7 +155,8 @@ function initialize(argv::Vector{String})
     end
 
     # Redirect error messages, in order not to print them to the screen.
-    Base.invokelatest(reset_GAP_ERROR_OUTPUT)
+    global last_error_gap
+    last_error_gap[] = ccall((:setup_ERROR_OUTPUT, JuliaInterface_path), GapObj, ())
 end
 
 function finalize()
