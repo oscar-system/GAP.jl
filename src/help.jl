@@ -7,7 +7,7 @@ function gap_help_string(topic::String, onlyexact::Bool = false,
     # Let GAP collect the information.
     info = Globals.HELP_Info(GapObj(topic), onlyexact)
 
-    if Globals.IsRecord(info)
+    if Wrappers.IsRecord(info)
         len = length(info.entries)
         if len == 1
             # If there is a unique match then just return it.

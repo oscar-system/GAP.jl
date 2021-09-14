@@ -72,5 +72,5 @@ end
 ## convenience function
 
 function Display(x::GapObj)
-    print(AbstractString(Globals.StringDisplayObj(x)))
+    print(AbstractString(Wrappers.StringDisplayObj(x)))
 end

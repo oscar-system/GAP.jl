@@ -4,7 +4,7 @@
 import Base: getindex, setindex!, length, show
 
 function show_string(io::IO, obj::Union{GapObj,FFE})
-    str = Globals.StringViewObj(obj)
+    str = Wrappers.StringViewObj(obj)
     stri = CSTR_STRING(str)
     lines = split(stri, "\n")
     rows = displaysize(io)[1]-3  # the maximum number of lines to show
@@ -40,7 +40,7 @@ function Base.show(io::IO, obj::Union{GapObj,FFE})
 end
 
 function Base.string(obj::Union{GapObj,FFE})
-    str = Globals.String(obj)
+    str = Wrappers.String(obj)
     return CSTR_STRING(str)
 end
 
@@ -86,7 +86,7 @@ julia> m[2,1]
 
 ```
 """
-Base.getindex(x::GapObj, i::Int64) = Globals.ELM_LIST(x, i)
+Base.getindex(x::GapObj, i::Int64) = Wrappers.ELM_LIST(x, i)
 Base.getindex(x::GapObj, l::Union{Vector{T},AbstractRange{T}}) where {T<:Integer} =
     Globals.ELMS_LIST(x, GapObj(l))
 # The following would make sense but could not be installed just for the case
@@ -135,20 +135,20 @@ GAP: [ [ 1, 0 ], [ 3, 4 ] ]
 
 ```
 """
-Base.setindex!(x::GapObj, v::Any, i::Int64) = Globals.ASS_LIST(x, i, v)
+Base.setindex!(x::GapObj, v::Any, i::Int64) = Wrappers.ASS_LIST(x, i, v)
 Base.setindex!(x::GapObj, v::Any, l::Union{Vector{T},AbstractRange{T}}) where {T<:Integer} =
-    Globals.ASSS_LIST(x, GapObj(l), GapObj(v))
+    Wrappers.ASSS_LIST(x, GapObj(l), GapObj(v))
 
-Base.length(x::GapObj)::Int = Globals.Length(x)
+Base.length(x::GapObj)::Int = Wrappers.Length(x)
 Base.firstindex(x::GapObj) = 1
-Base.lastindex(x::GapObj)::Int = Globals.Length(x)
+Base.lastindex(x::GapObj)::Int = Wrappers.Length(x)
 
 # matrix
-Base.getindex(x::GapObj, i::Int64, j::Int64) = Globals.ELM_LIST(x, i, j)
-Base.setindex!(x::GapObj, v::Any, i::Int64, j::Int64) = Globals.ASS_LIST(x, i, j, v)
+Base.getindex(x::GapObj, i::Int64, j::Int64) = Wrappers.ELM_MAT(x, i, j)
+Base.setindex!(x::GapObj, v::Any, i::Int64, j::Int64) = Wrappers.ASS_MAT(x, i, j, v)
 
 # records
-RNamObj(f::Union{Symbol,Int64,AbstractString}) = Globals.RNamObj(MakeString(string(f)))
+RNamObj(f::Union{Symbol,Int64,AbstractString}) = Wrappers.RNamObj(MakeString(string(f)))
 # note: we don't use Union{Symbol,Int64,AbstractString} below to avoid
 # ambiguity between these methods and method `getproperty(x, f::Symbol)`
 # from Julia's Base module
@@ -169,8 +169,8 @@ julia> r.a
 
 ```
 """
-Base.getproperty(x::GapObj, f::Symbol) = Globals.ELM_REC(x, RNamObj(f))
-Base.getproperty(x::GapObj, f::Union{AbstractString,Int64}) = Globals.ELM_REC(x, RNamObj(f))
+Base.getproperty(x::GapObj, f::Symbol) = Wrappers.ELM_REC(x, RNamObj(f))
+Base.getproperty(x::GapObj, f::Union{AbstractString,Int64}) = Wrappers.ELM_REC(x, RNamObj(f))
 
 
 """
@@ -193,9 +193,9 @@ GAP: rec( a := 1, b := 0 )
 
 ```
 """
-Base.setproperty!(x::GapObj, f::Symbol, v) = Globals.ASS_REC(x, RNamObj(f), v)
+Base.setproperty!(x::GapObj, f::Symbol, v) = Wrappers.ASS_REC(x, RNamObj(f), v)
 Base.setproperty!(x::GapObj, f::Union{AbstractString,Int64}, v) =
-    Globals.ASS_REC(x, RNamObj(f), v)
+    Wrappers.ASS_REC(x, RNamObj(f), v)
 
 """
     hasproperty(x::GapObj, f::Symbol)
@@ -226,18 +226,18 @@ GAP: rec( a := 1, b := 2 )
 
 ```
 """
-Base.hasproperty(x::GapObj, f::Symbol) = Globals.ISB_REC(x, RNamObj(f))
+Base.hasproperty(x::GapObj, f::Symbol) = Wrappers.ISB_REC(x, RNamObj(f))
 Base.hasproperty(x::GapObj, f::Union{AbstractString,Int64}) =
-    Globals.ISB_REC(x, RNamObj(f))
+    Wrappers.ISB_REC(x, RNamObj(f))
 
 #
-Base.zero(x::Union{GapObj,FFE}) = Globals.ZERO(x)   # same mutability
-Base.one(x::Union{GapObj,FFE}) = Globals.ONE_MUT(x) # same mutability
-Base.inv(x::Union{GapObj,FFE}) = Globals.INV_MUT(x) # same mutability
-Base.:-(x::Union{GapObj,FFE}) = Globals.AINV(x)     # same mutability
+Base.zero(x::Union{GapObj,FFE}) = Wrappers.ZERO(x)   # same mutability
+Base.one(x::Union{GapObj,FFE}) = Wrappers.ONE_MUT(x) # same mutability
+Base.inv(x::Union{GapObj,FFE}) = Wrappers.INV_MUT(x) # same mutability
+Base.:-(x::Union{GapObj,FFE}) = Wrappers.AINV(x)     # same mutability
 
 #
-Base.in(x::Any, y::GapObj) = Globals.in(x, y)
+Base.in(x::Any, y::GapObj) = Wrappers.IN(x, y)
 
 #
 typecombinations = (
@@ -269,7 +269,7 @@ function_combinations = (
 for (left, right) in typecombinations
     for (funcJ, funcC) in function_combinations
         @eval begin
-            Base.$(funcJ)(x::$left, y::$right) = Globals.$(funcC)(x, y)
+            Base.$(funcJ)(x::$left, y::$right) = Wrappers.$(funcC)(x, y)
         end
     end
 end
@@ -343,15 +343,15 @@ Random.Sampler(::Type{<:AbstractGAPRNG}, x::AbstractVector, ::Random.Repetition)
 # Installing analogous methods for `x^0` and `x^1` would *not* be allowed,
 # these terms are equivalent to `ONE_MUT(x)` and `x`, respectively,
 # only if `x` is a multiplicative element in the sense of GAP.
-Base.literal_pow(::typeof(^), x::GapObj, ::Val{-1}) = Globals.INV_MUT(x)
+Base.literal_pow(::typeof(^), x::GapObj, ::Val{-1}) = Wrappers.INV_MUT(x)
 
 # iteration
 
 function Base.iterate(obj::GapObj)
-    if Globals.IsList(obj)
-        iterate(obj, (1, Globals.Length(obj)))
-    elseif Globals.IsCollection(obj)
-        iterate(obj, Globals.Iterator(obj))
+    if Wrappers.IsList(obj)
+        iterate(obj, (1, Wrappers.Length(obj)))
+    elseif Wrappers.IsCollection(obj)
+        iterate(obj, Wrappers.Iterator(obj))
     else
         throw(ArgumentError("object cannot be iterated"))
     end
@@ -363,10 +363,10 @@ function Base.iterate(obj::GapObj, (i, len)::Tuple{Int,Any})
 end
 
 function Base.iterate(obj::GapObj, iter::GapObj)
-    if Globals.IsDoneIterator(iter)
+    if Wrappers.IsDoneIterator(iter)
         nothing
     else
-        x = Globals.NextIterator(iter)
+        x = Wrappers.NextIterator(iter)
         (x, iter)
     end
 end
@@ -377,11 +377,11 @@ end
 # Eventually we want to handle also nested objects such as GAP lists of
 # Julia objects having GAP subobjects,
 # see 'https://github.com/oscar-system/GAP.jl/issues/197'.
-Base.copy(obj::GapObj) = GAP.Globals.ShallowCopy(obj)
+Base.copy(obj::GapObj) = GAP.Wrappers.ShallowCopy(obj)
 
 function Base.deepcopy_internal(obj::GapObj, stackdict::IdDict)
     return get!(stackdict, obj) do
-        GAP.Globals.StructuralCopy(obj)
+        GAP.Wrappers.StructuralCopy(obj)
     end
 end
 

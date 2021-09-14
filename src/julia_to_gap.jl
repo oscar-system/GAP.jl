@@ -69,7 +69,7 @@ function julia_to_gap(x::Rational{T}) where {T<:Integer}
     end
     numer = julia_to_gap(numer_julia)
     denom = julia_to_gap(denom_julia)
-    return Globals.QUO(numer, denom)
+    return Wrappers.QUO(numer, denom)
 end
 
 ## Floats
@@ -175,13 +175,13 @@ function julia_to_gap(
         recursion_dict[obj] = record
     end
     for (x, y) in obj
-        x = Globals.RNamObj(MakeString(string(x)))
+        x = Wrappers.RNamObj(MakeString(string(x)))
         if recursive
             y = get!(recursion_dict, y) do
                 julia_to_gap(y, recursion_dict; recursive = recursive)
             end
         end
-        Globals.ASS_REC(record, x, y)
+        Wrappers.ASS_REC(record, x, y)
     end
 
     return record
@@ -199,18 +199,18 @@ function julia_to_gap(
 )
     if ! recursive
         ret_val = obj
-    elseif Globals.IsList(obj)
+    elseif Wrappers.IsList(obj)
         len = length(obj)
         ret_val = NewPlist(len)
         recursion_dict[obj] = ret_val
         for i = 1:len
              ret_val[i] = julia_to_gap(obj[i], recursion_dict; recursive = recursive)
         end
-    elseif Globals.IsRecord(obj)
+    elseif Wrappers.IsRecord(obj)
         ret_val = NewPrecord(0)
         recursion_dict[obj] = ret_val
-        for x in Vector{String}(Globals.RecNames(obj))
-            Globals.ASS_REC(ret_val, x, julia_to_gap(Globals.ELM_REC(obj, x), recursion_dict; recursive = true))
+        for x in Vector{String}(Wrappers.RecNames(obj))
+            Wrappers.ASS_REC(ret_val, x, julia_to_gap(Wrappers.ELM_REC(obj, x), recursion_dict; recursive = true))
         end
     else
         ret_val = obj
