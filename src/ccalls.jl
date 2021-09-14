@@ -70,10 +70,10 @@ function evalstr(cmd::String)
     res = evalstr_ex(cmd * ";")
     if any(x->x[1] == false, res)
       # error
-      global last_error
+      global last_error, last_error_gap
       # HACK HACK HACK: if there is an error string on the GAP side, call
       # error_handler to copy it into `last_error`
-      if !GAP.Globals.IsEmpty(GAP.Globals._JULIAINTERFACE_ERROR_OUTPUT)
+      if !GAP.Globals.IsEmpty(last_error_gap[])
         error_handler()
       end
       error("Error thrown by GAP: $(last_error[])")

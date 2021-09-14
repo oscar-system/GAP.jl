@@ -329,6 +329,16 @@ static void MarkJuliaObject(Bag bag)
 #endif
 }
 
+//
+extern Obj setup_ERROR_OUTPUT(void)
+{
+    Obj buf = MakeString("");
+    Obj stream = CALL_2ARGS(ValGVar(GVarName("OutputTextString")), buf, True);
+    CALL_2ARGS(ValGVar(GVarName("SetPrintFormattingStatus")), stream, False);
+    AssGVarWithoutReadOnlyCheck(GVarName("ERROR_OUTPUT"), stream);
+    return buf;
+}
+
 // Table of functions to export
 static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(_JuliaFunction, 1, "string"),
