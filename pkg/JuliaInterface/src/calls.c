@@ -119,10 +119,9 @@ static ALWAYS_INLINE Obj DoCallJuliaFunc(Obj func, const int narg, Obj * a)
     default:
         result = jl_call(f, (jl_value_t **)a, narg);
     }
-    // It suffices to use JULIAINTERFACE_EXCEPTION_HANDLER here, as jl_call
-    // and its variants are part of the jlapi, so don't have to be wrapped in
-    // JL_TRY/JL_CATCH.
-    JULIAINTERFACE_EXCEPTION_HANDLER
+    if (jl_exception_occurred()) {
+        handle_jl_exception();
+    }
     return gap_julia(result);
 }
 
