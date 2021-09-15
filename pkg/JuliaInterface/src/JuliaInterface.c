@@ -43,11 +43,10 @@ void handle_jl_exception(void)
 
 static jl_module_t * get_module(const char * name)
 {
-    // It suffices to use JULIAINTERFACE_EXCEPTION_HANDLER here, as
-    // jl_eval_string is part of the jlapi, so don't have to be wrapped in
-    // JL_TRY/JL_CATCH.
     jl_value_t * module_value = jl_eval_string(name);
-    JULIAINTERFACE_EXCEPTION_HANDLER
+    if (jl_exception_occurred()) {
+        handle_jl_exception();
+    }
     if (!jl_is_module(module_value)) {
         BEGIN_GAP_SYNC();
         ErrorQuit("Not a module", 0, 0);
@@ -211,12 +210,11 @@ static Obj FuncJuliaEvalString(Obj self, Obj string)
     BEGIN_GAP_SYNC();
     RequireStringRep("JuliaEvalString", string);
 
-    // It suffices to use JULIAINTERFACE_EXCEPTION_HANDLER here, as
-    // jl_eval_string is part of the jlapi, so don't have to be wrapped in
-    // JL_TRY/JL_CATCH.
     jl_value_t * result = jl_eval_string(CONST_CSTR_STRING(string));
     END_GAP_SYNC();
-    JULIAINTERFACE_EXCEPTION_HANDLER
+    if (jl_exception_occurred()) {
+        handle_jl_exception();
+    }
     return gap_julia(result);
 }
 
@@ -309,13 +307,12 @@ static Obj FuncJuliaGetFieldOfObject(Obj self, Obj super_obj, Obj field_name)
 
     jl_value_t * extracted_superobj = GET_JULIA_OBJ(super_obj);
 
-    // It suffices to use JULIAINTERFACE_EXCEPTION_HANDLER here, as
-    // jl_get_field is part of the jlapi, so don't have to be wrapped in
-    // JL_TRY/JL_CATCH.
     jl_value_t * field_value =
         jl_get_field(extracted_superobj, CONST_CSTR_STRING(field_name));
     END_GAP_SYNC();
-    JULIAINTERFACE_EXCEPTION_HANDLER
+    if (jl_exception_occurred()) {
+        handle_jl_exception();
+    }
     return gap_julia(field_value);
 }
 
