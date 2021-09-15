@@ -77,7 +77,7 @@ gap> _JuliaGetGlobalVariableByModule("sqrt", Julia.Base.sqrt);
 Error, _JuliaGetGlobalVariableByModule: <module> must be a string or a Julia m\
 odule
 gap> _JuliaGetGlobalVariableByModule("Base","sqrt");
-Error, Not a module
+Error, sqrt is not a module
 gap> _JuliaGetGlobalVariableByModule("sqrt","Base");
 <Julia: sqrt>
 gap> _JuliaGetGlobalVariableByModule("sqrt", JuliaModule("Base"));

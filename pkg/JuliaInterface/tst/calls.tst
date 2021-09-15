@@ -228,7 +228,13 @@ gap> _JuliaFunctionByModule("foo", fail);
 Error, _JuliaFunctionByModule: <moduleName> must be a string (not the value 'f\
 ail')
 gap> _JuliaFunctionByModule("foo", "bar");
-Error, UndefVarError: bar not defined
+Error, bar not defined
+gap> _JuliaFunctionByModule("foo", "Int");
+Error, Int is not a module
+gap> _JuliaFunctionByModule("foo", "Base");
+Error, Function Base.foo is not defined in julia
+gap> _JuliaFunctionByModule("parse", "Base");
+<Julia: parse>
 
 #
 gap> STOP_TEST( "calls.tst", 1 );

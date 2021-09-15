@@ -12,14 +12,12 @@
 
 #include <julia_gcext.h>
 
+static jl_module_t * gap_module;
 
 static jl_value_t *    JULIA_ERROR_IOBuffer;
 static jl_function_t * JULIA_FUNC_take_inplace;
-static jl_function_t * JULIA_FUNC_String_constructor;
 static jl_function_t * JULIA_FUNC_showerror;
 static jl_datatype_t * JULIA_GAPFFE_type;
-
-static jl_value_t * jl_bigint_type = NULL;
 
 static jl_datatype_t * gap_datatype_mptr;
 
@@ -35,39 +33,25 @@ void handle_jl_exception(void)
              jl_exception_occurred());
     jl_value_t * string_object =
         jl_call1(JULIA_FUNC_take_inplace, JULIA_ERROR_IOBuffer);
-    string_object = jl_call1(JULIA_FUNC_String_constructor, string_object);
+    string_object = jl_array_to_string((jl_array_t *)string_object);
     BEGIN_GAP_SYNC();
     ErrorMayQuit("%s", (Int)jl_string_data(string_object), 0);
     END_GAP_SYNC();
 }
 
+// note: the following helper expects to be called from inside a
+// BEGIN_GAP_SYNC / END_GAP_SYNC section
 static jl_module_t * get_module(const char * name)
 {
-    jl_value_t * module_value = jl_eval_string(name);
-    if (jl_exception_occurred()) {
-        handle_jl_exception();
+    jl_value_t * module_value =
+        jl_get_global(jl_main_module, jl_symbol(name));
+    if (!module_value) {
+        ErrorQuit("%s not defined", (Int)name, 0);
     }
     if (!jl_is_module(module_value)) {
-        BEGIN_GAP_SYNC();
-        ErrorQuit("Not a module", 0, 0);
-        END_GAP_SYNC();
+        ErrorQuit("%s is not a module", (Int)name, 0);
     }
     return (jl_module_t *)module_value;
-}
-
-// This function needs to be called after GAP.jl is loaded into julia.
-// Therefore we do not call in InitKernel, but in the `read.g` file.
-Obj Func_JULIAINTERFACE_INTERNAL_INIT(Obj self)
-{
-    jl_module_t * gap_module = get_module("__JULIAGAPMODULE");
-    JULIA_GAPFFE_type =
-        (jl_datatype_t *)jl_get_global(gap_module, jl_symbol("FFE"));
-    if (!JULIA_GAPFFE_type) {
-        BEGIN_GAP_SYNC();
-        ErrorMayQuit("Could not locate the GAP.FFE datatype", 0, 0);
-        END_GAP_SYNC();
-    }
-    return NULL;
 }
 
 jl_value_t * gap_box_gapffe(Obj value)
@@ -193,7 +177,8 @@ static Obj Func_JuliaFunctionByModule(Obj self, Obj funcName, Obj moduleName)
     // an exception
     jl_function_t * f = jl_get_function(m, CONST_CSTR_STRING(funcName));
     if (f == 0)
-        ErrorMayQuit("Function is not defined in julia", 0, 0);
+        ErrorMayQuit("Function %g.%g is not defined in julia",
+                     (Int)moduleName, (Int)funcName);
     END_GAP_SYNC();
     return WrapJuliaFunc(f);
 }
@@ -337,7 +322,6 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(_JuliaGetGlobalVariableByModule, 2, "name, module"),
     GVAR_FUNC(JuliaGetFieldOfObject, 2, "obj,name"),
     GVAR_FUNC(JuliaSymbol, 1, "name"),
-    GVAR_FUNC(_JULIAINTERFACE_INTERNAL_INIT, 0, ""),
     { 0 } /* Finish with an empty entry */
 
 };
@@ -348,6 +332,20 @@ static StructGVarFunc GVarFuncs[] = {
 */
 static Int InitKernel(StructInitInfo * module)
 {
+    // TODO: store __JULIAGAPMODULE in a GAP global instead?
+    BEGIN_GAP_SYNC();
+    gap_module = get_module("__JULIAGAPMODULE");
+    GAP_ASSERT(gap_module);
+    END_GAP_SYNC();
+
+    JULIA_GAPFFE_type =
+        (jl_datatype_t *)jl_get_global(gap_module, jl_symbol("FFE"));
+    if (!JULIA_GAPFFE_type) {
+        BEGIN_GAP_SYNC();
+        ErrorMayQuit("Could not locate the GAP.FFE datatype", 0, 0);
+        END_GAP_SYNC();
+    }
+
     InitGapSync();
 
     // init filters and functions
@@ -365,25 +363,26 @@ static Int InitKernel(StructInitInfo * module)
 
     // Initialize necessary variables for error handling
     JULIA_ERROR_IOBuffer =
-        jl_eval_string("GAP_JULIA_ERROR_IO_BUFFER = Base.IOBuffer()");
-    JULIA_FUNC_take_inplace = jl_get_function(jl_base_module, "take!");
-    JULIA_FUNC_String_constructor = jl_get_function(jl_base_module, "String");
-    JULIA_FUNC_showerror = jl_get_function(jl_base_module, "showerror");
+        jl_call0(jl_get_function(jl_base_module, "IOBuffer"));
+    GAP_ASSERT(JULIA_ERROR_IOBuffer);
+    // store the IO buffer object to protect it from being garbage collected
+    jl_set_const(gap_module, jl_symbol("error_buffer"), JULIA_ERROR_IOBuffer);
 
-    // import bigint type from Julia
-    jl_bigint_type = jl_base_module
-                         ? jl_get_global(jl_base_module, jl_symbol("BigInt"))
-                         : NULL;
-    if (jl_bigint_type) {
-        jl_module_t * gmp_module =
-            (jl_module_t *)jl_get_global(jl_base_module, jl_symbol("GMP"));
-        GAP_ASSERT(gmp_module);
-        int bits_per_limb = jl_unbox_long(
-            jl_get_global(gmp_module, jl_symbol("BITS_PER_LIMB")));
-        if (sizeof(UInt) * 8 != bits_per_limb) {
-            Panic("GMP limb size is %d in GAP and %d in Julia",
-                  (int)sizeof(UInt) * 8, bits_per_limb);
-        }
+    JULIA_FUNC_take_inplace = jl_get_function(jl_base_module, "take!");
+    GAP_ASSERT(JULIA_FUNC_take_inplace);
+
+    JULIA_FUNC_showerror = jl_get_function(jl_base_module, "showerror");
+    GAP_ASSERT(JULIA_FUNC_showerror);
+
+    // paranoia: verify that Julia's GMP has the BITS_PER_LIMB we expect
+    jl_module_t * gmp_module =
+        (jl_module_t *)jl_get_global(jl_base_module, jl_symbol("GMP"));
+    GAP_ASSERT(gmp_module);
+    int bits_per_limb =
+        jl_unbox_long(jl_get_global(gmp_module, jl_symbol("BITS_PER_LIMB")));
+    if (sizeof(UInt) * 8 != bits_per_limb) {
+        Panic("GMP limb size is %d in GAP and %d in Julia",
+              (int)sizeof(UInt) * 8, bits_per_limb);
     }
 
     // import mptr type from GAP, by getting the Julia type of any GAP object
