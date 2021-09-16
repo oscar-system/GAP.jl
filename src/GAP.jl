@@ -22,19 +22,17 @@ include("types.jl")
 const sysinfo = Setup.read_sysinfo_gap(GAPROOT)
 const GAP_VERSION = VersionNumber(sysinfo["GAP_VERSION"])
 
-const last_error_gap = Ref{GapObj}()
 const last_error = Ref{String}("")
 
 const disable_error_handler = Ref{Bool}(false)
-
 
 function error_handler()
     global disable_error_handler
     if disable_error_handler[]
         return
     end
-    last_error[] = String(last_error_gap[])
-    ccall((:SET_LEN_STRING, libgap), Cvoid, (GapObj, Cuint), last_error_gap[], 0)
+    last_error[] = String(Globals._JULIAINTERFACE_ERROR_BUFFER)
+    ccall((:SET_LEN_STRING, libgap), Cvoid, (GapObj, Cuint), Globals._JULIAINTERFACE_ERROR_BUFFER, 0)
 end
 
 function ThrowObserver(depth::Cint)
@@ -155,8 +153,9 @@ function initialize(argv::Vector{String})
     end
 
     # Redirect error messages, in order not to print them to the screen.
-    global last_error_gap
-    last_error_gap[] = ccall((:setup_ERROR_OUTPUT, JuliaInterface_path), GapObj, ())
+    GAP.Globals.Read(GapObj(joinpath(@__DIR__, "..", "lib", "err.g")))
+
+    return nothing
 end
 
 function finalize()
