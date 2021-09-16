@@ -91,14 +91,14 @@ end
     @test GAP.julia_to_gap([1, 2, 3, 4, 5, 6]) == f(1, 2, 3, 4, 5, 6)
     @test GAP.julia_to_gap([1, 2, 3, 4, 5, 6, 7]) == f(1, 2, 3, 4, 5, 6, 7)
 
-    @test [] == convert(Vector{String}, f())
-    @test ["1"] == convert(Vector{String}, f("1"))
-    @test ["1", "2"] == convert(Vector{String}, f("1", "2"))
-    @test ["1", "2", "3"] == convert(Vector{String}, f("1", "2", "3"))
-    @test ["1", "2", "3", "4"] == convert(Vector{String}, f("1", "2", "3", "4"))
-    @test ["1", "2", "3", "4", "5"] == convert(Vector{String}, f("1", "2", "3", "4", "5"))
-    @test ["1", "2", "3", "4", "5", "6"] == convert(Vector{String}, f("1", "2", "3", "4", "5", "6"))
-    @test ["1", "2", "3", "4", "5", "6", "7"] == convert(Vector{String}, f("1", "2", "3", "4", "5", "6", "7"))
+    @test [] == Vector{String}(f())
+    @test ["1"] == Vector{String}(f("1"))
+    @test ["1", "2"] == Vector{String}(f("1", "2"))
+    @test ["1", "2", "3"] == Vector{String}(f("1", "2", "3"))
+    @test ["1", "2", "3", "4"] == Vector{String}(f("1", "2", "3", "4"))
+    @test ["1", "2", "3", "4", "5"] == Vector{String}(f("1", "2", "3", "4", "5"))
+    @test ["1", "2", "3", "4", "5", "6"] == Vector{String}(f("1", "2", "3", "4", "5", "6"))
+    @test ["1", "2", "3", "4", "5", "6", "7"] == Vector{String}(f("1", "2", "3", "4", "5", "6", "7"))
 
     g = GAP.evalstr("""{x...} -> [x,ValueOption("option")]""")
 
