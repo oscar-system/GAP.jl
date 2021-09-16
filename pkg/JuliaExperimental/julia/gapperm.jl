@@ -49,10 +49,10 @@ function Permutation( imgsarray::Vector{Int} )
         local conv16, conv32
 
         if length( imgsarray ) <= 2^16
-          conv16::Vector{UInt16} = convert( Vector{UInt16}, imgsarray )
+          conv16::Vector{UInt16} = Vector{UInt16}( imgsarray )
           return Permutation2( length( conv16 ), conv16 )
         else
-          conv32::Vector{UInt32} = convert( Vector{UInt32}, imgsarray )
+          conv32::Vector{UInt32} = Vector{UInt32}( imgsarray )
           return Permutation4( length( conv32 ), conv32 )
         end
     end
@@ -62,10 +62,10 @@ function Permutation( imgsarray::Vector{Any} )
         local conv16, conv32
 
         if length( imgsarray ) <= 2^16
-          conv16::Vector{UInt16} = convert( Vector{UInt16}, imgsarray )
+          conv16::Vector{UInt16} = Vector{UInt16}( imgsarray )
           return Permutation2( length( conv16 ), conv16 )
         else
-          conv32::Vector{UInt32} = convert( Vector{UInt32}, imgsarray )
+          conv32::Vector{UInt32} = Vector{UInt32}( imgsarray )
           return Permutation4( length( conv32 ), conv32 )
         end
     end

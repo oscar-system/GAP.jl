@@ -626,7 +626,7 @@ row = M[ii]
     # 'Ainv' is an integer matrix and 'denom' is an integer
     # such that 'Ainv = denom * Inverse( A )'.
     Adiag = [ A[i,i] for i in 1:n ]
-    Ainv = inv( convert( Matrix{Rational{Int}}, A ) )
+    Ainv = inv( Matrix{Rational{Int}}( A ) )
     denom = lcm( map( denominator, Ainv ) )
     AinvI = denom * Ainv
 

@@ -288,8 +288,7 @@ InstallMethod( ContextGAPNemo,
     if Length( indetnames ) = 1 then
       names:= GAPToJulia( indetnames[1] );
     else
-      names:= Julia.Base.convert( JuliaEvalString( "Vector{String}" ),
-                                  GAPToJulia( indetnames ) );
+      names:= JuliaEvalString( "Vector{String}" )( GAPToJulia( indetnames ) );
     fi;
 
     # Create the Nemo ring.
@@ -390,7 +389,7 @@ InstallMethod( ContextGAPNemo,
             coeffs:= GAPToNemo( FContext, obj{ [ 2, 4 .. len ] } );
             coeffs:= Julia.GAPNumberFields.VectorToArray( coeffs );
             n:= Length( indets );
-            monoms:= GAPToJulia( JuliaEvalString( "Vector{Vector{UInt}}" ),
+            monoms:= JuliaEvalString( "Vector{Vector{UInt}}" )(
                          List( obj{ [ 1, 3 .. len-1 ] },
                                w -> ExponentVectorFromWord( w, n ) ) );
             pol:= C!.JuliaDomainPointer( coeffs, monoms );
@@ -579,11 +578,9 @@ InstallMethod( ContextGAPNemo,
         numden:= Julia.GAPNumberFields.CoefficientVectorsNumDenOfNumberFieldElement(
                      obj, Dimension( C!.GAPDomain ) );
 
-        convert:= Julia.Base.convert;
-        num:= JuliaToGAP( IsList,
-              convert( JuliaEvalString( "Vector{Int}" ), numden[1] ), true );
-        den:= JuliaToGAP( IsList,
-              convert( JuliaEvalString( "Vector{Int}" ), numden[2] ), true );
+        convert:=JuliaEvalString( "Vector{Int}" );
+        num:= JuliaToGAP( IsList, convert( numden[1] ), true );
+        den:= JuliaToGAP( IsList, convert( numden[2] ), true );
         coeffs:= List( [ 1 .. Length( num ) ], i -> num[i] / den[i] );
 
         return AlgExtElm( ElementsFamily( FamilyObj( C!.GAPDomain ) ), coeffs );
@@ -892,8 +889,7 @@ InstallOtherMethod( InverseMutable,
                                           modulus ) );
          od;
        od;
-       arr:= Julia.Base.convert( JuliaEvalString( "Vector{Nemo.fmpz}" ),
-                                 GAPToJulia( arr ) );
+       arr:= JuliaEvalString( "Vector{Nemo.fmpz}" )( GAPToJulia( arr ) );
        res:= Julia.Nemo.parent( ptr )( arr );
      fi;
 
