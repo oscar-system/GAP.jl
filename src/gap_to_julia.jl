@@ -95,12 +95,12 @@ gap_to_julia(::Type{GapObj}, x::GapObj) = x
 gap_to_julia(::Type{T}, x::Int64) where {T<:Integer} = trunc(T, x)
 
 function gap_to_julia(::Type{T}, obj::GapObj) where {T<:Integer}
-    Globals.IsInt(obj) && return T(BigInt(obj))
+    GAP_IS_INT(obj) && return T(BigInt(obj))
     throw(ConversionError(obj, T))
 end
 
 function gap_to_julia(::Type{BigInt}, x::GapObj)
-    Globals.IsInt(x) || throw(ConversionError(x, BigInt))
+    GAP_IS_INT(x) || throw(ConversionError(x, BigInt))
     ## get size of GAP BigInt (in limbs), multiply
     ## by 64 to get bits
     size_limbs = ccall((:GAP_SizeInt, libgap), Cint, (Any,), x)
@@ -122,8 +122,8 @@ function gap_to_julia(::Type{Rational{T}}, x::Int64) where {T<:Integer}
 end
 
 function gap_to_julia(::Type{Rational{T}}, x::GapObj) where {T<:Integer}
-    Globals.IsInt(x) && return gap_to_julia(T, x) // T(1)
-    !Globals.IsRat(x) && throw(ConversionError(x, Rational{T}))
+    GAP_IS_INT(x) && return gap_to_julia(T, x) // T(1)
+    !GAP_IS_RAT(x) && throw(ConversionError(x, Rational{T}))
     numer = Globals.NumeratorRat(x)
     denom = Globals.DenominatorRat(x)
     return gap_to_julia(T, numer) // gap_to_julia(T, denom)
@@ -131,7 +131,7 @@ end
 
 ## Floats
 function gap_to_julia(::Type{Float64}, obj::GapObj)
-    Globals.IsIEEE754FloatRep(obj) && return ValueMacFloat(obj)::Float64
+    GAP_IS_MACFLOAT(obj) && return ValueMacFloat(obj)::Float64
     throw(ConversionError(obj, Float64))
 end
 
@@ -140,12 +140,12 @@ gap_to_julia(::Type{T}, obj::GapObj) where {T<:AbstractFloat} =
 
 ## Chars
 function gap_to_julia(::Type{Char}, obj::GapObj)
-    Globals.IsChar(obj) && return Char(Globals.INT_CHAR(obj))
+    GAP_IS_CHAR(obj) && return Char(Globals.INT_CHAR(obj))
     throw(ConversionError(obj, Char))
 end
 
 function gap_to_julia(::Type{Cuchar}, obj::GapObj)
-    Globals.IsChar(obj) && return trunc(Cuchar, Globals.INT_CHAR(obj))
+    GAP_IS_CHAR(obj) && return trunc(Cuchar, Globals.INT_CHAR(obj))
     throw(ConversionError(obj, Cuchar))
 end
 
@@ -389,10 +389,10 @@ end
 gap_to_julia(x::Any) = x
 
 function gap_to_julia(x::GapObj; recursive::Bool = true)
-    Globals.IsInt(x) && return gap_to_julia(BigInt, x)
-    Globals.IsRat(x) && return gap_to_julia(Rational{BigInt}, x)
-    Globals.IsFloat(x) && return gap_to_julia(Float64, x)
-    Globals.IsChar(x) && return gap_to_julia(Cuchar, x)
+    GAP_IS_INT(x) && return gap_to_julia(BigInt, x)
+    GAP_IS_RAT(x) && return gap_to_julia(Rational{BigInt}, x)
+    GAP_IS_MACFLOAT(x) && return gap_to_julia(Float64, x)
+    GAP_IS_CHAR(x) && return gap_to_julia(Cuchar, x)
     # Do not choose this conversion for other lists in 'IsString'.
     Globals.IsStringRep(x) && return gap_to_julia(AbstractString, x)
     # Do not choose this conversion for other lists in 'IsRange'.
