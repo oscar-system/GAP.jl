@@ -5,9 +5,10 @@
 #
 ReadPackage( "JuliaInterface", "gap/JuliaInterface.gi");
 
-## The GAP module is also bound to the variable __JULIAGAPMODULE,
-## to prevent name clashes when accessing it before it is completely initialized.
-Julia!.storage.GAP := _WrapJuliaModule( "GAP", _JuliaGetGlobalVariable( "__JULIAGAPMODULE" ) );
+## Ensure that the Julia module GAP is always accessible as Julia.GAP,
+## even while it is still being initialized, and also if it not actually
+## exported to the Julia Main module
+Julia!.storage.GAP := _WrapJuliaModule( "GAP", _JuliaGetGapModule() );
 
 ReadPackage( "JuliaInterface", "gap/adapter.gi");
 ReadPackage( "JuliaInterface", "gap/calls.gi");

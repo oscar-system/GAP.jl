@@ -12,7 +12,7 @@
 
 #include <julia_gcext.h>
 
-static jl_module_t * gap_module;
+jl_module_t * gap_module;
 
 static jl_value_t *    JULIA_ERROR_IOBuffer;
 static jl_function_t * JULIA_FUNC_take_inplace;
@@ -301,6 +301,11 @@ static Obj FuncJuliaGetFieldOfObject(Obj self, Obj super_obj, Obj field_name)
     return gap_julia(field_value);
 }
 
+static Obj Func_JuliaGetGapModule(Obj self)
+{
+    return NewJuliaObj((jl_value_t *)gap_module);
+}
+
 // Mark the Julia pointer inside the GAP JuliaObj
 static void MarkJuliaObject(Bag bag)
 {
@@ -322,6 +327,7 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(_JuliaGetGlobalVariableByModule, 2, "name, module"),
     GVAR_FUNC(JuliaGetFieldOfObject, 2, "obj,name"),
     GVAR_FUNC(JuliaSymbol, 1, "name"),
+    GVAR_FUNC(_JuliaGetGapModule, 0, ""),
     { 0 } /* Finish with an empty entry */
 
 };
@@ -332,11 +338,11 @@ static StructGVarFunc GVarFuncs[] = {
 */
 static Int InitKernel(StructInitInfo * module)
 {
-    // TODO: store __JULIAGAPMODULE in a GAP global instead?
-    BEGIN_GAP_SYNC();
-    gap_module = get_module("__JULIAGAPMODULE");
-    GAP_ASSERT(gap_module);
-    END_GAP_SYNC();
+    if (!gap_module) {
+        BEGIN_GAP_SYNC();
+        ErrorMayQuit("gap_module was not set", 0, 0);
+        END_GAP_SYNC();
+    }
 
     JULIA_GAPFFE_type =
         (jl_datatype_t *)jl_get_global(gap_module, jl_symbol("FFE"));

@@ -75,14 +75,6 @@ function initialize(argv::Vector{String})
     # (which is created by `setup.jl`).
     append!(argv, ["--systemfile", abspath(@__DIR__, "..", "lib", "systemfile.g")])
 
-    ## At this point, the GAP module has not been completely initialized, and
-    ## hence is not yet available under the global binding "GAP"; but
-    ## JuliaInterface needs to access it. To make that possible, we assign
-    ## this module to the name __JULIAGAPMODULE.
-    ## TODO: find a way to avoid using such a global variable
-    gap_module = @__MODULE__
-    Base.MainInclude.eval(:(__JULIAGAPMODULE = $gap_module))
-
     if ! handle_signals
         # Tell GAP to show some traceback on errors.
         append!(argv, ["--alwaystrace"])
@@ -103,8 +95,15 @@ function initialize(argv::Vector{String})
         handle_signals,
     )
 
-    # TODO: store a pointer to this module in a GAP variable
-    #...
+    ## At this point, the GAP module has not been completely initialized, and
+    ## hence is not yet available under the global binding "GAP"; but
+    ## JuliaInterface needs to access it. To make that possible, we dlopen
+    ## its kernel extension already here, and poke a point to this module
+    ## into the kernel extension's global variable `gap_module`
+    Libdl.dlopen(JuliaInterface_path)
+    mptr = pointer_from_objref(@__MODULE__)
+    g = cglobal((:gap_module, JuliaInterface_path), Ptr{Cvoid})
+    unsafe_store!(g, mptr)
 
     # now load init.g
     @debug "about to read init.g"

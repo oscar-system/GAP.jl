@@ -146,7 +146,7 @@ end );
 
 InstallGlobalFunction( ImportJuliaModuleIntoGAP,
   function( name )
-    local callstring, julia_list_func, list, variable_list, i,
+    local callstring, list, variable_list, i,
           current_module, is_module_present, no_import;
 
     no_import := ValueOption( "NoImport" );
@@ -165,8 +165,7 @@ InstallGlobalFunction( ImportJuliaModuleIntoGAP,
     fi;
 
     current_module := Julia.(name);
-    julia_list_func := JuliaFunction( "get_symbols_in_module", "__JULIAGAPMODULE" );
-    list := JuliaToGAP( IsList, julia_list_func( JuliaPointer( current_module ) ), true );
+    list := JuliaToGAP( IsList, Julia.GAP.get_symbols_in_module( JuliaPointer( current_module ) ), true );
     for i in list do
         \.( current_module, RNamObj( i ) );
     od;
