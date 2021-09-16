@@ -22,6 +22,12 @@ include("types.jl")
 const sysinfo = Setup.read_sysinfo_gap(GAPROOT)
 const GAP_VERSION = VersionNumber(sysinfo["GAP_VERSION"])
 
+function reset_GAP_ERROR_OUTPUT()
+    global last_error_gap
+    last_error_gap[] = ccall((:setup_ERROR_OUTPUT, JuliaInterface_path), GapObj, ())
+    return nothing
+end
+
 const last_error_gap = Ref{GapObj}()
 const last_error = Ref{String}("")
 
@@ -155,8 +161,7 @@ function initialize(argv::Vector{String})
     end
 
     # Redirect error messages, in order not to print them to the screen.
-    global last_error_gap
-    last_error_gap[] = ccall((:setup_ERROR_OUTPUT, JuliaInterface_path), GapObj, ())
+    reset_GAP_ERROR_OUTPUT()
 end
 
 function finalize()
