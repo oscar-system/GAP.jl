@@ -63,3 +63,8 @@ function GET_FUNC_PTR(obj::GapObj, narg::Int)
     bag_ptr = Ptr{Ptr{Nothing}}(ADDR_OBJ(obj))
     unsafe_load(bag_ptr, narg + 1)
 end
+
+GAP_IS_INT(obj::GapObj) = TNUM_OBJ(obj) <= T_INTNEG
+GAP_IS_RAT(obj::GapObj) = TNUM_OBJ(obj) == T_RAT
+GAP_IS_MACFLOAT(obj::GapObj) = TNUM_OBJ(obj) == T_MACFLOAT
+GAP_IS_CHAR(obj::GapObj) = TNUM_OBJ(obj) == T_CHAR

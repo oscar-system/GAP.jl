@@ -93,9 +93,9 @@ julia> big(val)
 ```
 """
 function Base.big(obj::GapObj)
-    Globals.IsInt(obj) && return gap_to_julia(BigInt, obj)
-    Globals.IsRat(obj) && return gap_to_julia(Rational{BigInt}, obj)
-    Globals.IsFloat(obj) && return gap_to_julia(BigFloat, obj)
+    GAP_IS_INT(obj) && return gap_to_julia(BigInt, obj)
+    GAP_IS_RAT(obj) && return gap_to_julia(Rational{BigInt}, obj)
+    GAP_IS_MACFLOAT(obj) && return gap_to_julia(BigFloat, obj)
     throw(ConversionError(obj, "a type supported by big"))
 end
 
