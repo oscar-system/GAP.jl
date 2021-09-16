@@ -206,12 +206,12 @@ function __init__()
         append!(cmdline_options, ["--nointeract"])
     end
 
-    if haskey(ENV, "GAP_PRINT_BANNER")
-        show_banner = ENV["GAP_PRINT_BANNER"] == "true"
-    else
-        show_banner =
-            isinteractive() && !any(x -> x.name in ["Oscar"], keys(Base.package_locks))
-    end
+    # Respect the -q flag
+    isquiet = Bool(Base.JLOptions().quiet)
+
+    show_banner = !isquiet && isinteractive() &&
+                 !any(x->x.name in ["Oscar"], keys(Base.package_locks)) &&
+                 get(ENV, "GAP_PRINT_BANNER", "true") != "false"
 
     if !show_banner
         # Do not show the main GAP banner by default.
