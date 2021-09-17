@@ -127,6 +127,14 @@ jobs:
       - name: "Run doctests"
         run: |
           julia --project=docs --color=yes test/doctest.jl
+      - name: "Build GAP manual"
+        run: |
+          gap_sh=$(julia --project=. -e 'import GAP; print(GAP.gap_exe())');
+          cd pkg/JuliaInterface
+          $gap_sh -A --quitonbreak --norepl makedoc.g
+          cd ../..
+          mkdir -p docs/src/assets/html/JuliaInterface/
+          cp pkg/JuliaInterface/doc/*.{html,css,js} docs/src/assets/html/JuliaInterface/
       - name: "Deploy documentation"
         run: julia --project=docs --color=yes docs/make.jl
         env:
