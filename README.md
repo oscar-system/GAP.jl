@@ -2,7 +2,6 @@
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://oscar-system.github.io/GAP.jl/dev)
 [![Build Status](https://github.com/oscar-system/GAP.jl/workflows/CI/badge.svg)](https://github.com/oscar-system/GAP.jl/actions?query=workflow%3A%22CI%22+branch%3Amaster)
 [![Codecov](https://codecov.io/github/oscar-system/GAP.jl/coverage.svg?branch=master&token=)](https://codecov.io/gh/oscar-system/GAP.jl)
-[![Coveralls](https://coveralls.io/repos/github/oscar-system/GAP.jl/badge.svg?branch=master)](https://coveralls.io/github/oscar-system/GAP.jl?branch=master)
 
 # GAP.jl Julia package
 
