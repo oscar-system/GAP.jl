@@ -84,15 +84,6 @@ gap> _JuliaGetGlobalVariableByModule("sqrt", JuliaModule("Base"));
 <Julia: sqrt>
 
 ##
-gap> JuliaGetFieldOfObject(1, "");
-Error, JuliaGetFieldOfObject: <super_obj> must be a Julia object
-gap> JuliaGetFieldOfObject(JuliaModule("Base"), fail);
-Error, JuliaGetFieldOfObject: <field_name> must be a string (not the value 'fa\
-il')
-gap> JuliaGetFieldOfObject(JuliaModule("Base"), "not-a-field");
-Error, type Module has no field not-a-field
-
-##
 gap> NameFunction(Julia.Base.parse);
 "parse"
 gap> Display(Julia.Base.parse);

@@ -277,30 +277,6 @@ static Obj Func_JuliaGetGlobalVariableByModule(Obj self, Obj name, Obj module)
     return gap_julia(value);
 }
 
-// Returns the julia object GAP object that holds a pointer to the value
-// currently bound to <super_object>.<name>.
-// <super_object> must be a julia object GAP object, and <name> a string.
-static Obj FuncJuliaGetFieldOfObject(Obj self, Obj super_obj, Obj field_name)
-{
-    BEGIN_GAP_SYNC();
-    if (!IS_JULIA_OBJ(super_obj)) {
-        ErrorMayQuit(
-            "JuliaGetFieldOfObject: <super_obj> must be a Julia object", 0,
-            0);
-    }
-    RequireStringRep("JuliaGetFieldOfObject", field_name);
-
-    jl_value_t * extracted_superobj = GET_JULIA_OBJ(super_obj);
-
-    jl_value_t * field_value =
-        jl_get_field(extracted_superobj, CONST_CSTR_STRING(field_name));
-    END_GAP_SYNC();
-    if (jl_exception_occurred()) {
-        handle_jl_exception();
-    }
-    return gap_julia(field_value);
-}
-
 static Obj Func_JuliaGetGapModule(Obj self)
 {
     return NewJuliaObj((jl_value_t *)gap_module);
@@ -325,7 +301,6 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(JuliaSetVal, 2, "name,val"),
     GVAR_FUNC(_JuliaGetGlobalVariable, 1, "name"),
     GVAR_FUNC(_JuliaGetGlobalVariableByModule, 2, "name, module"),
-    GVAR_FUNC(JuliaGetFieldOfObject, 2, "obj,name"),
     GVAR_FUNC(JuliaSymbol, 1, "name"),
     GVAR_FUNC(_JuliaGetGapModule, 0, ""),
     { 0 } /* Finish with an empty entry */
