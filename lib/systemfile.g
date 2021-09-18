@@ -19,11 +19,8 @@
     # before they can use the GAP-Julia integration.
     # Thus we move 'InitFiles' to another variable, and provide
     # a GAP function that will be called from the 'gap.sh' script.
-    # (But we have to execute the assignment of the variable
-    # '__JULIAINTERNAL_LOADED_FROM_JULIA' earlier, which is used by GAP.jl
-    # for checking that the GAP initializations from 'init.g' have been done.)
     GAPInfo.InitFiles_GAPjl:= GAPInfo.InitFiles;
-    GAPInfo.InitFiles:= [ rec( command:= "BindGlobal( \"__JULIAINTERNAL_LOADED_FROM_JULIA\", true );" ) ];
+    GAPInfo.InitFiles:= [];
     GAPInfo.LoadInitFiles_GAP_JL:= function()
         GAPInfo.InitFiles:= GAPInfo.InitFiles_GAPjl;
         Unbind( GAPInfo.InitFiles_GAPjl );
