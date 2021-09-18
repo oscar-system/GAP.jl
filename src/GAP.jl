@@ -121,9 +121,8 @@ function initialize(argv::Vector{String})
     # HACK: GAP resp. libgap currently offers no good way to detect this
     # (perhaps this could be a return value for GAP_Initialize?),
     # so instead we check for the presence of the global variable
-    # __JULIAINTERNAL_LOADED_FROM_JULIA which we ensure is declared near the
-    # end of init.g; this is done in `lib/systemfile.g`.
-    val = _ValueGlobalVariable("__JULIAINTERNAL_LOADED_FROM_JULIA")
+    # `ProcessInitFiles` which is declared near the end of GAP's `init.g`;
+    val = _ValueGlobalVariable("ProcessInitFiles")
 
     if val == C_NULL
         exit(exit_code())
