@@ -20,9 +20,9 @@ functions. Instead, this is left to higher-level code, for example in the
 
 ## Install
 
-To install this package in Julia, use
+To install this package in Julia:
 ```
-] add GAP
+using Pkg; Pkg.add("GAP")
 ```
 
 ## Basic usage
@@ -31,14 +31,17 @@ After entering the following in Julia,
 ```julia
 using GAP
 ```
-one may call any GAP function by prefixing its name with `GAP.Globals.`. For example:
+one may access any global GAP variable by prefixing its name with `GAP.Globals.`, and
+call GAP functions like Julia functions. For example:
 ```julia
 julia> GAP.Globals.SymmetricGroup(3)
 GAP: SymmetricGroup( [ 1 .. 3 ] )
 ```
 
-The Julia types `Int64` and `Bool` are automatically converted to GAP objects.
-Several others basic types of objects can be converted using the `GapObj` constructor:
+The Julia types `Int64` and `Bool` are automatically converted to GAP
+objects when passed as arguments to GAP functions. Several others basic
+types of objects can be converted using the `GapObj` constructor. For
+example, here we convert a `Vector{Int}` to a GAP list:
 ```julia
 julia> x = GapObj([1,2,3])
 GAP: [ 1, 2, 3 ]
@@ -52,16 +55,31 @@ julia> GapObj([1,2,[3,4,5]]; recursive=true)
 GAP: [ 1, 2, [ 3, 4, 5 ] ]
 ```
 
-Converting back to Julia can be done using suitable Julia constructors.
+Converting GAP objects to native Julia objects is done using suitable Julia constructors.
 For example, to convert the GAP list of integers we defined earlier back to Julia,
 we might do this:
 ```julia
-julia> Vector{Int64}(x)
+julia> Vector{Int}(x)
 3-element Vector{Int64}:
  1
  2
  3
 ```
+
+You can temporarily switch to a GAP prompt using `GAP.prompt()`:
+```
+julia> GAP.prompt();
+gap> G := SymmetricGroup(5);
+Sym( [ 1 .. 5 ] )
+gap> quit;
+
+julia> GAP.Globals.G
+GAP: Sym( [ 1 .. 5 ] )
+```
+
+For more information on these and other capabilities of this package, please
+consult the [GAP.jl manual](https://oscar-system.github.io/GAP.jl/stable).
+
 
 ## Contact
 
