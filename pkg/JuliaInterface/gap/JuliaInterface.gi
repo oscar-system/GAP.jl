@@ -31,13 +31,6 @@ BindGlobal( "_WrapJuliaModule",
                              JuliaPointer, julia_pointer );
 end );
 
-InstallGlobalFunction( IsArgumentForJuliaFunction,
-    obj -> IsJuliaObject( obj ) or
-           IsJuliaWrapper( obj ) or
-           IsBool( obj ) or
-           ( IsInt( obj ) and IsSmallIntRep( obj ) ) or
-           ( IsFFE( obj ) and IsInternalRep( obj ) ) );
-
 InstallMethod( ViewString,
     [ "IsFunction and IsInternalRep and HasNameFunction" ],
     1, # override GAP's default method for functions

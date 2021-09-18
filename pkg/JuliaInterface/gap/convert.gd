@@ -354,8 +354,7 @@
 #! @Arguments filt, juliaobj[, recursive]
 #! @Returns a &GAP; object in the filter <A>filt</A>
 #! @Description
-#!  Let <A>juliaobj</A> be an object in
-#!  <Ref Func="IsArgumentForJuliaFunction"/>
+#!  Let <A>juliaobj</A> be a Julia object in
 #!  for which a conversion to &GAP; is provided,
 #!  in the sense of Section <Ref Sect="Section_Conversion_rules"/>,
 #!  such that the corresponding &GAP; object is in the filter <A>filt</A>.
