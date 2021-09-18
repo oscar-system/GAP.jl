@@ -103,10 +103,6 @@
 #!
 #!  The results of <Ref Func="JuliaModule"/> are always in
 #!  <Ref Filt="IsJuliaObject" Label="for IsObject"/>.
-#!  The results of <Ref Func="JuliaEvalString"/> are in
-#!  <Ref Func="IsArgumentForJuliaFunction"/>
-#!  but not necessarily in <Ref Filt="IsJuliaObject" Label="for IsObject"/>.
-#!  <!-- What about &Julia; functions (see <Ref Func="JuliaFunction"/>)? -->
 #! @BeginExampleSession
 #! gap> julia_fun:= JuliaEvalString( "sqrt" );
 #! <Julia: sqrt>
@@ -192,30 +188,6 @@ DeclareCategory( "IsJuliaModule", IsJuliaWrapper  );
 BindGlobal( "TheFamilyOfJuliaModules", NewFamily( "TheFamilyOfJuliaModules" ) );
 BindGlobal( "TheTypeOfJuliaModules", NewType( TheFamilyOfJuliaModules, IsJuliaModule and IsAttributeStoringRep ) );
 
-#! @Arguments obj
-#! @Description
-#!  This function returns <K>true</K> for all those &GAP; objects
-#!  that can be used as arguments of &Julia; functions.
-#!  These are the objects in
-#!  <Ref Filt="IsJuliaObject" Label="for IsObject"/>,
-#!  <Ref Filt="IsJuliaWrapper" Label="for IsObject"/>,
-#!  <Ref Filt="IsBool" BookName="ref"/>,
-#!  <C>IsInt and IsSmallIntRep</C>
-#!  (see <Ref Chap="Integers" BookName="ref"/>),
-#!  and <C>IsFFE and IsInternalRep</C>
-#!  (see <Ref Filt="IsFFE" BookName="ref"/>).
-#!  <!-- (Except for IsJuliaWrapper, these are the objects with the
-#!       Julia type GAP.Obj.) -->
-#!  For all other &GAP; objects, the function returns <K>false</K>.
-#! @BeginExampleSession
-#! gap> m:= JuliaEvalString( "sqrt(2)" );;
-#! gap> ForAll( [ m, Julia, true, 1, Z(2) ], IsArgumentForJuliaFunction );
-#! true
-#! gap> ForAny( [ 2^62, [], (1,2) ], IsArgumentForJuliaFunction );
-#! false
-#! @EndExampleSession
-DeclareGlobalFunction( "IsArgumentForJuliaFunction" );
-
 #! @Section Creating &Julia; objects
 
 #! @Arguments string
@@ -287,8 +259,6 @@ BindGlobal( "_JuliaFunctions", rec( ) );
 #! Both arguments must be strings.
 #! If <A>module_name</A> is not given,
 #! the function is taken from &Julia;'s <C>Main</C> module.
-#! The returned function can be called on arguments in
-#! <Ref Func="IsArgumentForJuliaFunction"/>.
 #!
 #! @BeginExampleSession
 #! gap> fun:= JuliaFunction( "sqrt" );
