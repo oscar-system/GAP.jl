@@ -425,7 +425,7 @@ true
 &lt;Julia: 1.4142135623730951&gt;
 </pre></div>
 
-<p>There are also callable <strong class="pkg">Julia</strong> objects which aren't represented by <strong class="pkg">GAP</strong> functions, for example <strong class="pkg">Julia</strong> types can be called like functions. In this situation, the function call is executed via the applicable <code class="func">CallFuncList</code> (<a href="/home/runner/.julia/artifacts/8f22bf2645df36936a8a74cea9de55d6070017ed/share/gap/doc/ref/chap5_mj.html#X7CF4DDB97D65AE52"><span class="RefLink">Reference: CallFuncList</span></a>) method, which calls <strong class="pkg">Julia</strong>'s <code class="code">Core._apply</code>.</p>
+<p>Note that in <strong class="pkg">Julia</strong> any object (not just functions) is potentially callable (in fact this is the same as in <strong class="pkg">GAP</strong>), for example <strong class="pkg">Julia</strong> types can be</p>
 
 
 <div class="example"><pre>
