@@ -465,11 +465,9 @@ DeclareGlobalFunction( "CallJuliaFunctionWithKeywordArguments" );
 #! gap> fun( 2 );
 #! <Julia: 1.4142135623730951>
 #! @EndExampleSession
-#!  There are also callable &Julia; objects which aren't represented by
-#!  &GAP; functions, for example &Julia; types can be called like functions.
-#!  In this situation, the function call is executed via
-#!  the applicable <Ref Oper="CallFuncList" BookName="ref"/> method,
-#!  which calls &Julia;'s <C>Core._apply</C>.
+#!  Note that in &Julia; any object (not just functions) is potentially callable
+#!  (in fact this is the same as in &GAP;), for example &Julia; types can be
+##  called like functions. This is also fully supported on the GAP side:
 #! @BeginExampleSession
 #! gap> smalltype:= Julia.Int32;
 #! <Julia: Int32>
