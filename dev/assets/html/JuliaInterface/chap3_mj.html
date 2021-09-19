@@ -276,7 +276,7 @@
 <div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; JuliaToGAP</code>( <var class="Arg">filt</var>, <var class="Arg">juliaobj</var>[, <var class="Arg">recursive</var>] )</td><td class="tdright">(&nbsp;constructor&nbsp;)</td></tr></table></div>
 <p>Returns: a <strong class="pkg">GAP</strong> object in the filter <var class="Arg">filt</var></p>
 
-<p>Let <var class="Arg">juliaobj</var> be an object in <code class="func">IsArgumentForJuliaFunction</code> (<a href="chap2_mj.html#X7DE898AF7A242FE3"><span class="RefLink">2.1-5</span></a>) for which a conversion to <strong class="pkg">GAP</strong> is provided, in the sense of Section <a href="chap3_mj.html#X85C0815A7DD15788"><span class="RefLink">3.1</span></a>, such that the corresponding <strong class="pkg">GAP</strong> object is in the filter <var class="Arg">filt</var>. Then <code class="func">JuliaToGAP</code> returns this <strong class="pkg">GAP</strong> object.</p>
+<p>Let <var class="Arg">juliaobj</var> be a Julia object in for which a conversion to <strong class="pkg">GAP</strong> is provided, in the sense of Section <a href="chap3_mj.html#X85C0815A7DD15788"><span class="RefLink">3.1</span></a>, such that the corresponding <strong class="pkg">GAP</strong> object is in the filter <var class="Arg">filt</var>. Then <code class="func">JuliaToGAP</code> returns this <strong class="pkg">GAP</strong> object.</p>
 
 <p>For recursive structures (<strong class="pkg">GAP</strong> lists and records), only the outermost level is converted except if the optional argument <var class="Arg">recursive</var> is given and has the value <code class="keyw">true</code>, in this case all layers are converted recursively.</p>
 

@@ -32,7 +32,6 @@
 <span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2_mj.html#X80FEB3607C6B60F8">2.1-2 IsJuliaWrapper</a></span>
 <span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2_mj.html#X7B52F52D86477B4E">2.1-3 JuliaPointer</a></span>
 <span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2_mj.html#X81976A257848705F">2.1-4 IsJuliaModule</a></span>
-<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2_mj.html#X7DE898AF7A242FE3">2.1-5 IsArgumentForJuliaFunction</a></span>
 </div></div>
 <div class="ContSect"><span class="tocline"><span class="nocss">&nbsp;</span><a href="chap2_mj.html#X87856ABF7C0D3757">2.2 <span class="Heading">Creating <strong class="pkg">Julia</strong> objects</span></a>
 </span>
@@ -78,7 +77,7 @@
 
 <p>The result is <code class="keyw">true</code> if and only if <var class="Arg">obj</var> is a pointer to a <strong class="pkg">Julia</strong> object.</p>
 
-<p>The results of <code class="func">JuliaModule</code> (<a href="chap2_mj.html#X7FA676BA82C6FE52"><span class="RefLink">2.3-4</span></a>) are always in <code class="func">IsJuliaObject</code>. The results of <code class="func">JuliaEvalString</code> (<a href="chap2_mj.html#X801B61B17901D5A1"><span class="RefLink">2.2-1</span></a>) are in <code class="func">IsArgumentForJuliaFunction</code> (<a href="chap2_mj.html#X7DE898AF7A242FE3"><span class="RefLink">2.1-5</span></a>) but not necessarily in <code class="func">IsJuliaObject</code>.</p>
+<p>The results of <code class="func">JuliaModule</code> (<a href="chap2_mj.html#X7FA676BA82C6FE52"><span class="RefLink">2.3-4</span></a>) are always in <code class="func">IsJuliaObject</code>.</p>
 
 
 <div class="example"><pre>
@@ -155,22 +154,6 @@ true
 &lt;Julia: julia_to_gap&gt;
 </pre></div>
 
-<p><a id="X7DE898AF7A242FE3" name="X7DE898AF7A242FE3"></a></p>
-
-<h5>2.1-5 IsArgumentForJuliaFunction</h5>
-
-<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; IsArgumentForJuliaFunction</code>( <var class="Arg">obj</var> )</td><td class="tdright">(&nbsp;function&nbsp;)</td></tr></table></div>
-<p>This function returns <code class="keyw">true</code> for all those <strong class="pkg">GAP</strong> objects that can be used as arguments of <strong class="pkg">Julia</strong> functions. These are the objects in <code class="func">IsJuliaObject</code> (<a href="chap2_mj.html#X879710A97B8A4202"><span class="RefLink">2.1-1</span></a>), <code class="func">IsJuliaWrapper</code> (<a href="chap2_mj.html#X80FEB3607C6B60F8"><span class="RefLink">2.1-2</span></a>), <code class="func">IsBool</code> (<a href="/home/runner/.julia/artifacts/8f22bf2645df36936a8a74cea9de55d6070017ed/share/gap/doc/ref/chap20_mj.html#X7D58580284CF7894"><span class="RefLink">Reference: IsBool</span></a>), <code class="code">IsInt and IsSmallIntRep</code> (see <a href="/home/runner/.julia/artifacts/8f22bf2645df36936a8a74cea9de55d6070017ed/share/gap/doc/ref/chap14_mj.html#X853DF11B80068ED5"><span class="RefLink">Reference: Integers</span></a>), and <code class="code">IsFFE and IsInternalRep</code> (see <code class="func">IsFFE</code> (<a href="/home/runner/.julia/artifacts/8f22bf2645df36936a8a74cea9de55d6070017ed/share/gap/doc/ref/chap59_mj.html#X7D3DF32C84FEBD25"><span class="RefLink">Reference: IsFFE</span></a>)). For all other <strong class="pkg">GAP</strong> objects, the function returns <code class="keyw">false</code>.</p>
-
-
-<div class="example"><pre>
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">m:= JuliaEvalString( "sqrt(2)" );;</span>
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">ForAll( [ m, Julia, true, 1, Z(2) ], IsArgumentForJuliaFunction );</span>
-true
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">ForAny( [ 2^62, [], (1,2) ], IsArgumentForJuliaFunction );</span>
-false
-</pre></div>
-
 <p><a id="X87856ABF7C0D3757" name="X87856ABF7C0D3757"></a></p>
 
 <h4>2.2 <span class="Heading">Creating <strong class="pkg">Julia</strong> objects</span></h4>
@@ -227,7 +210,7 @@ false
 <div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; JuliaFunction</code>( <var class="Arg">function_name</var>[, <var class="Arg">module_name</var>] )</td><td class="tdright">(&nbsp;function&nbsp;)</td></tr></table></div>
 <p>Returns: a function</p>
 
-<p>Returns a <strong class="pkg">GAP</strong> function that wraps the <strong class="pkg">Julia</strong> function with identifier <var class="Arg">function_name</var> from the module <var class="Arg">module_name</var>. Both arguments must be strings. If <var class="Arg">module_name</var> is not given, the function is taken from <strong class="pkg">Julia</strong>'s <code class="code">Main</code> module. The returned function can be called on arguments in <code class="func">IsArgumentForJuliaFunction</code> (<a href="chap2_mj.html#X7DE898AF7A242FE3"><span class="RefLink">2.1-5</span></a>).</p>
+<p>Returns a <strong class="pkg">GAP</strong> function that wraps the <strong class="pkg">Julia</strong> function with identifier <var class="Arg">function_name</var> from the module <var class="Arg">module_name</var>. Both arguments must be strings. If <var class="Arg">module_name</var> is not given, the function is taken from <strong class="pkg">Julia</strong>'s <code class="code">Main</code> module.</p>
 
 
 <div class="example"><pre>
