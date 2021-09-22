@@ -24,6 +24,7 @@ Other changes:
 - Add `GapInt` type union
 - Patch the GAP package manager to perform downloads via Julia's
   `Downloads.download` to avoid certain failure scenarios
+- Add `@wrap` macro as an alternative to `@gapwrap` for certain use cases.
 - Don't show the GAP banner if Julia is started with the `--quiet` flag
 - Call the GAP AtExit handler when exiting Julia, so that e.g. the command
   line history is saved (if the user enabled this in their preferences) or
