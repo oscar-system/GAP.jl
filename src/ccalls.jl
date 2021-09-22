@@ -29,12 +29,14 @@ _JULIA_TO_GAP(val::Any) = ccall((:gap_julia, JuliaInterface_path), Ptr{Cvoid}, (
 #_JULIA_TO_GAP(x::Bool) = x ? gap_true : gap_false
 _JULIA_TO_GAP(x::FFE) = reinterpret(Ptr{Cvoid}, x)
 _JULIA_TO_GAP(x::GapObj) = pointer_from_objref(x)
+
+ObjInt_Int(x::Int) = ccall((:ObjInt_Int, libgap), Ptr{Cvoid}, (Int,), x)
 function _JULIA_TO_GAP(x::Int)
     # convert x into a GAP immediate integer if it fits
     if x in -1<<60:(1<<60-1)
         return Ptr{Cvoid}(x << 2 | 1)
     end
-    return ccall((:ObjInt_Int, libgap), Ptr{Cvoid}, (Int,), x)
+    return ObjInt_Int(x)
 end
 
 
