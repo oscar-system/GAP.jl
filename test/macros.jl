@@ -1,3 +1,26 @@
+@testset "@gapattribute" begin
+
+    """
+        isevenint_GAP(x)
+    
+    Return `true` if the input integer is even.
+    """
+    @gapattribute isevenint_GAP(x::Int) = GAP.Globals.IsEvenInt(x)::Bool
+
+    doc = string(@doc isevenint_GAP)
+    @test !occursin("No documentation found", string(doc))
+    @test occursin("if the input integer is even", string(doc))
+
+    doc = string(@doc hasisevenint_GAP)
+    @test !occursin("No documentation found", string(doc))
+    @test occursin("has already been computed", string(doc))
+
+    doc = string(@doc setisevenint_GAP)
+    @test !occursin("No documentation found", string(doc))
+    @test occursin("Set the value", string(doc))
+
+end
+
 @testset "compat" begin
 
     x = @gap (1, 2, 3)
