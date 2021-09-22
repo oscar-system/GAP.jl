@@ -362,7 +362,7 @@ involves only native Julia objects such as integers and strings.
 Dealing with results containing GAP objects will be inefficient.
 
 # Examples
-```
+```julia
 julia> Set{Int}(GAP.evalstr("[ 1, 2, 1 ]"))
 Set{Int64} with 2 elements:
   2
