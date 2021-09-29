@@ -80,15 +80,10 @@ end
 DocMeta.setdocmeta!(GAP, :DocTestSetup, :(using GAP, Random); recursive = true)
 
 makedocs(
-    format = Documenter.HTML(),
     sitename = "GAP.jl",
-    modules = [GAP],
-    clean = true,
     doctest = true,
     doctestfilters = GAP.GAP_doctestfilters,
-    strict = false,
-    checkdocs = :none,
     pages = ["index.md"],
 )
 
-deploydocs(repo = "github.com/oscar-system/GAP.jl.git", target = "build")
+deploydocs(repo = "github.com/oscar-system/GAP.jl.git")
