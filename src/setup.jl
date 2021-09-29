@@ -308,23 +308,7 @@ function create_gap_sh(dstdir::String)
         ENV["GAP_PRINT_BANNER"] = "true"
         __GAP_ARGS__ = ARGS
         using GAP
-
-        # Read the files from the GAP command line.
-        ccall((:Call0ArgsInNewReader, GAP.GAP_jll.libgap), Cvoid, (Any,), GAP.Globals.GAPInfo.LoadInitFiles_GAP_JL)
-
-        # GAP.jl forces the norepl option, which means that init.g never
-        # starts a GAP session; we now run one "manually". Note that this
-        # may throw a "GAP exception", which we need to catch; thus we
-        # use Call0ArgsInNewReader to perform the actual call.
-        if !GAP.Globals.GAPInfo.CommandLineOptions_original.norepl
-            ccall((:Call0ArgsInNewReader, GAP.GAP_jll.libgap), Cvoid, (Any,), GAP.Globals.SESSION)
-        end
-
-        # call GAP's "atexit" cleanup functions
-        ccall((:Call0ArgsInNewReader, GAP.GAP_jll.libgap), Cvoid, (Any,), GAP.Globals.PROGRAM_CLEAN_UP)
-
-        # Finally exit
-        exit(GAP.exit_code())
+        exit(GAP.run_session())
         """,
         )
     chmod(gap_sh_path, 0o755)
