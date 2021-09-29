@@ -50,3 +50,24 @@ function prompt()
     Globals.ERROR_OUTPUT = Globals._JULIAINTERFACE_ERROR_OUTPUT
     Globals.MakeReadOnlyGlobal(GapObj("ERROR_OUTPUT"))
 end
+
+# helper function for `gap.sh` scripts created by create_gap_sh()
+function run_session()
+
+    # Read the files from the GAP command line.
+    ccall((:Call0ArgsInNewReader, GAP_jll.libgap), Cvoid, (Any,), Globals.GAPInfo.LoadInitFiles_GAP_JL)
+
+    # GAP.jl forces the norepl option, which means that init.g never
+    # starts a GAP session; we now run one "manually". Note that this
+    # may throw a "GAP exception", which we need to catch; thus we
+    # use Call0ArgsInNewReader to perform the actual call.
+    if !Globals.GAPInfo.CommandLineOptions_original.norepl
+        ccall((:Call0ArgsInNewReader, GAP_jll.libgap), Cvoid, (Any,), Globals.SESSION)
+    end
+
+    # call GAP's "atexit" cleanup functions
+    ccall((:Call0ArgsInNewReader, GAP_jll.libgap), Cvoid, (Any,), Globals.PROGRAM_CLEAN_UP)
+
+    # Finally exit
+    return exit_code()
+end
