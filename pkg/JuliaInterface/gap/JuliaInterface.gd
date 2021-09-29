@@ -77,12 +77,11 @@
 #!  afterwards the package <Package>JuliaInterface</Package> is already
 #!  installed and loaded.
 #!
-#!  Alternatively, one can start &GAP; in the traditional way,
-#!  by executing a shell script.
-#!  Such a script is generated automatically during the installation of
-#!  &GAP; via &Julia;,
-#!  its location is returned in a &Julia; session by
-#!  <Listing Type="Julia">using GAP; GAP.gap_exe()</Listing>
+#!  Alternatively, one can start &GAP; in the traditional way, by executing
+#!  a shell script. Such a script can be created in a location of your choice
+#!  via the following &Julia; command, where <F>dstdir</F> is a directory
+#!  path in which a <F>gap.sh</F> script plus some auxiliary files will be placed:
+#!  <Listing Type="Julia">using GAP; GAP.create_gap_sh(dstdir)</Listing>
 #!
 #!  Note that the <Package>JuliaInterface</Package> code belongs to
 #!  <URL><Link>https://github.com/oscar-system/GAP.jl</Link>

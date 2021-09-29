@@ -6,13 +6,15 @@
 This is the first release of the 0.7.x series. It contains the following breaking
 changes compared to the 0.6.x release:
 
-- `LoadPackageAndExposeGlobals` was removed. If you are using this, see
+- Remove `LoadPackageAndExposeGlobals`. If you are using this, see
   <https://github.com/oscar-system/GAP.jl/pull/696> for alternatives.
 - Remove all `convert` methods. If you were using `convert(GapObj, val)`,
   you can use `GapObj(val)` or `julia_to_gap(val)` instead. If you were
   using `convert(T,gapobj)`, use `T(gapobj)` or `julia_to_gap(gapobj)`
   instead.
-- Remove `IsArgumentForJuliaFunction` from the GAP side.
+- Remove `IsArgumentForJuliaFunction` from the GAP side. There was no
+  actual use case, so hopefully nobody was using it
+- Remove `GAP.gap_exe()`. Instead please use `GAP.create_gap_sh(path)`.
 
 Other changes:
 

@@ -1,9 +1,3 @@
-function gap_exe()
-    return joinpath(GAPROOT, "bin", "gap.sh")
-end
-
-export gap_exe
-
 """
     prompt()
 

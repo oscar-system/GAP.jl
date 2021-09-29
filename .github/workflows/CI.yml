@@ -61,8 +61,8 @@ jobs:
         run: julia --color=yes -e 'using Pkg ; Pkg.add(["Singular", "Nemo"])'
       - name: "GAP tests"
         run: |
-          gap_sh=$(julia --project=. -e 'import GAP; print(GAP.gap_exe())');
-          export GAP="$gap_sh -A --quitonbreak --norepl"
+          julia --project=. -e 'import GAP; GAP.create_gap_sh("/tmp")'
+          export GAP="/tmp/gap.sh -A --quitonbreak --norepl"
           etc/ci_test.sh
 
       - name: "Process Julia code coverage"
@@ -73,8 +73,7 @@ jobs:
             using GAP
             GAP.Packages.install("profiling", interactive = false) || exit(1)
             '
-          gap_sh=$(julia --project=. -e 'import GAP; print(GAP.gap_exe())');
-          $gap_sh -A --quitonbreak --norepl etc/gather_coverage.g
+          /tmp/gap.sh -A --quitonbreak --norepl etc/gather_coverage.g
           cat gap-lcov.info >> lcov.info
 
       - name: "Upload coverage data to Codecov"
@@ -111,9 +110,9 @@ jobs:
           julia --project=docs --color=yes test/doctest.jl
       - name: "Build GAP manual"
         run: |
-          gap_sh=$(julia --project=. -e 'import GAP; print(GAP.gap_exe())');
+          julia --project=. -e 'import GAP; GAP.create_gap_sh("/tmp")'
           cd pkg/JuliaInterface
-          $gap_sh -A --quitonbreak --norepl makedoc.g
+          /tmp/gap.sh -A --quitonbreak --norepl makedoc.g
           cd ../..
           mkdir -p docs/src/assets/html/JuliaInterface/
           cp pkg/JuliaInterface/doc/*.{html,css,js} docs/src/assets/html/JuliaInterface/
