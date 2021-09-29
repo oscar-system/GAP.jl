@@ -255,11 +255,6 @@ function regenerate_gaproot(gaproot_mutable)
         run(pipeline(`make V=1 -j$(Sys.CPU_THREADS)`, stdout="build.log", append=true))
     end
 
-    ##
-    ## Create custom gap.sh
-    ##
-    create_gap_sh(joinpath(gaproot_mutable, "bin"))
-
     return gaproot_mutable
 end # function
 
