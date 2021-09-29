@@ -284,7 +284,6 @@ include("utils.jl")
 include("help.jl")
 include("packages.jl")
 include("prompt.jl")
-include("obsolete.jl")
 include("doctestfilters.jl")
 
 end
