@@ -73,7 +73,6 @@ InstallMethod( \.\:\=,
     Error( "Manual assignment to module is not allowed" );
 end );
 
-
 InstallMethod( IsBound\.,
                [ "IsJuliaModule", "IsPosInt" ],
   function( module, rnum )
@@ -83,16 +82,18 @@ InstallMethod( IsBound\.,
     return fail <> _JuliaGetGlobalVariableByModule( NameRNam( rnum ), JuliaPointer( module ) );
 end );
 
-
 InstallMethod( Unbind\.,
                [ "IsJuliaModule", "IsPosInt" ],
   function( module, rnum )
     Error( "cannot unbind Julia variables" );
 end );
 
+InstallMethod(RecNames, [ "IsJuliaModule" ],
+function( obj )
+    return JuliaToGAP( IsList, Julia.GAP.get_symbols_in_module( JuliaPointer( obj ) ), true );
+end);
 
 InstallValue( Julia, _WrapJuliaModule( "Main", _JuliaGetGlobalVariable( "Main" ) ) );
-
 
 InstallOtherMethod( \[\],
     [ "IsJuliaObject", "IsPosInt and IsSmallIntRep" ],
