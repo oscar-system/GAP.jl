@@ -6,7 +6,7 @@ import REPL.REPLCompletions: completions
     get_symbols_in_module(m::Module) :: Vector{Symbol}
 
 Return all symbols in the module `m`.
-This is used in the GAP function `ImportJuliaModuleIntoGAP`.
+This is used in a GAP method for `RecName`.
 """
 function get_symbols_in_module(m::Module)
     name = string(nameof(m))

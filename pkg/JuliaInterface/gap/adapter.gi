@@ -104,7 +104,7 @@ InstallMethod( State,
 InstallMethod( Init,
     [ "IsRandomSourceJulia", "IsObject" ],
     function( rng, seed )
-    ImportJuliaModuleIntoGAP( "Random" );
+    JuliaEvalString( "import Random" );
     if IsInt( seed ) then
       # This means a prescribed seed.
       seed:= AbsInt( seed );
@@ -146,7 +146,7 @@ InstallMethod( Reset,
     local old;
 
     old:= State( rng );
-    ImportJuliaModuleIntoGAP( "Random" );
+    JuliaEvalString( "import Random" );
     if IsInt( seed ) then
       # This means a prescribed seed.
       seed:= AbsInt( seed );

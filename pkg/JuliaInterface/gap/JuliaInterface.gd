@@ -166,10 +166,7 @@ DeclareAttribute( "JuliaPointer", IsJuliaWrapper );
 #! @Arguments obj
 #! @Description
 #!  This filter is set in those &GAP; objects that represent &Julia; modules.
-#!  A submodule of a module can be accessed like a record component,
-#!  provided that this submodule has already been imported,
-#!  see <Ref Func="ImportJuliaModuleIntoGAP"/>.
-#!  &Julia; variables from a module can be accessed like record components.
+#!  Members of a &Julia; module can be accessed like record components.
 #! @BeginExampleSession
 #! gap> IsJuliaModule( Julia );
 #! true
@@ -212,8 +209,6 @@ BindGlobal( "TheTypeOfJuliaModules", NewType( TheFamilyOfJuliaModules, IsJuliaMo
 #!  This means that the &Julia; code in the file with name <A>filename</A>
 #!  gets executed in the current &Julia; session,
 #!  in the context of the &Julia; module <A>module_name</A>.
-#!  If the file defines a new &Julia; module then the next step will be
-#!  to import this module, see <Ref Func="ImportJuliaModuleIntoGAP"/>.
 DeclareGlobalFunction( "JuliaIncludeFile" );
 
 #! @Arguments pkgname
@@ -311,31 +306,10 @@ DeclareGlobalFunction( "JuliaFunction" );
 DeclareGlobalVariable( "Julia" );
 
 #! @Arguments name
-#! @Returns nothing.
-#! @Description
-#!  The aim of this function is to make the &Julia; module with name
-#!  <A>name</A> available in the current &GAP; session.
-#!  After the call,
-#!  the <A>name</A> component of the global object <Ref Var="Julia"/> will be
-#!  bound, and one can access the module as a component of <Ref Var="Julia"/>
-#!  or via <Ref Func="JuliaModule"/>.
-#! @BeginExampleSession
-#! gap> ImportJuliaModuleIntoGAP( "GAP" );
-#! gap> Julia.GAP;
-#! <Julia module GAP>
-#! @EndExampleSession
-#!  The &Julia; modules <C>Base</C>, <C>Core</C>, and <C>GAP</C>
-#!  have in fact already been imported when the
-#!  <Package>JuliaInterface</Package> package got loaded.
-DeclareGlobalFunction( "ImportJuliaModuleIntoGAP" );
-
-#! @Arguments name
 #! @Returns a &Julia; object
 #! @Description
 #!  Returns the &Julia; object that points to the &Julia; module
 #!  with name <A>name</A>.
-#!  Note that this module needs to be imported before being present,
-#!  see <Ref Func="ImportJuliaModuleIntoGAP"/>.
 #! @BeginExampleSession
 #! gap> gapmodule:= JuliaModule( "GAP" );
 #! <Julia: GAP>
