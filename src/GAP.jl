@@ -213,10 +213,15 @@ function __init__()
     gaproots = sysinfo["GAPROOTS"]
     cmdline_options = ["", "-l", gaproots]
     if isdefined(Main, :__GAP_ARGS__)
+        # we were started via gap.sh, handle user command line arguments
         append!(cmdline_options, Main.__GAP_ARGS__)
     else
+        # started regularly
         append!(cmdline_options, ["--nointeract"])
     end
+
+    # ensure GAP exit handler is run when we exit
+    Base.atexit(function() GAP.Globals.PROGRAM_CLEAN_UP() end)
 
     # Respect the -q flag
     isquiet = Bool(Base.JLOptions().quiet)
