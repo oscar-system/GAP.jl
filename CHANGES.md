@@ -12,9 +12,11 @@ changes compared to the 0.6.x release:
   you can use `GapObj(val)` or `julia_to_gap(val)` instead. If you were
   using `convert(T,gapobj)`, use `T(gapobj)` or `julia_to_gap(gapobj)`
   instead.
-- Remove `IsArgumentForJuliaFunction` from the GAP side. There was no
-  actual use case, so hopefully nobody was using it
 - Remove `GAP.gap_exe()`. Instead please use `GAP.create_gap_sh(path)`.
+- Remove GAP function `IsArgumentForJuliaFunction`. No replacement should
+  be necessary.
+- Remove GAP function `ImportJuliaModuleIntoGAP`. As a replacement, use
+  `JuliaEvalString("import MODULENAME")`.
 
 Other changes:
 

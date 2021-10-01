@@ -138,34 +138,6 @@ InstallMethod( String,
 end );
 
 
-InstallGlobalFunction( ImportJuliaModuleIntoGAP,
-  function( name )
-    local callstring, list, variable_list, i,
-          current_module, is_module_present, no_import;
-
-    no_import := ValueOption( "NoImport" );
-    if no_import = fail then
-        no_import := false;
-    fi;
-
-    is_module_present := JuliaEvalString( Concatenation( "isdefined( Main, :", name, ")" ) );
-
-    if no_import = false then
-        if not is_module_present then
-            ## Local modules cannot be imported
-            callstring:= Concatenation( "import ", name );
-            JuliaEvalString( callstring );
-        fi;
-    fi;
-
-    current_module := Julia.(name);
-    list := JuliaToGAP( IsList, Julia.GAP.get_symbols_in_module( JuliaPointer( current_module ) ), true );
-    for i in list do
-        \.( current_module, RNamObj( i ) );
-    od;
-end );
-
-
 InstallGlobalFunction( JuliaImportPackage, function( pkgname )
     local callstring;
     if not IsString( pkgname ) then
