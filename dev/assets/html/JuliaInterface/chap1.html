@@ -87,10 +87,10 @@
 
 <p>at the <strong class="pkg">Julia</strong> prompt, afterwards the package <strong class="pkg">JuliaInterface</strong> is already installed and loaded.</p>
 
-<p>Alternatively, one can start <strong class="pkg">GAP</strong> in the traditional way, by executing a shell script. Such a script is generated automatically during the installation of <strong class="pkg">GAP</strong> via <strong class="pkg">Julia</strong>, its location is returned in a <strong class="pkg">Julia</strong> session by</p>
+<p>Alternatively, one can start <strong class="pkg">GAP</strong> in the traditional way, by executing a shell script. Such a script can be created in a location of your choice via the following <strong class="pkg">Julia</strong> command, where <code class="file">dstdir</code> is a directory path in which a <code class="file">gap.sh</code> script plus some auxiliary files will be placed:</p>
 
 
-<div class="example"><pre>using GAP; GAP.gap_exe()</pre></div>
+<div class="example"><pre>using GAP; GAP.create_gap_sh(dstdir)</pre></div>
 
 <p>Note that the <strong class="pkg">JuliaInterface</strong> code belongs to <span class="URL"><a href="https://github.com/oscar-system/GAP.jl">the <strong class="pkg">Julia</strong> package <code class="code">GAP.jl</code></a></span>, hence it can be found there.</p>
 
