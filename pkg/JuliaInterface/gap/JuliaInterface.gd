@@ -182,7 +182,7 @@ DeclareAttribute( "JuliaPointer", IsJuliaWrapper );
 #! gap> JuliaFunction( "julia_to_gap", "GAP" );  # the same function
 #! <Julia: julia_to_gap>
 #! @EndExampleSession
-DeclareCategory( "IsJuliaModule", IsJuliaWrapper  );
+DeclareCategory( "IsJuliaModule", IsJuliaWrapper and IsRecord  );
 
 BindGlobal( "TheFamilyOfJuliaModules", NewFamily( "TheFamilyOfJuliaModules" ) );
 BindGlobal( "TheTypeOfJuliaModules", NewType( TheFamilyOfJuliaModules, IsJuliaModule and IsAttributeStoringRep ) );
