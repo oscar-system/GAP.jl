@@ -59,9 +59,6 @@ function run_session()
         ccall((:Call0ArgsInNewReader, GAP_jll.libgap), Cvoid, (Any,), Globals.SESSION)
     end
 
-    # call GAP's "atexit" cleanup functions
-    ccall((:Call0ArgsInNewReader, GAP_jll.libgap), Cvoid, (Any,), Globals.PROGRAM_CLEAN_UP)
-
     # Finally exit
     return exit_code()
 end

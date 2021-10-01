@@ -21,7 +21,10 @@ Other changes:
 - Add `GapInt` type union
 - Patch the GAP package manager to perform downloads via Julia's
   `Downloads.download` to avoid certain failure scenarios
-- Don't show the GAP banner wen Julia is started with the `--quiet` / `-q` flag
+- Don't show the GAP banner if Julia is started with the `--quiet` flag
+- Call the GAP AtExit handler when exiting Julia, so that e.g. the command
+  line history is saved (if the user enabled this in their preferences) or
+  temporary directories are removed.
 - Many internal changes and refactoring
 
 
