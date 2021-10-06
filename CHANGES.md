@@ -6,6 +6,7 @@
 This is the first release of the 0.7.x series. It contains the following breaking
 changes compared to the 0.6.x release:
 
+- Require Julia 1.6 or later.
 - Remove `LoadPackageAndExposeGlobals`. If you are using this, see
   <https://github.com/oscar-system/GAP.jl/pull/696> for alternatives.
 - Remove all `convert` methods. If you were using `convert(GapObj, val)`,

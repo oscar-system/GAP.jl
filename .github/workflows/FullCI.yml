@@ -9,7 +9,7 @@ jobs:
     steps:
     - uses: oscar-system/oscar-ci-action/configure@master
       with:
-        julia: "1.5.3"
+        julia: "1.6.3"
         package: GAP
         ref: ${{ github.sha }}
         repository: ${{ github.repository }}
