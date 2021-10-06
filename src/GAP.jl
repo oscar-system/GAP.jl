@@ -52,12 +52,7 @@ function ThrowObserver(depth::Cint)
     end
 end
 
-# The following hack is needed only in Julia 1.3, not in later versions.
-if VERSION >= v"1.4"
-    const error_handlerwrap = error_handler
-else
-    error_handlerwrap() = Base.invokelatest(error_handler)
-end
+const error_handlerwrap = error_handler
 
 # This must be `const` so that we can use it with `ccall()`
 const JuliaInterface = "JuliaInterface.so"

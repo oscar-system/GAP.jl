@@ -20,22 +20,11 @@ This software is licensed under the LGPL, version 3, or any later version.
 
 ## Installation
 
-### Requirements
+This package is automatically built and installed as part of the Julia
+package `GAP.jl`.
 
-- Julia 1.3 or higher, compiled in `<path_to_julia>`
-- GAP 4.11 or higher, compiled in `<path_to_gaproot>`
-- JuliaInterface, compiled in `<path_to_juliainterface>`
-- The Julia packages Nemo.jl and Singular.jl
-
-### Installation
-
-#### General instructions
-
-- Compile the JuliaInterface package as described it its README.md
-- Start Julia and make sure Nemo.jl and Singular.jl are compiled, by typing
-
-        using Singular
-        using Nemo
+For all features to work, the Julia packages Nemo.jl and Singular.jl
+must be installed.
 
 ## Usage
 
