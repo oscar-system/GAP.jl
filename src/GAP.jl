@@ -68,7 +68,7 @@ function initialize(argv::Vector{String})
     # line are not read before the Julia module `GAP` is available;
     # these files will be read via a function call in `gap.sh`
     # (which is created by `setup.jl`).
-    append!(argv, ["--systemfile", abspath(@__DIR__, "..", "lib", "systemfile.g")])
+    append!(argv, ["--systemfile", abspath(@__DIR__, "..", "gap", "systemfile.g")])
 
     if ! handle_signals
         # Tell GAP to show some traceback on errors.
@@ -152,8 +152,8 @@ function initialize(argv::Vector{String})
         error("JuliaInterface could not be loaded")
     end
 
-    GAP.Globals.Read(GapObj(joinpath(@__DIR__, "..", "lib", "pkg.g")))
-    GAP.Globals.Read(GapObj(joinpath(@__DIR__, "..", "lib", "repl.g")))
+    GAP.Globals.Read(GapObj(joinpath(@__DIR__, "..", "gap", "pkg.g")))
+    GAP.Globals.Read(GapObj(joinpath(@__DIR__, "..", "gap", "repl.g")))
 
     # If we are in "stand-alone mode", stop here
     if handle_signals
@@ -162,7 +162,7 @@ function initialize(argv::Vector{String})
     end
 
     # Redirect error messages, in order not to print them to the screen.
-    GAP.Globals.Read(GapObj(joinpath(@__DIR__, "..", "lib", "err.g")))
+    GAP.Globals.Read(GapObj(joinpath(@__DIR__, "..", "gap", "err.g")))
 
     return nothing
 end
