@@ -58,7 +58,8 @@ julia> Int128(val)
 1208925819614629174706176
 
 ```
-""" Int128
+"""
+Int128(obj::GapObj) = Int128(BigInt(obj))
 
 
 """
