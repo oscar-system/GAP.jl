@@ -90,7 +90,7 @@ const GapObj = GAP_jll.MPtr
 """
     GAP.Obj
 
-This is an alias for `Union{GapObj,FFE,Int64,Bool,Nothing}`.
+This is an alias for `Union{GapObj,FFE,Int64,Bool}`.
 This type union covers all types a "native" GAP object may have
 from Julia's viewpoint.
 
@@ -111,7 +111,7 @@ julia> GAP.Obj(42)
 
 ```
 """
-const Obj = Union{GapObj,FFE,Int64,Bool,Nothing}
+const Obj = Union{GapObj,FFE,Int64,Bool}
 
 """
     GapInt
