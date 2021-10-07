@@ -177,6 +177,7 @@ function initialize(argv::Vector{String})
     end
 
     GAP.Globals.Read(GapObj(joinpath(@__DIR__, "..", "gap", "pkg.g")))
+    GAP.Globals.Read(GapObj(joinpath(@__DIR__, "..", "gap", "exec.g")))
 
     # If we are in "stand-alone mode", stop here
     if handle_signals
@@ -314,6 +315,7 @@ include("utils.jl")
 include("help.jl")
 include("packages.jl")
 include("prompt.jl")
+include("exec.jl")
 include("doctestfilters.jl")
 
 end
