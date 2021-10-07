@@ -106,23 +106,23 @@ julia_to_gap
 one can use [`GapObj`](@ref) and [`GAP.Obj`](@ref) as constructors.)
 
 ```@docs
-Int128
-BigInt
-Rational
-Float64
-big
-Char
-Cuchar
-String
-Symbol
-UnitRange
-StepRange
+Int128(obj::GapObj)
+BigInt(obj::GapObj)
+Rational(obj::GapObj)
+Float64(obj::GapObj)
+big(obj::GapObj)
+Char(obj::GapObj)
+Cuchar(obj::GapObj)
+String(obj::GapObj)
+Symbol(obj::GapObj)
+UnitRange(obj::GapObj)
+StepRange(obj::GapObj)
 Tuple
-BitVector
-Vector{T}
-Matrix{T}
-Set{T}
-Dict{Symbol,T}
+BitVector(obj::GapObj)
+Vector{T}(obj::GapObj; recursive = true)
+Matrix{T}(obj::GapObj; recursive = true)
+Set{T}(obj::GapObj; recursive = true)
+Dict{Symbol,T}(obj::GapObj; recursive = true)
 ```
 
 ## Convenience adapters
@@ -134,11 +134,11 @@ using Julia syntax features.
 Globals
 call_gap_func
 evalstr
-getindex
-setindex!
-getproperty
-setproperty!
-hasproperty
+getindex(x::GapObj, i::Int64)
+setindex!(x::GapObj, v::Any, i::Int64)
+getproperty(x::GapObj, f::Symbol)
+setproperty!(x::GapObj, f::Symbol, v)
+hasproperty(x::GapObj, f::Symbol)
 wrap_rng
 ```
 
