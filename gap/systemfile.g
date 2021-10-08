@@ -6,7 +6,7 @@
     # and such that it is available when user files get read
     # via the GAP command line.
     deps:= SHALLOW_COPY_OBJ( GAPInfo.Dependencies.NeededOtherPackages );
-    APPEND_LIST_INTR( deps, [ [ "JuliaInterface", ">=0.7.0-DEV" ] ] );
+    APPEND_LIST_INTR( deps, [ [ "JuliaInterface", ">=0.7.0" ] ] );
     GAPInfo.Dependencies:= MakeImmutable( rec( NeededOtherPackages:= deps ) );
 
     # force the --norepl option to be on
