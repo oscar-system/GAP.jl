@@ -5,9 +5,6 @@ DocTestSetup = :(using GAP)
 
 # GAP.jl
 
-```@contents
-```
-
 ## Introduction
 
 GAP.jl is a low level interface from Julia to
@@ -33,4 +30,9 @@ as soon as GAP packages provide functionality that is based on
 using Julia code from the GAP side.
 
 The viewpoint of an interface from GAP to Julia is described in
-[the manual of the GAP package JuliaInterface](GAP_ref(JuliaInterface:Title page)).
+[the manual of the GAP package JuliaInterface](../assets/html/JuliaInterface/chap0_mj.html).
+
+## Table of contents
+
+```@contents
+```
