@@ -43,6 +43,7 @@ The viewpoint of an interface from GAP to Julia is described in
 FFE
 GapObj
 GAP.Obj
+GapInt
 ```
 
 ## Macros
@@ -52,6 +53,7 @@ GAP.Obj
 @g_str
 @gapwrap
 @gapattribute
+@wrap
 ```
 
 ## Conversions
