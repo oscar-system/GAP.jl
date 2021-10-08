@@ -84,7 +84,14 @@ makedocs(
     modules = [GAP],
     doctest = true,
     doctestfilters = GAP.GAP_doctestfilters,
-    pages = ["index.md"],
+    pages = [
+        "intro.md",
+        "basics.md",
+        "conversion.md",
+        "packages.md",
+        "other.md",
+        "manualindex.md",
+        ],
 )
 
 deploydocs(repo = "github.com/oscar-system/GAP.jl.git")
