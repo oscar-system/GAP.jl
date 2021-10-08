@@ -22,12 +22,14 @@ using Julia syntax features.
 
 ```@docs
 call_gap_func
+call_with_catch
 getindex
 setindex!
 getproperty
 setproperty!
 hasproperty
 wrap_rng
+randseed!
 ```
 
 For the following Julia functions, methods are provided that deal with the
