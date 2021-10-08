@@ -1,0 +1,133 @@
+```@meta
+CurrentModule = GAP
+DocTestSetup = :(using GAP)
+```
+
+# Other stuff
+
+## Macros
+
+```@docs
+@gap
+@g_str
+@gapwrap
+@gapattribute
+@wrap
+```
+
+## Convenience adapters
+
+This section describes how one can manipulate GAP objects from the Julia side,
+using Julia syntax features.
+
+```@docs
+call_gap_func
+getindex
+setindex!
+getproperty
+setproperty!
+hasproperty
+wrap_rng
+```
+
+For the following Julia functions, methods are provided that deal with the
+case that the arguments are GAP objects; they delegate to the corresponding
+GAP operations.
+
+| Julia        | GAP      |
+|--------------|----------|
+| `length`     | `Length` |
+| `in`         | `\in`    |
+| `zero`       | `ZERO`   |
+| `one`        | `ONE`    |
+| `-` (unary)  | `AINV`   |
+| `+`          | `SUM`    |
+| `-` (binary) | `DIFF`   |
+| `*`          | `PROD`   |
+| `/`          | `QUO`    |
+| `\`          | `LQUO`   |
+| `^`          | `POW`    |
+| `mod`        | `MOD`    |
+| `<`          | `LT`     |
+| `==`         | `EQ`     |
+
+```jldoctest
+julia> l = GAP.julia_to_gap( [ 1, 3, 7, 15 ] )
+GAP: [ 1, 3, 7, 15 ]
+
+julia> m = GAP.julia_to_gap( [ 1 2; 3 4 ] )
+GAP: [ [ 1, 2 ], [ 3, 4 ] ]
+
+julia> length( l )
+4
+
+julia> length( m )  # different from Julia's behaviour
+2
+
+julia> 1 in l
+true
+
+julia> 2 in l
+false
+
+julia> zero( l )
+GAP: [ 0, 0, 0, 0 ]
+
+julia> one( m )
+GAP: [ [ 1, 0 ], [ 0, 1 ] ]
+
+julia> - l
+GAP: [ -1, -3, -7, -15 ]
+
+julia> l + 1
+GAP: [ 2, 4, 8, 16 ]
+
+julia> l + l
+GAP: [ 2, 6, 14, 30 ]
+
+julia> m + m
+GAP: [ [ 2, 4 ], [ 6, 8 ] ]
+
+julia> 1 - m
+GAP: [ [ 0, -1 ], [ -2, -3 ] ]
+
+julia> l * l
+284
+
+julia> l * m
+GAP: [ 10, 14 ]
+
+julia> m * m
+GAP: [ [ 7, 10 ], [ 15, 22 ] ]
+
+julia> 1 / m
+GAP: [ [ -2, 1 ], [ 3/2, -1/2 ] ]
+
+julia> m / 2
+GAP: [ [ 1/2, 1 ], [ 3/2, 2 ] ]
+
+julia> 2 \ m
+GAP: [ [ 1/2, 1 ], [ 3/2, 2 ] ]
+
+julia> m ^ 2
+GAP: [ [ 7, 10 ], [ 15, 22 ] ]
+
+julia> m ^ -1
+GAP: [ [ -2, 1 ], [ 3/2, -1/2 ] ]
+
+julia> mod( l, 3 )
+GAP: [ 1, 0, 1, 0 ]
+
+julia> m < 2 * m
+true
+
+julia> m^2 - 5 * m == 2 * one( m )
+true
+
+```
+
+## Access to the GAP help system
+
+```@docs
+show_gap_help
+```
