@@ -42,7 +42,7 @@ The exceptions are as follows.
 - GAP's `true` and `false`
   are automatically converted to Julia's `true` and `false`, and vice versa.
 
-### Explicit GAP-to-Julia and Julia-to-GAP Conversions
+## Explicit GAP-to-Julia and Julia-to-GAP Conversions
 
 ```@docs
 gap_to_julia
