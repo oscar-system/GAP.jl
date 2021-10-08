@@ -259,6 +259,8 @@ function regenerate_gaproot(gaproot_mutable)
 end # function
 
 
+end # module
+
 """
     create_gap_sh(dstdir::String)
 
@@ -309,7 +311,3 @@ function create_gap_sh(dstdir::String)
     chmod(gap_sh_path, 0o755)
 
 end # function
-
-end # module
-
-const create_gap_sh = Setup.create_gap_sh
