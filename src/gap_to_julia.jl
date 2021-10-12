@@ -6,7 +6,7 @@ struct ConversionError <: Base.Exception
 end
 
 Base.showerror(io::IO, e::ConversionError) =
-    print(io, "failed to convert GapObj to $(e.jl_type):\n $(e.obj)")
+    print(io, "failed to convert $(typeof(e.obj)) to $(e.jl_type):\n $(e.obj)")
 
 
 ## Conversion from GAP to Julia
