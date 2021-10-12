@@ -217,7 +217,7 @@ in whose scope the macro is called.
 ```jldoctest
 julia> @gapattribute isstrictlysortedlist(obj::GAP.GapObj) = GAP.Globals.IsSSortedList(obj)::Bool;
 
-julia> l = GAP.evalstr( "[ 1, 3, 7 ]" );
+julia> l = GapObj([ 1, 3, 7 ]);
 
 julia> hasisstrictlysortedlist( l )
 false
@@ -228,7 +228,7 @@ true
 julia> hasisstrictlysortedlist( l )
 true
 
-julia> l = GAP.evalstr( "[ 1, 3, 7 ]" );
+julia> l = GapObj([ 1, 3, 7 ]);
 
 julia> hasisstrictlysortedlist( l )
 false

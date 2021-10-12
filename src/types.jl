@@ -6,10 +6,10 @@ This type is defined in the JuliaInterface C code.
 
 # Examples
 ```jldoctest
-julia> x = GAP.evalstr( "Z(3)" )
+julia> x = GAP.Globals.Z(3)
 GAP: Z(3)
 
-julia> typeof( x )
+julia> typeof(x)
 FFE
 
 ```
@@ -25,25 +25,25 @@ This is the Julia type of all those GAP objects that are not
 
 # Examples
 ```jldoctest
-julia> isa( GAP.evalstr( "[ 1, 2 ]" ), GapObj ) # a GAP list
-true
+julia> typeof( GAP.evalstr( "[ 1, 2 ]" ) ) # a GAP list
+GapObj
 
-julia> isa( GAP.evalstr( "rec()" ), GapObj )    # a GAP record
-true
+julia> typeof( GAP.evalstr( "rec()" ) )    # a GAP record
+GapObj
 
-julia> isa( GAP.evalstr( "(1,2,3)" ), GapObj )  # a GAP permutation
-true
+julia> typeof( GAP.evalstr( "(1,2,3)" ) )  # a GAP permutation
+GapObj
 
-julia> isa( GAP.evalstr( "2^64" ), GapObj )     # a large GAP integer
-true
+julia> typeof( GAP.evalstr( "2^64" ) )     # a large GAP integer
+GapObj
 
-julia> typeof( GAP.evalstr( "2^59" ) )          # a small GAP integer
+julia> typeof( GAP.evalstr( "2^59" ) )     # a small GAP integer
 Int64
 
-julia> typeof( GAP.evalstr( "Z(2)" ) )          # a GAP FFE
+julia> typeof( GAP.evalstr( "Z(2)" ) )     # a GAP FFE
 FFE
 
-julia> typeof( GAP.evalstr( "true" ) )          # a boolean
+julia> typeof( GAP.evalstr( "true" ) )     # a boolean
 Bool
 
 ```

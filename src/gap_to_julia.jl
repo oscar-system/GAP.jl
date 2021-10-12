@@ -19,7 +19,7 @@ manual of the GAP package JuliaInterface.
 If `x` is another `GAP.Obj` (for example a `Int64`) then the result is
 defined in Julia by `type`.
 
-The parameter `recursion_dict` is meant to preserve the identity
+The parameter `recursion_dict` is used to preserve the identity
 of converted subobjects and should never be given by the user.
 
 For GAP lists and records, it makes sense to convert also the subobjects
@@ -34,7 +34,8 @@ julia> GAP.gap_to_julia( GAP.evalstr( "1/3" ) )
 julia> GAP.gap_to_julia( GAP.evalstr( "\\"abc\\"" ) )
 "abc"
 
-julia> val = GAP.evalstr( "[ [ 1, 2 ], [ 3, 4 ] ]" );
+julia> val = GapObj([ 1 2 ; 3 4 ])
+GAP: [ [ 1, 2 ], [ 3, 4 ] ]
 
 julia> GAP.gap_to_julia( val )
 2-element Vector{Any}:
@@ -46,6 +47,15 @@ julia> GAP.gap_to_julia( val, recursive = false )
  GAP: [ 1, 2 ]
  GAP: [ 3, 4 ]
 
+julia> GAP.gap_to_julia( Vector{GapObj}, val )
+2-element Vector{GapObj}:
+ GAP: [ 1, 2 ]
+ GAP: [ 3, 4 ]
+
+julia> GAP.gap_to_julia( Matrix{Int}, val )
+2×2 Matrix{Int64}:
+ 1  2
+ 3  4
 ```
 """
 function gap_to_julia(t::T, x::Any) where {T<:Type}
