@@ -406,7 +406,7 @@ end
     @test GAP.julia_to_gap(4:1:13) == r
     r = GAP.evalstr("[ 1, 4 .. 10 ]")
     @test GAP.julia_to_gap(1:3:10) == r
-    @test_throws ErrorException GAP.julia_to_gap(1:2^62)
+    @test_throws GAP.ConversionError GAP.julia_to_gap(1:2^62)
   end
 
   @testset "Dictionaries" begin

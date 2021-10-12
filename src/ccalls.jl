@@ -138,6 +138,7 @@ end
 
 NewPlist(capacity::Int64) = ccall((:GAP_NewPlist, libgap), GapObj, (Int64,), capacity)
 NewPrecord(capacity::Int64) = ccall((:GAP_NewPrecord, libgap), GapObj, (Int64,), capacity)
+NewRange(len::Int64, low::Int64, inc::Int64) = ccall((:GAP_NewRange, libgap), GapObj, (Int64, Int64, Int64), len, low, inc)
 NEW_MACFLOAT(x::Float64) = ccall((:NEW_MACFLOAT, libgap), GapObj, (Cdouble,), x)
 ValueMacFloat(x::GapObj) = ccall((:GAP_ValueMacFloat, libgap), Cdouble, (Any,), x)
 CharWithValue(x::Cuchar) = ccall((:GAP_CharWithValue, libgap), GapObj, (Cuchar,), x)

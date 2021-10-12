@@ -146,21 +146,10 @@ function julia_to_gap(
 end
 
 ## Ranges
-# FIXME: eventually check that the values are valid for GAP ranges
-function julia_to_gap(range::UnitRange{T}) where {T<:Integer}
-    return evalstr("[" * string(range.start) * ".." * string(range.stop) * "]")
-end
-
-function julia_to_gap(range::StepRange{T1,T2}) where {T1<:Integer,T2<:Integer}
-    return evalstr(
-        "[" *
-        string(range.start) *
-        "," *
-        string(range.start + range.step) *
-        ".." *
-        string(range.stop) *
-        "]",
-    )
+function julia_to_gap(r::AbstractRange{<:Integer})
+    res = NewRange(length(r), first(r), step(r))
+    Wrappers.IsRange(res) || throw(ConversionError(r, GapObj))
+    return res
 end
 
 ## Dictionaries
