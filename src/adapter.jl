@@ -53,11 +53,12 @@ end
 
 Return the entry at position `i` or at position `(i,j)` in `x`,
 or the list of entries in `x` at the positions described by `l`,
-provided that `x` is a GAP list.
+provided that `x` is a GAP object supporting
+this, such as a GAP list or matrix object.
 
 # Examples
 ```jldoctest
-julia> l = GAP.evalstr( "[ 1, 2, 3, 5, 8, 13 ]" )
+julia> l = GapObj([ 1, 2, 3, 5, 8, 13 ])
 GAP: [ 1, 2, 3, 5, 8, 13 ]
 
 julia> l[4]
@@ -72,7 +73,7 @@ GAP: [ 2, 3, 5 ]
 julia> l[[1,4,4]]
 GAP: [ 1, 5, 5 ]
 
-julia> m = GAP.evalstr( "[ [ 1, 2 ], [ 3, 4 ] ]" )
+julia> m = GapObj([ 1 2 ; 3 4 ])
 GAP: [ [ 1, 2 ], [ 3, 4 ] ]
 
 julia> m[1,1]
@@ -102,11 +103,12 @@ Base.getindex(x::GapObj, l::Union{Vector{T},AbstractRange{T}}) where {T<:Integer
 
 Set the entry at position `i` or `(i,j)` in `x` to `v`,
 or set the entries at the positions in `x` that are described by `l`
-to the entries in `v`, provided that `x` is a GAP list.
+to the entries in `v`, provided that `x` is a GAP object supporting
+this, such as a GAP list or matrix object.
 
 # Examples
 ```jldoctest
-julia> l = GAP.evalstr( "[ 1, 2, 3, 5, 8, 13 ]" )
+julia> l = GapObj([ 1, 2, 3, 5, 8, 13 ])
 GAP: [ 1, 2, 3, 5, 8, 13 ]
 
 julia> l[1] = 0
@@ -124,7 +126,7 @@ julia> l[2:4] = [ 7, 7, 7 ]
 julia> l
 GAP: [ 0, 7, 7, 7, 8, 13,, -1 ]
 
-julia> m = GAP.evalstr( "[ [ 1, 2 ], [ 3, 4 ] ]" )
+julia> m = GapObj([ 1 2 ; 3 4 ])
 GAP: [ [ 1, 2 ], [ 3, 4 ] ]
 
 julia> m[1,2] = 0
