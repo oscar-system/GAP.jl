@@ -1,7 +1,12 @@
 # Changes in GAP.jl
 
 
-## Version 0.7.0 (released 2022-MM-DD)
+## Version 0.7.1 (released 2021-MM-DD)
+
+- Fix compatibility with Julia 1.6.0 and 1.6.1. (Note that we recommend using
+  Julia 1.6.3 or newer anyway)
+
+## Version 0.7.0 (released 2021-10-08)
 
 This is the first release of the 0.7.x series. It contains the following breaking
 changes compared to the 0.6.x release:

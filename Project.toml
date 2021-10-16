@@ -16,7 +16,6 @@ REPL = "3fa0cd96-eef1-5676-8a61-b3b8758bbffb"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 
 [compat]
-Downloads = "1.4.2"
 GAP_jll = "~400.1190.200"
 GAP_lib_jll = "~400.1190.200"
 MacroTools = "0.5"
