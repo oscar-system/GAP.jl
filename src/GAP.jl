@@ -153,7 +153,6 @@ function initialize(argv::Vector{String})
     end
 
     GAP.Globals.Read(GapObj(joinpath(@__DIR__, "..", "gap", "pkg.g")))
-    GAP.Globals.Read(GapObj(joinpath(@__DIR__, "..", "gap", "repl.g")))
 
     # If we are in "stand-alone mode", stop here
     if handle_signals
