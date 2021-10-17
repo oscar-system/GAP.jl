@@ -3,7 +3,7 @@
 
 // #define THREADSAFE_GAP_JL 1
 
-#include <src/compiled.h>
+#include <gap_all.h>
 
 #if defined(HPCGAP) || !defined(THREADSAFE_GAP_JL)
 #define BEGIN_GAP_SYNC() ((void)0)
