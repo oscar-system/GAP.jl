@@ -249,10 +249,21 @@ function regenerate_gaproot(gaproot_mutable)
     ## Compile JuliaInterface
     ##
     @info "Compiling JuliaInterface ..."
-
-    cd(joinpath(gaproot_gapjl, "pkg", "JuliaInterface")) do
+    jipath = joinpath(gaproot_gapjl, "pkg", "JuliaInterface")
+    cd(jipath) do
         run(pipeline(`./configure $gaproot_mutable`, stdout="build.log"))
         run(pipeline(`make V=1 -j$(Sys.CPU_THREADS)`, stdout="build.log", append=true))
+    end
+
+    # any change to the JuliaInterface source code or build system should
+    # trigger a rebuild
+    include_dependency(joinpath(jipath, "configure"))
+    include_dependency(joinpath(jipath, "Makefile.in"))
+    include_dependency(joinpath(jipath, "Makefile.gappkg"))
+    for (root, dirs, files) in walkdir(joinpath(jipath, "src"))
+        for file in files
+            include_dependency(joinpath(root, file))
+        end
     end
 
     return gaproot_mutable
