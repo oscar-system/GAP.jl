@@ -85,7 +85,7 @@ makedocs(
     doctest = true,
     doctestfilters = GAP.GAP_doctestfilters,
     pages = [
-        "intro.md",
+        "index.md",
         "basics.md",
         "conversion.md",
         "packages.md",
