@@ -5,6 +5,9 @@
 
 - Fix compatibility with Julia 1.6.0 and 1.6.1. (Note that we recommend using
   Julia 1.6.3 or newer anyway)
+- Improve the GAP.jl manual; in particular, it now includes the manual of the
+  JuliaInterface GAP package
+- Optimize conversion of Julia ranges to GAP
 
 ## Version 0.7.0 (released 2021-10-08)
 
