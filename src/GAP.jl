@@ -54,9 +54,9 @@ end
 
 const error_handlerwrap = error_handler
 
-# This must be `const` so that we can use it with `ccall()`
-const JuliaInterface = "JuliaInterface.so"
-const JuliaInterface_path = normpath(joinpath(@__DIR__, "..", "pkg", "JuliaInterface", "bin", sysinfo["GAParch"], JuliaInterface))
+# path to JuliaInterface.so
+const JuliaInterface_path_intern = normpath(joinpath(@__DIR__, "..", "pkg", "JuliaInterface", "bin", sysinfo["GAParch"], "JuliaInterface.so"))
+JuliaInterface_path() = JuliaInterface_path_intern
 
 function initialize(argv::Vector{String})
     handle_signals = isdefined(Main, :__GAP_ARGS__)  # a bit of a hack...
@@ -95,9 +95,9 @@ function initialize(argv::Vector{String})
     ## JuliaInterface needs to access it. To make that possible, we dlopen
     ## its kernel extension already here, and poke a point to this module
     ## into the kernel extension's global variable `gap_module`
-    Libdl.dlopen(JuliaInterface_path)
+    Libdl.dlopen(JuliaInterface_path())
     mptr = pointer_from_objref(@__MODULE__)
-    g = cglobal((:gap_module, JuliaInterface_path), Ptr{Cvoid})
+    g = cglobal((:gap_module, JuliaInterface_path()), Ptr{Cvoid})
     unsafe_store!(g, mptr)
 
     # now load init.g
