@@ -8,6 +8,7 @@
 - Improve the GAP.jl manual; in particular, it now includes the manual of the
   JuliaInterface GAP package
 - Optimize conversion of Julia ranges to GAP
+- Update to a slightly newer GAP 4.12dev snapshot
 
 ## Version 0.7.0 (released 2021-10-08)
 
