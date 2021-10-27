@@ -34,12 +34,30 @@ julia> BigInt(val)
 
 ```
 """
-Base.BigInt(obj::GapObj) = gap_to_julia(BigInt, obj)
+function Base.BigInt(obj::GapObj)
+    GAP_IS_INT(obj) || throw(ConversionError(obj, BigInt))
+    ## get size of GAP BigInt (in limbs), multiply
+    ## by 64 to get bits
+    size_limbs = ccall((:GAP_SizeInt, libgap), Cint, (Any,), obj)
+    size = abs(size_limbs * sizeof(UInt) * 8)
+    ## allocate new GMP
+    new_bigint = Base.GMP.MPZ.realloc2(size)
+    new_bigint.size = size_limbs
+    ## Get limb address ptr
+    addr = ccall((:GAP_AddrInt, libgap), Ptr{UInt}, (Any,), obj)
+    ## Copy limbs
+    unsafe_copyto!(new_bigint.d, addr, abs(size_limbs))
+    return new_bigint
+end
 
 # A small integer cannot be represented by a `GapObj`,
 # the `T` is expected to be `Int64` or `Int128` if `obj` can be converted
 # to an integer type.
-(::Type{T})(obj::GapObj) where {T<:Integer} = T(BigInt(obj))
+function (::Type{T})(obj::GapObj) where {T<:Integer}
+    GAP_IS_INT(obj) || throw(ConversionError(obj, T))
+    return T(BigInt(obj))::T
+end
+
 @doc """
     Int128(obj::GapObj)
 
@@ -94,9 +112,9 @@ julia> big(val)
 ```
 """
 function Base.big(obj::GapObj)
-    GAP_IS_INT(obj) && return gap_to_julia(BigInt, obj)
-    GAP_IS_RAT(obj) && return gap_to_julia(Rational{BigInt}, obj)
-    GAP_IS_MACFLOAT(obj) && return gap_to_julia(BigFloat, obj)
+    GAP_IS_INT(obj) && return BigInt(obj)
+    GAP_IS_RAT(obj) && return Rational{BigInt}(obj)
+    GAP_IS_MACFLOAT(obj) && return BigFloat(obj)
     throw(ConversionError(obj, "a type supported by big"))
 end
 
@@ -127,7 +145,14 @@ julia> Rational{Int64}(val)
 
 ```
 """
-Base.Rational{T}(obj::GapObj) where {T<:Integer} = gap_to_julia(Rational{T}, obj)
+function Base.Rational{T}(obj::GapObj) where {T<:Integer}
+    GAP_IS_INT(obj) && return T(obj) // T(1)
+    GAP_IS_RAT(obj) || throw(ConversionError(obj, Rational{T}))
+    numer = Wrappers.NumeratorRat(obj)
+    denom = Wrappers.DenominatorRat(obj)
+    return T(numer) // T(denom)
+end
+
 
 ## Floats
 """

@@ -104,26 +104,7 @@ gap_to_julia(::Type{GapObj}, x::GapObj) = x
 ## Integers
 gap_to_julia(::Type{T}, x::Int64) where {T<:Integer} = trunc(T, x)
 
-function gap_to_julia(::Type{T}, obj::GapObj) where {T<:Integer}
-    GAP_IS_INT(obj) && return T(BigInt(obj))
-    throw(ConversionError(obj, T))
-end
-
-function gap_to_julia(::Type{BigInt}, x::GapObj)
-    GAP_IS_INT(x) || throw(ConversionError(x, BigInt))
-    ## get size of GAP BigInt (in limbs), multiply
-    ## by 64 to get bits
-    size_limbs = ccall((:GAP_SizeInt, libgap), Cint, (Any,), x)
-    size = abs(size_limbs * sizeof(UInt) * 8)
-    ## allocate new GMP
-    new_bigint = Base.GMP.MPZ.realloc2(size)
-    new_bigint.size = size_limbs
-    ## Get limb address ptr
-    addr = ccall((:GAP_AddrInt, libgap), Ptr{UInt}, (Any,), x)
-    ## Copy limbs
-    unsafe_copyto!(new_bigint.d, addr, abs(size_limbs))
-    return new_bigint
-end
+gap_to_julia(::Type{T}, x::GapObj) where {T<:Integer} = T(x)
 
 ## Rationals
 function gap_to_julia(::Type{Rational{T}}, x::Int64) where {T<:Integer}
@@ -131,13 +112,7 @@ function gap_to_julia(::Type{Rational{T}}, x::Int64) where {T<:Integer}
     return numerator // T(1)
 end
 
-function gap_to_julia(::Type{Rational{T}}, x::GapObj) where {T<:Integer}
-    GAP_IS_INT(x) && return gap_to_julia(T, x) // T(1)
-    !GAP_IS_RAT(x) && throw(ConversionError(x, Rational{T}))
-    numer = Wrappers.NumeratorRat(x)
-    denom = Wrappers.DenominatorRat(x)
-    return gap_to_julia(T, numer) // gap_to_julia(T, denom)
-end
+gap_to_julia(::Type{Rational{T}}, x::GapObj) where {T<:Integer} = Rational{T}(x)
 
 ## Floats
 function gap_to_julia(::Type{Float64}, obj::GapObj)
