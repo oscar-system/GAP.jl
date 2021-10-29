@@ -1,0 +1,16 @@
+title = "metadata for oscar CI run"
+
+[env]
+os = [ "ubuntu-latest", "macos-latest" ]
+julia-version = [ "~1.6.0-0", "~1.7.0-0"]
+# branches = [ "release", "<matching>" ]
+
+[pkgs]
+  [pkgs.Oscar]
+  test = true
+
+#[include]
+#  [include.julia]
+#  Oscar = "master"
+#  julia-version = "nightly"
+#  os = "ubuntu-latest"
