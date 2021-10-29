@@ -10,7 +10,7 @@ SetPackageInfo( rec(
 
 PackageName := "JuliaExperimental",
 Subtitle := "Experimental code for the GAP Julia integration",
-Version := "0.7.1",
+Version := "0.7.2-DEV",
 Date := "29/10/2021", # dd/mm/yyyy format
 License := "GPL-2.0-or-later",
 
@@ -81,7 +81,7 @@ PackageDoc := rec(
 Dependencies := rec(
   GAP := ">= 4.11",
   NeededOtherPackages := [ ],
-  OtherPackagesLoadedInAdvance := [ [ "JuliaInterface", ">=0.7.1" ] ], 
+  OtherPackagesLoadedInAdvance := [ [ "JuliaInterface", ">=0.7.2-DEV" ] ], 
   SuggestedOtherPackages := [ ],
   ExternalConditions := [ ],
 ),

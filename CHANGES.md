@@ -1,5 +1,8 @@
 # Changes in GAP.jl
 
+## Version 0.7.2-DEV (released 2021-10-29)
+
+- ...
 
 ## Version 0.7.1 (released 2021-10-29)
 
