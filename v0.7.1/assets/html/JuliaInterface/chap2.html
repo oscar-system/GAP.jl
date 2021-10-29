@@ -1,0 +1,499 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>GAP (JuliaInterface) - Chapter 2: Using Julia from GAP</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<meta name="generator" content="GAPDoc2HTML" />
+<link rel="stylesheet" type="text/css" href="manual.css" />
+<script src="manual.js" type="text/javascript"></script>
+<script type="text/javascript">overwriteStyle();</script>
+</head>
+<body class="chap2"  onload="jscontent()">
+
+
+<div class="chlinktop"><span class="chlink1">Goto Chapter: </span><a href="chap0.html">Top</a>  <a href="chap1.html">1</a>  <a href="chap2.html">2</a>  <a href="chap3.html">3</a>  <a href="chapInd.html">Ind</a>  </div>
+
+<div class="chlinkprevnexttop">&nbsp;<a href="chap0.html">[Top of Book]</a>&nbsp;  <a href="chap0.html#contents">[Contents]</a>&nbsp;  &nbsp;<a href="chap1.html">[Previous Chapter]</a>&nbsp;  &nbsp;<a href="chap3.html">[Next Chapter]</a>&nbsp;  </div>
+
+<p id="mathjaxlink" class="pcenter"><a href="chap2_mj.html">[MathJax on]</a></p>
+<p><a id="X803153227B36BD35" name="X803153227B36BD35"></a></p>
+<div class="ChapSects"><a href="chap2.html#X803153227B36BD35">2 <span class="Heading">Using <strong class="pkg">Julia</strong> from <strong class="pkg">GAP</strong></span></a>
+<div class="ContSect"><span class="tocline"><span class="nocss">&nbsp;</span><a href="chap2.html#X7B7DD1268038A60B">2.1 <span class="Heading">Filters for <strong class="pkg">JuliaInterface</strong></span></a>
+</span>
+<div class="ContSSBlock">
+<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2.html#X879710A97B8A4202">2.1-1 IsJuliaObject</a></span>
+<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2.html#X80FEB3607C6B60F8">2.1-2 IsJuliaWrapper</a></span>
+<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2.html#X7B52F52D86477B4E">2.1-3 JuliaPointer</a></span>
+<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2.html#X82D4023684D29F75">2.1-4 IsJuliaModule</a></span>
+</div></div>
+<div class="ContSect"><span class="tocline"><span class="nocss">&nbsp;</span><a href="chap2.html#X87856ABF7C0D3757">2.2 <span class="Heading">Creating <strong class="pkg">Julia</strong> objects</span></a>
+</span>
+<div class="ContSSBlock">
+<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2.html#X801B61B17901D5A1">2.2-1 JuliaEvalString</a></span>
+<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2.html#X7D5864EE7A23AD0A">2.2-2 JuliaIncludeFile</a></span>
+<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2.html#X870606747AC280A1">2.2-3 JuliaImportPackage</a></span>
+</div></div>
+<div class="ContSect"><span class="tocline"><span class="nocss">&nbsp;</span><a href="chap2.html#X86C0CFC88175498D">2.3 <span class="Heading">Access to <strong class="pkg">Julia</strong> objects</span></a>
+</span>
+<div class="ContSSBlock">
+<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2.html#X793B404286E5D5C6">2.3-1 JuliaFunction</a></span>
+<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2.html#X83C764AC820CC172">2.3-2 Julia</a></span>
+<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2.html#X7FA676BA82C6FE52">2.3-3 JuliaModule</a></span>
+<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2.html#X7DDEFDC58469C33D">2.3-4 JuliaTypeInfo</a></span>
+<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2.html#X8339D8D47D079AF9">2.3-5 CallJuliaFunctionWithCatch</a></span>
+<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2.html#X7FB242EE864F21A2">2.3-6 CallJuliaFunctionWithKeywordArguments</a></span>
+</div></div>
+<div class="ContSect"><span class="tocline"><span class="nocss">&nbsp;</span><a href="chap2.html#X861DE72C8383D6E6">2.4 <span class="Heading">Calling <strong class="pkg">Julia</strong> functions</span></a>
+</span>
+<div class="ContSSBlock">
+<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2.html#X821EFEF1843BA0F1">2.4-1 <span class="Heading">Convenience methods for <strong class="pkg">Julia</strong> objects</span></a>
+</span>
+</div></div>
+<div class="ContSect"><span class="tocline"><span class="nocss">&nbsp;</span><a href="chap2.html#X7CD54DB37ADC782D">2.5 <span class="Heading">Access <strong class="pkg">Julia</strong> help from a <strong class="pkg">GAP</strong> session</span></a>
+</span>
+</div>
+</div>
+
+<h3>2 <span class="Heading">Using <strong class="pkg">Julia</strong> from <strong class="pkg">GAP</strong></span></h3>
+
+<p><a id="X7B7DD1268038A60B" name="X7B7DD1268038A60B"></a></p>
+
+<h4>2.1 <span class="Heading">Filters for <strong class="pkg">JuliaInterface</strong></span></h4>
+
+<p><a id="X879710A97B8A4202" name="X879710A97B8A4202"></a></p>
+
+<h5>2.1-1 IsJuliaObject</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; IsJuliaObject</code>( <var class="Arg">obj</var> )</td><td class="tdright">(&nbsp;filter&nbsp;)</td></tr></table></div>
+<p>Returns: <code class="keyw">true</code> or <code class="keyw">false</code></p>
+
+<p>The result is <code class="keyw">true</code> if and only if <var class="Arg">obj</var> is a pointer to a <strong class="pkg">Julia</strong> object.</p>
+
+<p>The results of <code class="func">JuliaModule</code> (<a href="chap2.html#X7FA676BA82C6FE52"><span class="RefLink">2.3-3</span></a>) are always in <code class="func">IsJuliaObject</code>.</p>
+
+
+<div class="example"><pre>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">julia_fun:= JuliaEvalString( "sqrt" );</span>
+&lt;Julia: sqrt&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">IsJuliaObject( julia_fun );</span>
+true
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">julia_val:= julia_fun( 2 );</span>
+&lt;Julia: 1.4142135623730951&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">IsJuliaObject( julia_val );</span>
+true
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">julia_x:= JuliaEvalString( "x = 4" );</span>
+4
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">IsJuliaObject( julia_x );</span>
+false
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">IsJuliaObject( JuliaModule( "Main" ) );</span>
+true
+</pre></div>
+
+<p><a id="X80FEB3607C6B60F8" name="X80FEB3607C6B60F8"></a></p>
+
+<h5>2.1-2 IsJuliaWrapper</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; IsJuliaWrapper</code>( <var class="Arg">obj</var> )</td><td class="tdright">(&nbsp;filter&nbsp;)</td></tr></table></div>
+<p>Returns: <code class="code">true</code> or <code class="code">false</code></p>
+
+<p>If the component or positional object <var class="Arg">obj</var> is in this filter then calling a <strong class="pkg">Julia</strong> function with <var class="Arg">obj</var> as an argument will not pass <var class="Arg">obj</var> as an <code class="code">MPtr</code>, but instead its <code class="func">JuliaPointer</code> (<a href="chap2.html#X7B52F52D86477B4E"><span class="RefLink">2.1-3</span></a>) value is passed, which must be a <strong class="pkg">Julia</strong> object. This admits implementing high-level wrapper objects for <strong class="pkg">Julia</strong> objects that behave just like the <strong class="pkg">Julia</strong> objects when used as arguments in calls to <strong class="pkg">Julia</strong> functions.</p>
+
+<p>Objects in <code class="func">IsJuliaWrapper</code> should <em>not</em> be in the filter <code class="func">IsJuliaObject</code> (<a href="chap2.html#X879710A97B8A4202"><span class="RefLink">2.1-1</span></a>).</p>
+
+<p>Examples of objects in <code class="func">IsJuliaWrapper</code> are the return values of <code class="func">JuliaModule</code> (<a href="chap2.html#X7FA676BA82C6FE52"><span class="RefLink">2.3-3</span></a>).</p>
+
+<p><a id="X7B52F52D86477B4E" name="X7B52F52D86477B4E"></a></p>
+
+<h5>2.1-3 JuliaPointer</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; JuliaPointer</code>( <var class="Arg">obj</var> )</td><td class="tdright">(&nbsp;attribute&nbsp;)</td></tr></table></div>
+<p>is an attribute for <strong class="pkg">GAP</strong> objects in the filter <code class="func">IsJuliaWrapper</code> (<a href="chap2.html#X80FEB3607C6B60F8"><span class="RefLink">2.1-2</span></a>). The value must be a <strong class="pkg">Julia</strong> object.</p>
+
+
+<div class="example"><pre>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">Julia;</span>
+&lt;Julia module Main&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">IsJuliaObject( Julia );</span>
+false
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">IsJuliaWrapper( Julia );</span>
+true
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">ptr:= JuliaPointer( Julia );</span>
+&lt;Julia: Main&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">IsJuliaObject( ptr );</span>
+true
+</pre></div>
+
+<p><a id="X82D4023684D29F75" name="X82D4023684D29F75"></a></p>
+
+<h5>2.1-4 IsJuliaModule</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; IsJuliaModule</code>( <var class="Arg">obj</var> )</td><td class="tdright">(&nbsp;filter&nbsp;)</td></tr></table></div>
+<p>Returns: <code class="code">true</code> or <code class="code">false</code></p>
+
+<p>This filter is set in those <strong class="pkg">GAP</strong> objects that represent <strong class="pkg">Julia</strong> modules. Members of a <strong class="pkg">Julia</strong> module can be accessed like record components.</p>
+
+
+<div class="example"><pre>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">IsJuliaModule( Julia );</span>
+true
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">Julia.GAP;</span>
+&lt;Julia module GAP&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">IsJuliaModule( Julia.GAP );</span>
+true
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">Julia.GAP.julia_to_gap;</span>
+&lt;Julia: julia_to_gap&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">JuliaFunction( "julia_to_gap", "GAP" );  # the same function</span>
+&lt;Julia: julia_to_gap&gt;
+</pre></div>
+
+<p><a id="X87856ABF7C0D3757" name="X87856ABF7C0D3757"></a></p>
+
+<h4>2.2 <span class="Heading">Creating <strong class="pkg">Julia</strong> objects</span></h4>
+
+<p><a id="X801B61B17901D5A1" name="X801B61B17901D5A1"></a></p>
+
+<h5>2.2-1 JuliaEvalString</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; JuliaEvalString</code>( <var class="Arg">string</var> )</td><td class="tdright">(&nbsp;function&nbsp;)</td></tr></table></div>
+<p>evaluates the string <var class="Arg">string</var> in the current <strong class="pkg">Julia</strong> session, in the <code class="code">Main</code> module, and returns <strong class="pkg">Julia</strong>'s return value.</p>
+
+
+<div class="example"><pre>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">JuliaEvalString( "x = 2^2" );  # assignment to a variable in Julia</span>
+4
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">JuliaEvalString( "x" );        # access to this variable</span>
+4
+</pre></div>
+
+<p><a id="X7D5864EE7A23AD0A" name="X7D5864EE7A23AD0A"></a></p>
+
+<h5>2.2-2 JuliaIncludeFile</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; JuliaIncludeFile</code>( <var class="Arg">filename</var>[, <var class="Arg">module_name</var>] )</td><td class="tdright">(&nbsp;function&nbsp;)</td></tr></table></div>
+<p>Returns: nothing.</p>
+
+<p>calls <strong class="pkg">Julia</strong>'s <code class="code">Base.include</code> with the strings <var class="Arg">filename</var> (an absolute filename, as returned by <code class="func">Filename</code> (<a href="/home/runner/.julia/artifacts/1ae5d8f1898d9dcbe8dc3d93f56369c864a8e717/share/gap/doc/ref/chap9.html#X7E352E1F87060602"><span class="RefLink">Reference: Filename</span></a>)) and <var class="Arg">module_name</var> (the name of a <strong class="pkg">Julia</strong> module, the default is <code class="code">"Main"</code>). This means that the <strong class="pkg">Julia</strong> code in the file with name <var class="Arg">filename</var> gets executed in the current <strong class="pkg">Julia</strong> session, in the context of the <strong class="pkg">Julia</strong> module <var class="Arg">module_name</var>.</p>
+
+<p><a id="X870606747AC280A1" name="X870606747AC280A1"></a></p>
+
+<h5>2.2-3 JuliaImportPackage</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; JuliaImportPackage</code>( <var class="Arg">pkgname</var> )</td><td class="tdright">(&nbsp;function&nbsp;)</td></tr></table></div>
+<p>Returns: <code class="keyw">true</code> or <code class="keyw">false</code>.</p>
+
+<p>This function triggers the execution of an <code class="code">import</code> statement for the <strong class="pkg">Julia</strong> package with name <var class="Arg">pkgname</var>. It returns <code class="keyw">true</code> if the call was successful, and <code class="keyw">false</code> otherwise.</p>
+
+<p>Note that we just want to load the package into <strong class="pkg">Julia</strong>, we do <em>not</em> want to import variable names from the package into <strong class="pkg">Julia</strong>'s <code class="code">Main</code> module, because the <strong class="pkg">Julia</strong> variables must be referenced relative to their modules if we want to be sure to access the correct values.</p>
+
+<p>Why is this function needed?</p>
+
+<p>Apparently <code class="code">libjulia</code> throws an error when trying to compile the package, which happens when some files from the package have been modified since compilation.</p>
+
+<p>Thus <strong class="pkg">GAP</strong> has to check whether the <strong class="pkg">Julia</strong> package has been loaded successfully, and can then safely load and execute code that relies on this <strong class="pkg">Julia</strong> package. In particular, we cannot just put the necessary <code class="code">import</code> statements into the relevant <code class="file">.jl</code> files, and then load these files with <code class="func">JuliaIncludeFile</code> (<a href="chap2.html#X7D5864EE7A23AD0A"><span class="RefLink">2.2-2</span></a>).</p>
+
+<p><a id="X86C0CFC88175498D" name="X86C0CFC88175498D"></a></p>
+
+<h4>2.3 <span class="Heading">Access to <strong class="pkg">Julia</strong> objects</span></h4>
+
+<p><a id="X793B404286E5D5C6" name="X793B404286E5D5C6"></a></p>
+
+<h5>2.3-1 JuliaFunction</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; JuliaFunction</code>( <var class="Arg">function_name</var>[, <var class="Arg">module_name</var>] )</td><td class="tdright">(&nbsp;function&nbsp;)</td></tr></table></div>
+<p>Returns: a function</p>
+
+<p>Returns a <strong class="pkg">GAP</strong> function that wraps the <strong class="pkg">Julia</strong> function with identifier <var class="Arg">function_name</var> from the module <var class="Arg">module_name</var>. Both arguments must be strings. If <var class="Arg">module_name</var> is not given, the function is taken from <strong class="pkg">Julia</strong>'s <code class="code">Main</code> module.</p>
+
+
+<div class="example"><pre>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">fun:= JuliaFunction( "sqrt" );</span>
+&lt;Julia: sqrt&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">Print( fun );</span>
+function ( arg... )
+    &lt;&lt;kernel code&gt;&gt; from Julia:sqrt
+end
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">IsFunction( fun );</span>
+true
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">IsJuliaObject( fun );</span>
+false
+</pre></div>
+
+<p>Alternatively, one can access <strong class="pkg">Julia</strong> functions also via the global object <code class="func">Julia</code> (<a href="chap2.html#X83C764AC820CC172"><span class="RefLink">2.3-2</span></a>), as follows.</p>
+
+
+<div class="example"><pre>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">Julia.sqrt;</span>
+&lt;Julia: sqrt&gt;
+</pre></div>
+
+<p>Note that each call to <code class="func">JuliaFunction</code> and each component access to <code class="func">Julia</code> (<a href="chap2.html#X83C764AC820CC172"><span class="RefLink">2.3-2</span></a>) create a <em>new</em> <strong class="pkg">GAP</strong> object.</p>
+
+
+<div class="example"><pre>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">IsIdenticalObj( JuliaFunction( "sqrt" ), JuliaFunction( "sqrt" ) );</span>
+false
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">IsIdenticalObj( Julia.sqrt, Julia.sqrt );</span>
+false
+</pre></div>
+
+<p><a id="X83C764AC820CC172" name="X83C764AC820CC172"></a></p>
+
+<h5>2.3-2 Julia</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; Julia</code></td><td class="tdright">(&nbsp;global variable&nbsp;)</td></tr></table></div>
+<p>This global variable represents the <strong class="pkg">Julia</strong> module <code class="code">Main</code>, see <code class="func">IsJuliaModule</code> (<a href="chap2.html#X82D4023684D29F75"><span class="RefLink">2.1-4</span></a>).</p>
+
+<p>The variables from the underlying <strong class="pkg">Julia</strong> session can be accessed via <code class="func">Julia</code>, as follows.</p>
+
+
+<div class="example"><pre>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">Julia.sqrt;  # a Julia function</span>
+&lt;Julia: sqrt&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">JuliaEvalString( "x = 1" );  # an assignment in the Julia session</span>
+1
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">Julia.x;  # access to the value that was just assigned</span>
+1
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">Julia.Main.x;</span>
+1
+</pre></div>
+
+<p><a id="X7FA676BA82C6FE52" name="X7FA676BA82C6FE52"></a></p>
+
+<h5>2.3-3 JuliaModule</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; JuliaModule</code>( <var class="Arg">name</var> )</td><td class="tdright">(&nbsp;function&nbsp;)</td></tr></table></div>
+<p>Returns: a <strong class="pkg">Julia</strong> object</p>
+
+<p>Returns the <strong class="pkg">Julia</strong> object that points to the <strong class="pkg">Julia</strong> module with name <var class="Arg">name</var>.</p>
+
+
+<div class="example"><pre>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">gapmodule:= JuliaModule( "GAP" );</span>
+&lt;Julia: GAP&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">gapmodule = JuliaPointer( Julia.GAP );</span>
+true
+</pre></div>
+
+<p><a id="X7DDEFDC58469C33D" name="X7DDEFDC58469C33D"></a></p>
+
+<h5>2.3-4 JuliaTypeInfo</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; JuliaTypeInfo</code>( <var class="Arg">juliaobj</var> )</td><td class="tdright">(&nbsp;function&nbsp;)</td></tr></table></div>
+<p>Returns: a string.</p>
+
+<p>Returns the string that describes the <strong class="pkg">Julia</strong> type of the object <var class="Arg">juliaobj</var>.</p>
+
+
+<div class="example"><pre>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">JuliaTypeInfo( Julia.GAP );</span>
+"Module"
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">JuliaTypeInfo( JuliaPointer( Julia.GAP ) );</span>
+"Module"
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">JuliaTypeInfo( JuliaEvalString( "sqrt(2)" ) );</span>
+"Float64"
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">JuliaTypeInfo( 1 );</span>
+"Int64"
+</pre></div>
+
+<p><a id="X8339D8D47D079AF9" name="X8339D8D47D079AF9"></a></p>
+
+<h5>2.3-5 CallJuliaFunctionWithCatch</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; CallJuliaFunctionWithCatch</code>( <var class="Arg">juliafunc</var>, <var class="Arg">arguments</var> )</td><td class="tdright">(&nbsp;function&nbsp;)</td></tr></table></div>
+<p>Returns: a record.</p>
+
+<p>The function calls the <strong class="pkg">Julia</strong> function <var class="Arg">juliafunc</var> with arguments in the <strong class="pkg">GAP</strong> list <var class="Arg">arguments</var>, and returns a record with the components <code class="code">ok</code> and <code class="code">value</code>. If no error occured then <code class="code">ok</code> has the value <code class="keyw">true</code>, and <code class="code">value</code> is the value returned by <var class="Arg">juliafunc</var>. If an error occured then <code class="code">ok</code> has the value <code class="keyw">false</code>, and <code class="code">value</code> is the error message as a <strong class="pkg">GAP</strong> string.</p>
+
+
+<div class="example"><pre>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">fun:= Julia.sqrt;;</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">CallJuliaFunctionWithCatch( fun, [ 2 ] );</span>
+rec( ok := true, value := &lt;Julia: 1.4142135623730951&gt; )
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">res:= CallJuliaFunctionWithCatch( fun, [ -1 ] );;</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">res.ok;</span>
+false
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">res.value{ [ 1 .. Position( res.value, '(' )-1 ] };</span>
+"DomainError"
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">inv:= Julia.inv;;</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">m:= GAPToJulia( JuliaEvalString( "Matrix{Int}" ), [[1,2],[2,4]] );</span>
+&lt;Julia: [1 2; 2 4]&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">res:= CallJuliaFunctionWithCatch( inv, [ m ] );;</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">res.ok;</span>
+false
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">res.value{ [ 1 .. Position( res.value, '(' )-1 ] };</span>
+"LinearAlgebra.SingularException"
+</pre></div>
+
+<p><a id="X7FB242EE864F21A2" name="X7FB242EE864F21A2"></a></p>
+
+<h5>2.3-6 CallJuliaFunctionWithKeywordArguments</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; CallJuliaFunctionWithKeywordArguments</code>( <var class="Arg">juliafunc</var>, <var class="Arg">arguments</var>, <var class="Arg">arec</var> )</td><td class="tdright">(&nbsp;function&nbsp;)</td></tr></table></div>
+<p>Returns: the result of the <strong class="pkg">Julia</strong> function call.</p>
+
+<p>The function calls the <strong class="pkg">Julia</strong> function <var class="Arg">juliafunc</var> with ordinary arguments in the <strong class="pkg">GAP</strong> list <var class="Arg">arguments</var> and keyword arguments given by the component names (keys) and values of the record <var class="Arg">arec</var>, and returns the function value.</p>
+
+<p>Note that the entries of <var class="Arg">arguments</var> and the components of <var class="Arg">arec</var> are not implicitly converted to <strong class="pkg">Julia</strong>.</p>
+
+
+<div class="example"><pre>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">CallJuliaFunctionWithKeywordArguments( Julia.Base.round,</span>
+<span class="GAPprompt">&gt;</span> <span class="GAPinput">       [ GAPToJulia( Float( 1/3 ) ) ], rec( digits:= 5 ) );</span>
+&lt;Julia: 0.33333&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">CallJuliaFunctionWithKeywordArguments(</span>
+<span class="GAPprompt">&gt;</span> <span class="GAPinput">       Julia.Base.range, [ 2 ], rec( length:= 5, step:= 2 ) );</span>
+&lt;Julia: 2:2:10&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">m:= GAPToJulia( JuliaEvalString( "Matrix{Int}" ),</span>
+<span class="GAPprompt">&gt;</span> <span class="GAPinput">           [ [ 1, 2 ], [ 3, 4 ] ] );</span>
+&lt;Julia: [1 2; 3 4]&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">CallJuliaFunctionWithKeywordArguments(</span>
+<span class="GAPprompt">&gt;</span> <span class="GAPinput">       Julia.Base.reverse, [ m ], rec( dims:= 1 ) );</span>
+&lt;Julia: [3 4; 1 2]&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">CallJuliaFunctionWithKeywordArguments(</span>
+<span class="GAPprompt">&gt;</span> <span class="GAPinput">       Julia.Base.reverse, [ m ], rec( dims:= 2 ) );</span>
+&lt;Julia: [2 1; 4 3]&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">tuptyp:= JuliaEvalString( "Tuple{Int,Int}" );;</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">t1:= GAPToJulia( tuptyp, [ 2, 1 ] );</span>
+&lt;Julia: (2, 1)&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">t2:= GAPToJulia( tuptyp, [ 1, 3 ] );</span>
+&lt;Julia: (1, 3)&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">CallJuliaFunctionWithKeywordArguments(</span>
+<span class="GAPprompt">&gt;</span> <span class="GAPinput">       Julia.Base.( "repeat" ), [ m ],</span>
+<span class="GAPprompt">&gt;</span> <span class="GAPinput">       rec( inner:= t1, outer:= t2 ) );</span>
+&lt;Julia: [1 2 1 2 1 2; 1 2 1 2 1 2; 3 4 3 4 3 4; 3 4 3 4 3 4]&gt;
+</pre></div>
+
+<p><a id="X861DE72C8383D6E6" name="X861DE72C8383D6E6"></a></p>
+
+<h4>2.4 <span class="Heading">Calling <strong class="pkg">Julia</strong> functions</span></h4>
+
+<p>The simplest way to execute <strong class="pkg">Julia</strong> code from <strong class="pkg">GAP</strong> is to call <code class="func">JuliaEvalString</code> (<a href="chap2.html#X801B61B17901D5A1"><span class="RefLink">2.2-1</span></a>) with a string that contains the <strong class="pkg">Julia</strong> code in question.</p>
+
+
+<div class="example"><pre>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">JuliaEvalString( "sqrt( 2 )" );</span>
+&lt;Julia: 1.4142135623730951&gt;
+</pre></div>
+
+<p>However, it is usually more suitable to create <strong class="pkg">GAP</strong> variables whose values are <strong class="pkg">Julia</strong> objects, and to call <strong class="pkg">Julia</strong> functions directly. The <strong class="pkg">GAP</strong> function call syntax is used for that.</p>
+
+
+<div class="example"><pre>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">jsqrt:= JuliaEvalString( "sqrt" );</span>
+&lt;Julia: sqrt&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">jsqrt( 2 );</span>
+&lt;Julia: 1.4142135623730951&gt;
+</pre></div>
+
+<p>In fact, there are slightly different kinds of function calls. A <strong class="pkg">Julia</strong> function such as <code class="code">Julia.sqrt</code> (or equivalently <code class="code">JuliaFunction( "sqrt" )</code>) is represented by a <strong class="pkg">GAP</strong> function object, and calls to it are executed on the C level, using <strong class="pkg">Julia</strong>'s <code class="code">jl_call</code>.</p>
+
+
+<div class="example"><pre>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">fun:= Julia.sqrt;</span>
+&lt;Julia: sqrt&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">IsJuliaObject( fun );</span>
+false
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">IsFunction( fun );</span>
+true
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">fun( 2 );</span>
+&lt;Julia: 1.4142135623730951&gt;
+</pre></div>
+
+<p>Note that in <strong class="pkg">Julia</strong> any object (not just functions) is potentially callable (in fact this is the same as in <strong class="pkg">GAP</strong>), for example <strong class="pkg">Julia</strong> types can be</p>
+
+
+<div class="example"><pre>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">smalltype:= Julia.Int32;</span>
+&lt;Julia: Int32&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">IsJuliaObject( smalltype );</span>
+true
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">IsFunction( smalltype );</span>
+false
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">val:= smalltype( 1 );</span>
+&lt;Julia: 1&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">JuliaTypeInfo( val );</span>
+"Int32"
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">JuliaTypeInfo( 1 );</span>
+"Int64"
+</pre></div>
+
+<p><a id="X821EFEF1843BA0F1" name="X821EFEF1843BA0F1"></a></p>
+
+<h5>2.4-1 <span class="Heading">Convenience methods for <strong class="pkg">Julia</strong> objects</span></h5>
+
+<p>For the following operations, methods are installed that require arguments in <code class="func">IsJuliaObject</code> (<a href="chap2.html#X879710A97B8A4202"><span class="RefLink">2.1-1</span></a>) and delegate to the corresponding <strong class="pkg">Julia</strong> functions.</p>
+
+
+<ul>
+<li><p><code class="func">CallFuncList</code> (<a href="/home/runner/.julia/artifacts/1ae5d8f1898d9dcbe8dc3d93f56369c864a8e717/share/gap/doc/ref/chap5.html#X7CF4DDB97D65AE52"><span class="RefLink">Reference: CallFuncList</span></a>), delegating to <code class="code">Julia.Core._apply</code> (this yields the function call syntax in <strong class="pkg">GAP</strong>, it is installed also for objects in <code class="func">IsJuliaWrapper</code> (<a href="chap2.html#X80FEB3607C6B60F8"><span class="RefLink">2.1-2</span></a>),</p>
+
+</li>
+<li><p>access to and assignment of entries of arrays, via <code class="func">\[\]</code> (<a href="/home/runner/.julia/artifacts/1ae5d8f1898d9dcbe8dc3d93f56369c864a8e717/share/gap/doc/ref/chap21.html#X8297BBCD79642BE6"><span class="RefLink">Reference: \[\]</span></a>), <code class="func">\[\]\:\=</code> (<a href="/home/runner/.julia/artifacts/1ae5d8f1898d9dcbe8dc3d93f56369c864a8e717/share/gap/doc/ref/chap21.html#X8297BBCD79642BE6"><span class="RefLink">Reference: \[\]\:\=</span></a>), and the (up to <strong class="pkg">GAP</strong> 4.11 undocumented) operations <code class="code">MatElm</code> and <code class="code">SetMatElm</code>, delegating to <code class="code">Julia.Base.getindex</code> and <code class="code">Julia.Base.setindex</code>,</p>
+
+</li>
+<li><p>access to and assignment of fields and properties, via <code class="func">\.</code> (<a href="/home/runner/.julia/artifacts/1ae5d8f1898d9dcbe8dc3d93f56369c864a8e717/share/gap/doc/ref/chap0.html#X7D2C85EC87DD46E5"><span class="RefLink">Reference: Title page</span></a>) and <code class="func">\.\:\=</code> (<a href="/home/runner/.julia/artifacts/1ae5d8f1898d9dcbe8dc3d93f56369c864a8e717/share/gap/doc/ref/chap29.html#X7821AC097821AC09"><span class="RefLink">Reference: \.\:\=</span></a>), delegating to <code class="code">Julia.Base.getproperty</code> and <code class="code">Julia.Base.setproperty</code>,</p>
+
+</li>
+<li><p>the unary arithmetic operations <code class="func">AdditiveInverseOp</code> (<a href="/home/runner/.julia/artifacts/1ae5d8f1898d9dcbe8dc3d93f56369c864a8e717/share/gap/doc/ref/chap31.html#X84BB723C81D55D63"><span class="RefLink">Reference: AdditiveInverseOp</span></a>), <code class="func">ZeroOp</code> (<a href="/home/runner/.julia/artifacts/1ae5d8f1898d9dcbe8dc3d93f56369c864a8e717/share/gap/doc/ref/chap31.html#X8040AC7A79FFC442"><span class="RefLink">Reference: ZeroOp</span></a>), and <code class="func">OneOp</code> (<a href="/home/runner/.julia/artifacts/1ae5d8f1898d9dcbe8dc3d93f56369c864a8e717/share/gap/doc/ref/chap31.html#X8046262384895B2A"><span class="RefLink">Reference: OneOp</span></a>), delegating to <code class="code">Julia.Base.\-</code>, <code class="code">Julia.Base.zero</code>, and <code class="code">Julia.Base.one</code>,</p>
+
+</li>
+<li><p>the binary arithmetic operations <code class="func">\+</code> (<a href="/home/runner/.julia/artifacts/1ae5d8f1898d9dcbe8dc3d93f56369c864a8e717/share/gap/doc/ref/chap4.html#X7B66C8707B5DE10A"><span class="RefLink">Reference: +</span></a>), <code class="func">\-</code> (<a href="/home/runner/.julia/artifacts/1ae5d8f1898d9dcbe8dc3d93f56369c864a8e717/share/gap/doc/ref/chap4.html#X7B66C8707B5DE10A"><span class="RefLink">Reference: -</span></a>), <code class="func">\*</code> (<a href="/home/runner/.julia/artifacts/1ae5d8f1898d9dcbe8dc3d93f56369c864a8e717/share/gap/doc/ref/chap4.html#X7B66C8707B5DE10A"><span class="RefLink">Reference: *</span></a>), <code class="func">\/</code> (<a href="/home/runner/.julia/artifacts/1ae5d8f1898d9dcbe8dc3d93f56369c864a8e717/share/gap/doc/ref/chap4.html#X7B66C8707B5DE10A"><span class="RefLink">Reference: /</span></a>), <code class="func">LeftQuotient</code> (<a href="/home/runner/.julia/artifacts/1ae5d8f1898d9dcbe8dc3d93f56369c864a8e717/share/gap/doc/ref/chap31.html#X7A37082878DB3930"><span class="RefLink">Reference: LeftQuotient</span></a>), <code class="func">\^</code> (<a href="/home/runner/.julia/artifacts/1ae5d8f1898d9dcbe8dc3d93f56369c864a8e717/share/gap/doc/ref/chap4.html#X7B66C8707B5DE10A"><span class="RefLink">Reference: ^</span></a>), <code class="func">\=</code> (<a href="/home/runner/.julia/artifacts/1ae5d8f1898d9dcbe8dc3d93f56369c864a8e717/share/gap/doc/ref/chap31.html#X7EF67D047F03CA6F"><span class="RefLink">Reference: \=</span></a>), <code class="func">\&lt;</code> (<a href="/home/runner/.julia/artifacts/1ae5d8f1898d9dcbe8dc3d93f56369c864a8e717/share/gap/doc/ref/chap31.html#X7EF67D047F03CA6F"><span class="RefLink">Reference: \<</span></a>), delegating to <code class="code">Julia.Base.\+</code>, <code class="code">Julia.Base.\-</code>, <code class="code">Julia.Base.\*</code>, <code class="code">Julia.Base.\/</code>, <code class="code">Julia.Base.\\</code>, <code class="code">Julia.Base.\^</code>, <code class="code">Julia.Base.\=\=</code>, and <code class="code">Julia.Base.\&lt;</code>; the same methods are installed also for the case that only one argument is in <code class="func">IsJuliaObject</code> (<a href="chap2.html#X879710A97B8A4202"><span class="RefLink">2.1-1</span></a>), and the other argument is an immediate integer.</p>
+
+</li>
+</ul>
+
+<div class="example"><pre>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">m:= GAPToJulia( JuliaEvalString( "Matrix{Int}" ),</span>
+<span class="GAPprompt">&gt;</span> <span class="GAPinput">           [ [ 1, 2 ], [ 3, 4 ] ] );</span>
+&lt;Julia: [1 2; 3 4]&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">m[1,2];</span>
+2
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">- m;</span>
+&lt;Julia: [-1 -2; -3 -4]&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">m + m;</span>
+&lt;Julia: [2 4; 6 8]&gt;
+</pre></div>
+
+<p><a id="X7CD54DB37ADC782D" name="X7CD54DB37ADC782D"></a></p>
+
+<h4>2.5 <span class="Heading">Access <strong class="pkg">Julia</strong> help from a <strong class="pkg">GAP</strong> session</span></h4>
+
+<p>In a <strong class="pkg">Julia</strong> session, one can ask for help about the object with the name <code class="code">obj</code> (a function or a type) by entering <code class="code">?obj</code>, and <strong class="pkg">Julia</strong> prints all matches to the screen. One can get the same output in a <strong class="pkg">GAP</strong> session by entering <code class="code">?Julia:obj</code>, cf. Section <a href="/home/runner/.julia/artifacts/1ae5d8f1898d9dcbe8dc3d93f56369c864a8e717/share/gap/doc/ref/chap2.html#X7E2C53D2844DD8C3"><span class="RefLink">Reference: Invoking the Help</span></a> in the <strong class="pkg">GAP</strong> Reference Manual. For example, <code class="code">?Julia:sqrt</code> shows the <strong class="pkg">Julia</strong> help about the <strong class="pkg">Julia</strong> function <code class="code">sqrt</code> (which is available in <strong class="pkg">GAP</strong> as <code class="code">Julia.sqrt</code>).</p>
+
+<p>Note that this way to access the <strong class="pkg">Julia</strong> help is different from the usual access to <strong class="pkg">GAP</strong> help books, in the following sense.</p>
+
+
+<ul>
+<li><p>The qualifying prefix <code class="code">Julia:</code> is mandatory. Thus the help request <code class="code">?sqrt</code> will show matches from usual <strong class="pkg">GAP</strong> help books (there is one match in the <strong class="pkg">GAP</strong> Reference Manual), but not the help abot the <strong class="pkg">Julia</strong> function <code class="code">sqrt</code>.</p>
+
+</li>
+<li><p>Since the prefix <code class="code">Julia:</code> does not belong to a "preprocessed" help book with chapters, sections, index, etc., help requests of the kinds <code class="code">?&lt;</code>, <code class="code">?&lt;&lt;</code>, <code class="code">?&gt;</code>, <code class="code">?&gt;&gt;</code> are not meaningful when the previous help request had the prefix <code class="code">?Julia:</code>. (Also requests with the prefix <code class="code">??Julia:</code> do not work, but this holds also for usual <strong class="pkg">GAP</strong> help books.)</p>
+
+</li>
+<li><p>The <strong class="pkg">Julia</strong> help system is case sensitive. Thus <code class="code">?Julia:sqrt</code> yields a match but <code class="code">?Julia:Sqrt</code> does not, and <code class="code">?Julia:Set</code> yields a match but <code class="code">?Julia:set</code> does not.</p>
+
+</li>
+<li><p>The <strong class="pkg">Julia</strong> help system does currently not support menus in case of multiple matches, all matches are shown at once, and this happens also in a <strong class="pkg">GAP</strong> session.</p>
+
+</li>
+<li><p>No PDF or HTML version of the <strong class="pkg">Julia</strong> help is supported in <strong class="pkg">GAP</strong>, only the text format can be shown on the screen. Thus it does not make sense to change the help viewer, cf. Section <a href="/home/runner/.julia/artifacts/1ae5d8f1898d9dcbe8dc3d93f56369c864a8e717/share/gap/doc/ref/chap2.html#X863FF9087EDA8DF9"><span class="RefLink">Reference: Changing the Help Viewer</span></a> in the <strong class="pkg">GAP</strong> Reference Manual.</p>
+
+</li>
+<li><p><strong class="pkg">Julia</strong> functions belong to <strong class="pkg">Julia</strong> modules. Many <strong class="pkg">Julia</strong> functions can be accessed only relative to their modules, and then also the help requests work only for the qualified names. For example, <code class="code">?Julia:GAP.julia_to_gap</code> yields the description of the <strong class="pkg">Julia</strong> function <code class="code">julia_to_gap</code> that is defined in the <strong class="pkg">Julia</strong> module <code class="code">GAP</code>, whereas no match is found for the input <code class="code">?Julia:julia_to_gap</code>.</p>
+
+</li>
+</ul>
+
+<div class="chlinkprevnextbot">&nbsp;<a href="chap0.html">[Top of Book]</a>&nbsp;  <a href="chap0.html#contents">[Contents]</a>&nbsp;  &nbsp;<a href="chap1.html">[Previous Chapter]</a>&nbsp;  &nbsp;<a href="chap3.html">[Next Chapter]</a>&nbsp;  </div>
+
+
+<div class="chlinkbot"><span class="chlink1">Goto Chapter: </span><a href="chap0.html">Top</a>  <a href="chap1.html">1</a>  <a href="chap2.html">2</a>  <a href="chap3.html">3</a>  <a href="chapInd.html">Ind</a>  </div>
+
+<hr />
+<p class="foot">generated by <a href="http://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc">GAPDoc2HTML</a></p>
+</body>
+</html>
