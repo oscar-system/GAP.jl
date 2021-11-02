@@ -320,17 +320,13 @@ static StructGVarFunc GVarFuncs[] = {
 static Int InitKernel(StructInitInfo * module)
 {
     if (!gap_module) {
-        BEGIN_GAP_SYNC();
         ErrorMayQuit("gap_module was not set", 0, 0);
-        END_GAP_SYNC();
     }
 
     JULIA_GAPFFE_type =
         (jl_datatype_t *)jl_get_global(gap_module, jl_symbol("FFE"));
     if (!JULIA_GAPFFE_type) {
-        BEGIN_GAP_SYNC();
         ErrorMayQuit("Could not locate the GAP.FFE datatype", 0, 0);
-        END_GAP_SYNC();
     }
 
     InitGapSync();
