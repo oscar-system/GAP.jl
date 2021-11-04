@@ -117,13 +117,13 @@ function regenerate_gaproot(gaproot_mutable)
     sysinfo["GAP_LIB_DIR"] = abspath(GAP_lib_jll.find_artifact_dir(), "share", "gap")
 
     # Locate C compiler (for use by GAP packages)
-    cc_candidates = [ "gcc", "clang", "cc" ]
+    cc_candidates = [ "cc", "gcc", "clang" ]
     haskey(ENV, "GAP_CC") && pushfirst!(cc_candidates, ENV["GAP_CC"])
     haskey(ENV, "CC") && pushfirst!(cc_candidates, ENV["CC"])
     CC = sysinfo["GAP_CC"] = select_compiler("C", cc_candidates, ".c")
 
     # Locate  C++ compiler (for use by GAP packages)
-    cxx_candidates = [ "g++", "clang++", "c++" ]
+    cxx_candidates = [ "c++", "g++", "clang++" ]
     haskey(ENV, "GAP_CXX") && pushfirst!(GAP_CXX_candidates, ENV["CXX"])
     haskey(ENV, "CXX") && pushfirst!(cxx_candidates, ENV["CXX"])
     CXX = sysinfo["GAP_CXX"] = select_compiler("C++", cxx_candidates, ".cc")
