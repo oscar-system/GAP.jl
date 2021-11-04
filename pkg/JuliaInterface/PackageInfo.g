@@ -103,15 +103,7 @@ Dependencies := rec(
   ExternalConditions := [ ],
 ),
 
-AvailabilityTest := function()
-  if Filename( DirectoriesPackagePrograms( "JuliaInterface" ),
-               "JuliaInterface.so" ) = fail then
-    LogPackageLoadingMessage( PACKAGE_WARNING,
-        [ "The kernel module of JuliaInterface is not available." ] );
-    return false;
-  fi;
-  return true;
-end,
+AvailabilityTest := ReturnTrue,
 
 # Show the julia version number in the banner string.
 # (We assume that this function gets called *after* the package has been
