@@ -55,8 +55,8 @@ end
 const error_handlerwrap = error_handler
 
 # path to JuliaInterface.so
-const JuliaInterface_path_intern = normpath(joinpath(@__DIR__, "..", "pkg", "JuliaInterface", "bin", sysinfo["GAParch"], "JuliaInterface.so"))
-JuliaInterface_path() = JuliaInterface_path_intern
+const real_JuliaInterface_path = Setup.locate_JuliaInterface_so(GAPROOT, sysinfo)
+JuliaInterface_path() = real_JuliaInterface_path
 
 function initialize(argv::Vector{String})
     handle_signals = isdefined(Main, :__GAP_ARGS__)  # a bit of a hack...
@@ -90,15 +90,22 @@ function initialize(argv::Vector{String})
         handle_signals,
     )
 
+    # HACK HACK HACK workaround
+    Base.GC.gc(true)
+
     ## At this point, the GAP module has not been completely initialized, and
     ## hence is not yet available under the global binding "GAP"; but
     ## JuliaInterface needs to access it. To make that possible, we dlopen
     ## its kernel extension already here, and poke a point to this module
     ## into the kernel extension's global variable `gap_module`
+    @debug "storing pointer to Julia module 'GAP' into JuliaInterface"
     Libdl.dlopen(JuliaInterface_path())
     mptr = pointer_from_objref(@__MODULE__)
     g = cglobal((:gap_module, JuliaInterface_path()), Ptr{Cvoid})
     unsafe_store!(g, mptr)
+
+    # also declare a global GAP variable with the path to JuliaInterface.so
+    AssignGlobalVariable("_path_JuliaInterface_so", MakeString(JuliaInterface_path()))
 
     # now load init.g
     @debug "about to read init.g"

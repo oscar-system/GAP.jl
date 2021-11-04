@@ -53,12 +53,8 @@ DeclareUserPreference( rec(
     default:= "",
     ) );
 
-
-_PATH_SO:=Filename(DirectoriesPackagePrograms("JuliaInterface"), "JuliaInterface.so");
-if _PATH_SO <> fail then
-    LoadDynamicModule(_PATH_SO);
-fi;
-Unbind(_PATH_SO);
+LoadDynamicModule(_path_JuliaInterface_so);
+Unbind(_path_JuliaInterface_so);
 
 
 ##

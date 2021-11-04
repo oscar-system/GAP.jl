@@ -4,6 +4,7 @@ using Pkg
 using Pkg.Artifacts
 using GAP_jll
 using GAP_lib_jll
+using GAP_pkg_juliainterface_jll
 using GMP_jll
 
 #############################################################################
@@ -109,7 +110,7 @@ function regenerate_gaproot(gaproot_mutable)
     sysinfo["JULIA_LDFLAGS"] = filter(c -> c != '\'', ldflags())
     sysinfo["JULIA_LIBS"] = filter(c -> c != '\'', ldlibs())
 
-    # path to the currently used Julia executable 
+    # path to the currently used Julia executable
     sysinfo["JULIA"] = joinpath(Sys.BINDIR, Base.julia_exename())
 
     #
@@ -143,7 +144,7 @@ function regenerate_gaproot(gaproot_mutable)
     gmp_lib = joinpath(gmp_prefix, "lib")
     gap_lib = joinpath(gap_prefix, "lib")
     sysinfo["GAP_LDFLAGS"] = "-L$(gmp_lib) -L$(gap_lib) -lgap " * sysinfo["JULIA_LDFLAGS"]
-    
+
     # set library flags; note that for many packages (e.g. Browse) one really needs
     # additional flags.
     # We deliberately drop '-lz -lreadline' here, it should not be needed for packages
@@ -245,18 +246,9 @@ function regenerate_gaproot(gaproot_mutable)
 
     end # cd(gaproot_mutable)
 
-    ##
-    ## Compile JuliaInterface
-    ##
-    @info "Compiling JuliaInterface ..."
-    jipath = joinpath(gaproot_gapjl, "pkg", "JuliaInterface")
-    cd(jipath) do
-        run(pipeline(`./configure $gaproot_mutable`, stdout="build.log"))
-        run(pipeline(`make V=1 -j$(Sys.CPU_THREADS)`, stdout="build.log", append=true))
-    end
-
     # any change to the JuliaInterface source code or build system should
     # trigger a rebuild
+    jipath = joinpath(gaproot_gapjl, "pkg", "JuliaInterface")
     include_dependency(joinpath(jipath, "configure"))
     include_dependency(joinpath(jipath, "Makefile.in"))
     include_dependency(joinpath(jipath, "Makefile.gappkg"))
@@ -267,8 +259,38 @@ function regenerate_gaproot(gaproot_mutable)
     end
 
     return gaproot_mutable
-end # function
+end
 
+function build_JuliaInterface(gaproot::String, sysinfo::Dict{String, String}, srchash)
+    @info "Compiling JuliaInterface ..."
+    jipath = joinpath(@__DIR__, "..", "pkg", "JuliaInterface")
+    cd(jipath) do
+        run(pipeline(`./configure $gaproot`, stdout="build.log"))
+        run(pipeline(`make V=1 -j$(Sys.CPU_THREADS)`, stdout="build.log", append=true))
+    end
+
+    return normpath(joinpath(jipath, "bin", sysinfo["GAParch"]))
+end
+
+function locate_JuliaInterface_so(gaproot::String, sysinfo::Dict{String, String})
+    # compare the C sources used to build GAP_pkg_juliainterface_jll with bundled copies
+    # by comparing tree hashes
+    jll = GAP_pkg_juliainterface_jll.find_artifact_dir()
+    jll_hash = Pkg.GitTools.tree_hash(joinpath(jll, "src"))
+    bundled = joinpath(@__DIR__, "..", "pkg", "JuliaInterface")
+    bundled_hash = Pkg.GitTools.tree_hash(joinpath(bundled, "src"))
+    if jll_hash == bundled_hash
+        # if the tree hashes match then we can use JuliaInterface.so from the JLL
+        @debug "Use JuliaInterface.so from GAP_pkg_juliainterface_jll"
+        path = joinpath(jll, "lib", "gap")
+    else
+        # tree hashes differ: we must compile the bundled sources (resp. access a
+        # previously compiled version)
+        path = build_JuliaInterface(gaproot, sysinfo, bundled_hash)
+        @debug "Use JuliaInterface.so from $(path)"
+    end
+    return joinpath(path, "JuliaInterface.so")
+end
 
 end # module
 
