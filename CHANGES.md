@@ -6,6 +6,10 @@
   bundled C code, thus for basic use of GAP.jl no C/C++ compiler is needed
   anymore; this also avoids compatibility issues when switching back and forth
   between Julia 1.6 and 1.7
+- Add support for REPL tab completion on members of `GAP.Globals`; e.g. if you
+  enter `GAP.Globals.MTX.Is` into the REPL and press the TAB key twice, you
+  should be offered a list of members of the record `GAP.Globals.MTX` whose
+  name starts with `Is`.
 
 ## Version 0.7.1 (released 2021-10-29)
 
