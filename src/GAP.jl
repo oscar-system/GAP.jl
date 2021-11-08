@@ -282,6 +282,7 @@ end
 
 include("lowlevel.jl")
 include("ccalls.jl")
+include("globals.jl")
 
 include("macros.jl")
 include("wrappers.jl")
