@@ -223,7 +223,14 @@ function __init__()
     end
 
     # ensure GAP exit handler is run when we exit
-    Base.atexit(function() GAP.Globals.PROGRAM_CLEAN_UP() end)
+    Base.atexit(function()
+                    try
+                        GAP.Globals.PROGRAM_CLEAN_UP()
+                    catch e
+                        showerror(stderr, e, catch_backtrace())
+                        exit(1) # signal error
+                    end
+                end)
 
     # Respect the -q flag
     isquiet = Bool(Base.JLOptions().quiet)
