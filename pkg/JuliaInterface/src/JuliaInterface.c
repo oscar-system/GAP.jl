@@ -151,6 +151,12 @@ jl_function_t * get_function_from_obj_or_string(Obj func)
 }
 
 
+void ResetUserHasQUIT(void)
+{
+    STATE(UserHasQUIT) = 0;
+}
+
+
 /*
  * Returns the function from the Object <func>
  * or the function with name <func> from
