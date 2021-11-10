@@ -59,6 +59,17 @@ function run_session()
         ccall((:Call0ArgsInNewReader, GAP_jll.libgap), Cvoid, (Any,), Globals.SESSION)
     end
 
+    # Reset the GAP kernel variable `UserHasQUIT` so that GAP's exit handlers
+    # can run. This is necessary if the user passed a file on the command line
+    # that has a `QUIT` statements, thus ending GAP during ProcessInitFiles,
+    # hence before the first SESSION.
+    #
+    # Note that in this case, even our manual call to SESSION above actually
+    # ends up doing nothing as a side effect of `UserHasQUIT` being non-zero
+    # (it aborts after its first call to a function, which happens to be
+    # `GetBottomLVars()`).
+    ccall((:ResetUserHasQUIT, JuliaInterface_path()), Cvoid, ())
+
     # Finally exit
     return exit_code()
 end

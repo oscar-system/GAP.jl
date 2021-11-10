@@ -10,6 +10,10 @@
   enter `GAP.Globals.MTX.Is` into the REPL and press the TAB key twice, you
   should be offered a list of members of the record `GAP.Globals.MTX` whose
   name starts with `Is`.
+- Fix a bug where running GAP through Julia via a `gap.sh` wrapper created
+  using `GAP.create_gap_sh` could produce an error (specifically when a `QUIT`
+  statement is encountered while processing a GAP file by passing its path as
+  argument to `gap.sh`)
 
 ## Version 0.7.1 (released 2021-10-29)
 
