@@ -86,7 +86,6 @@ ERROR: TypeError: in typeassert, expected GapObj, got a value of type Int64
 """
 const GapObj = GAP_jll.MPtr
 
-
 """
     GAP.Obj
 

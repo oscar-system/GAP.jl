@@ -18,22 +18,6 @@ function show_string(io::IO, obj::Union{GapObj,FFE})
     return stri
 end
 
-# Show `GapObj` as `GAP.GapObj` or `GapObj` not as `GAP_jll.MPtr`.
-# Use the same criteria as (the currently undocumented) `show_type_name`
-function Base.show(io::IO, ::Type{GapObj})
-    if !get(io, :compact, false)
-        # Print module prefix unless type is visible from module passed to
-        # IOContext If :module is not set, default to Main. nothing can be used
-        # to force printing prefix
-        from = get(io, :module, Main)
-        if from === nothing || !Base.isvisible(:GapObj, GAP, from)
-            show(io, GAP)
-            print(io, ".")
-        end
-    end
-    print(io, "GapObj")
-end
-
 function Base.show(io::IO, obj::Union{GapObj,FFE})
     stri = show_string(io, obj)
     print(io, "GAP: $stri")
