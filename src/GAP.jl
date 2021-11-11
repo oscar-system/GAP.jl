@@ -207,6 +207,11 @@ function __init__()
         windows_error()
     end
 
+    # HACK HACK HACK: ensure the type GapObj (which is just an alias
+    # for `GAP_jll.MPtr`) is printed as ours
+    GapObj.name.module = GAP
+    GapObj.name.name = :GapObj
+
     # regenerate GAPROOT if it was removed
     if !isdir(GAPROOT) || isempty(readdir(GAPROOT))
         Setup.regenerate_gaproot(GAPROOT)

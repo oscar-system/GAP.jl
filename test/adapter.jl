@@ -46,6 +46,11 @@ end
     io = IOBuffer();
     print(io, GAP.GapObj)
     @test String(take!(io)) == "GapObj"
+
+    L = [ GAP.evalstr( "()" ) ]
+    print(io, L)
+    @test String(take!(io)) == "GapObj[GAP: ()]"
+
     ioc = IOContext(io, :module => nothing);
     print(ioc, GAP.GapObj)
     @test String(take!(io)) == "GAP.GapObj"
