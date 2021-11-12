@@ -14,6 +14,10 @@
   using `GAP.create_gap_sh` could produce an error (specifically when a `QUIT`
   statement is encountered while processing a GAP file by passing its path as
   argument to `gap.sh`)
+- Fix printing of certain containers; e.g. `repr(GAP.GapObj[])` confusingly
+  produced the string `"GAP_jll.MPtr[]"`; it now gives `"GapObj[]"` resp.
+  `"GAP.GapObj[]"` (depending on whether `using GAP` or `import GAP` were
+  used to load GAP.jl)
 
 ## Version 0.7.1 (released 2021-10-29)
 
