@@ -36,6 +36,14 @@ one knows that only the kernel resp. only the GAP library, one can also
 deviate from this.
 
 
+## Updating `GAP_pkg_juliainterface_jll`
+
+When the C sources in `pkg/JuliaInterface/src` change, this JLL should be updated.
+To do this, open a pull request for <https://github.com/JuliaPackaging/Yggdrasil>.
+The file to edit there is `G/GAP_pkg/GAP_pkg_juliainterface/build_tarballs.jl`.
+Increment the version and the git SHA1 hash.
+
+
 ## Using GAP.jl with a different version of GAP than what `GAP_jll` provides
 
 This can be useful for various reasons e.g.,
