@@ -1,6 +1,6 @@
 # Changes in GAP.jl
 
-## Version 0.7.2 (released XXX)
+## Version 0.7.2 (released 2021-11-17)
 
 - Use a `GAP_pkg_juliainterface_jll` to installed a compiled version of the
   bundled C code, thus for basic use of GAP.jl no C/C++ compiler is needed
