@@ -54,11 +54,10 @@ function load(spec::String, version::String = ""; install = false)
 end
 
 """
-    install(spec::String; interactive::Bool = true, quiet::Bool = false)
+    install(spec::String; interactive::Bool = true, pkgdir::AbstractString = GAP.Packages.DEFAULT_PKGDIR, quiet::Bool = false)
 
 Download and install the newest released version of the GAP package
-given by `spec` in the `pkg` subdirectory of GAP's build directory
-(variable `GAP.GAPROOT`).
+given by `spec` into the `pkgdir` directory.
 Return `true` if the installation is successful or if the package
 was already installed, and `false` otherwise.
 
@@ -67,11 +66,13 @@ containing a package, or the URL of a `PackageInfo.g` file.
 
 The function uses [the function `InstallPackage` from GAP's package
 `PackageManager`](GAP_ref(PackageManager:InstallPackage)).
-The info messages shown by  this function can be suppressed by entering
-`true` as the value of `quiet`.
+The info messages shown by this function can be suppressed by passing
+`true` as the value of `quiet`. Specifying `interactive = false` will
+prevent `PackageManager` from prompting the user for input interactively.
+For details, please refer to its documentation.
 """
 function install(spec::String; interactive::Bool = true, pkgdir::AbstractString = DEFAULT_PKGDIR, quiet::Bool = false)
-    # point PackageManager to our internal pkg dir
+    # point PackageManager to the given pkg dir
     Globals.PKGMAN_CustomPackageDir = GapObj(pkgdir)
     mkpath(pkgdir)
 
@@ -87,11 +88,10 @@ function install(spec::String; interactive::Bool = true, pkgdir::AbstractString 
 end
 
 """
-    update(spec::String; quiet::Bool = false)
+    update(spec::String; interactive::Bool = true, pkgdir::AbstractString = GAP.Packages.DEFAULT_PKGDIR, quiet::Bool = false)
 
 Update the GAP package given by `spec` that is installed in the
-`pkg` subdirectory of GAP's build directory (variable `GAP.GAPROOT`),
-to the latest version.
+`pkgdir` directory, to the latest version.
 Return `true` if a newer version was installed successfully,
 or if no newer version is available, and `false` otherwise.
 
@@ -100,11 +100,13 @@ containing a package, or the URL of a `PackageInfo.g` file.
 
 The function uses [the function `UpdatePackage` from GAP's package
 `PackageManager`](GAP_ref(PackageManager:UpdatePackage)).
-The info messages shown by  this function can be suppressed by entering
-`true` as the value of `quiet`.
+The info messages shown by this function can be suppressed by passing
+`true` as the value of `quiet`. Specifying `interactive = false` will
+prevent `PackageManager` from prompting the user for input interactively.
+For details, please refer to its documentation.
 """
 function update(spec::String; interactive::Bool = true, pkgdir::AbstractString = DEFAULT_PKGDIR, quiet::Bool = false)
-    # point PackageManager to our internal pkg dir
+    # point PackageManager to the given pkg dir
     Globals.PKGMAN_CustomPackageDir = GapObj(pkgdir)
     mkpath(pkgdir)
 
@@ -123,19 +125,21 @@ end
 # thus nec. to start Julia anew
 
 """
-    remove(spec::String; quiet::Bool = false)
+    remove(spec::String; interactive::Bool = true, pkgdir::AbstractString = GAP.Packages.DEFAULT_PKGDIR, quiet::Bool = false)
 
 Remove the GAP package with name `spec` that is installed in the
-`pkg` subdirectory of GAP's build directory (variable `GAP.GAPROOT`).
+`pkgdir` directory.
 Return `true` if the removal was successful, and `false` otherwise.
 
 The function uses [the function `RemovePackage` from GAP's package
 `PackageManager`](GAP_ref(PackageManager:RemovePackage)).
-The info messages shown by  this function can be suppressed by entering
-`true` as the value of `quiet`.
+The info messages shown by this function can be suppressed by passing
+`true` as the value of `quiet`. Specifying `interactive = false` will
+prevent `PackageManager` from prompting the user for input interactively.
+For details, please refer to its documentation.
 """
 function remove(spec::String; interactive::Bool = true, pkgdir::AbstractString = DEFAULT_PKGDIR, quiet::Bool = false)
-    # point PackageManager to our internal pkg dir
+    # point PackageManager to the given pkg dir
     Globals.PKGMAN_CustomPackageDir = GapObj(pkgdir)
     mkpath(pkgdir)
 
