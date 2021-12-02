@@ -1,5 +1,11 @@
 # Changes in GAP.jl
 
+## Version 0.8.0 (released 2022-03-DD)
+
+- Upgrade to newer GAP snapshot
+- Remove `Base.big(obj::GapObj)`: nothing was using it and it does not really
+  fit conceptually into this package.
+
 ## Version 0.7.7 (released 2022-02-14)
 
 - Add `quiet` argument to `Packages.load` 

@@ -46,17 +46,6 @@
     @test_throws GAP.ConversionError Float64(x)
   end
 
-  @testset "big (is not a constructor but fits here)" begin
-    x = GAP.evalstr("2^100")
-    @test big(x) == BigInt(2)^100
-    x = GAP.evalstr("2^100/3")
-    @test big(x) == BigInt(2)^100 // 3
-    x = GAP.evalstr("2.")
-    @test big(x) == BigFloat(2.0)
-    x = GAP.evalstr("[]")
-    @test_throws GAP.ConversionError big(x)
-  end
-
   @testset "Chars" begin
     x = GAP.evalstr("'x'")
     @test (@inferred Cuchar(x)) == Cuchar('x')
