@@ -77,46 +77,6 @@ julia> Int128(val)
 ```
 """ Int128
 
-
-"""
-    big(obj::GapObj)
-
-Return the big integer converted from
-the [GAP integer](GAP_ref(ref:Integers)) `obj`,
-or the big rational converted from
-the [GAP rational](GAP_ref(ref:Rationals)) `obj`,
-or the big float converted from
-the [GAP float](GAP_ref(ref:Floats)) `obj`.
-
-# Examples
-```jldoctest
-julia> val = GAP.evalstr("2^64")
-GAP: 18446744073709551616
-
-julia> big(val)
-18446744073709551616
-
-julia> val = GAP.evalstr("1/3")
-GAP: 1/3
-
-julia> big(val)
-1//3
-
-julia> val = GAP.evalstr("1.1")
-GAP: 1.1
-
-julia> big(val)
-1.100000000000000088817841970012523233890533447265625
-
-```
-"""
-function Base.big(obj::GapObj)
-    GAP_IS_INT(obj) && return BigInt(obj)
-    GAP_IS_RAT(obj) && return Rational{BigInt}(obj)
-    GAP_IS_MACFLOAT(obj) && return BigFloat(obj)
-    throw(ConversionError(obj, "a type supported by big"))
-end
-
 """
     Rational{T}(obj::GapObj) where {T<:Integer}
 

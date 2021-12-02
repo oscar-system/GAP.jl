@@ -59,7 +59,6 @@ Int128
 BigInt
 Rational
 Float64
-big
 Char
 Cuchar
 String
