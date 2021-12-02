@@ -102,49 +102,24 @@ gap_to_julia(::Type{Obj}, x::Obj) = x
 gap_to_julia(::Type{GapObj}, x::GapObj) = x
 
 ## Integers
-gap_to_julia(::Type{T}, x::Int64) where {T<:Integer} = trunc(T, x)
-
-gap_to_julia(::Type{T}, x::GapObj) where {T<:Integer} = T(x)
+gap_to_julia(::Type{T}, x::GapInt) where {T<:Integer} = T(x)
 
 ## Rationals
-function gap_to_julia(::Type{Rational{T}}, x::Int64) where {T<:Integer}
-    numerator = gap_to_julia(T, x)
-    return numerator // T(1)
-end
-
-gap_to_julia(::Type{Rational{T}}, x::GapObj) where {T<:Integer} = Rational{T}(x)
+gap_to_julia(::Type{Rational{T}}, x::GapInt) where {T<:Integer} = Rational{T}(x)
 
 ## Floats
-function gap_to_julia(::Type{Float64}, obj::GapObj)
-    GAP_IS_MACFLOAT(obj) && return ValueMacFloat(obj)::Float64
-    throw(ConversionError(obj, Float64))
-end
-
-gap_to_julia(::Type{T}, obj::GapObj) where {T<:AbstractFloat} =
-    T(gap_to_julia(Float64, obj))
+gap_to_julia(::Type{T}, obj::GapObj) where {T<:AbstractFloat} = T(obj)
 
 ## Chars
-function gap_to_julia(::Type{Char}, obj::GapObj)
-    GAP_IS_CHAR(obj) && return Char(Wrappers.INT_CHAR(obj))
-    throw(ConversionError(obj, Char))
-end
-
-function gap_to_julia(::Type{Cuchar}, obj::GapObj)
-    GAP_IS_CHAR(obj) && return trunc(Cuchar, Wrappers.INT_CHAR(obj))
-    throw(ConversionError(obj, Cuchar))
-end
+gap_to_julia(::Type{Char}, obj::GapObj) = Char(obj)
+gap_to_julia(::Type{Cuchar}, obj::GapObj) = Cuchar(obj)
 
 ## Strings
-function gap_to_julia(::Type{String}, obj::GapObj)
-    Wrappers.IsStringRep(obj) && return CSTR_STRING(obj)
-    Wrappers.IsString(obj) && return CSTR_STRING(Wrappers.CopyToStringRep(obj))
-    throw(ConversionError(obj, String))
-end
-gap_to_julia(::Type{T}, obj::GapObj) where {T<:AbstractString} =
-    convert(T, gap_to_julia(String, obj))
+gap_to_julia(::Type{String}, obj::GapObj) = String(obj)
+gap_to_julia(::Type{T}, obj::GapObj) where {T<:AbstractString} = T(obj)
 
 ## Symbols
-gap_to_julia(::Type{Symbol}, obj::GapObj) = Symbol(gap_to_julia(String, obj))
+gap_to_julia(::Type{Symbol}, obj::GapObj) = Symbol(obj)
 
 ## Convert GAP string to Vector{UInt8} (==Vector{UInt8})
 function gap_to_julia(::Type{Vector{UInt8}}, obj::GapObj)
@@ -154,15 +129,7 @@ function gap_to_julia(::Type{Vector{UInt8}}, obj::GapObj)
 end
 
 ## BitVectors
-function gap_to_julia(::Type{BitVector}, obj::GapObj)
-    !Wrappers.IsBlist(obj) && throw(ConversionError(obj, BitVector))
-    len = Wrappers.Length(obj)
-    result = BitVector(undef, len)
-    for i = 1:len
-        result[i] = obj[i]
-    end
-    return result
-end
+gap_to_julia(::Type{BitVector}, obj::GapObj) = BitVector(obj)
 
 ## Vectors
 function gap_to_julia(
@@ -302,46 +269,8 @@ function gap_to_julia(
 end
 
 ## Ranges
-function gap_to_julia(::Type{T}, obj::GapObj) where {T<:UnitRange}
-    !Wrappers.IsRange(obj) && throw(ConversionError(obj, T))
-    len = Wrappers.Length(obj)
-    if len == 0
-        # construct an empty UnitRange object
-        result = 1:0
-    elseif len == 1
-        result = obj[1]:obj[1]
-    elseif obj[2] != obj[1] + 1
-        throw(ArgumentError("step width of first argument is not 1"))
-    else
-        result = obj[1]:obj[len]
-    end
-
-    return T(result)
-end
-
-function gap_to_julia(::Type{T}, obj::GapObj) where {T<:StepRange}
-    !Wrappers.IsRange(obj) && throw(ConversionError(obj, T))
-    len = Wrappers.Length(obj)
-    if len == 0
-        # construct an empty StepRange object
-        start = 1
-        step = 1
-        stop = 0
-    elseif len == 1
-        start = obj[1]
-        step = 1
-        stop = obj[1]
-    else
-        start = obj[1]
-        step = obj[2]-obj[1]
-        stop = obj[len]
-    end
-
-    # Julia does not support `StepRange(obj)` (but `StepRange{S,T}(obj)`),
-    # and also `T(start, step, stop)` does not work for each `T` in question,
-    # but we can always use `convert`.
-    return convert(T, start:step:stop)
-end
+gap_to_julia(::Type{T}, obj::GapObj) where {T<:UnitRange} = T(obj)
+gap_to_julia(::Type{T}, obj::GapObj) where {T<:StepRange} = T(obj)
 
 ## Dictionaries
 function gap_to_julia(
