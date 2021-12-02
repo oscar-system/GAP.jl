@@ -6,7 +6,6 @@ GapObj(x::GapObj) = x
 Obj(obj; recursive::Bool = false) = julia_to_gap(obj, IdDict(), recursive = recursive)::Obj
 GapObj(obj; recursive::Bool = false) = julia_to_gap(obj, IdDict(), recursive = recursive)::GapObj
 
-## Integer, BigInt
 """
     BigInt(obj::GapObj)
 
@@ -118,7 +117,6 @@ function Base.big(obj::GapObj)
     throw(ConversionError(obj, "a type supported by big"))
 end
 
-## Rationals
 """
     Rational{T}(obj::GapObj) where {T<:Integer}
 
@@ -153,8 +151,6 @@ function Base.Rational{T}(obj::GapObj) where {T<:Integer}
     return T(numer) // T(denom)
 end
 
-
-## Floats
 """
     Float64(obj::GapObj)
 
@@ -173,10 +169,12 @@ julia> Float32(val)
 
 ```
 """
-Base.Float64(obj::GapObj) = gap_to_julia(Float64, obj)
+function Base.Float64(obj::GapObj)
+    GAP_IS_MACFLOAT(obj) && return ValueMacFloat(obj)::Float64
+    throw(ConversionError(obj, Float64))
+end
 (::Type{T})(obj::GapObj) where {T<:AbstractFloat} = T(Float64(obj))
 
-## Chars
 """
     Char(obj::GapObj)
 
@@ -193,7 +191,10 @@ julia> Char(val)
 
 ```
 """
-Base.Char(obj::GapObj) = gap_to_julia(Char, obj)
+function Base.Char(obj::GapObj)
+    GAP_IS_CHAR(obj) && return Char(Wrappers.INT_CHAR(obj))
+    throw(ConversionError(obj, Char))
+end
 
 """
     Cuchar(obj::GapObj)
@@ -211,9 +212,11 @@ julia> Cuchar(val)
 
 ```
 """
-Base.Cuchar(obj::GapObj) = gap_to_julia(obj)
+function Base.Cuchar(obj::GapObj)
+    GAP_IS_CHAR(obj) && return trunc(Cuchar, Wrappers.INT_CHAR(obj))
+    throw(ConversionError(obj, Cuchar))
+end
 
-## Strings
 """
     String(obj::GapObj)
 
@@ -239,10 +242,13 @@ julia> String(val)   # an empty GAP list is a string
 
 ```
 """
-Base.String(obj::GapObj) = gap_to_julia(String, obj)
+function String(obj::GapObj)
+    Wrappers.IsStringRep(obj) && return CSTR_STRING(obj)
+    Wrappers.IsString(obj) && return CSTR_STRING(Wrappers.CopyToStringRep(obj))
+    throw(ConversionError(obj, String))
+end
 (::Type{T})(obj::GapObj) where {T<:AbstractString} = convert(T, String(obj))
 
-## Symbols
 """
     Symbol(obj::GapObj)
 
@@ -261,7 +267,6 @@ julia> Symbol(str)
 """
 Core.Symbol(obj::GapObj) = Symbol(String(obj))
 
-## BitVectors
 @doc """
     BitVector(obj::GapObj)
 
@@ -281,10 +286,18 @@ julia> BitVector(val)
 
 ```
 """
-BitVector(obj::GapObj) = gap_to_julia(BitVector, obj)
+function BitVector(obj::GapObj)
+    !Wrappers.IsBlist(obj) && throw(ConversionError(obj, BitVector))
+    # TODO: a much better conversion would be possible, at least if `obj` is
+    # in IsBlistRep, then we could essentially memcpy data
+    len = Wrappers.Length(obj)
+    result = BitVector(undef, len)
+    for i = 1:len
+        result[i] = obj[i]
+    end
+    return result
+end
 
-## Arrays
-## (special case: convert GAP string to Vector{UInt8} (== Vector{UInt8}))
 """
     Vector{T}(obj::GapObj; recursive = true)
 
@@ -336,7 +349,6 @@ julia> Vector{UInt8}(val)
 Base.Vector{T}(obj::GapObj; recursive = true) where {T} =
     gap_to_julia(Vector{T}, obj; recursive = recursive)
 
-## Matrix / list-of-lists
 """
     Matrix{T}(obj::GapObj; recursive = true)
 
@@ -371,7 +383,6 @@ julia> Matrix{Int64}(val)
 Base.Matrix{T}(obj::GapObj; recursive = true) where {T} =
     gap_to_julia(Matrix{T}, obj; recursive = recursive)
 
-## Sets
 @doc """
     Set{T}(obj::GapObj; recursive = true)
 
@@ -431,9 +442,6 @@ true
 Base.Set{T}(obj::GapObj; recursive = true) where {T} =
     gap_to_julia(Set{T}, obj; recursive = recursive)
 
-## Tuples
-(::Type{T})(obj::GapObj; recursive = true) where {T<:Tuple} =
-    gap_to_julia(T, obj, recursive = recursive)
 @doc """
     Tuple{Types...}(obj::GapObj; recursive = true)
 
@@ -464,8 +472,9 @@ julia> Tuple{GapObj,GapObj}(val, recursive = false)
 ```
 """ Tuple
 
-## Ranges
-(::Type{T})(obj::GapObj) where {T<:UnitRange} = gap_to_julia(T, obj)
+(::Type{T})(obj::GapObj; recursive = true) where {T<:Tuple} =
+    gap_to_julia(T, obj, recursive = recursive)
+
 @doc """
     UnitRange(obj::GapObj)
 
@@ -486,7 +495,24 @@ julia> UnitRange{Int32}(val)
 ```
 """ UnitRange
 
-(::Type{T})(obj::GapObj) where {T<:StepRange} = gap_to_julia(T, obj)
+function (::Type{T})(obj::GapObj) where {T<:UnitRange}
+    !Wrappers.IsRange(obj) && throw(ConversionError(obj, T))
+    len = Wrappers.Length(obj)
+    if len == 0
+        # construct an empty UnitRange object
+        result = 1:0
+    elseif len == 1
+        result = obj[1]:obj[1]
+    elseif obj[2] != obj[1] + 1
+        throw(ArgumentError("step width of first argument is not 1"))
+    else
+        result = obj[1]:obj[len]
+    end
+
+    return T(result)
+end
+
+
 @doc """
     StepRange(obj::GapObj)
 
@@ -510,7 +536,30 @@ StepRange{Int8, Int8}
 ```
 """ StepRange
 
-## Dictionaries
+function(::Type{T})(obj::GapObj) where {T<:StepRange}
+    !Wrappers.IsRange(obj) && throw(ConversionError(obj, T))
+    len = Wrappers.Length(obj)
+    if len == 0
+        # construct an empty StepRange object
+        start = 1
+        step = 1
+        stop = 0
+    elseif len == 1
+        start = obj[1]
+        step = 1
+        stop = obj[1]
+    else
+        start = obj[1]
+        step = obj[2]-obj[1]
+        stop = obj[len]
+    end
+
+    # Julia does not support `StepRange(obj)` (but `StepRange{S,T}(obj)`),
+    # and also `T(start, step, stop)` does not work for each `T` in question,
+    # but we can always use `convert`.
+    return convert(T, start:step:stop)
+end
+
 """
     Dict{Symbol,T}(obj::GapObj; recursive = true)
 
