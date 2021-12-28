@@ -1,11 +1,10 @@
 module Setup
 
-using Pkg
-using Pkg.Artifacts
-using GAP_jll
-using GAP_lib_jll
-using GAP_pkg_juliainterface_jll
-using GMP_jll
+import Pkg: Pkg, Artifacts
+import GAP_jll
+import GAP_lib_jll
+import GAP_pkg_juliainterface_jll
+import GMP_jll
 
 #############################################################################
 #
@@ -73,13 +72,13 @@ function gmp_artifact_dir()
 
     # If this file exists, it's a stdlib JLL and we must download the artifact ourselves
     if isfile(artifacts_toml)
-        meta = artifact_meta("GMP", artifacts_toml)
+        meta = Artifacts.artifact_meta("GMP", artifacts_toml)
         hash = Base.SHA1(meta["git-tree-sha1"])
-        if !artifact_exists(hash)
+        if !Artifacts.artifact_exists(hash)
             dl_info = first(meta["download"])
-            download_artifact(hash, dl_info["url"], dl_info["sha256"])
+            Artifacts.download_artifact(hash, dl_info["url"], dl_info["sha256"])
         end
-        return artifact_path(hash)
+        return Artifacts.artifact_path(hash)
     end
 
     # Otherwise, we can just use the artifact directory given to us by GMP_jll
@@ -242,7 +241,7 @@ function regenerate_gaproot(gaproot_mutable)
                       joinpath("bin", "BuildPackages.sh"))
 
         # create a `pkg` symlink to the GAP packages artifact
-        force_symlink(artifact"gap_packages", "pkg")
+        force_symlink(Artifacts.artifact"gap_packages", "pkg")
 
     end # cd(gaproot_mutable)
 

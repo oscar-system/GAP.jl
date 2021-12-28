@@ -269,9 +269,9 @@ Base.hash(::FFE, h::UInt) = h
 
 ### RNGs
 
-using Random: Random, AbstractRNG, rand
+import Random
 
-abstract type AbstractGAPRNG <: AbstractRNG end
+abstract type AbstractGAPRNG <: Random.AbstractRNG end
 
 struct MersenneTwisterState state end
 

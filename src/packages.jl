@@ -1,7 +1,7 @@
 ## dealing with GAP packages
 module Packages
 
-using Downloads
+import Downloads
 import ...GAP: Globals, GapObj, sysinfo
 
 const DEFAULT_PKGDIR = sysinfo["DEFAULT_PKGDIR"]

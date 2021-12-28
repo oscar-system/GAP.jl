@@ -4,7 +4,7 @@
   For more information about GAP see https://www.gap-system.org/
 """ module GAP
 
-using GAP_jll
+import GAP_jll: GAP_jll, libgap
 
 include("setup.jl")
 
@@ -284,7 +284,7 @@ For a fixed seed, the stream of generated numbers is allowed to change between
 different versions of GAP.
 """
 function randseed!(seed::Union{Integer,Nothing}=nothing)
-    seed = something(seed, rand(UInt128))
+    seed = something(seed, Random.rand(UInt128))
     Globals.Reset(Globals.GlobalMersenneTwister, seed)
     # when GlobalRandomSource is reset, the seed is taken modulo 2^28, so we just
     # pass an already reduced seed here
