@@ -157,6 +157,35 @@ void ResetUserHasQUIT(void)
 }
 
 
+// HACK: this helper function is called from Julia to override the parent
+// module and name of the type used for GAP objects. We used to achieve the
+// same via pure Julia like this:
+//
+//    GapObj.name.module = GAP
+//    GapObj.name.name = :GapObj
+//
+// However in recent Julia 1.8-DEV builds, a feature was introduced to mark
+// individual fields of mutable structs const, and this was used to make those
+// field of type `TypeName` const, so that code doesn't work anymore. For now,
+// it is still safe to override the type on the C kernel level, but we should
+// start thinking about long-term alternatives.
+void OverrideTypeNameAndModule(jl_value_t * type,
+                               jl_value_t * module,
+                               jl_value_t * name)
+{
+    if (!jl_is_datatype(type))
+        jl_error("<type> is not a DataType");
+    if (!jl_is_module(module))
+        jl_error("<module> is not a module");
+    if (!jl_is_symbol(name))
+        jl_error("<name> is not a symbol");
+
+    jl_datatype_t * t = (jl_datatype_t *)type;
+    t->name->name = (jl_sym_t *)name;
+    t->name->module = (jl_module_t *)module;
+}
+
+
 /*
  * Returns the function from the Object <func>
  * or the function with name <func> from
