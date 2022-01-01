@@ -236,10 +236,14 @@ function __init__()
                     end
                 end)
 
+    # Check if were loaded from another package
+    bt = Base.process_backtrace(Base.backtrace())
+    isinteractive_manual = all(sf -> sf[1].func != :_tryrequire_from_serialized, bt)
+
     # Respect the -q flag
     isquiet = Bool(Base.JLOptions().quiet)
 
-    show_banner = !isquiet && isinteractive() &&
+    show_banner = !isquiet && isinteractive_manual && isinteractive() &&
                  !any(x->x.name in ["Oscar"], keys(Base.package_locks)) &&
                  get(ENV, "GAP_PRINT_BANNER", "true") != "false"
 
