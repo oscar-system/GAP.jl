@@ -1,6 +1,8 @@
 # Changes in GAP.jl
 
-## Version 0.7.3-DEV (released 2021-XYZ)
+## Version 0.7.3 (released 2022-01-01)
+
+- Restore compatibility with Julia nightlies
 
 ## Version 0.7.2 (released 2021-11-17)
 
