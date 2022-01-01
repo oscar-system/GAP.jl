@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Basics · GAP.jl</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit">GAP.jl</span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">GAP.jl</a></li><li class="is-active"><a class="tocitem" href>Basics</a><ul class="internal"><li><a class="tocitem" href="#Accessing-GAP-from-Julia"><span>Accessing GAP from Julia</span></a></li><li><a class="tocitem" href="#Accessing-Julia-from-GAP"><span>Accessing Julia from GAP</span></a></li><li><a class="tocitem" href="#Types"><span>Types</span></a></li></ul></li><li><a class="tocitem" href="../conversion/">Conversions</a></li><li><a class="tocitem" href="../packages/">Managing GAP packages</a></li><li><a class="tocitem" href="../other/">Other stuff</a></li><li><a class="tocitem" href="../manualindex/">Index</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Basics</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Basics</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/oscar-system/GAP.jl/blob/master/docs/src/basics.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Basics"><a class="docs-heading-anchor" href="#Basics">Basics</a><a id="Basics-1"></a><a class="docs-heading-anchor-permalink" href="#Basics" title="Permalink"></a></h1><h2 id="Accessing-GAP-from-Julia"><a class="docs-heading-anchor" href="#Accessing-GAP-from-Julia">Accessing GAP from Julia</a><a id="Accessing-GAP-from-Julia-1"></a><a class="docs-heading-anchor-permalink" href="#Accessing-GAP-from-Julia" title="Permalink"></a></h2><p>Any global GAP variable and function can be access from Julia via the <a href="#GAP.Globals"><code>GAP.Globals</code></a> object; for example <code>GAP.Globals.Binomial(5,3)</code>.</p><p>The <a href="#GAP.prompt"><code>GAP.prompt</code></a> command can be used to switch to a GAP session that works like a regular GAP, except that leaving it (via <code>quit;</code> or by pressing Ctrl-D) returns one to a Julia prompt. From the GAP prompt, one can access Julia variables via the <code>Julia</code> object, for example <code>Julia.binomial(5,3)</code>. For more details on how to access Julia from GAP, please consult <a href="../assets/html/JuliaInterface/chap0_mj.html">the manual of the GAP package JuliaInterface</a>.</p><p>Alternatively, one can start GAP in the traditional way, by executing a shell script. Such a script can be created in a location of your choice via <a href="#GAP.create_gap_sh"><code>GAP.create_gap_sh</code></a>.</p><article class="docstring"><header><a class="docstring-binding" id="GAP.Globals" href="#GAP.Globals"><code>GAP.Globals</code></a> — <span class="docstring-category">Constant</span></header><section><div><pre><code class="language-julia">Globals</code></pre><p>This is a global object that gives access to all global variables of the current GAP session via <code>getproperty</code> and <code>setproperty!</code>.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; GAP.Globals.Size    # a global GAP function
+GAP: &lt;Attribute &quot;Size&quot;&gt;
+
+julia&gt; GAP.Globals.size    # there is no GAP variable with this name
+ERROR: GAP variable size not bound
+[...]
+
+julia&gt; hasproperty( GAP.Globals, :size )
+false
+
+julia&gt; GAP.Globals.size = 17;
+
+julia&gt; hasproperty( GAP.Globals, :size )
+true
+
+julia&gt; GAP.Globals.size
+17
+
+julia&gt; GAP.Globals.Julia   # Julia objects can be values of GAP variables
+Main
+</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/526f20f26432579f313e39fc97c93d7cc2505e4c/src/globals.jl#L5-L35">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="GAP.evalstr" href="#GAP.evalstr"><code>GAP.evalstr</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia">evalstr(cmd::String)</code></pre><p>Let GAP execute the command(s) given by <code>cmd</code>; if an error occurs then report this error, otherwise if the last command has a result then return it, otherwise return <code>nothing</code>.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; GAP.evalstr( &quot;1+2&quot; )
+3
+
+julia&gt; GAP.evalstr( &quot;x:= []&quot; )
+GAP: [  ]
+
+julia&gt; GAP.evalstr( &quot;y:= 2; Add( x, 1 )&quot; )
+
+julia&gt; GAP.evalstr( &quot;x&quot; )
+GAP: [ 1 ]
+</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/526f20f26432579f313e39fc97c93d7cc2505e4c/src/ccalls.jl#L48-L70">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="GAP.prompt" href="#GAP.prompt"><code>GAP.prompt</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia">prompt()</code></pre><p>Start a GAP prompt where you can enter GAP commands as in a regular GAP session. This prompt can be left as any GAP prompt by either entering <code>quit;</code> or pressing ctrl-D, which returns to the Julia prompt.</p><p>This GAP prompt allows to quickly switch between writing Julia and GAP code in a session where all data is shared.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/526f20f26432579f313e39fc97c93d7cc2505e4c/src/prompt.jl#L1-L10">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="GAP.create_gap_sh" href="#GAP.create_gap_sh"><code>GAP.create_gap_sh</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia">create_gap_sh(dstdir::String)</code></pre><p>Given a directory path, create three files in that directory:</p><ul><li>a shell script named <code>gap.sh</code> which acts like the <code>gap.sh</code> shipped with a regular GAP installation, but which behind the scenes launches GAP via Julia.</li><li>two TOML files, <code>Manifest.toml</code> and <code>Project.toml</code>, which are required by <code>gap.sh</code> to function (they record the precise versions of GAP.jl and other Julia packages involved)</li></ul></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/526f20f26432579f313e39fc97c93d7cc2505e4c/src/setup.jl#L297-L306">source</a></section></article><h2 id="Accessing-Julia-from-GAP"><a class="docs-heading-anchor" href="#Accessing-Julia-from-GAP">Accessing Julia from GAP</a><a id="Accessing-Julia-from-GAP-1"></a><a class="docs-heading-anchor-permalink" href="#Accessing-Julia-from-GAP" title="Permalink"></a></h2><p>The GAP-Julia interface is fully bidirectional, so it is also possible to access all Julia functionality from GAP. To learn more about this, please consult <a href="../assets/html/JuliaInterface/chap0_mj.html">the manual of the GAP package JuliaInterface</a>.</p><h2 id="Types"><a class="docs-heading-anchor" href="#Types">Types</a><a id="Types-1"></a><a class="docs-heading-anchor-permalink" href="#Types" title="Permalink"></a></h2><article class="docstring"><header><a class="docstring-binding" id="GAP.FFE" href="#GAP.FFE"><code>GAP.FFE</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia">FFE</code></pre><p>Wrap a pointer to a GAP FFE (&quot;finite field element&quot;) immediate object. This type is defined in the JuliaInterface C code.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; x = GAP.Globals.Z(3)
+GAP: Z(3)
+
+julia&gt; typeof(x)
+FFE
+</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/526f20f26432579f313e39fc97c93d7cc2505e4c/src/types.jl#L1-L16">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="GAP.GapObj" href="#GAP.GapObj"><code>GAP.GapObj</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia">GapObj</code></pre><p>This is the Julia type of all those GAP objects that are not &quot;immediate&quot; (booleans, small integers, FFEs).</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; typeof( GAP.evalstr( &quot;[ 1, 2 ]&quot; ) ) # a GAP list
+GapObj
+
+julia&gt; typeof( GAP.evalstr( &quot;rec()&quot; ) )    # a GAP record
+GapObj
+
+julia&gt; typeof( GAP.evalstr( &quot;(1,2,3)&quot; ) )  # a GAP permutation
+GapObj
+
+julia&gt; typeof( GAP.evalstr( &quot;2^64&quot; ) )     # a large GAP integer
+GapObj
+
+julia&gt; typeof( GAP.evalstr( &quot;2^59&quot; ) )     # a small GAP integer
+Int64
+
+julia&gt; typeof( GAP.evalstr( &quot;Z(2)&quot; ) )     # a GAP FFE
+FFE
+
+julia&gt; typeof( GAP.evalstr( &quot;true&quot; ) )     # a boolean
+Bool
+</code></pre><p>Note that this is Julia&#39;s viewpoint on GAP objects. From the viewpoint of GAP, also the pointers to Julia objects are implemented as &quot;non-immediate GAP objects&quot;, but they appear as Julia objects to Julia, not &quot;doubly wrapped&quot;.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; GAP.evalstr( &quot;Julia.Base&quot; )
+Base
+
+julia&gt; typeof( GAP.evalstr( &quot;Julia.Base&quot; ) )        # native Julia object
+Module
+</code></pre><p>One can use <code>GapObj</code> as a constructor, in order to convert Julia objects to GAP objects. Such calls are delegated to <a href="../conversion/#GAP.julia_to_gap"><code>julia_to_gap</code></a>.</p><p>However, this is restricted to outputs that actually are of type <code>GapObj</code>. To also deal with GAP integers, finite field elements and booleans, use <a href="#GAP.Obj"><code>GAP.Obj</code></a> instead.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; GapObj(1//3)
+GAP: 1/3
+
+julia&gt; GapObj([1 2; 3 4])
+GAP: [ [ 1, 2 ], [ 3, 4 ] ]
+
+julia&gt; GapObj(42)
+ERROR: TypeError: in typeassert, expected GapObj, got a value of type Int64
+</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/526f20f26432579f313e39fc97c93d7cc2505e4c/src/types.jl#L20-L86">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="GAP.Obj" href="#GAP.Obj"><code>GAP.Obj</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia">GAP.Obj</code></pre><p>This is an alias for <code>Union{GapObj,FFE,Int64,Bool}</code>. This type union covers all types a &quot;native&quot; GAP object may have from Julia&#39;s viewpoint.</p><p>Moreover, it can be used as a constructor, in order to convert Julia objects to GAP objects, whenever a suitable conversion has been defined.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; GAP.Obj(1//3)
+GAP: 1/3
+
+julia&gt; GAP.Obj([1 2; 3 4])
+GAP: [ [ 1, 2 ], [ 3, 4 ] ]
+
+julia&gt; GAP.Obj(42)
+42
+</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/526f20f26432579f313e39fc97c93d7cc2505e4c/src/types.jl#L89-L112">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="GAP.GapInt" href="#GAP.GapInt"><code>GAP.GapInt</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia">GapInt</code></pre><p>Any GAP integer object is represened in Julia as either a <code>GapObj</code> (if it is a &quot;large&quot; integer) or as an <code>Int</code> (if it is a &quot;small&quot; integer). This type union can be used to express this conveniently, e.g. when one wants to help type stability.</p><p>Note that also GAP&#39;s <code>infinity</code> and <code>-infinity</code> fit under this type (as do many other objects which are not numbers).</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/526f20f26432579f313e39fc97c93d7cc2505e4c/src/types.jl#L115-L125">source</a></section></article></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../">« GAP.jl</a><a class="docs-footer-nextpage" href="../conversion/">Conversions »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Saturday 1 January 2022 00:40">Saturday 1 January 2022</span>. Using Julia version 1.7.1.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
