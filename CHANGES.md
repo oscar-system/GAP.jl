@@ -1,5 +1,11 @@
 # Changes in GAP.jl
 
+## Version 0.7.4 (released 2022-01-18)
+
+- Better banner suppression logic
+- Restore use of `GAP_pkg_juliainterface_jll` (accidentally broken in the
+  previous release)
+
 ## Version 0.7.3 (released 2022-01-01)
 
 - Restore compatibility with Julia nightlies
