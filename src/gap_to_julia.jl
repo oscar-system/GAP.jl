@@ -124,7 +124,7 @@ gap_to_julia(::Type{Symbol}, obj::GapObj) = Symbol(obj)
 ## Convert GAP string to Vector{UInt8} (==Vector{UInt8})
 function gap_to_julia(::Type{Vector{UInt8}}, obj::GapObj)
     Wrappers.IsStringRep(obj) && return CSTR_STRING_AS_ARRAY(obj)
-    Wrappers.IsList(obj) && return [gap_to_julia(UInt8, obj[i]) for i = 1:length(obj)]
+    Wrappers.IsList(obj) && return UInt8[gap_to_julia(UInt8, obj[i]) for i = 1:length(obj)]
     throw(ConversionError(obj, Vector{UInt8}))
 end
 
@@ -168,7 +168,7 @@ function gap_to_julia(
             end
         end
     end
-    return recursion_dict[obj]
+    return recursion_dict[obj]::Vector{T}
 end
 
 ## Matrices or lists of lists
@@ -179,7 +179,7 @@ function gap_to_julia(
     recursive::Bool = true,
 ) where {T}
     if haskey(recursion_dict, obj)
-        return recursion_dict[obj]
+        return recursion_dict[obj]::Matrix{T}
     end
     if Wrappers.IsMatrixObj(obj)
         nrows = Wrappers.NumberRows(obj)
@@ -208,7 +208,7 @@ function gap_to_julia(
             end
         end
     end
-    return new_array
+    return new_array::Matrix{T}
 end
 
 ## Sets
@@ -265,7 +265,7 @@ function gap_to_julia(
         ]
         recursion_dict[obj] = T(list)
     end
-    return recursion_dict[obj]
+    return recursion_dict[obj]::T
 end
 
 ## Ranges
@@ -296,7 +296,7 @@ function gap_to_julia(
             end
         end
     end
-    return recursion_dict[obj]
+    return recursion_dict[obj]::Dict{Symbol,T}
 end
 
 ## Generic conversions
