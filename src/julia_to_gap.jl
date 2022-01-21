@@ -107,7 +107,7 @@ function julia_to_gap(
         end
         if recursive
             x = get!(recursion_dict, x) do
-                julia_to_gap(x, recursion_dict; recursive = recursive)
+                julia_to_gap(x, recursion_dict; recursive)
             end
         end
         ret_val[i] = x
@@ -130,7 +130,7 @@ function julia_to_gap(
         recursion_dict[obj] = ret_val
     end
     for i = 1:rows
-        ret_val[i] = julia_to_gap(obj[i, :], recursion_dict; recursive = recursive)
+        ret_val[i] = julia_to_gap(obj[i, :], recursion_dict; recursive)
     end
     return ret_val
 end
@@ -142,7 +142,7 @@ function julia_to_gap(
     recursive::Bool = false,
 )
     array = collect(Any, obj)
-    return julia_to_gap(array, recursion_dict, recursive = recursive)
+    return julia_to_gap(array, recursion_dict; recursive)
 end
 
 ## Ranges
@@ -167,7 +167,7 @@ function julia_to_gap(
         x = Wrappers.RNamObj(MakeString(string(x)))
         if recursive
             y = get!(recursion_dict, y) do
-                julia_to_gap(y, recursion_dict; recursive = recursive)
+                julia_to_gap(y, recursion_dict; recursive)
             end
         end
         Wrappers.ASS_REC(record, x, y)
@@ -193,7 +193,7 @@ function julia_to_gap(
         ret_val = NewPlist(len)
         recursion_dict[obj] = ret_val
         for i = 1:len
-             ret_val[i] = julia_to_gap(obj[i], recursion_dict; recursive = recursive)
+             ret_val[i] = julia_to_gap(obj[i], recursion_dict; recursive)
         end
     elseif Wrappers.IsRecord(obj)
         ret_val = NewPrecord(0)

@@ -3,8 +3,8 @@ Obj(x::Obj) = x
 GapObj(x::GapObj) = x
 
 ## Handle conversion of Julia objects to GAP objects
-Obj(obj; recursive::Bool = false) = julia_to_gap(obj, IdDict(), recursive = recursive)::Obj
-GapObj(obj; recursive::Bool = false) = julia_to_gap(obj, IdDict(), recursive = recursive)::GapObj
+Obj(obj; recursive::Bool = false) = julia_to_gap(obj, IdDict(); recursive)::Obj
+GapObj(obj; recursive::Bool = false) = julia_to_gap(obj, IdDict(); recursive)::GapObj
 
 """
     BigInt(obj::GapObj)
@@ -299,7 +299,7 @@ function BitVector(obj::GapObj)
 end
 
 """
-    Vector{T}(obj::GapObj; recursive = true)
+    Vector{T}(obj::GapObj; recursive::Bool = true)
 
 Return the 1-dimensional array converted from the
 [GAP list](GAP_ref(ref:Lists)) `obj`.
@@ -346,11 +346,11 @@ julia> Vector{UInt8}(val)
 
 ```
 """
-Base.Vector{T}(obj::GapObj; recursive = true) where {T} =
-    gap_to_julia(Vector{T}, obj; recursive = recursive)
+Base.Vector{T}(obj::GapObj; recursive::Bool = true) where {T} =
+    gap_to_julia(Vector{T}, obj; recursive)
 
 """
-    Matrix{T}(obj::GapObj; recursive = true)
+    Matrix{T}(obj::GapObj; recursive::Bool = true)
 
 Return the 2-dimensional array converted from the GAP matrix `obj`,
 which can be a [GAP list of lists](GAP_ref(ref:Matrices)) or
@@ -380,11 +380,11 @@ julia> Matrix{Int64}(val)
 
 ```
 """
-Base.Matrix{T}(obj::GapObj; recursive = true) where {T} =
-    gap_to_julia(Matrix{T}, obj; recursive = recursive)
+Base.Matrix{T}(obj::GapObj; recursive::Bool = true) where {T} =
+    gap_to_julia(Matrix{T}, obj; recursive)
 
 @doc """
-    Set{T}(obj::GapObj; recursive = true)
+    Set{T}(obj::GapObj; recursive::Bool = true)
 
 Return the set converted from the
 [GAP list](GAP_ref(ref:Lists)) or [GAP collection](GAP_ref(ref:Collections))
@@ -439,11 +439,11 @@ true
 
 ```
 """
-Base.Set{T}(obj::GapObj; recursive = true) where {T} =
-    gap_to_julia(Set{T}, obj; recursive = recursive)
+Base.Set{T}(obj::GapObj; recursive::Bool = true) where {T} =
+    gap_to_julia(Set{T}, obj; recursive)
 
 @doc """
-    Tuple{Types...}(obj::GapObj; recursive = true)
+    Tuple{Types...}(obj::GapObj; recursive::Bool = true)
 
 Return the tuple converted from the
 [GAP list](GAP_ref(ref:Lists)) `obj`.
@@ -472,8 +472,8 @@ julia> Tuple{GapObj,GapObj}(val, recursive = false)
 ```
 """ Tuple
 
-(::Type{T})(obj::GapObj; recursive = true) where {T<:Tuple} =
-    gap_to_julia(T, obj, recursive = recursive)
+(::Type{T})(obj::GapObj; recursive::Bool = true) where {T<:Tuple} =
+    gap_to_julia(T, obj; recursive)
 
 @doc """
     UnitRange(obj::GapObj)
@@ -561,7 +561,7 @@ function(::Type{T})(obj::GapObj) where {T<:StepRange}
 end
 
 """
-    Dict{Symbol,T}(obj::GapObj; recursive = true)
+    Dict{Symbol,T}(obj::GapObj; recursive::Bool = true)
 
 Return the dictionary converted from the
 [GAP record](GAP_ref(ref:Records)) `obj`.
@@ -596,5 +596,5 @@ Dict{Symbol, Vector{Int64}} with 1 entry:
 
 ```
 """
-Base.Dict{Symbol,T}(obj::GapObj; recursive = true) where {T} =
-    gap_to_julia(Dict{Symbol,T}, obj; recursive = recursive)
+Base.Dict{Symbol,T}(obj::GapObj; recursive::Bool = true) where {T} =
+    gap_to_julia(Dict{Symbol,T}, obj; recursive)

@@ -8,10 +8,16 @@ end
 Base.showerror(io::IO, e::ConversionError) =
     print(io, "failed to convert $(typeof(e.obj)) to $(e.jl_type):\n $(e.obj)")
 
+"""
+    RecDict
+
+An internal type of GAP.jl used for tracking conversion results in `gap_to_julia`.
+"""
+const RecDict = IdDict{Any,Any}
 
 ## Conversion from GAP to Julia
 """
-    gap_to_julia(type, x, recursion_dict=nothing; recursive::Bool=true)
+    gap_to_julia(type, x, recursion_dict::Union{Nothing,RecDict}=nothing; recursive::Bool=true)
 
 Try to convert the object `x` to a Julia object of type `type`.
 If `x` is a `GAP.GapObj` then the conversion rules are defined in the
@@ -86,13 +92,13 @@ end
 ## Switch recursion on by default.
 ## If no method for the given arguments supports 'recursion_dict'
 ## then assume that it is not needed.
-gap_to_julia(type_obj, obj, recursion_dict; recursive::Bool = true) =
-    gap_to_julia(type_obj, obj; recursive = recursive)
+gap_to_julia(type_obj, obj, recursion_dict::Union{Nothing,RecDict}; recursive::Bool = true) =
+    gap_to_julia(type_obj, obj; recursive)
 gap_to_julia(type_obj, obj; recursive::Bool = true) = gap_to_julia(type_obj, obj)
 
 ## Default
 gap_to_julia(::Type{Any}, x::GapObj; recursive::Bool = true) =
-    gap_to_julia(x; recursive = recursive)
+    gap_to_julia(x; recursive)
 gap_to_julia(::Type{Any}, x::Any) = x
 gap_to_julia(::T, x::Nothing) where {T<:Type} = nothing
 gap_to_julia(::Type{Any}, x::Nothing) = nothing
@@ -135,7 +141,7 @@ gap_to_julia(::Type{BitVector}, obj::GapObj) = BitVector(obj)
 function gap_to_julia(
     ::Type{Vector{T}},
     obj::GapObj,
-    recursion_dict = IdDict();
+    recursion_dict::Union{Nothing,RecDict} = IdDict();
     recursive::Bool = true,
 ) where {T}
     if Wrappers.IsList(obj)
@@ -175,7 +181,7 @@ end
 function gap_to_julia(
     type::Type{Matrix{T}},
     obj::GapObj,
-    recursion_dict = IdDict();
+    recursion_dict::Union{Nothing,RecDict} = IdDict();
     recursive::Bool = true,
 ) where {T}
     if haskey(recursion_dict, obj)
@@ -250,7 +256,7 @@ end
 function gap_to_julia(
     ::Type{T},
     obj::GapObj,
-    recursion_dict = IdDict();
+    recursion_dict::Union{Nothing,RecDict} = IdDict();
     recursive::Bool = true,
 ) where {T<:Tuple}
     !Wrappers.IsList(obj) && throw(ConversionError(obj, T))
@@ -260,7 +266,7 @@ function gap_to_julia(
         Wrappers.Length(obj) == len ||
             throw(ArgumentError("length of $obj does not match type $T"))
         list = [
-            gap_to_julia(parameters[i], obj[i], recursion_dict; recursive = recursive)
+            gap_to_julia(parameters[i], obj[i], recursion_dict; recursive)
             for i = 1:len
         ]
         recursion_dict[obj] = T(list)
@@ -276,7 +282,7 @@ gap_to_julia(::Type{T}, obj::GapObj) where {T<:StepRange} = T(obj)
 function gap_to_julia(
     ::Type{Dict{Symbol,T}},
     obj::GapObj,
-    recursion_dict = IdDict();
+    recursion_dict::Union{Nothing,RecDict} = IdDict();
     recursive::Bool = true,
 ) where {T}
     !Wrappers.IsRecord(obj) && throw(ConversionError(obj, Dict{Symbol,T}))
@@ -313,10 +319,10 @@ function gap_to_julia(x::GapObj; recursive::Bool = true)
     Wrappers.IsRangeRep(x) && return gap_to_julia(StepRange{Int64,Int64}, x)
     # Do not choose this conversion for other lists in 'IsBlist'.
     Wrappers.IsBlistRep(x) && return gap_to_julia(BitVector, x)
-    Wrappers.IsList(x) && return gap_to_julia(Vector{Any}, x; recursive = recursive)
-    Wrappers.IsMatrixObj(x) && return gap_to_julia(Matrix{Any}, x; recursive = recursive)
-    Wrappers.IsVectorObj(x) && return gap_to_julia(Vector{Any}, x; recursive = recursive)
-    Wrappers.IsRecord(x) && return gap_to_julia(Dict{Symbol,Any}, x; recursive = recursive)
+    Wrappers.IsList(x) && return gap_to_julia(Vector{Any}, x; recursive)
+    Wrappers.IsMatrixObj(x) && return gap_to_julia(Matrix{Any}, x; recursive)
+    Wrappers.IsVectorObj(x) && return gap_to_julia(Vector{Any}, x; recursive)
+    Wrappers.IsRecord(x) && return gap_to_julia(Dict{Symbol,Any}, x; recursive)
     Wrappers.IS_JULIA_FUNC(x) && return UnwrapJuliaFunc(x)
     throw(ConversionError(x, "any known type"))
 end
@@ -324,7 +330,7 @@ end
 ## for the GAP function GAPToJulia:
 ## turning arguments into keyword arguments is easier in Julia than in GAP
 _gap_to_julia(x::Obj) = gap_to_julia(x)
-_gap_to_julia(x::Obj, recursive::Bool) = gap_to_julia(x; recursive = recursive)
+_gap_to_julia(x::Obj, recursive::Bool) = gap_to_julia(x; recursive)
 _gap_to_julia(::Type{T}, x::Obj) where {T} = gap_to_julia(T, x)
 _gap_to_julia(::Type{T}, x::Obj, recursive::Bool) where {T} =
-    gap_to_julia(T, x; recursive = recursive)
+    gap_to_julia(T, x; recursive)
