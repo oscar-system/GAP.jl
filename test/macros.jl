@@ -19,6 +19,22 @@
     @test !occursin("No documentation found", string(doc))
     @test occursin("Set the value", string(doc))
 
+    # Do tester and setter refer to the right objects?
+    @gapattribute dersub(G::GapObj) = GAP.Globals.DerivedSubgroup(G)
+    @gapattribute cendersub(G::GapObj) = GAP.Globals.Centre(dersub(G))
+    G = GAP.Globals.SmallGroup(72, 15)
+    @test GAP.Globals.Size(GAP.Globals.Centre(G)) == 1
+    G = GAP.Globals.SmallGroup(72, 15)  # create the group anew
+    @test ! GAP.Globals.HasCentre(G)
+    @test ! hasdersub(G)
+    @test ! hascendersub(G)
+    @test hasdersub(G)  # the previous call has set the value
+    ggens = GAP.Globals.GeneratorsOfGroup(G)
+    setcendersub(G, GAP.Globals.Subgroup(G, GAP.GapObj([ggens[3]])))
+    @test hascendersub(G)
+    @test GAP.Globals.HasCentre(GAP.Globals.DerivedSubgroup(G))
+    @test GAP.Globals.Size(GAP.Globals.Centre(G)) == 1
+
 end
 
 @testset "compat" begin
