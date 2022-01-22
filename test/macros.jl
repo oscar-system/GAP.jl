@@ -1,3 +1,5 @@
+@gapattribute dersub(G::GapObj) = GAP.Globals.DerivedSubgroup(G)
+
 @testset "@gapattribute" begin
 
     """
@@ -20,7 +22,6 @@
     @test occursin("Set the value", string(doc))
 
     # Do tester and setter refer to the right objects?
-    @gapattribute dersub(G::GapObj) = GAP.Globals.DerivedSubgroup(G)
     @gapattribute cendersub(G::GapObj) = GAP.Globals.Centre(dersub(G))
     G = GAP.Globals.SmallGroup(72, 15)
     @test GAP.Globals.Size(GAP.Globals.Centre(G)) == 1
