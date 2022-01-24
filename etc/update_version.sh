@@ -29,6 +29,8 @@ echo "Setting version to $relvers, released $reldate_iso"
 # check that CHANGES.md has correct entry
 if egrep -q "^## Version ${relvers} " CHANGES.md ; then
     perl -pi -e "s;^## Version ${relvers} \([^)]+\)$;## Version ${relvers} (released ${reldate_iso});" CHANGES.md
+elif [[ ${relvers} = *-DEV ]] ; then
+    perl -pi -e "s;^(# Changes in GAP.jl)$;\1\n\n## Version ${relvers} (released YYYY-MM-DD);" CHANGES.md
 else
     error "Error, CHANGES.md has no section for version ${relvers}"
 fi
