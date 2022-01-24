@@ -1,5 +1,12 @@
 # Changes in GAP.jl
 
+## Version 0.7.5 (released 2022-01-24)
+
+- Improve type stability of the code for converting from GAP to Julia objects;
+  now in many cases code calling it will get precise information about the
+  result type, enabling better optimizations
+- Fixed a bug in `@gapattribute` that manifested in a runtime error
+
 ## Version 0.7.4 (released 2022-01-18)
 
 - Better banner suppression logic
