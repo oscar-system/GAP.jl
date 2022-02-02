@@ -4,6 +4,19 @@
   For more information about GAP see https://www.gap-system.org/
 """ module GAP
 
+# Show a more helpful error message for users on Windows.
+windows_error() = error("""
+
+    This package unfortunately does not run natively under Windows.
+    Please install Julia using Windows subsystem for Linux and try again.
+    See also https://oscar.computeralgebra.de/install/.
+    """)
+
+# error message at precompile time
+if Sys.iswindows()
+  windows_error()
+end
+
 using GAP_jll
 
 include("setup.jl")
@@ -186,19 +199,6 @@ function exit_code()
             0,
             C_NULL,
         ) >> 2
-end
-
-# Show a more helpful error message for users on Windows.
-windows_error() = error("""
-
-    This package unfortunately does not run natively under Windows.
-    Please install Julia using Windows subsystem for Linux and try again.
-    See also https://oscar.computeralgebra.de/install/.
-    """)
-
-# error message at precompile time
-if Sys.iswindows()
-  windows_error()
 end
 
 function __init__()
