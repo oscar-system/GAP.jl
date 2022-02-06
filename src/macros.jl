@@ -127,9 +127,8 @@ import MacroTools
     @gapwrap
 
 When applied to a method definition that involves access to entries of
-`GAP.Globals`, this macro rewrites the code (using `@generated`)
-such that the relevant entries are cached at compile time,
-and need not be fetched again and again at runtime.
+`GAP.Globals`, this macro rewrites the code such that the relevant GAP
+globals are cached, and need not be fetched again and again.
 
 # Examples
 ```jldoctest
@@ -159,31 +158,33 @@ macro gapwrap(ex)
     body = MacroTools.postwalk(body) do x
         MacroTools.@capture(x, GAP.Globals.sym_) || return x
         new_sym = get!(() -> gensym(sym), symdict, sym)
-        return Expr(:$, new_sym)
+        return Expr(:ref, new_sym)
     end
 
-    # now quote the old body, and prepend a list of assignments of
-    # this form:
-    #   ##XYZ##123 = GAP.Globals.XYZ
+    # modify the function body
     def_dict[:body] = Expr(
         :block,
         # first the location of the macro call
         __source__,
         # now the list of initializations ...
-        (:(local $v = GAP.Globals.$k::GapObj) for (k, v) in symdict)...,
-        # ... then the quoted original-with-substitutions body
-        Meta.quot(body),
+        (quote
+            global $v
+            if !isassigned($v)
+                $v[] = GAP.Globals.$k
+            end
+         end for (k, v) in symdict)...,
+        # ... then the original-with-substitutions body
+        body,
     )
 
     # assemble the method definition again
     ex = MacroTools.combinedef(def_dict)
-    result = :(@generated $ex)
 
-    # we must prevent Julia from applying gensym to all locals, as these
-    # substitutions do not get applied to the quoted part of the new body,
-    # leading to trouble if the wrapped function has arguments (as the
-    # argument names will be replaced, but not their uses in the quoted part
-    return esc(result)
+    return esc(Expr(
+        :block,
+        (:(@eval const $v = Ref{GapObj}()) for (k, v) in symdict)...,
+        :(Base.@__doc__ $ex),
+        ))
 end
 
 export @gapwrap
@@ -323,10 +324,9 @@ When applied to a function declaration of the form `NAME(a::T)` or
 assuming that `GAP.Globals.NAME` references a GAP function. Function declarations
 with more than one argument or zero arguments are also supported.
 
-However, the generated function actually is implemented using the `@generated`
-macro and caches the GAP object `GAP.Globals.NAME` and then produce optimal code
-to invoke that GAP function. This minimizes the call overhead. So @wrap typically
-is used to provide an optimized way to call certain GAP functions.
+However, the generated function actually caches the GAP object `GAP.Globals.NAME`.
+This minimizes the call overhead. So @wrap typically is used to provide an optimized
+way to call certain GAP functions.
 
 Another use case for this macro is to improve type stability of code calling into
 GAP, via the type annotations for the arguments and return value contained in the
@@ -362,28 +362,20 @@ macro wrap(ex)
     # strip type annotation from arguments for use in the call to GAP
     args = [x isa Symbol ? x : x.args[1] for x in fullargs]
 
-    # construct the inner part of the @generated function;
-    # this requires careful double quoting
-    innerbody = :($(Expr(:$, newsym))($(args...))::$retval)
-    innerbody = Meta.quot(innerbody)
-
-    # we emit code directly invoking `_call_gap_func` to minimize
-    # overhead.
-    innerbody2 = :(GAP._call_gap_func($(Expr(:$, newsym)), $(args...))::$retval)
-    innerbody2 = Meta.quot(innerbody2)
-
     # the "outer" part of the body
     body = quote
-               local $newsym = GAP.Globals.$name::GapObj
-               if GAP.TNUM_OBJ($newsym) == GAP.T_FUNCTION && length($args) <= 6
-                   $innerbody2
-               else
-                   $innerbody
+               global $newsym
+               if !isassigned($newsym)
+                   $newsym[] = GAP.Globals.$name
                end
+               return $newsym[]($(args...))::$retval
            end
 
     # insert the correct line number
     body.args[1] = __source__
 
-    return esc(:(@generated $ex = $body))
+    return esc(quote
+       @eval const $newsym = Ref{GapObj}()
+       Base.@__doc__ $ex = $body
+    end)
 end
