@@ -1,5 +1,12 @@
 # Changes in GAP.jl
 
+## Version 0.7.6 (released 2022-02-07)
+
+- Improve how we show the error messaged triggered by a user trying to
+  load GAP.jl on native Windows (which isn't supported)
+- Rewrite `@wrap`, `@gapwrap` and `@gapattribute` to be better compatible
+  with future Julia versions.
+
 ## Version 0.7.5 (released 2022-01-24)
 
 - Improve type stability of the code for converting from GAP to Julia objects;
