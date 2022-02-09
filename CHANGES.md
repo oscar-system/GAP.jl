@@ -1,5 +1,9 @@
 # Changes in GAP.jl
 
+## Version X.Y (released YYYY-MM-DD)
+
+- Add `quiet` argument to `Packages.load` 
+
 ## Version 0.7.6 (released 2022-02-07)
 
 - Improve how we show the error messaged triggered by a user trying to

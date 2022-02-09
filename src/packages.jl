@@ -21,7 +21,7 @@ function init_packagemanager()
 end
 
 """
-    load(spec::String, version::String = ""; install = false)
+    load(spec::String, version::String = ""; install::Bool = false, quiet::Bool = true)
 
 Try to load the newest installed version of the GAP package with name `spec`.
 Return `true` if this is successful, and `false` otherwise.
@@ -32,19 +32,22 @@ the package banner is not printed.
 If `install` is set to `true` and the required GAP package is not yet
 installed then [`install`](@ref) is called first, in order to install
 the newest released version of the package.
+
+If `quiet` is set to `false` then package banners are shown for all packages
+being loaded. It is also passed on to [`install`](@ref).
 """
-function load(spec::String, version::String = ""; install = false)
+function load(spec::String, version::String = ""; install::Bool = false, quiet::Bool = true)
     # Try to load the package.
     gspec = GapObj(spec)
     gversion = GapObj(version)
-    loaded = Globals.LoadPackage(gspec, gversion, false)
+    loaded = Globals.LoadPackage(gspec, gversion, !quiet)
     if loaded == true
         return true
     elseif install == true
         # Try to install the package, without showing messages.
-        if Packages.install(spec; interactive = false, quiet = true)
+        if Packages.install(spec; interactive = false, quiet)
             # Make sure that the installed version is admissible.
-            return Globals.LoadPackage(gspec, gversion, false)
+            return Globals.LoadPackage(gspec, gversion, !quiet)
         end
     end
 
@@ -54,7 +57,8 @@ function load(spec::String, version::String = ""; install = false)
 end
 
 """
-    install(spec::String; interactive::Bool = true, pkgdir::AbstractString = GAP.Packages.DEFAULT_PKGDIR, quiet::Bool = false)
+    install(spec::String; interactive::Bool = true, quiet::Bool = false,
+                          pkgdir::AbstractString = GAP.Packages.DEFAULT_PKGDIR)
 
 Download and install the newest released version of the GAP package
 given by `spec` into the `pkgdir` directory.
@@ -71,7 +75,8 @@ The info messages shown by this function can be suppressed by passing
 prevent `PackageManager` from prompting the user for input interactively.
 For details, please refer to its documentation.
 """
-function install(spec::String; interactive::Bool = true, pkgdir::AbstractString = DEFAULT_PKGDIR, quiet::Bool = false)
+function install(spec::String; interactive::Bool = true, quiet::Bool = false,
+                               pkgdir::AbstractString = DEFAULT_PKGDIR)
     # point PackageManager to the given pkg dir
     Globals.PKGMAN_CustomPackageDir = GapObj(pkgdir)
     mkpath(pkgdir)
@@ -88,7 +93,8 @@ function install(spec::String; interactive::Bool = true, pkgdir::AbstractString 
 end
 
 """
-    update(spec::String; interactive::Bool = true, pkgdir::AbstractString = GAP.Packages.DEFAULT_PKGDIR, quiet::Bool = false)
+    update(spec::String; interactive::Bool = true, quiet::Bool = false,
+                         pkgdir::AbstractString = GAP.Packages.DEFAULT_PKGDIR)
 
 Update the GAP package given by `spec` that is installed in the
 `pkgdir` directory, to the latest version.
@@ -105,7 +111,8 @@ The info messages shown by this function can be suppressed by passing
 prevent `PackageManager` from prompting the user for input interactively.
 For details, please refer to its documentation.
 """
-function update(spec::String; interactive::Bool = true, pkgdir::AbstractString = DEFAULT_PKGDIR, quiet::Bool = false)
+function update(spec::String; interactive::Bool = true, quiet::Bool = false,
+                              pkgdir::AbstractString = DEFAULT_PKGDIR)
     # point PackageManager to the given pkg dir
     Globals.PKGMAN_CustomPackageDir = GapObj(pkgdir)
     mkpath(pkgdir)
@@ -125,7 +132,8 @@ end
 # thus nec. to start Julia anew
 
 """
-    remove(spec::String; interactive::Bool = true, pkgdir::AbstractString = GAP.Packages.DEFAULT_PKGDIR, quiet::Bool = false)
+    remove(spec::String; interactive::Bool = true, quiet::Bool = false,
+                         pkgdir::AbstractString = GAP.Packages.DEFAULT_PKGDIR)
 
 Remove the GAP package with name `spec` that is installed in the
 `pkgdir` directory.
@@ -138,7 +146,8 @@ The info messages shown by this function can be suppressed by passing
 prevent `PackageManager` from prompting the user for input interactively.
 For details, please refer to its documentation.
 """
-function remove(spec::String; interactive::Bool = true, pkgdir::AbstractString = DEFAULT_PKGDIR, quiet::Bool = false)
+function remove(spec::String; interactive::Bool = true, quiet::Bool = false,
+                              pkgdir::AbstractString = DEFAULT_PKGDIR)
     # point PackageManager to the given pkg dir
     Globals.PKGMAN_CustomPackageDir = GapObj(pkgdir)
     mkpath(pkgdir)
