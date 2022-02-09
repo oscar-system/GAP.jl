@@ -217,10 +217,10 @@ Base.hasproperty(x::GapObj, f::Union{AbstractString,Int64}) =
     Wrappers.ISB_REC(x, RNamObj(f))
 
 #
-Base.zero(x::Union{GapObj,FFE}) = Wrappers.ZERO(x)   # same mutability
-Base.one(x::Union{GapObj,FFE}) = Wrappers.ONE_MUT(x) # same mutability
-Base.inv(x::Union{GapObj,FFE}) = Wrappers.INV_MUT(x) # same mutability
-Base.:-(x::Union{GapObj,FFE}) = Wrappers.AINV(x)     # same mutability
+Base.zero(x::Union{GapObj,FFE}) = Wrappers.ZeroSameMutability(x)
+Base.one(x::Union{GapObj,FFE}) = Wrappers.OneSameMutability(x)
+Base.inv(x::Union{GapObj,FFE}) = Wrappers.InverseSameMutability(x)
+Base.:-(x::Union{GapObj,FFE}) = Wrappers.AdditiveInverseSameMutability(x)
 
 #
 Base.in(x::Any, y::GapObj) = Wrappers.IN(x, y)
@@ -325,11 +325,11 @@ Random.Sampler(::Type{<:AbstractGAPRNG}, x::AbstractVector, ::Random.Repetition)
     Random.SamplerTrivial(julia_to_gap(x, recursive=false))
 
 
-# The following bypasses GAP's redirection of `x^-1` to `INV_MUT(x)`.
+# The following bypasses GAP's redirection of `x^-1` to `InverseSameMutability(x)`.
 # Installing analogous methods for `x^0` and `x^1` would *not* be allowed,
-# these terms are equivalent to `ONE_MUT(x)` and `x`, respectively,
+# these terms are equivalent to `OneSameMutability(x)` and `x`, respectively,
 # only if `x` is a multiplicative element in the sense of GAP.
-Base.literal_pow(::typeof(^), x::GapObj, ::Val{-1}) = Wrappers.INV_MUT(x)
+Base.literal_pow(::typeof(^), x::GapObj, ::Val{-1}) = Wrappers.InverseSameMutability(x)
 
 # iteration
 
