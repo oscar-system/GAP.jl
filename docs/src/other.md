@@ -40,9 +40,10 @@ GAP operations.
 |--------------|----------|
 | `length`     | `Length` |
 | `in`         | `\in`    |
-| `zero`       | `ZERO`   |
-| `one`        | `ONE`    |
-| `-` (unary)  | `AINV`   |
+| `zero`       | `ZeroSameMutability`   |
+| `one`        | `OneSameMutability`    |
+| `-` (unary)  | `AdditiveInverseSameMutability`   |
+| `inv`        | `InverseSameMutability`    |
 | `+`          | `SUM`    |
 | `-` (binary) | `DIFF`   |
 | `*`          | `PROD`   |

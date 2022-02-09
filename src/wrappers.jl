@@ -3,7 +3,7 @@ module Wrappers
 using GAP
 import GAP: @wrap
 
-@wrap AINV(x::Any)::Any
+@wrap AdditiveInverseSameMutability(x::Any)::Any
 @wrap ASS_LIST(x::Any, i::Int, v::Any)::Nothing
 @wrap ASS_MAT(x::Any, i::Int, j::Int, v::Any)::Nothing
 @wrap ASS_REC(x::Any, y::Int, v::Any)::Nothing
@@ -21,7 +21,7 @@ import GAP: @wrap
 @wrap EQ(x::Any, y::Any)::Bool
 @wrap IN(x::Any, y::Any)::Bool
 @wrap INT_CHAR(x::Any)::Int
-@wrap INV_MUT(x::Any)::Any
+@wrap InverseSameMutability(x::Any)::Any
 @wrap IS_JULIA_FUNC(x::Any)::Bool
 @wrap ISB_LIST(x::Any, i::Int)::Bool
 @wrap ISB_REC(x::Any, y::Int)::Bool
@@ -49,7 +49,7 @@ import GAP: @wrap
 @wrap NumberColumns(x::Any)::GapInt
 @wrap NumberRows(x::Any)::GapInt
 @wrap NumeratorRat(x::Any)::GapInt
-@wrap ONE_MUT(x::Any)::Any
+@wrap OneSameMutability(x::Any)::Any
 @wrap PopOptions()::Nothing
 @wrap POW(x::Any, y::Any)::Any
 @wrap PROD(x::Any, y::Any)::Any
@@ -63,6 +63,6 @@ import GAP: @wrap
 @wrap StringViewObj(x::Any)::Any
 @wrap StructuralCopy(x::Any)::Any
 @wrap SUM(x::Any, y::Any)::Any
-@wrap ZERO(x::Any)::Any
+@wrap ZeroSameMutability(x::Any)::Any
 
 end
