@@ -1,5 +1,7 @@
 # Changes in GAP.jl
 
+## Version 0.8.0-DEV (released 2022-02-14)
+
 ## Version X.Y (released YYYY-MM-DD)
 
 - Add `quiet` argument to `Packages.load` 
