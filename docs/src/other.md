@@ -54,6 +54,17 @@ GAP operations.
 | `<`          | `LT`     |
 | `==`         | `EQ`     |
 
+The reason why four `SameMutability` operations are chosen in this list
+is as follows.
+In GAP, *binary* arithmetic operations return immutable results if and only if
+the two arguments are immutable.
+Thus it is consistent if *unary* arithmetic operations return a result
+with the same mutability as the argument.
+Note that GAP provides several variants of these unary operations,
+regarding the mutability of the result
+(`ZeroMutable`, `ZeroImmutable`, `ZeroSameMutability`, etc.),
+but here we have to choose one behaviour for the Julia function.
+
 ```jldoctest
 julia> l = GAP.julia_to_gap( [ 1, 3, 7, 15 ] )
 GAP: [ 1, 3, 7, 15 ]
