@@ -1,6 +1,6 @@
 # Changes in GAP.jl
 
-## Version 0.7.7 (released YYYY-MM-DD)
+## Version 0.7.7 (released 2022-02-14)
 
 - Add `quiet` argument to `Packages.load` 
 - Fix compatibility with Julia nightly
