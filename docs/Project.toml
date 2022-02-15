@@ -3,4 +3,4 @@ Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 GAP = "c863536a-3901-11e9-33e7-d5cd0df7b904"
 
 [compat]
-Documenter = "^0.25.0"
+Documenter = "^0.27.0"
