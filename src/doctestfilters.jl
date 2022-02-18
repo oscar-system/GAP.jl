@@ -17,3 +17,12 @@ GAP_doctestfilters = Regex[
     r"Vector\{Int64\}|Array\{Int64,1\}",
     r"Vector\{UInt8\}|Array\{UInt8,1\}",
 ]
+
+GAP_docs_pages = [
+        "index.md",
+        "basics.md",
+        "conversion.md",
+        "packages.md",
+        "other.md",
+        "manualindex.md",
+        ]

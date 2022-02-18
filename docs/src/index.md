@@ -35,4 +35,5 @@ The viewpoint of an interface from GAP to Julia is described in
 ## Table of contents
 
 ```@contents
+Pages = GAP.GAP_docs_pages
 ```
