@@ -19,6 +19,10 @@ end
 
 using GAP_jll
 
+GAP_jll.is_available() ||
+   error("""This platform or julia version is currently not supported by GAP:
+            $(Base.BinaryPlatforms.host_triplet())""")
+
 include("setup.jl")
 
 # always force regeneration of GAPROOT when precompiling
