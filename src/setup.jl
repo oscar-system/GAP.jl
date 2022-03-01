@@ -100,18 +100,11 @@ function regenerate_gaproot(gaproot_mutable)
     # now we modify sysinfo for our needs
     #
 
-    # run code in julia-config.jl to determine compiler and linker flags for Julia;
-    # remove apostrophes, they mess up quoting when used in shell code(although
-    # they are fine inside of Makefiles); this could cause problems if any
-    # paths involve spaces, but then we likely will haves problem in other
-    # places; in any case, if anybody ever cares about this, we can work on
-    # finding a better solution.
-    sysinfo["JULIA_CPPFLAGS"] = filter(c -> c != '\'', cflags())
-    sysinfo["JULIA_LDFLAGS"] = filter(c -> c != '\'', ldflags())
-    sysinfo["JULIA_LIBS"] = filter(c -> c != '\'', ldlibs())
-
-    # path to the currently used Julia executable
-    sysinfo["JULIA"] = joinpath(Sys.BINDIR, Base.julia_exename())
+    # delete obsolete keys
+    delete!(sysinfo, "JULIA")
+    delete!(sysinfo, "JULIA_CPPFLAGS")
+    delete!(sysinfo, "JULIA_LDFLAGS")
+    delete!(sysinfo, "JULIA_LIBS")
 
     #
     sysinfo["GAP_BIN_DIR"] = gaproot_mutable
@@ -143,12 +136,12 @@ function regenerate_gaproot(gaproot_mutable)
     # flags to link against libgap
     gmp_lib = joinpath(gmp_prefix, "lib")
     gap_lib = joinpath(gap_prefix, "lib")
-    sysinfo["GAP_LDFLAGS"] = "-L$(gmp_lib) -L$(gap_lib) -lgap " * sysinfo["JULIA_LDFLAGS"]
+    sysinfo["GAP_LDFLAGS"] = "-L$(gmp_lib) -L$(gap_lib) -lgap "
 
     # set library flags; note that for many packages (e.g. Browse) one really needs
     # additional flags.
     # We deliberately drop '-lz -lreadline' here, it should not be needed for packages
-    sysinfo["GAP_LIBS"] = """-lgmp -lgap """ * sysinfo["JULIA_LIBS"]
+    sysinfo["GAP_LIBS"] = "-lgmp -lgap"
 
     GAP_VERSION = VersionNumber(sysinfo["GAP_VERSION"])
     gaproot_packages = joinpath(Base.DEPOT_PATH[1], "gaproot", "v$(GAP_VERSION.major).$(GAP_VERSION.minor)")
@@ -263,10 +256,24 @@ end
 
 function build_JuliaInterface(gaproot::String, sysinfo::Dict{String, String}, srchash)
     @info "Compiling JuliaInterface ..."
+
+    # run code in julia-config.jl to determine compiler and linker flags for Julia;
+    # remove apostrophes, they mess up quoting when used in shell code(although
+    # they are fine inside of Makefiles); this could cause problems if any
+    # paths involve spaces, but then we likely will haves problem in other
+    # places; in any case, if anybody ever cares about this, we can work on
+    # finding a better solution.
+    JULIA_CPPFLAGS = filter(c -> c != '\'', cflags())
+    JULIA_LDFLAGS = filter(c -> c != '\'', ldflags())
+    JULIA_LIBS = filter(c -> c != '\'', ldlibs())
+
     jipath = joinpath(@__DIR__, "..", "pkg", "JuliaInterface")
     cd(jipath) do
-        run(pipeline(`./configure $gaproot`, stdout="build.log"))
-        run(pipeline(`make V=1 -j$(Sys.CPU_THREADS)`, stdout="build.log", append=true))
+        withenv("CFLAGS" => JULIA_CPPFLAGS,
+                "LDFLAGS" => JULIA_LDFLAGS * " " * JULIA_LIBS) do
+            run(pipeline(`./configure $gaproot`, stdout="build.log"))
+            run(pipeline(`make V=1 -j$(Sys.CPU_THREADS)`, stdout="build.log", append=true))
+        end
     end
 
     return normpath(joinpath(jipath, "bin", sysinfo["GAParch"]))
