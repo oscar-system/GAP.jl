@@ -4,9 +4,6 @@
 KEXT_NAME = JuliaInterface
 KEXT_SOURCES = src/JuliaInterface.c src/calls.c src/convert.c src/sync.c
 
-KEXT_CFLAGS = $(shell echo $(JULIA_CPPFLAGS))
-KEXT_LDFLAGS = $(shell echo $(JULIA_LDFLAGS) $(JULIA_LIBS))
-
 # include shared GAP package build system
 GAPPATH = @GAPPATH@
 include Makefile.gappkg
