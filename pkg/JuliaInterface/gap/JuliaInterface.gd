@@ -128,7 +128,7 @@ BindGlobal("TheTypeJuliaObject", NewType( JuliaObjectFamily, IsJuliaObject ));
 #! @Description
 #!  If the component or positional object <A>obj</A> is in this filter
 #!  then calling a &Julia; function with <A>obj</A> as an argument
-#!  will not pass <A>obj</A> as an <C>MPtr</C>,
+#!  will not pass <A>obj</A> as an <C>GapObj</C>,
 #!  but instead its <Ref Attr="JuliaPointer" Label="for IsJuliaWrapper"/>
 #!  value is passed, which must be a &Julia; object.
 #!  This admits implementing high-level wrapper objects

@@ -208,12 +208,12 @@
 #!    <C>Rational{T} where T &lt;:&nbsp;Integer</C>,
 #!  </Item>
 #!  <Item>
-#!    <C>MPtr and IsInt</C> to
+#!    <C>GapObj and IsInt</C> to
 #!    <C>BigInt</C> (default),
 #!    <C>Rational{T} where T &lt;:&nbsp;Integer</C>,
 #!  </Item>
 #!  <Item>
-#!    <C>MPtr and IsRat</C> to
+#!    <C>GapObj and IsRat</C> to
 #!    <C>Rational{BigInt}</C> (default),
 #!    <C>Rational{T} where T &lt;:&nbsp;Integer</C>,
 #!  </Item>
@@ -291,7 +291,7 @@
 #!    </Row>
 #!    <HorLine/>
 #!    <Row>
-#!      <Item><C>Int64</C>, <C>MPtr</C>, <C>GapFFE</C>, and <C>Bool</C></Item>
+#!      <Item><C>Int64</C>, <C>GapObj</C>, <C>GapFFE</C>, and <C>Bool</C></Item>
 #!      <Item></Item>
 #!      <Item>automatic conversion</Item>
 #!    </Row>
@@ -527,7 +527,7 @@ DeclareCategory( "IsRandomSourceJulia", IsRandomSource );
 #!     There could be a &Julia; type hierarchy of wrappers, e.g.,
 #!     <C>GAPInt &lt;: GAPRat &lt;: GAPCyc</C>;
 #!     those types would wrap the corresponding &GAP; objects,
-#!     i.e., they would simply wrap a <C>Union{MPtr,Int64}</C>,
+#!     i.e., they would simply wrap a <C>Union{GapObj,Int64}</C>,
 #!     but perhaps provided nicer integration with the rest of &Julia;,
 #!     like methods for <C>gcd</C>, say, which are properly type restricted;
 #!     or nicer printing (w/o the <C>GAP:</C> prefix even?).
