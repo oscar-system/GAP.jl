@@ -1,3 +1,6 @@
+import GAP_jll: GapObj
+
+
 """
     FFE
 
@@ -83,8 +86,7 @@ julia> GapObj(42)
 ERROR: TypeError: in typeassert, expected GapObj, got a value of type Int64
 
 ```
-"""
-const GapObj = GAP_jll.MPtr
+""" GapObj
 
 """
     GAP.Obj

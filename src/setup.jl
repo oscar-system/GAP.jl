@@ -130,7 +130,7 @@ function regenerate_gaproot(gaproot_mutable)
     gmp_include = joinpath(gmp_prefix, "include")
     gap_include = joinpath(gap_prefix, "include", "gap")
     gap_include2 = joinpath(gaproot_mutable) # for code doing `#include "src/compiled.h"`
-    sysinfo["GAP_CPPFLAGS"] = "-I$(gmp_include) -I$(gap_include) -I$(gap_include2) -DHAVE_CONFIG_H"
+    sysinfo["GAP_CPPFLAGS"] = "-I$(gmp_include) -I$(gap_include) -I$(gap_include2) -DUSE_JULIA_GC=1"
 
     # set linker flags; since these are meant for use for GAP packages, add the necessary
     # flags to link against libgap

@@ -1,16 +1,16 @@
 module GapFunctionPerform
 
-import GAP_jll: MPtr
+import GAP_jll: GapObj
 
-function typed_func(a::MPtr, b::MPtr)
+function typed_func(a::GapObj, b::GapObj)
     return a
 end
 
-function typed_func(a::MPtr, b::Int64)
+function typed_func(a::GapObj, b::Int64)
     return a
 end
 
-function typed_func(a::Int64, b::MPtr)
+function typed_func(a::Int64, b::GapObj)
     return a
 end
 
