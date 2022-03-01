@@ -1,8 +1,9 @@
 # Changes in GAP.jl
 
-## Version 0.8.0 (released 2022-03-DD)
+## Version 0.8.0-DEV (released YYYY-MM-DD)
 
 - Upgrade to newer GAP snapshot
+- Give helpful error if GAP_jll is not available
 - Remove `Base.big(obj::GapObj)`: nothing was using it and it does not really
   fit conceptually into this package.
 
