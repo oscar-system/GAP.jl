@@ -220,23 +220,23 @@ julia> @gapattribute isstrictlysortedlist(obj::GAP.GapObj) = GAP.Globals.IsSSort
 
 julia> l = GapObj([ 1, 3, 7 ]);
 
-julia> hasisstrictlysortedlist( l )
+julia> has_isstrictlysortedlist( l )
 false
 
 julia> isstrictlysortedlist( l )
 true
 
-julia> hasisstrictlysortedlist( l )
+julia> has_isstrictlysortedlist( l )
 true
 
 julia> l = GapObj([ 1, 3, 7 ]);
 
-julia> hasisstrictlysortedlist( l )
+julia> has_isstrictlysortedlist( l )
 false
 
-julia> setisstrictlysortedlist( l, true )
+julia> set_isstrictlysortedlist( l, true )
 
-julia> hasisstrictlysortedlist( l )
+julia> has_isstrictlysortedlist( l )
 true
 
 julia> isstrictlysortedlist( l )
@@ -277,8 +277,8 @@ macro gapattribute(ex)
     # ... and on the Julia side.
     julianame = string(def_dict[:name])
     juliaarg = def_dict[:args][1]
-    testername = Symbol("has" * julianame)
-    settername = Symbol("set" * julianame)
+    testername = Symbol("has_" * julianame)
+    settername = Symbol("set_" * julianame)
 
     # assemble everything
     result = quote

@@ -13,11 +13,11 @@
     @test !occursin("No documentation found", string(doc))
     @test occursin("if the input integer is even", string(doc))
 
-    doc = string(@doc hasisevenint_GAP)
+    doc = string(@doc has_isevenint_GAP)
     @test !occursin("No documentation found", string(doc))
     @test occursin("has already been computed", string(doc))
 
-    doc = string(@doc setisevenint_GAP)
+    doc = string(@doc set_isevenint_GAP)
     @test !occursin("No documentation found", string(doc))
     @test occursin("Set the value", string(doc))
 
@@ -27,12 +27,12 @@
     @test GAP.Globals.Size(GAP.Globals.Centre(G)) == 1
     G = GAP.Globals.SmallGroup(72, 15)  # create the group anew
     @test ! GAP.Globals.HasCentre(G)
-    @test ! hasdersub(G)
-    @test ! hascendersub(G)
-    @test hasdersub(G)  # the previous call has set the value
+    @test ! has_dersub(G)
+    @test ! has_cendersub(G)
+    @test has_dersub(G)  # the previous call has set the value
     ggens = GAP.Globals.GeneratorsOfGroup(G)
-    setcendersub(G, GAP.Globals.Subgroup(G, GAP.GapObj([ggens[3]])))
-    @test hascendersub(G)
+    set_cendersub(G, GAP.Globals.Subgroup(G, GAP.GapObj([ggens[3]])))
+    @test has_cendersub(G)
     @test GAP.Globals.HasCentre(GAP.Globals.DerivedSubgroup(G))
     @test GAP.Globals.Size(GAP.Globals.Centre(G)) == 1
 
