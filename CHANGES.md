@@ -3,7 +3,11 @@
 ## Version 0.8.0-DEV (released YYYY-MM-DD)
 
 - Upgrade to newer GAP snapshot
-- Give helpful error if GAP_jll is not available
+- Give helpful error if `GAP_jll` is not available
+- Change `@gapattribute` to use prefixes `has_` and `set_` instead of
+  `has` and `set`. So for example for `@gapattribute isfinite(obj) = ...`
+  the tester function now is `has_isfinite` instead of `hasisfinite` and
+  the setter function is `set_isfinite` instead of `setisfinite`.
 - Remove `Base.big(obj::GapObj)`: nothing was using it and it does not really
   fit conceptually into this package.
 
