@@ -9,8 +9,7 @@ function( name, val )
   if not IsString( name ) then
     Error( "JuliaSetVal: <name> must be a string (not the value '", name, "')" );
   else
-    JuliaFunction( "_setglobal!", "GAP" )( Julia.Main,
-        Julia.Symbol( GAPToJulia( name ) ), val );
+    Julia.GAP.( "_setglobal!" )( Julia.Main, JuliaSymbol( name ), val );
   fi;
 end );
 
