@@ -1,12 +1,24 @@
 import REPL.REPLCompletions: completions
 
-## These two functions are used on the GAP side.
+## These functions are used on the GAP side.
+
+# a helper function, not to be documented
+function _setglobal!(M::Module, name::Symbol, val::Any)
+  @static if isdefined(Core,:setglobal!)
+    # `setglobal!` is available in Julia 1.9.
+    return Core.setglobal!(M, name, val)
+  else
+    # `jl_set_global` is available up to Julia 1.8.
+    ccall(:jl_set_global, Cvoid, (Any, Any, Any), M, name, val)
+    return val
+  end
+end
 
 """
     get_symbols_in_module(m::Module) :: Vector{Symbol}
 
 Return all symbols in the module `m`.
-This is used in a GAP method for `RecName`.
+This is used in a GAP method for `RecNames`.
 """
 function get_symbols_in_module(m::Module)
     name = string(nameof(m))
