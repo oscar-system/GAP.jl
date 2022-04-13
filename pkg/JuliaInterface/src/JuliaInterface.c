@@ -252,20 +252,6 @@ static Obj FuncJuliaSymbol(Obj self, Obj name)
     return NewJuliaObj((jl_value_t *)julia_symbol);
 }
 
-// Sets the value of the julia identifier <name> to the <val>.
-// This function is for debugging purposes.
-static Obj FuncJuliaSetVal(Obj self, Obj name, Obj val)
-{
-    BEGIN_GAP_SYNC();
-    RequireStringRep("JuliaSetVal", name);
-
-    jl_value_t * julia_obj = julia_gap(val);
-    jl_sym_t *   julia_symbol = jl_symbol(CONST_CSTR_STRING(name));
-    END_GAP_SYNC();
-    jl_set_global(jl_main_module, julia_symbol, julia_obj);
-    return 0;
-}
-
 // Returns the julia object GAP object that holds a pointer to the value
 // currently bound to the julia identifier <name>.
 static Obj Func_JuliaGetGlobalVariable(Obj self, Obj name)
@@ -333,7 +319,6 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(_JuliaFunctionByModule, 2, "funcName, moduleName"),
     GVAR_FUNC(IS_JULIA_FUNC, 1, "obj"),
     GVAR_FUNC(JuliaEvalString, 1, "string"),
-    GVAR_FUNC(JuliaSetVal, 2, "name,val"),
     GVAR_FUNC(_JuliaGetGlobalVariable, 1, "name"),
     GVAR_FUNC(_JuliaGetGlobalVariableByModule, 2, "name, module"),
     GVAR_FUNC(JuliaSymbol, 1, "name"),
