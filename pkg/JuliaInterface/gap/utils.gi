@@ -4,6 +4,25 @@
 ##
 #############################################################################
 
+BindGlobal( "JuliaSetVal",
+function( name, val )
+  if not IsString( name ) then
+    Error( "JuliaSetVal: <name> must be a string (not the value '", name, "')" );
+  elif Julia.isdefined( Julia.Core,
+         Julia.Symbol( GAPToJulia( "setglobal!" ) ) ) then
+    # Julia 1.9 introduces `setglobal!`.
+    JuliaFunction( "setglobal!" )( Julia.Main,
+        Julia.Symbol( GAPToJulia( name ) ), val );
+  else
+    # `jl_set_global` is available up to Julia 1.8.
+    GAPInfo.JuliaValue:= val;
+    JuliaEvalString( Concatenation(
+        "ccall(:jl_set_global, Cvoid, (Any, Any, Any), Main, Symbol(\"", name,
+        "\"), GAP.Globals.GAPInfo.JuliaValue)" ) );
+    Unbind( GAPInfo.JuliaValue );
+  fi;
+end );
+
 ## Create a record from key value lists
 BindGlobal( "CreateRecFromKeyValuePairList",
   function( keys, vals )
