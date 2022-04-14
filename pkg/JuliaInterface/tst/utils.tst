@@ -24,13 +24,6 @@ gap> JuliaEvalString(fail);
 Error, JuliaEvalString: <string> must be a string (not the value 'fail')
 
 ##
-gap> JuliaSetVal(fail, 1);
-Error, JuliaSetVal: <name> must be a string (not the value 'fail')
-gap> JuliaSetVal("foo", JuliaEvalString("1"));
-gap> Julia.Main.foo;
-1
-
-##
 gap> Julia.Core.Tuple( GAPToJulia( JuliaEvalString( "Vector{Any}" ), [] ) );
 <Julia: ()>
 gap> Julia.Core.Tuple( GAPToJulia( JuliaEvalString( "Vector{Any}" ), [1] ) );

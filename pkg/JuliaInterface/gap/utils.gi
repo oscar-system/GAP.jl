@@ -4,15 +4,6 @@
 ##
 #############################################################################
 
-BindGlobal( "JuliaSetVal",
-function( name, val )
-  if not IsString( name ) then
-    Error( "JuliaSetVal: <name> must be a string (not the value '", name, "')" );
-  else
-    Julia.GAP.( "_setglobal!" )( Julia.Main, JuliaSymbol( name ), val );
-  fi;
-end );
-
 ## Create a record from key value lists
 BindGlobal( "CreateRecFromKeyValuePairList",
   function( keys, vals )
