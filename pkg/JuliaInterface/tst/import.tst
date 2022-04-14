@@ -28,7 +28,9 @@ false
 gap> Julia.Base.foo_bar_quux_not_defined;
 Error, foo_bar_quux_not_defined is not bound in Julia
 gap> Julia.Base.foo_bar_quux_not_defined := 1;
-Error, Manual assignment to module is not allowed
+1
+gap> Julia.Base.foo_bar_quux_not_defined;
+1
 
 #
 gap> IsBound( Julia.Base.C_NULL );

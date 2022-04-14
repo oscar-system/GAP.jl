@@ -70,7 +70,7 @@ end );
 InstallMethod( \.\:\=,
                [ "IsJuliaModule", "IsPosInt", "IsObject" ],
   function( module, rnum, obj )
-    Error( "Manual assignment to module is not allowed" );
+    Julia.GAP._setglobal( module, JuliaSymbol( NameRNam( rnum ) ), obj );
 end );
 
 InstallMethod( IsBound\.,

@@ -3,7 +3,7 @@ import REPL.REPLCompletions: completions
 ## These functions are used on the GAP side.
 
 # a helper function, not to be documented
-function _setglobal!(M::Module, name::Symbol, val::Any)
+function _setglobal(M::Module, name::Symbol, val::Any)
   @static if isdefined(Core,:setglobal!)
     # `setglobal!` is available in Julia 1.9.
     return Core.setglobal!(M, name, val)

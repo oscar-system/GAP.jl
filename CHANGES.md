@@ -4,6 +4,9 @@
 
 - Upgrade to newer GAP snapshot
 - Give helpful error if `GAP_jll` is not available
+- Allow assigning Julia variables in arbitrary Julia modules from GAP.
+  For example `Julia.x := 1` sets the variable `x` in the `Main` module,
+  as does `Julia.Main.x := 1`.
 - Change `@gapattribute` to use prefixes `has_` and `set_` instead of
   `has` and `set`. So for example for `@gapattribute isfinite(obj) = ...`
   the tester function now is `has_isfinite` instead of `hasisfinite` and
