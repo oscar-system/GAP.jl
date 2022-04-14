@@ -53,5 +53,5 @@ end
 
     ioc = IOContext(io, :module => nothing);
     print(ioc, GAP.GapObj)
-    @test String(take!(io)) == "GAP.GapObj"
+    @test String(take!(io)) == "GAP_jll.GapObj"
 end
