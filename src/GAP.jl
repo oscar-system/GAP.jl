@@ -212,8 +212,8 @@ function __init__()
     end
 
     # HACK HACK HACK: ensure the type GapObj (which is just an alias
-    # for `GAP_jll.MPtr`) is printed as ours
-    ccall((:OverrideTypeNameAndModule, JuliaInterface_path()), Cvoid, (Any, Any, Any), GapObj, GAP, :GapObj)
+    # for `GAP_jll.GapObj`) is printed as ours
+    ccall((:OverrideTypeNameAndModule, JuliaInterface_path()), Cvoid, (Any, Any), GapObj, GAP)
 
     # regenerate GAPROOT if it was removed
     if !isdir(GAPROOT) || isempty(readdir(GAPROOT))
