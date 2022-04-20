@@ -61,7 +61,7 @@ function select_compiler(lang, candidates, extension)
         end
     end
     @warn "Could not locate a working $(lang) compiler"
-    return nothing
+    return first(candidates)
 end
 
 include("julia-config.jl")
@@ -112,14 +112,14 @@ function regenerate_gaproot(gaproot_mutable)
 
     # Locate C compiler (for use by GAP packages)
     cc_candidates = [ "cc", "gcc", "clang" ]
-    haskey(ENV, "GAP_CC") && pushfirst!(cc_candidates, ENV["GAP_CC"])
     haskey(ENV, "CC") && pushfirst!(cc_candidates, ENV["CC"])
+    haskey(ENV, "GAP_CC") && pushfirst!(cc_candidates, ENV["GAP_CC"])
     CC = sysinfo["GAP_CC"] = select_compiler("C", cc_candidates, ".c")
 
     # Locate  C++ compiler (for use by GAP packages)
     cxx_candidates = [ "c++", "g++", "clang++" ]
-    haskey(ENV, "GAP_CXX") && pushfirst!(GAP_CXX_candidates, ENV["GAP_CXX"])
     haskey(ENV, "CXX") && pushfirst!(cxx_candidates, ENV["CXX"])
+    haskey(ENV, "GAP_CXX") && pushfirst!(GAP_CXX_candidates, ENV["GAP_CXX"])
     CXX = sysinfo["GAP_CXX"] = select_compiler("C++", cxx_candidates, ".cc")
 
     sysinfo["GAP_CFLAGS"] = " -g -O2"
