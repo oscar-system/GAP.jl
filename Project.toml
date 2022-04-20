@@ -18,7 +18,7 @@ Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 
 [compat]
 GAP_jll = "~400.1192.001"
-GAP_lib_jll = "~400.1192.001"
+GAP_lib_jll = "~400.1192.002"
 GAP_pkg_juliainterface_jll = "=0.700.301"
 MacroTools = "0.5"
 julia = "1.6"
