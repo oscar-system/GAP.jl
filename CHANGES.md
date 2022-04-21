@@ -13,6 +13,13 @@
   the setter function is `set_isfinite` instead of `setisfinite`.
 - Remove `Base.big(obj::GapObj)`: nothing was using it and it does not really
   fit conceptually into this package.
+- Implement tab completion on GAP prompts for Julia module members;
+  so e.g. typing `Julia.GA` followed by a tab key press is completed to
+  `Julia.GAP`, and `Julia.GAP.` then suggests the names of all members
+  of the `GAP` module
+- Fix a bug where a warning issues when no C/C++ compiler could be found
+  was accidentally turned into an error that prevented loading GAP.jl.
+  Note that installing certain GAP packages still requires a C/C++ compiler.
 
 ## Version 0.7.7 (released 2022-02-14)
 
