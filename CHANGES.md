@@ -1,6 +1,6 @@
 # Changes in GAP.jl
 
-## Version 0.8.0-DEV (released YYYY-MM-DD)
+## Version 0.8.0 (released 2022-04-21)
 
 - Upgrade to newer GAP snapshot
 - Give helpful error if `GAP_jll` is not available
