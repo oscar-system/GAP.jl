@@ -231,6 +231,7 @@ end
 (func::GapObj)(args...; kwargs...) = call_gap_func(func, args...; kwargs...)
 
 # specialize non-kwargs versions, which increases performance
+(func::GapObj)() = call_gap_func_nokw(func)
 (func::GapObj)(a1) = call_gap_func_nokw(func, a1)
 (func::GapObj)(a1, a2) = call_gap_func_nokw(func, a1, a2)
 (func::GapObj)(a1, a2, a3) = call_gap_func_nokw(func, a1, a2, a3)
