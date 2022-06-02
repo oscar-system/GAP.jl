@@ -81,14 +81,21 @@ function install(spec::String; interactive::Bool = true, quiet::Bool = false,
     Globals.PKGMAN_CustomPackageDir = GapObj(pkgdir)
     mkpath(pkgdir)
 
-    if quiet
-      oldlevel = Globals.InfoLevel(Globals.InfoPackageManager)
-      Globals.SetInfoLevel(Globals.InfoPackageManager, 0)
-      res = Globals.InstallPackage(GapObj(spec), interactive)
-      Globals.SetInfoLevel(Globals.InfoPackageManager, oldlevel)
-      return res
-    else
-      return Globals.InstallPackage(GapObj(spec), interactive)
+    try
+      if quiet
+        oldlevel = Globals.InfoLevel(Globals.InfoPackageManager)
+        Globals.SetInfoLevel(Globals.InfoPackageManager, 0)
+        res = Globals.InstallPackage(GapObj(spec), interactive)
+        Globals.SetInfoLevel(Globals.InfoPackageManager, oldlevel)
+        return res
+      else
+        return Globals.InstallPackage(GapObj(spec), interactive)
+      end
+    catch e
+      if ! quiet
+        println( "cannot install $spec:\n$e")
+      end
+      return false
     end
 end
 
