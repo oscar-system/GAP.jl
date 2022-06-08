@@ -4,6 +4,21 @@
 ##
 #############################################################################
 
+## Access data from component and positional objects
+BindGlobal( "BangComponent", { obj, nam } -> obj!.( nam ) );
+
+BindGlobal( "SetBangComponent",
+  function( obj, nam, val )
+    obj!.( nam ):= val;
+  end );
+
+BindGlobal( "BangPosition", { obj, pos } -> obj![ pos ] );
+
+BindGlobal( "SetBangPosition",
+  function( obj, pos, val )
+    obj![ pos ]:= val;
+  end );
+
 ## Create a record from key value lists
 BindGlobal( "CreateRecFromKeyValuePairList",
   function( keys, vals )

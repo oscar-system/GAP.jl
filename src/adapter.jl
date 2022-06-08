@@ -3,6 +3,8 @@
 
 import Base: getindex, setindex!, length, show
 
+export getbangindex, setbangindex!, getbangproperty, setbangproperty!
+
 function show_string(io::IO, obj::Union{GapObj,FFE})
     str = Wrappers.StringViewObj(obj)
     stri = CSTR_STRING(str)
@@ -133,6 +135,53 @@ Base.lastindex(x::GapObj)::Int = Wrappers.Length(x)
 Base.getindex(x::GapObj, i::Int64, j::Int64) = Wrappers.ELM_MAT(x, i, j)
 Base.setindex!(x::GapObj, v::Any, i::Int64, j::Int64) = Wrappers.ASS_MAT(x, i, j, v)
 
+# access and set internals of positional objects
+"""
+    getbangindex(x::GapObj, i::Int64)
+
+Return the entry at position `i` in the
+[positional object](GAP_ref(ref:IsPositionalObjectRep)) `x`.
+
+# Examples
+```jldoctest
+julia> x = GAP.Globals.ZmodnZObj(1, 6)
+GAP: ZmodnZObj( 1, 6 )
+
+julia> GAP.Globals.IsPositionalObjectRep(x)
+true
+
+julia> getbangindex(x, 1)
+1
+
+```
+"""
+getbangindex(x::GapObj, i::Int64) = Globals.BangPosition(x, i)
+
+"""
+    setbangindex!(x::GapObj, v::Any, i::Int64)
+
+Set the entry at position `i` in the
+[positional object](GAP_ref(ref:IsPositionalObjectRep)) `x` to `v`,
+and return `x`.
+
+# Examples
+```jldoctest
+julia> x = GAP.Globals.ZmodnZObj(1, 6)
+GAP: ZmodnZObj( 1, 6 )
+
+julia> GAP.Globals.IsPositionalObjectRep(x)
+true
+
+julia> setbangindex!(x, 0, 1)
+GAP: ZmodnZObj( 0, 6 )
+
+```
+"""
+function setbangindex!(x::GapObj, v::Any, i::Int64)
+  Globals.SetBangPosition(x, i, v)
+  return x
+end
+
 # records
 RNamObj(f::Union{Symbol,Int64,AbstractString}) = Wrappers.RNamObj(MakeString(string(f)))
 # note: we don't use Union{Symbol,Int64,AbstractString} below to avoid
@@ -215,6 +264,57 @@ GAP: rec( a := 1, b := 2 )
 Base.hasproperty(x::GapObj, f::Symbol) = Wrappers.ISB_REC(x, RNamObj(f))
 Base.hasproperty(x::GapObj, f::Union{AbstractString,Int64}) =
     Wrappers.ISB_REC(x, RNamObj(f))
+
+# access internals of component objects
+"""
+    getbangproperty(x::GapObj, f::Union{AbstractString,Int64,Symbol})
+
+Return the value of the component `f` in the
+[component object](GAP_ref(ref:IsComponentObjectRep)) `x`.
+
+# Examples
+```jldoctest
+julia> x = GAP.Globals.Iterator(GAP.Globals.Integers)
+GAP: <iterator of Integers at 0>
+
+julia> GAP.Globals.IsComponentObjectRep(x)
+true
+
+julia> getbangproperty(x, :counter)
+0
+
+```
+"""
+getbangproperty(x::GapObj, f::Union{AbstractString,Int64,Symbol}) =
+    Globals.BangComponent(x, Obj(f))
+
+"""
+    setbangproperty!(x::GapObj, f::Union{AbstractString,Int64,Symbol}, v)
+
+Set the value of the component `f` in the
+[component object](GAP_ref(ref:IsComponentObjectRep)) `x` to `v`,
+and return `x`.
+
+# Examples
+```jldoctest
+julia> x = GAP.Globals.Iterator(GAP.Globals.Integers)
+GAP: <iterator of Integers at 0>
+
+julia> GAP.Globals.IsComponentObjectRep(x)
+true
+
+julia> setbangproperty!(x, :counter, 3)
+GAP: <iterator of Integers at -1>
+
+julia> getbangproperty(x, :counter)
+3
+
+```
+"""
+function setbangproperty!(x::GapObj, f::Union{AbstractString,Int64,Symbol}, v)
+  Globals.SetBangComponent(x, Obj(f), v)
+  return x
+end
 
 #
 Base.zero(x::Union{GapObj,FFE}) = Wrappers.ZeroSameMutability(x)

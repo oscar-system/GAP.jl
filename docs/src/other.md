@@ -25,9 +25,13 @@ call_gap_func
 call_with_catch
 getindex
 setindex!
+getbangindex
+setbangindex!
 getproperty
 setproperty!
 hasproperty
+getbangproperty
+setbangproperty!
 wrap_rng
 randseed!
 ```
