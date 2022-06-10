@@ -1,5 +1,13 @@
 # Changes in GAP.jl
 
+## Version 0.8.1-DEV (released YYYY-MM-DD)
+
+- Add `getbangindex`, `setbangindex!`, `getbangproperty`, `setbangproperty!`,
+  helpers to access to internals of positional and component objects
+- Optimize speed of calls to GAP function without arguments
+- Fix `Packages.install` to deal with more kinds of download errors
+  (e.g. when the user is offline)
+
 ## Version 0.8.0 (released 2022-04-21)
 
 - Upgrade to newer GAP snapshot
