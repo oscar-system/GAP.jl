@@ -4,11 +4,14 @@
     @test ! GAP.Packages.load("no such package")
     @test ! GAP.Packages.load("no such package", install = true)
 
-    @test GAP.Packages.install("io", interactive = false)
-    @test GAP.Packages.remove("io", interactive = false)
+    tmproot = mktempdir()
+    pkgdir = joinpath(tmproot, "pkg")
+    mkpath(pkgdir)
+    GG = GAP.Globals
+    GG.GAPInfo.RootPaths = GG.Concatenation(GapObj([tmproot]; recursive = true), GG.GAPInfo.RootPaths)
 
-#    pkgdir = mktempdir()
-#    @test GAP.Packages.install("io", interactive = false, pkgdir = pkgdir)
-#    @test GAP.Packages.remove("io", interactive = false, pkgdir = pkgdir)
+    #GAP.Globals.ExtendRootDirectories(GapObj([tmproot * "/"]; recursive=true))
+    @test GAP.Packages.install("io", interactive = false, pkgdir = pkgdir)
+    @test GAP.Packages.remove("io", interactive = false, pkgdir = pkgdir)
 
 end
