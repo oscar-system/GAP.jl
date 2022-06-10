@@ -1,6 +1,6 @@
 # Changes in GAP.jl
 
-## Version 0.8.1-DEV (released YYYY-MM-DD)
+## Version 0.8.1 (released 2022-06-10)
 
 - Add `getbangindex`, `setbangindex!`, `getbangproperty`, `setbangproperty!`,
   helpers to access to internals of positional and component objects
