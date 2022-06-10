@@ -13,15 +13,9 @@ function init_packagemanager()
     # overwrite PKGMAN_DownloadURL
     Globals.MakeReadWriteGlobal(GapObj("PKGMAN_DownloadURL"))
     Globals.PKGMAN_DownloadURL = function(url)
-      # We catch errors occuring during the download
-      # in order to throw a Julia exception not a GAP error.
-      # If an error occurs then we show it to the user.
-      try
+        # exception handling is omitted by concept, i.e. errors occuring during the download are shown to the user
         buffer = Downloads.download(String(url), IOBuffer())
         return GapObj(Dict{Symbol, Any}(:success => true, :result => String(take!(buffer))), recursive=true)
-      catch e
-        rethrow()
-      end
     end
     Globals.MakeReadOnlyGlobal(GapObj("PKGMAN_DownloadURL"))
 end
