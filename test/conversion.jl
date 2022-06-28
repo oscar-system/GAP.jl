@@ -1,3 +1,15 @@
+@testset "_needs_conversion_tracking" begin
+    @test !GAP._needs_conversion_tracking(Int)
+    @test !GAP._needs_conversion_tracking(GAP.FFE)
+    @test !GAP._needs_conversion_tracking(GAP.GapObj)
+    #@test !GAP._needs_conversion_tracking(GAP.Obj)
+    #@test !GAP._needs_conversion_tracking(GAP.Obj)
+    @test !GAP._needs_conversion_tracking(Tuple{Int,Int})
+
+    @test GAP._needs_conversion_tracking(Vector{Int})
+    @test GAP._needs_conversion_tracking(String)
+end
+
 @testset "conversion from GAP" begin
 
   @testset "Defaults" begin
@@ -101,7 +113,7 @@
     x = GAP.evalstr("\"foo\"")
     @test (@inferred GAP.gap_to_julia(Symbol, x)) == :foo
     x = GAP.evalstr("(1,2,3)")
-    @test_throws GAP.ConversionError GAP.gap_to_julia(String, x)
+    @test_throws GAP.ConversionError GAP.gap_to_julia(Symbol, x)
 
     # Convert GAP string to Vector{UInt8} (==Vector{UInt8})
     x = GAP.evalstr("\"foo\"")
@@ -197,7 +209,7 @@
     y = GAP.gap_to_julia(Tuple{GAP.Obj,Any}, x; recursive = false)
     @test isa(y, Tuple)
     @test isa(y[1], GAP.Obj)
-    @test isa(y[2], Array)
+    @test isa(y[2], GAP.Obj)
     @test isa(y[2][2], GAP.Obj)
   end
 
@@ -263,14 +275,14 @@
 
   @testset "Catch conversions to types that are not supported" begin
     xx = GAP.julia_to_gap("a")
-    @test_throws ErrorException GAP.gap_to_julia(Dict{Int64,Int64}, xx)
+    @test_throws GAP.ConversionError GAP.gap_to_julia(Dict{Int64,Int64}, xx)
   end
 
   @testset "Test converting GAP lists with holes in them" begin
     xx = GAP.evalstr("[1,,1]")
     @test GAP.gap_to_julia(xx) == Any[1, nothing, 1]
     @test GAP.gap_to_julia(Vector{Any}, xx) == Any[1, nothing, 1]
-    @test_throws MethodError GAP.gap_to_julia(Vector{Int64}, xx)
+    @test_throws GAP.ConversionError GAP.gap_to_julia(Vector{Int64}, xx)
     @test GAP.gap_to_julia(Vector{Union{Nothing,Int64}}, xx) ==
           Union{Nothing,Int64}[1, nothing, 1]
     @test GAP.gap_to_julia(Vector{Union{Int64,Nothing}}, xx) ==

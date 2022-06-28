@@ -83,7 +83,7 @@
     x = GAP.evalstr("\"foo\"")
     @test (@inferred Symbol(x)) == :foo
     x = GAP.evalstr("(1,2,3)")
-    @test_throws GAP.ConversionError String(x)
+    @test_throws GAP.ConversionError Symbol(x)
 
     # Convert GAP string to Vector{UInt8} (==Vector{UInt8})
     x = GAP.evalstr("\"foo\"")
@@ -169,7 +169,7 @@
     y = Tuple{GAP.Obj,Any}(x; recursive = false)
     @test isa(y, Tuple)
     @test isa(y[1], GAP.Obj)
-    @test isa(y[2], Array)
+    @test isa(y[2], GAP.Obj)
     @test isa(y[2][2], GAP.Obj)
   end
 
@@ -220,7 +220,7 @@
   @testset "Test converting GAP lists with holes in them" begin
     xx = GAP.evalstr("[1,,1]")
     @test (@inferred Vector{Any}(xx)) == Any[1, nothing, 1]
-    @test_throws MethodError Vector{Int64}(xx)
+    @test_throws GAP.ConversionError Vector{Int64}(xx)
     @test (@inferred Vector{Union{Nothing,Int64}}(xx)) == Union{Nothing,Int64}[1, nothing, 1]
     @test (@inferred Vector{Union{Int64,Nothing}}(xx)) == Union{Nothing,Int64}[1, nothing, 1]
   end

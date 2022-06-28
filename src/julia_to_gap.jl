@@ -106,13 +106,16 @@ julia_to_gap(x::AbstractString) = MakeString(string(x))
 julia_to_gap(x::Symbol) = MakeString(string(x))
 
 ## Generic caller for optional arguments
-julia_to_gap(obj::Any; recursive::Bool) = julia_to_gap(obj)
+julia_to_gap(obj::Any; recursive::Bool) = julia_to_gap(obj) # FIXME
 julia_to_gap(obj::Any, recursion_dict::IdDict{Any,Any}; recursive::Bool = true) = julia_to_gap(obj)
+
+# split into julia_to_gap
+
 
 ## Arrays (including BitVector)
 function julia_to_gap(
     obj::Vector{T},
-    recursion_dict::IdDict{Any,Any} = IdDict();
+    recursion_dict::IdDict{Any,Any} = IdDict();  # TODO: allow Nothing
     recursive::Bool = false,
 ) where {T}
 
@@ -154,6 +157,31 @@ function julia_to_gap(
         ret_val[i] = julia_to_gap(obj[i, :], recursion_dict; recursive)
     end
     return ret_val
+end
+
+## Sets
+function GAP.julia_to_gap(
+    obj::Set{T},
+    recursion_dict::IdDict{Any,Any} = IdDict();
+    recursive::Bool = false,
+) where {T}
+
+    gapset = GAP.NewPlist(length(obj))
+    if recursive
+        recursion_dict[obj] = gapset
+    end
+    for x in obj
+        if recursive
+            x = get!(recursion_dict, x) do
+                GAP.julia_to_gap(x, recursion_dict; recursive)
+            end
+        end
+        GAP.Globals.Add(gapset, x)
+    end
+    GAP.Globals.Sort(gapset)
+    @assert GAP.Globals.IsSet(gapset)
+
+    return gapset
 end
 
 ## Tuples

@@ -1,3 +1,19 @@
+## Version X.Y.Z-DEV (released YYYY-MM-DD)
+
+- Rewrite `gap_to_julia` to improve performance, fix bugs in many corner
+  cases, and make it easier to extend it correctly in other packages. The
+  target type of conversions now must be either ...
+  - `Any` (in which case we try to "guess" a suitable result type),
+  - or a supertype of the given object (in which case the input is returned unmodified),
+  - or else a concrete type (and this will then be the type of the result).
+
+  Thus e.g. `GAP.gap_to_julia(AbstractString, x)`  no longer
+  works if `x` is a GAP string object; use `GAP.gap_to_julia(String, x)`
+  instead.
+  To extend the GAP-to-Julia conversion code, you should provide a method
+  `gap_to_julia_intern(type::YourType, input::Any, recursive::Bool, dict::GapToJuliaDict)`
+  TODO: .. consult the documentation in location TODO
+
 # Changes in GAP.jl
 
 ## Version 0.9.8 (released 2023-09-11)

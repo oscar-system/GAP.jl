@@ -255,7 +255,7 @@ gap> Julia.GAP.Obj( xx );
 
 ##  empty record
 gap> dict:= GAPToJulia( rec() );
-<Julia: Dict{Symbol,Any}()>
+<Julia: Dict{Symbol, Any}()>
 gap> JuliaToGAP( IsRecord, dict );
 rec(  )
 gap> Julia.GAP.Obj( dict );
@@ -278,7 +278,7 @@ rec( bool := true, list := [ 1, 2, 3 ], string := "abc" )
 ##  something where recursive conversion would run into a Julia error
 gap> dict:= GAPToJulia( rec( juliafunc:= Julia.Base.map,
 >                          ) );
-<Julia: Dict{Symbol,Any}(:juliafunc=>map)>
+<Julia: Dict{Symbol, Any}(:juliafunc => map)>
 gap> JuliaToGAP( IsRecord, dict );
 rec( juliafunc := <Julia: map> )
 gap> Julia.GAP.Obj( dict );
