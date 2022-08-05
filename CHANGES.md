@@ -1,5 +1,9 @@
 # Changes in GAP.jl
 
+## Version 0.8.2 (released 2022-08-05)
+
+- Switch GAP.Packages test to use `fga` instead of `io`
+
 ## Version 0.8.1 (released 2022-06-10)
 
 - Add `getbangindex`, `setbangindex!`, `getbangproperty`, `setbangproperty!`,
