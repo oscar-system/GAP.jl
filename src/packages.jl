@@ -7,6 +7,10 @@ import ...GAP: Globals, GapObj, sysinfo
 const DEFAULT_PKGDIR = Ref{String}()
 
 function init_packagemanager()
+#TODO:
+# As soon as PackageManager uses utils' Download function,
+# we need not replace code from PackageManager anymore.
+# (And the function should be renamed.)
     res = load("PackageManager")
     @assert res
 
@@ -20,6 +24,33 @@ function init_packagemanager()
         return GapObj(Dict{Symbol, Any}(:success => true, :result => String(take!(buffer))), recursive=true)
     end
     Globals.MakeReadOnlyGlobal(GapObj("PKGMAN_DownloadURL"))
+
+    # Install a method (based on Julia's Downloads package) as the first choice
+    # for the `Download` function from GAP's utils package,
+    # in order to make this function independent of the availability of some
+    # external program that is not guaranteed by an explicit dependency.
+    res = load("utils")
+    @assert res
+    if hasproperty(Globals, :Download_Methods)
+      # provide a Julia function as a `Download` method
+      r = Dict{Symbol, Any}(
+           :name => "via Julia's Downloads.download",
+           :isAvailable => Globals.ReturnTrue,
+           :download => function(url, opt)
+             # exception handling is omitted by concept, i.e. errors occuring during the download are shown to the user
+             if hasproperty(opt, :target)
+               Downloads.download(String(url), String(opt.target))
+               return GapObj(Dict{Symbol, Any}(:success => true), recursive=true)
+             else
+               buffer = Downloads.download(String(url), IOBuffer())
+               return GapObj(Dict{Symbol, Any}(:success => true, :result => String(take!(buffer))), recursive=true)
+             end
+           end)
+
+      # put the new method in the first position
+      meths = Globals.Download_Methods
+      Globals.Add(meths, GapObj(r, recursive=true), 1)
+    end
 end
 
 """
@@ -84,6 +115,9 @@ function install(spec::String; interactive::Bool = true, quiet::Bool = false,
     mkpath(pkgdir)
 
     try
+#T When a new PackageManager version will be available,
+#T this try/catch is no longer necessary,
+#T because no GAP error is thrown when one is offline or so.
       if quiet
         oldlevel = Globals.InfoLevel(Globals.InfoPackageManager)
         Globals.SetInfoLevel(Globals.InfoPackageManager, 0)
