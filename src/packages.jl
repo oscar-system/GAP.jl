@@ -35,13 +35,18 @@ function init_packagemanager()
            :name => "via Julia's Downloads.download",
            :isAvailable => Globals.ReturnTrue,
            :download => function(url, opt)
-             # exception handling is omitted by concept, i.e. errors occuring during the download are shown to the user
-             if hasproperty(opt, :target)
-               Downloads.download(String(url), String(opt.target))
-               return GapObj(Dict{Symbol, Any}(:success => true), recursive=true)
-             else
-               buffer = Downloads.download(String(url), IOBuffer())
-               return GapObj(Dict{Symbol, Any}(:success => true, :result => String(take!(buffer))), recursive=true)
+             try
+               if hasproperty(opt, :target)
+                 Downloads.download(String(url), String(opt.target))
+                 return GapObj(Dict{Symbol, Any}(:success => true), recursive=true)
+               else
+                 buffer = Downloads.download(String(url), IOBuffer())
+                 return GapObj(Dict{Symbol, Any}(:success => true, :result => String(take!(buffer))), recursive=true)
+               end
+             catch(e)
+               return GapObj(Dict{Symbol, Any}(:success => false,
+                                               :error => GapObj(string(e))),
+                             recursive=true)
              end
            end)
 
