@@ -43,7 +43,7 @@ function init_packagemanager()
                  buffer = Downloads.download(String(url), IOBuffer())
                  return GapObj(Dict{Symbol, Any}(:success => true, :result => String(take!(buffer))), recursive=true)
                end
-             catch(e)
+             catch e
                return GapObj(Dict{Symbol, Any}(:success => false,
                                                :error => GapObj(string(e))),
                              recursive=true)
