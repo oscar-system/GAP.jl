@@ -316,7 +316,7 @@
 #!      <Item>strings</Item>
 #!    </Row>
 #!    <Row>
-#!      <Item>Symbol</Item>
+#!      <Item><C>Symbol</C></Item>
 #!      <Item><C>IsString</C></Item>
 #!      <Item>strings</Item>
 #!    </Row>

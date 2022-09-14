@@ -24,6 +24,24 @@ julia> GAP.julia_to_gap([ [1, 2], [3, 4]], recursive = true)
 GAP: [ [ 1, 2 ], [ 3, 4 ] ]
 
 ```
+
+The following `julia_to_gap` conversions are supported by GAP.jl.
+(Other Julia packages may provide conversions for more Julia objects.)
+
+| Julia type                           | GAP filter |
+|--------------------------------------|------------|
+| `Int8`, `Int16`, ..., `BigInt`       | `IsInt`    |
+| `GapFFE`                             | `IsFFE`    |
+| `Bool`                               | `IsBool`   |
+| `Rational{T}`                        | `IsRat`    |
+| `Float16`, `Float32`, `Float64`      | `IsFloat`  |
+| `AbstractString`                     | `IsString` |
+| `Symbol`                             | `IsString` |
+| `Vector{T}`                          | `IsList`   |
+| `Vector{Bool}`, `BitVector`          | `IsBList`  |
+| `Tuple{T}`                           | `IsList`   |
+| `Dict{String, T}`, `Dict{Symbol, T}` | `IsRecord` |
+| `UnitRange{T}`, `StepRange{T}`       | `IsRange`  |
 """
 julia_to_gap(x::FFE) = x    # Default for actual GAP objects is to do nothing
 julia_to_gap(x::Bool) = x   # Default for actual GAP objects is to do nothing
