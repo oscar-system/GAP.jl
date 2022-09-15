@@ -63,6 +63,25 @@ julia> GAP.gap_to_julia( Matrix{Int}, val )
  1  2
  3  4
 ```
+
+The following `gap_to_julia` conversions are supported by GAP.jl.
+(Other Julia packages may provide conversions for more GAP objects.)
+
+| GAP filter    | default Julia type       | other Julia types     |
+|---------------|--------------------------|-----------------------|
+| `IsInt`       | `BigInt`                 | `T <: Integer         |
+| `IsFFE`       | `GapFFE`                 |                       |
+| `IsBool`      | `Bool`                   |                       |
+| `IsRat`       | `Rational{BigInt}`       | `Rational{T}          |
+| `IsFloat`     | `Float64`                | `T <: AbstractFloat   |
+| `IsChar`      | `Cuchar`                 | `Char`                |
+| `IsStringRep` | `String`                 | `Symbol`, `Vector{T}` |
+| `IsRangeRep`  | `StepRange{Int64,Int64}` | `Vector{T}`           |
+| `IsBListRep`  | `BitVector`              | `Vector{T}`           |
+| `IsList`      | `Vector{Any}`            | `Vector{T}`           |
+| `IsVectorObj` | `Vector{Any}`            | `Vector{T}`           |
+| `IsMatrixObj` | `Matrix{Any}`            | `Matrix{T}`           |
+| `IsRecord`    | `Dict{Symbol, Any}`      | `Dict{Symbol, T}`     |
 """
 function gap_to_julia(t::T, x::Any) where {T<:Type}
     ## Default for conversion:
@@ -127,7 +146,7 @@ gap_to_julia(::Type{T}, obj::GapObj) where {T<:AbstractString} = T(obj)
 ## Symbols
 gap_to_julia(::Type{Symbol}, obj::GapObj) = Symbol(obj)
 
-## Convert GAP string to Vector{UInt8} (==Vector{UInt8})
+## Convert GAP string to Vector{UInt8}
 function gap_to_julia(::Type{Vector{UInt8}}, obj::GapObj)
     Wrappers.IsStringRep(obj) && return CSTR_STRING_AS_ARRAY(obj)
     Wrappers.IsList(obj) && return UInt8[gap_to_julia(UInt8, obj[i]) for i = 1:length(obj)]
