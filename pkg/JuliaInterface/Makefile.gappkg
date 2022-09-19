@@ -46,12 +46,23 @@ ifndef GAP_KERNEL_MAJOR_VERSION
   KEXT_CXXFLAGS += -I$(GAP_LIB_DIR)/src
 endif
 
+# honor used supplied flags
+KEXT_CFLAGS += $(CPPFLAGS)
+KEXT_CFLAGS += $(CFLAGS)
+KEXT_CXXFLAGS += $(CPPFLAGS)
+KEXT_CXXFLAGS += $(CXXFLAGS)
+KEXT_LDFLAGS += $(LDFLAGS)
+
 # various derived settings
 KEXT_BINARCHDIR = bin/$(GAParch)
 KEXT_SO = $(KEXT_BINARCHDIR)/$(KEXT_NAME).so
 
-GAP = $(GAPPATH)/gap
-GAC = $(GAPPATH)/gac
+# the following settings are provided by sysinfo.gap in GAP >= 4.12;
+# for compatibility with older GAP version (at least 4.9, 4.10, 4.11)
+# we try to "guess" suitable values here
+GAP ?= $(GAPPATH)/gap
+GAC ?= $(GAPPATH)/gac
+GAP_OBJEXT ?= lo
 
 # override KEXT_RECONF if your package needs a different invocation
 # for reconfiguring (e.g. `./config.status --recheck` for autoconf)
@@ -67,12 +78,12 @@ all: $(KEXT_SO)
 
 ########################################################################
 # Object files
-# For each file FOO.c in SOURCES, add gen/FOO.lo to KEXT_OBJS; similar
-# for .cc files
+# For each file FOO.c in SOURCES, add gen/FOO.$(GAP_OBJEXT) to KEXT_OBJS
+# and similar for .cc files
 ########################################################################
-KEXT_OBJS = $(patsubst %.s,gen/%.lo, \
-            $(patsubst %.cc,gen/%.lo, \
-            $(patsubst %.c,gen/%.lo, \
+KEXT_OBJS = $(patsubst %.s,gen/%.$(GAP_OBJEXT), \
+            $(patsubst %.cc,gen/%.$(GAP_OBJEXT), \
+            $(patsubst %.c,gen/%.$(GAP_OBJEXT), \
                 $(KEXT_SOURCES))))
 
 ########################################################################
@@ -83,7 +94,7 @@ KEXT_OBJS = $(patsubst %.s,gen/%.lo, \
 ########################################################################
 ifneq ($(findstring $(MAKEFLAGS),s),s)
 ifndef V
-QUIET_GAC     = @echo "   GAC     $< => $@";
+QUIET_GAC     = @echo "   GAC     $< => $@";>/dev/null # keep the trailing space!
 endif
 endif
 
@@ -93,7 +104,7 @@ endif
 ########################################################################
 
 # List of all (potential) dependency files, derived from KEXT_OBJS
-KEXT_DEPFILES = $(patsubst %.lo,%.d,$(KEXT_OBJS))
+KEXT_DEPFILES = $(patsubst %.$(GAP_OBJEXT),%.d,$(KEXT_OBJS))
 
 # Include the dependency tracking files
 -include $(KEXT_DEPFILES)
@@ -110,23 +121,26 @@ KEXT_DEPFLAGS = -MQ "$@" -MMD -MP -MF $(@D)/$(*F).d
 
 # build rule for C code
 # The dependency on Makefile ensures that re-running configure recompiles everything
-gen/%.lo: %.c Makefile
-	$(QUIET_GAC)$(GAC) -d -p "$(KEXT_DEPFLAGS)" -p "$(KEXT_CFLAGS)" -p "$(CFLAGS)" -c $< -o $@
+gen/%.$(GAP_OBJEXT): %.c Makefile
+	@mkdir -p $(@D)
+	$(QUIET_GAC)$(GAC) -d -p "$(KEXT_DEPFLAGS)" -p "$(KEXT_CFLAGS)" -c $< -o $@
 
 # build rule for C++ code
 # The dependency on Makefile ensures that re-running configure recompiles everything
-gen/%.lo: %.cc Makefile
-	$(QUIET_GAC)$(GAC) -d -p "$(KEXT_DEPFLAGS)" -p "$(KEXT_CXXFLAGS)" -p "$(CXXFLAGS)" -c $< -o $@
+gen/%.$(GAP_OBJEXT): %.cc Makefile
+	@mkdir -p $(@D)
+	$(QUIET_GAC)$(GAC) -d -p "$(KEXT_DEPFLAGS)" -p "$(KEXT_CXXFLAGS)" -c $< -o $@
 
 # build rule for assembler code
 # The dependency on Makefile ensures that re-running configure recompiles everything
-gen/%.lo: %.s Makefile
-	$(QUIET_GAC)$(GAC) -d -p "$(KEXT_DEPFLAGS)" -p "$(KEXT_CFLAGS)" -p "$(CFLAGS)" -c $< -o $@
+gen/%.$(GAP_OBJEXT): %.s Makefile
+	@mkdir -p $(@D)
+	$(QUIET_GAC)$(GAC) -d -p "$(KEXT_DEPFLAGS)" -p "$(KEXT_CFLAGS)" -c $< -o $@
 
 # build rule for linking all object files together into a kernel extension
 $(KEXT_SO): $(KEXT_OBJS)
-	@mkdir -p $(KEXT_BINARCHDIR)
-	$(QUIET_GAC)$(GAC) -d -p "$(KEXT_DEPFLAGS)" -P "$(KEXT_LDFLAGS)" -P "$(LDFLAGS)" $(KEXT_OBJS) -o $@
+	@mkdir -p $(@D)
+	$(QUIET_GAC)$(GAC) -d -p "$(KEXT_DEPFLAGS)" -P "$(KEXT_LDFLAGS)" $(KEXT_OBJS) -o $@
 
 # hook into `make clean`
 clean: clean-kext
@@ -134,7 +148,7 @@ clean-kext:
 	rm -rf $(KEXT_BINARCHDIR) gen
 
 # hook into `make distclean`
-distclean: clean-kext
+distclean: distclean-kext
 distclean-kext:
 	rm -rf bin gen Makefile
 	(cd doc && ./clean)
@@ -142,7 +156,7 @@ distclean-kext:
 # hook into `make doc`
 doc: doc-kext
 doc-kext:
-	$(GAP) makedoc.g
+	$(GAP) --quitonbreak -b -q < makedoc.g
 
 # hook into `make check`
 check: check-kext
