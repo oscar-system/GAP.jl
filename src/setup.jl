@@ -22,9 +22,8 @@ function force_symlink(p::AbstractString, np::AbstractString)
 end
 
 function read_sysinfo_gap(dir::String)
-    d = missing
+    d = Dict{String,String}()
     open(joinpath(dir, "sysinfo.gap")) do file
-        d = Dict{String,String}()
         for ln in eachline(file)
             if length(ln) == 0 || ln[1] == '#'
                 continue
