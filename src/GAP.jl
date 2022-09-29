@@ -25,19 +25,18 @@ GAP_jll.is_available() ||
 
 include("setup.jl")
 
-# always force regeneration of GAPROOT when precompiling
-const GAPROOT = abspath(@__DIR__, "..", "gaproot", "v$(VERSION.major).$(VERSION.minor)")
-Setup.regenerate_gaproot(GAPROOT)
-
 import Base: length, finalize
 import Libdl
 import Markdown
 import Random
 
-include("types.jl")
+# setup the initial sysinfo dictionary; we'll update this later in __init__
+# this also ensures that Setup.regenerate_gaproot gets precompiled, reducing
+# the startup time a little bit
+const sysinfo = Setup.regenerate_gaproot()
 
-const sysinfo = Setup.read_sysinfo_gap(GAPROOT)
-const GAP_VERSION = VersionNumber(sysinfo["GAP_VERSION"])
+
+include("types.jl")
 
 const last_error = Ref{String}("")
 
@@ -72,8 +71,8 @@ end
 const error_handlerwrap = error_handler
 
 # path to JuliaInterface.so
-const real_JuliaInterface_path = Setup.locate_JuliaInterface_so(GAPROOT, sysinfo)
-JuliaInterface_path() = real_JuliaInterface_path
+const real_JuliaInterface_path = Ref{String}()
+JuliaInterface_path() = real_JuliaInterface_path[]
 
 function initialize(argv::Vector{String})
     handle_signals = isdefined(Main, :__GAP_ARGS__)  # a bit of a hack...
@@ -212,10 +211,12 @@ function __init__()
         windows_error()
     end
 
-    # regenerate GAPROOT if it was removed
-    if !isdir(GAPROOT) || isempty(readdir(GAPROOT))
-        Setup.regenerate_gaproot(GAPROOT)
-    end
+    # always regenerate our custom GAP root dir, to accommodate for changes
+    # in the system configuration (artifact paths, available compilers, ...)
+    global sysinfo
+    merge!(sysinfo, Setup.regenerate_gaproot())
+
+    real_JuliaInterface_path[] = Setup.locate_JuliaInterface_so(sysinfo)
 
     gaproots = sysinfo["GAPROOTS"]
     cmdline_options = ["", "-l", gaproots]
