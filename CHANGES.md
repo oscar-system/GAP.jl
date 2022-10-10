@@ -1,6 +1,6 @@
 # Changes in GAP.jl
 
-## Version 0.8.3-DEV (released 2022-10-XX)
+## Version 0.8.3 (released 2022-10-10)
 
 - Improve the `gap_to_julia` and `julia_to_gap` documentation by providing
   an explicit list of types for which conversions are provided in GAP.jl
