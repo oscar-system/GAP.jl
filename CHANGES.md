@@ -1,5 +1,17 @@
 # Changes in GAP.jl
 
+## Version 0.8.3-DEV (released 2022-10-XX)
+
+- Improve the `gap_to_julia` and `julia_to_gap` documentation by providing
+  an explicit list of types for which conversions are provided in GAP.jl
+  (this information was already available in GAP manual for `JuliaInterface`,
+  but not on the Julia side)
+- Use `Scratch.jl` for the GAP root directory to hopefully avoid issues on
+  systems where the Julia depot is read-only
+- Fix banner printing issues in Julia >= 1.8
+- Install a `GAP.Globals.Download` method if possible (will have an effect
+  once we start to ship the latest version of the GAP package `utils`)
+
 ## Version 0.8.2 (released 2022-08-05)
 
 - Switch GAP.Packages test to use `fga` instead of `io`
