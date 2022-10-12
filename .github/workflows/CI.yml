@@ -21,13 +21,21 @@ jobs:
       matrix:
         julia-version:
           - '1.6'
-          - '~1.7.0-0'
+          - '1.7'
+          - '1.8'
           - 'nightly'
         julia-arch:
           - x64
         os:
           - ubuntu-latest
-          - macOS-latest
+        include:
+          # Add a few macOS jobs (not too many, the number we can run in parallel is limited)
+          - julia-version: '1.6'
+            julia-arch: x64
+            os: macOS-latest
+          - julia-version: 'nightly'
+            julia-arch: x64
+            os: macOS-latest
 
     steps:
       - uses: actions/checkout@v3
