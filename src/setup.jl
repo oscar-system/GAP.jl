@@ -168,7 +168,6 @@ function regenerate_gaproot()
     sysinfo["GAC"] = joinpath(gaproot_mutable, "gac")
 
     # create the mutable gaproot
-    rm(gaproot_mutable, recursive=true, force=true)
     mkpath(gaproot_mutable)
     cd(gaproot_mutable) do
         # create fake sysinfo.gap
