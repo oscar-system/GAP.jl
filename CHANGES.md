@@ -1,5 +1,9 @@
 # Changes in GAP.jl
 
+## Version 0.8.4 (released 2022-10-12)
+
+- Avoid a race condition when loading GAP.jl concurrently in multiple processes
+
 ## Version 0.8.3 (released 2022-10-10)
 
 - Improve the `gap_to_julia` and `julia_to_gap` documentation by providing
