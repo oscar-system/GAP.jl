@@ -1,5 +1,9 @@
 # Changes in GAP.jl
 
+## Version 0.8.5 (released 2022-10-18)
+
+- Better (?) fix for the race condition the previous release was supposed to address
+
 ## Version 0.8.4 (released 2022-10-12)
 
 - Avoid a race condition when loading GAP.jl concurrently in multiple processes
