@@ -18,9 +18,9 @@ Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Scratch = "6c6a2e73-6563-6170-7368-637461726353"
 
 [compat]
-GAP_jll = "~400.1192.001"
-GAP_lib_jll = "~400.1192.002"
-GAP_pkg_juliainterface_jll = "=0.800.000"
+GAP_jll = "~400.1200.101"
+GAP_lib_jll = "~400.1201.100"
+GAP_pkg_juliainterface_jll = "=0.800.201"
 MacroTools = "0.5"
 Scratch = "1.1"
 julia = "1.6"
