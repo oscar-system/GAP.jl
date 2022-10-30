@@ -341,9 +341,9 @@ DeclareGlobalFunction( "JuliaTypeInfo" );
 #!  The function calls the &Julia; function <A>juliafunc</A>
 #!  with arguments in the &GAP; list <A>arguments</A>,
 #!  and returns a record with the components <C>ok</C> and <C>value</C>.
-#!  If no error occured then <C>ok</C> has the value <K>true</K>,
+#!  If no error occurred then <C>ok</C> has the value <K>true</K>,
 #!  and <C>value</C> is the value returned by <A>juliafunc</A>.
-#!  If an error occured then <C>ok</C> has the value <K>false</K>,
+#!  If an error occurred then <C>ok</C> has the value <K>false</K>,
 #!  and <C>value</C> is the error message as a &GAP; string.
 #! @BeginExampleSession
 #! gap> fun:= Julia.sqrt;;

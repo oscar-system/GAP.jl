@@ -114,7 +114,7 @@ end
 # Assign a value to the global GAP variable with the given name.
 function AssignGlobalVariable(name::Union{AbstractString,Symbol}, value::Any)
     if !CanAssignGlobalVariable(name)
-        error("cannot assing to $name in GAP")
+        error("cannot assign to $name in GAP")
     end
     tmp = _JULIA_TO_GAP(value)
     _AssignGlobalVariable(name, tmp)

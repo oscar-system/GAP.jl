@@ -7,7 +7,7 @@ If `recursive` is set to `true`, recursive conversions on
 arrays, tuples, and dictionaries is performed.
 
 The input `recursion_dict` should never be set by the user, it is meant to keep egality
-of input data, by converting egal data to identical objects in GAP.
+of input data, by converting equal data to identical objects in GAP.
 
 # Examples
 ```jldoctest

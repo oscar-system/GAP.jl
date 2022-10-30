@@ -46,7 +46,7 @@ function hasproperty(::GlobalsType, name::Symbol)
 end
 
 function setproperty!(::GlobalsType, name::Symbol, val::Any)
-    CanAssignGlobalVariable(name) || error("cannot assing to $name in GAP")
+    CanAssignGlobalVariable(name) || error("cannot assign to $name in GAP")
     tmp = (val === nothing) ? C_NULL : _JULIA_TO_GAP(val)
     _AssignGlobalVariable(name, tmp)
 end

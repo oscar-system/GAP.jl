@@ -19,7 +19,7 @@
 #!   The qualifying prefix <C>Julia:</C> is mandatory.
 #!   Thus the help request <C>?sqrt</C> will show matches from usual
 #!   &GAP; help books (there is one match in the &GAP; Reference Manual),
-#!   but not the help abot the &Julia; function <C>sqrt</C>.
+#!   but not the help about the &Julia; function <C>sqrt</C>.
 #!  </Item>
 #!  <Item>
 #!   Since the prefix <C>Julia:</C> does not belong to a <Q>preprocessed</Q>
