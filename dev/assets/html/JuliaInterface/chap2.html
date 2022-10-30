@@ -306,7 +306,7 @@ true
 <div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; CallJuliaFunctionWithCatch</code>( <var class="Arg">juliafunc</var>, <var class="Arg">arguments</var> )</td><td class="tdright">(&nbsp;function&nbsp;)</td></tr></table></div>
 <p>Returns: a record.</p>
 
-<p>The function calls the <strong class="pkg">Julia</strong> function <var class="Arg">juliafunc</var> with arguments in the <strong class="pkg">GAP</strong> list <var class="Arg">arguments</var>, and returns a record with the components <code class="code">ok</code> and <code class="code">value</code>. If no error occured then <code class="code">ok</code> has the value <code class="keyw">true</code>, and <code class="code">value</code> is the value returned by <var class="Arg">juliafunc</var>. If an error occured then <code class="code">ok</code> has the value <code class="keyw">false</code>, and <code class="code">value</code> is the error message as a <strong class="pkg">GAP</strong> string.</p>
+<p>The function calls the <strong class="pkg">Julia</strong> function <var class="Arg">juliafunc</var> with arguments in the <strong class="pkg">GAP</strong> list <var class="Arg">arguments</var>, and returns a record with the components <code class="code">ok</code> and <code class="code">value</code>. If no error occurred then <code class="code">ok</code> has the value <code class="keyw">true</code>, and <code class="code">value</code> is the value returned by <var class="Arg">juliafunc</var>. If an error occurred then <code class="code">ok</code> has the value <code class="keyw">false</code>, and <code class="code">value</code> is the error message as a <strong class="pkg">GAP</strong> string.</p>
 
 
 <div class="example"><pre>
@@ -468,7 +468,7 @@ false
 
 
 <ul>
-<li><p>The qualifying prefix <code class="code">Julia:</code> is mandatory. Thus the help request <code class="code">?sqrt</code> will show matches from usual <strong class="pkg">GAP</strong> help books (there is one match in the <strong class="pkg">GAP</strong> Reference Manual), but not the help abot the <strong class="pkg">Julia</strong> function <code class="code">sqrt</code>.</p>
+<li><p>The qualifying prefix <code class="code">Julia:</code> is mandatory. Thus the help request <code class="code">?sqrt</code> will show matches from usual <strong class="pkg">GAP</strong> help books (there is one match in the <strong class="pkg">GAP</strong> Reference Manual), but not the help about the <strong class="pkg">Julia</strong> function <code class="code">sqrt</code>.</p>
 
 </li>
 <li><p>Since the prefix <code class="code">Julia:</code> does not belong to a "preprocessed" help book with chapters, sections, index, etc., help requests of the kinds <code class="code">?&lt;</code>, <code class="code">?&lt;&lt;</code>, <code class="code">?&gt;</code>, <code class="code">?&gt;&gt;</code> are not meaningful when the previous help request had the prefix <code class="code">?Julia:</code>. (Also requests with the prefix <code class="code">??Julia:</code> do not work, but this holds also for usual <strong class="pkg">GAP</strong> help books.)</p>
