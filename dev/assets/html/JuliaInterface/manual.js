@@ -86,7 +86,8 @@ function addStyleLink() {
   var el = document.createElement("a");
   var oncl = document.createAttribute("href");
   var back = window.location.protocol+"//"
-  if (window.location.protocol == "http:") {
+  if (window.location.protocol == "http:" || 
+      window.location.protocol == "https:") {
     back = back+window.location.host;
     if (window.location.port != "") {
       back = back+":"+window.location.port;
