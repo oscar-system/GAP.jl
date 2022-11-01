@@ -1,5 +1,9 @@
 # Changes in GAP.jl
 
+## Version 0.9.0 (released 2022-11-01)
+
+- Update go GAP 4.12.1.
+
 ## Version 0.8.5 (released 2022-10-18)
 
 - Better (?) fix for the race condition the previous release was supposed to address
