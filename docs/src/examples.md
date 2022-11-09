@@ -172,7 +172,7 @@ a subgroup that has trivial intersection with the kernel
 and that generates `cube1` together with the kernel.
 
 ```jldoctest rubik
-julia> cmpl1 = GAP.Globals.Complementclasses(cube1, ker1)
+julia> cmpl1 = GAP.Globals.ComplementClassesRepresentatives(cube1, ker1)
 GAP: [ <permutation group of size 40320 with 7 generators> ]
 
 julia> cmpl1 = cmpl1[1]; GAP.Globals.Size(cmpl1)
@@ -237,7 +237,7 @@ GAP: [ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 ]
 julia> GAP.Globals.IsElementaryAbelian(ker2)
 true
 
-julia> cmpl2 = GAP.Globals.Complementclasses(cube2, ker2); length(cmpl2)
+julia> cmpl2 = GAP.Globals.ComplementClassesRepresentatives(cube2, ker2); length(cmpl2)
 4
 ```
 
@@ -318,7 +318,7 @@ onto the cube group.
 julia> f = GAP.Globals.FreeGroup(GAP.GapObj(["t", "l", "f", "r", "e", "b"], recursive =  true))
 GAP: <free group on the generators [ t, l, f, r, e, b ]>
 
-julia> hom = GAP.Globals.GroupHomomorphismByImages(f, cube)
+julia> fhom = GAP.Globals.GroupHomomorphismByImages(f, cube)
 GAP: [ t, l, f, r, e, b ] -> [ (1,3,8,6)(2,5,7,4)(9,33,25,17)(10,34,26,18)(11,35,27,19), (1,17,41,40)(4,20,44,37)(6,22,46,35)(9,11,16,14)(10,13,15,12), (6,25,43,16)(7,28,42,13)(8,30,41,11)(17,19,24,22)(18,21,23,20), (3,38,43,19)(5,36,45,21)(8,33,48,24)(25,27,32,30)(26,29,31,28), (1,14,48,27)(2,12,47,29)(3,9,46,32)(33,35,40,38)(34,37,39,36), (14,22,30,38)(15,23,31,39)(16,24,32,40)(41,43,48,46)(42,45,47,44) ]
 ```
 
@@ -327,13 +327,18 @@ The method used utilizes a stabilizer chain and does not enumerate all
 group elements, therefore the words obtained are not the shortest possible,
 though they are short enough for hand solutions.
 
+The computed decompositions may be different in different sessions,
+because they involve the computation of pseudo random elements.
+Therefore the results shown in the following may look different in actual
+Julia sessions.
+
 First we decompose the nonidentity centre element:
 
-```jldoctest rubik
+```
 julia> zgen = GAP.Globals.GeneratorsOfGroup(z)[1]
 GAP: (2,34)(4,10)(5,26)(7,18)(12,37)(13,20)(15,44)(21,28)(23,42)(29,36)(31,45)(39,47)
 
-julia> pre1 = GAP.Globals.PreImagesRepresentative(hom, zgen)
+julia> pre1 = GAP.Globals.PreImagesRepresentative(fhom, zgen)
 GAP: l*f*t*f^-1*t^-1*l^-1*f*t*f^2*l*f*l^-2*t*l*f^-1*t^-1*l^-1*t*l*f^2*t*l*t*l^-1*f^-1*l*t^-1*l^-1*f*r*t^-1*r^-1*f^-1*l*t*f*t^-1*f^-1*l^-1*t*f^-1*l^-1*t^-1*l*t*f*t^-2*f*t*f^-1*t^-1*l^-1*t^-1*l*t^-1*l^-1*t*e^-1*t*e*(l*t)^2*e*l^-1*e^-1*t^-1*l^-3*b*f*b^-1*l^-1*f^-1*t*l^-1*f*t*f*l^-1*t^-1*b*r^-1*b^-1*t^-2*e^-1*r*e*r*f^-1*e*t^-1*e^-1*r^-2*t^-2*l^-1*b^-1*r^-1*e^-1
 
 julia> length(pre1)
@@ -342,8 +347,8 @@ julia> length(pre1)
 
 Next we decompose some element arbitrarily chosen by us:
 
-```jldoctest rubik
-julia> pre2 = GAP.Globals.PreImagesRepresentative(hom, @gap("(17, 19)(11, 8)(6, 25)(7, 28)(18, 21)"))
+```
+julia> pre2 = GAP.Globals.PreImagesRepresentative(fhom, @gap("(17, 19)(11, 8)(6, 25)(7, 28)(18, 21)"))
 GAP: l^-1*t^-1*l*f*r*t*r^-1*f^-1*l*t*f*t^-1*f^-1*l^-1*t^2*f*t*l*t*l^-1*f^-1*l*t^-1*l^-1*f*t^-1*f^-1*l*t*l^-1*t*l*t^-2*l^-1*f*(t*r*t^-1*r^-1)^2*f^-1*t*l*f^-1*l^-1*f*l^-1*t^-1*l*t^-2*f*t*(f^-1*l^-1)^2*l^-1*f*l*e^-1*t*e*l*t^-1*e^-1*t^-1*e*l*b*f^-1*b^-1
 
 julia> length(pre2)
@@ -352,11 +357,11 @@ julia> length(pre2)
 
 Last we let GAP choose a random element ...
 
-```jldoctest rubik
+```
 julia> r = GAP.Globals.Random(cube)
 GAP: (1,9,35)(2,26,42,28,47,44,13,12,31,34,5,23,21,39,15,20,37,45)(3,19,46,11,41,33,8,40,6,16,27,25,14,17,22)(4,18,36,10,7,29)(32,38,48)
 
-julia> pre3 = GAP.Globals.PreImagesRepresentative(hom, r)
+julia> pre3 = GAP.Globals.PreImagesRepresentative(fhom, r)
 GAP: f*b^2*f^-1*r^-1*l^-1*e*b^-2*e^-1*t^2*b^-1*e^-1*b*f*t^2*f^-1*l*t^-1*f*l^-1*b*f^-2*b^-1*l^-1*e^-1*t*e*l^-1*f^-1*l*f*t^-1*(t^-1*l^-1)^2*f^-1*l^-1*f*l*f*t*f^-1*t^-1*l*f^-1*l^-1*f*l^-1*(t^-1*l)^2*f*t*f^-1*t^-1*l^-1*t*l*t^2*l^-1*t^-1*l*t^-1*l^-1*t*f*r*t*r^-1*t^-1*f^-1*l^-1*t^-1*(l*t)^2*f^-1*l^-1*e^-1*f*t^-1*e*l*t^-1*l^-1*t
 
 julia> length(pre3)
@@ -365,8 +370,8 @@ julia> length(pre3)
 
 ... and we verify that the decomposition is correct:
 
-```jldoctest rubik
-julia> GAP.Globals.Image(hom, pre3) == r
+```
+julia> GAP.Globals.Image(fhom, pre3) == r
 true
 ```
 
