@@ -28,6 +28,8 @@ true
 julia> GAP.Globals.size
 17
 
+julia> GAP.Globals.UnbindGlobal(g"size")
+
 julia> GAP.Globals.Julia   # Julia objects can be values of GAP variables
 Main
 
