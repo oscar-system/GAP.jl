@@ -99,10 +99,10 @@ julia> Vector{Vector{Int}}(cf)
 Next let us investigate the operation of the group on the 48 points.
 
 ```jldoctest rubik
-julia> orbits = GAP.Globals.Orbits(cube, GAP.GapObj(1:48))
+julia> orbs = GAP.Globals.Orbits(cube, GAP.GapObj(1:48))
 GAP: [ [ 1, 3, 17, 14, 8, 38, 9, 41, 19, 48, 22, 6, 30, 33, 43, 11, 46, 40, 24, 27, 25, 35, 16, 32 ], [ 2, 5, 12, 7, 36, 10, 47, 4, 28, 45, 34, 13, 29, 44, 20, 42, 26, 21, 37, 15, 31, 18, 23, 39 ] ]
 
-julia> length(orbits)
+julia> length(orbs)
 2
 ```
 
@@ -116,7 +116,7 @@ Note that the constructed group that describes this operation will operate
 on the set `[1..24]`, not on the original set `orbs[1]`.
 
 ```jldoctest rubik
-julia> cube1 = GAP.Globals.Action(cube, orbits[1])
+julia> cube1 = GAP.Globals.Action(cube, orbs[1])
 GAP: <permutation group with 6 generators>
 
 julia> GAP.Globals.NrMovedPoints(cube1)
@@ -217,7 +217,7 @@ More or less the same things happen when we consider the operation of the
 cube group on the edges.
 
 ```jldoctest rubik
-julia> cube2 = GAP.Globals.Action(cube, orbits[2]); GAP.Globals.Size(cube2)
+julia> cube2 = GAP.Globals.Action(cube, orbs[2]); GAP.Globals.Size(cube2)
 980995276800
 
 julia> edges = GAP.Globals.Blocks(cube2, GAP.Globals.MovedPoints(cube2))
@@ -334,20 +334,20 @@ Julia sessions.
 
 First we decompose the nonidentity centre element:
 
-```
+```jldoctest rubik; setup = :(GAP.Globals.Reset(GAP.Globals.GlobalMersenneTwister))
 julia> zgen = GAP.Globals.GeneratorsOfGroup(z)[1]
 GAP: (2,34)(4,10)(5,26)(7,18)(12,37)(13,20)(15,44)(21,28)(23,42)(29,36)(31,45)(39,47)
 
 julia> pre1 = GAP.Globals.PreImagesRepresentative(fhom, zgen)
-GAP: l*f*t*f^-1*t^-1*l^-1*f*t*f^2*l*f*l^-2*t*l*f^-1*t^-1*l^-1*t*l*f^2*t*l*t*l^-1*f^-1*l*t^-1*l^-1*f*r*t^-1*r^-1*f^-1*l*t*f*t^-1*f^-1*l^-1*t*f^-1*l^-1*t^-1*l*t*f*t^-2*f*t*f^-1*t^-1*l^-1*t^-1*l*t^-1*l^-1*t*e^-1*t*e*(l*t)^2*e*l^-1*e^-1*t^-1*l^-3*b*f*b^-1*l^-1*f^-1*t*l^-1*f*t*f*l^-1*t^-1*b*r^-1*b^-1*t^-2*e^-1*r*e*r*f^-1*e*t^-1*e^-1*r^-2*t^-2*l^-1*b^-1*r^-1*e^-1
+GAP: t^-1*l*t*l^-1*e^-1*t*f^-1*e*l*f*(t^-1*l^-1)^2*t*l*f*t*r*t^-1*r^-1*f^-1*l^-1*e^-1*t^-1*e*t*l*t*f*t*r*t^-1*r^-1*f^-1*t^-2*f*t^-1*f^-1*t^2*e*l^-1*e^-1*t^-1*l*t*l*f*t^-1*f^-1*l^-1*t*l*t^2*l^-1*t^-1*l*t^-1*l^-1*t^2*f^-1*l^-1*t^-1*l*t*f*t*l^-1*t*l*f^-1*l*f*l^-1*t^-2*l^-1*f^-1*l*f*l*t*e^-1*t*e*l*t*l^-1*e*l*e^-1*t^-1*f*l*f*l^-1*f^-1*t^-2*f^-1*t*l^-1*f*t^-2*f^-2*b*r^-1*b^-1*t^-2*e^-1*r^-2*e*t^-1*r*b*e^-1*b^-1*l^-1*r^-2*t^-2*l^-1*b^-1*r^-1*e^-1
 
 julia> length(pre1)
-108
+134
 ```
 
 Next we decompose some element arbitrarily chosen by us:
 
-```
+```jldoctest rubik
 julia> pre2 = GAP.Globals.PreImagesRepresentative(fhom, @gap("(17, 19)(11, 8)(6, 25)(7, 28)(18, 21)"))
 GAP: l^-1*t^-1*l*f*r*t*r^-1*f^-1*l*t*f*t^-1*f^-1*l^-1*t^2*f*t*l*t*l^-1*f^-1*l*t^-1*l^-1*f*t^-1*f^-1*l*t*l^-1*t*l*t^-2*l^-1*f*(t*r*t^-1*r^-1)^2*f^-1*t*l*f^-1*l^-1*f*l^-1*t^-1*l*t^-2*f*t*(f^-1*l^-1)^2*l^-1*f*l*e^-1*t*e*l*t^-1*e^-1*t^-1*e*l*b*f^-1*b^-1
 
@@ -357,20 +357,20 @@ julia> length(pre2)
 
 Last we let GAP choose a random element ...
 
-```
+```jldoctest rubik
 julia> r = GAP.Globals.Random(cube)
-GAP: (1,9,35)(2,26,42,28,47,44,13,12,31,34,5,23,21,39,15,20,37,45)(3,19,46,11,41,33,8,40,6,16,27,25,14,17,22)(4,18,36,10,7,29)(32,38,48)
+GAP: (1,6,9,17,35,11)(2,13,29,42,4,34,20,36,23,10)(3,22,14,8,38,24,27,16,40,19,32,43,33,41,46,25,48,30)(5,39,28,37,18,31,44,26,47,21,12,7,45,15)
 
 julia> pre3 = GAP.Globals.PreImagesRepresentative(fhom, r)
-GAP: f*b^2*f^-1*r^-1*l^-1*e*b^-2*e^-1*t^2*b^-1*e^-1*b*f*t^2*f^-1*l*t^-1*f*l^-1*b*f^-2*b^-1*l^-1*e^-1*t*e*l^-1*f^-1*l*f*t^-1*(t^-1*l^-1)^2*f^-1*l^-1*f*l*f*t*f^-1*t^-1*l*f^-1*l^-1*f*l^-1*(t^-1*l)^2*f*t*f^-1*t^-1*l^-1*t*l*t^2*l^-1*t^-1*l*t^-1*l^-1*t*f*r*t*r^-1*t^-1*f^-1*l^-1*t^-1*(l*t)^2*f^-1*l^-1*e^-1*f*t^-1*e*l*t^-1*l^-1*t
+GAP: r*e^-1*t^-1*e^-1*r^-2*e*f*t^2*b^-1*e^-1*b*l*f^-1*r*t^-1*r^-1*l*b*f^-2*b^-1*f^-1*l*f*t^-1*l^-1*f^-1*l^-1*f*e*l^-1*e^-1*l^-2*t^-1*l*f^-1*l^-1*f*l^-1*t^-1*l^2*f*t*f^-1*(t^-1*l^-1)^3*e*l*e^-1*t*l*t^-1*l*t^2*l^-1*t^-1*l*t^-1*l^-1*f*t*f^-1*l*t*l^-1*f*l*t^-1*l^-1*t^-1*f^-1*t^-1*f*r*t*r^-1*t^-1*f^-1*t^-1*l^-1*t^-1*e^-1*t*e*l*f*r*t*r^-1*t^-1*f^-1*l^-1*t^-1*(l*t)^2*f^-1*l^-1*e^-1*f*t^-1*e*l*t^-1*l^-1*t
 
 julia> length(pre3)
-94
+116
 ```
 
 ... and we verify that the decomposition is correct:
 
-```
+```jldoctest rubik
 julia> GAP.Globals.Image(fhom, pre3) == r
 true
 ```
