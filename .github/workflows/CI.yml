@@ -84,7 +84,7 @@ jobs:
 
       - name: "Upload coverage data to Codecov"
         continue-on-error: true
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
 
   docs:
     name: "Documentation"
