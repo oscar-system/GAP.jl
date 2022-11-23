@@ -366,7 +366,7 @@ macro wrap(ex)
     body = quote
                global $newsym
                if !isassigned($newsym)
-                   $newsym[] = GAP.Globals.$name
+                   $newsym[] = GAP.Globals.$name::GapObj
                end
                return $newsym[]($(args...))::$retval
            end

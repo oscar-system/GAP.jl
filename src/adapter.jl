@@ -127,9 +127,9 @@ Base.setindex!(x::GapObj, v::Any, i::Int64) = Wrappers.ASS_LIST(x, i, v)
 Base.setindex!(x::GapObj, v::Any, l::Union{Vector{T},AbstractRange{T}}) where {T<:Integer} =
     Wrappers.ASSS_LIST(x, GapObj(l), GapObj(v))
 
-Base.length(x::GapObj)::Int = Wrappers.Length(x)
+Base.length(x::GapObj) = Wrappers.Length(x)::Int
 Base.firstindex(x::GapObj) = 1
-Base.lastindex(x::GapObj)::Int = Wrappers.Length(x)
+Base.lastindex(x::GapObj) = Wrappers.Length(x)::Int
 
 # matrix
 Base.getindex(x::GapObj, i::Int64, j::Int64) = Wrappers.ELM_MAT(x, i, j)
@@ -435,15 +435,22 @@ Base.literal_pow(::typeof(^), x::GapObj, ::Val{-1}) = Wrappers.InverseSameMutabi
 
 function Base.iterate(obj::GapObj)
     if Wrappers.IsList(obj)
-        iterate(obj, (1, Wrappers.Length(obj)))
+        len = Wrappers.Length(obj)
+        if len isa Int
+            iterate(obj, (1, len::Int))
+        else
+            # we won't be able to iterate over this many elements anyway, but
+            # we can still allow iteration util some large bound
+            iterate(obj, (1, typemax(Int)))
+        end
     elseif Wrappers.IsCollection(obj)
-        iterate(obj, Wrappers.Iterator(obj))
+        iterate(obj, Wrappers.Iterator(obj)::GapObj)
     else
         throw(ArgumentError("object cannot be iterated"))
     end
 end
 
-function Base.iterate(obj::GapObj, (i, len)::Tuple{Int,Any})
+function Base.iterate(obj::GapObj, (i, len)::Tuple{Int,Int})
     i > len && return nothing
     ElmList(obj, i), (i+1, len)
 end
