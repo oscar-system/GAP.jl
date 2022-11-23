@@ -115,22 +115,8 @@ run(`make -j$(Sys.CPU_THREADS)`)
 @info "Installing GAP to $(prefix)"
 
 # install GAP binaries, headers, libraries
-run(`make install-bin install-headers install-libgap`)
+run(`make install-bin install-headers install-libgap install-sysinfo`)
 
-# manually copy config.h for now
-cp("build/config.h", joinpath(prefix, "include", "gap", "config.h"))
-
-# get rid of *.la files, they just cause trouble
-#rm $(prefix)/lib/*.la
-
-# get rid of the wrapper shell script, which is useless for us
-#mv("$(prefix)/bin/gap.real", "$(prefix)/bin/gap"; force=true)
-
-# install gac and sysinfo.gap
-mkpath(joinpath(prefix, "share", "gap"))
-for f in ["gac", "sysinfo.gap"]
-    cp(f, joinpath(prefix, "share", "gap", f))
-end
 
 # We deliberately do NOT install the GAP library, documentation, etc. because
 # they are identical across all platforms; instead, we use another platform
