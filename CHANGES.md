@@ -1,5 +1,10 @@
 # Changes in GAP.jl
 
+## Version 0.9.1 (released 2022-11-23)
+
+- Added a longer example for using GAP.jl, based around the Rubik's cube
+- Fix some type minor stability issues
+
 ## Version 0.9.0 (released 2022-11-01)
 
 - Update go GAP 4.12.1.
