@@ -41,7 +41,7 @@ end
 
 
 function evalstr_ex(cmd::String)
-    res = ccall((:GAP_EvalString, libgap), GapObj, (Cstring,), cmd)
+    res = ccall((:GAP_EvalString, libgap), Any, (Cstring,), cmd)::GapObj
     return res
 end
 
@@ -120,7 +120,7 @@ function AssignGlobalVariable(name::Union{AbstractString,Symbol}, value::Any)
     _AssignGlobalVariable(name, tmp)
 end
 
-MakeString(val::String) = GC.@preserve val ccall((:MakeStringWithLen, libgap), GapObj, (Ptr{UInt8}, Culong), val, sizeof(val))
+MakeString(val::String) = GC.@preserve val ccall((:MakeStringWithLen, libgap), Any, (Ptr{UInt8}, Culong), val, sizeof(val))::GapObj
 #TODO: As soon as libgap provides :GAP_MakeStringWithLen, use it.
 
 function CSTR_STRING(val::GapObj)
@@ -136,12 +136,12 @@ function CSTR_STRING_AS_ARRAY(val::GapObj)::Vector{UInt8}
 end
 
 
-NewPlist(capacity::Int64) = ccall((:GAP_NewPlist, libgap), GapObj, (Int64,), capacity)
-NewPrecord(capacity::Int64) = ccall((:GAP_NewPrecord, libgap), GapObj, (Int64,), capacity)
-NewRange(len::Int64, low::Int64, inc::Int64) = ccall((:GAP_NewRange, libgap), GapObj, (Int64, Int64, Int64), len, low, inc)
-NEW_MACFLOAT(x::Float64) = ccall((:NEW_MACFLOAT, libgap), GapObj, (Cdouble,), x)
-ValueMacFloat(x::GapObj) = ccall((:GAP_ValueMacFloat, libgap), Cdouble, (Any,), x)
-CharWithValue(x::Cuchar) = ccall((:GAP_CharWithValue, libgap), GapObj, (Cuchar,), x)
+NewPlist(capacity::Int64) = ccall((:GAP_NewPlist, libgap), Any, (Int64,), capacity)::GapObj
+NewPrecord(capacity::Int64) = ccall((:GAP_NewPrecord, libgap), Any, (Int64,), capacity)::GapObj
+NewRange(len::Int64, low::Int64, inc::Int64) = ccall((:GAP_NewRange, libgap), Any, (Int64, Int64, Int64), len, low, inc)::GapObj
+NEW_MACFLOAT(x::Float64) = ccall((:NEW_MACFLOAT, libgap), Any, (Cdouble,), x)::GapObj
+ValueMacFloat(x::GapObj) = ccall((:GAP_ValueMacFloat, libgap), Cdouble, (Any,), x)::Float64
+CharWithValue(x::Cuchar) = ccall((:GAP_CharWithValue, libgap), Any, (Cuchar,), x)::GapObj
 
 # `WrapJuliaFunc` and `UnwrapJuliaFunc` are intended to create a GAP function
 # object that wraps a given Julia function, and to unwrap such a GAP function,
@@ -160,9 +160,9 @@ CharWithValue(x::Cuchar) = ccall((:GAP_CharWithValue, libgap), GapObj, (Cuchar,)
 # In the other direction, `UnwrapJuliaFunc` extracts the underlying Julia
 # function from its argument if applicable, and otherwise returns the input.
 WrapJuliaFunc(x::Any) = x
-WrapJuliaFunc(x::Function) = ccall((:WrapJuliaFunc, JuliaInterface_path()), GapObj, (Any,), x)
+WrapJuliaFunc(x::Function) = ccall((:WrapJuliaFunc, JuliaInterface_path()), Any, (Any,), x)
 UnwrapJuliaFunc(x::Any) = x
-UnwrapJuliaFunc(x::GapObj) = ccall((:UnwrapJuliaFunc, JuliaInterface_path()), Any, (GapObj,), x)
+UnwrapJuliaFunc(x::GapObj) = ccall((:UnwrapJuliaFunc, JuliaInterface_path()), Any, (Any,), x)
 
 function ElmList(x::GapObj, position)
     o = ccall((:GAP_ElmList, libgap), Ptr{Cvoid}, (Any, Culong), x, Culong(position))
