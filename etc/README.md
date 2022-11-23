@@ -65,15 +65,14 @@ For this to work, follow these instructions:
    the result shall be installed. I recommend to execute this in a separate
    environment, as it may need to install a few things.
 
-   To give a concrete example, supposed you have a Julia executable named `julia-1.6`. Then
-   you could invoke
+   To give a concrete example you could invoke
 
-        julia-1.6 --proj=override-1.6 etc/setup_override_dir.jl GAPROOT /tmp/gap_jll_override-1.6
+        julia --proj=override etc/setup_override_dir.jl GAPROOT /tmp/gap_jll_override
 
 4. Use the `etc/run_with_override.jl` script with the exact same Julia executable
    and the override environment we just prepared.
 
-        julia-1.6 --proj=override-1.6 etc/run_with_override.jl /tmp/gap_jll_override-1.6
+        julia --proj=override etc/run_with_override.jl /tmp/gap_jll_override
 
 5. This opens a Julia session with the override in effect. You can now e.g. load GAP.jl
    via `using GAP`, or install other packages (such as Oscar) and test with them.
