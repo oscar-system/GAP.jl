@@ -23,6 +23,27 @@ GAP_jll.is_available() ||
    error("""This platform or julia version is currently not supported by GAP:
             $(Base.BinaryPlatforms.host_triplet())""")
 
+# Julia >= 1.10 will at some point add support for (de)serializing foreign
+# types (the types, not the instances, at least not yet). We want (and need)
+# to use that if available, which also requires changes in GAP resp. GAP_jll.
+# To determine whether to use it, we therefore check two conditions:
+# (1) whether the Julia kernel exports `jl_reinit_foreign_type`, and
+# (2) whether or not GAP_jll defines GapObj.
+# See https://github.com/JuliaLang/julia/pull/44527
+# and https://github.com/JuliaLang/julia/pull/47407
+function use_jl_reinit_foreign_type()
+    if isdefined(GAP_jll, :GapObj)
+        # GAP_jll still provides GapObj => use the old system
+        return false
+    end
+    # otherwise try to use the new system
+    try
+        cglobal(:jl_reinit_foreign_type) != C_NULL
+    catch
+        false
+    end
+end
+
 include("setup.jl")
 
 import Base: length, finalize
@@ -75,6 +96,10 @@ const real_JuliaInterface_path = Ref{String}()
 JuliaInterface_path() = real_JuliaInterface_path[]
 
 function initialize(argv::Vector{String})
+    if use_jl_reinit_foreign_type()
+        ccall((:GAP_InitJuliaMemoryInterface, libgap), Nothing, (Any, Ptr{Nothing}), @__MODULE__, C_NULL)
+    end
+
     handle_signals = isdefined(Main, :__GAP_ARGS__)  # a bit of a hack...
     error_handler_func = handle_signals ? C_NULL : @cfunction(error_handlerwrap, Cvoid, ())
 
@@ -112,7 +137,7 @@ function initialize(argv::Vector{String})
     ## At this point, the GAP module has not been completely initialized, and
     ## hence is not yet available under the global binding "GAP"; but
     ## JuliaInterface needs to access it. To make that possible, we dlopen
-    ## its kernel extension already here, and poke a point to this module
+    ## its kernel extension already here, and poke a pointer to this module
     ## into the kernel extension's global variable `gap_module`
     @debug "storing pointer to Julia module 'GAP' into JuliaInterface"
     Libdl.dlopen(JuliaInterface_path())
