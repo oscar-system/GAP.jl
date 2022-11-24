@@ -1,6 +1,6 @@
 module GapFunctionPerform
 
-import GAP_jll: GapObj
+import GAP: GapObj
 
 function typed_func(a::GapObj, b::GapObj)
     return a

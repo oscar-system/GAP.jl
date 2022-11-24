@@ -1,4 +1,24 @@
+if use_jl_reinit_foreign_type()
+    const GapObj = ccall((:GAP_DeclareGapObj, libgap),
+                            Any,
+                            (Symbol, Module, Any),
+                            :GapObj, GAP, Any)
+
+    const SmallBag = ccall((:GAP_DeclareBag, libgap),
+                            Any,
+                            (Symbol, Module, Any, Cint),
+                            :SmallBag, GAP, Any, 0)
+
+    const LargeBag = ccall((:GAP_DeclareBag, libgap),
+                            Any,
+                            (Symbol, Module, Any, Cint),
+                            :LargeBag, GAP, Any, 1)
+
+else
+
 import GAP_jll: GapObj
+
+end
 
 
 """

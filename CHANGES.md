@@ -2,6 +2,9 @@
 
 ## Version 0.9.2-DEV (released YYYY-MM-DD)
 
+- Silence scary warning about missing compiler
+- Prepare for an upcoming change to serialization in Julia 1.10
+
 ## Version 0.9.1 (released 2022-11-23)
 
 - Added a longer example for using GAP.jl, based around the Rubik's cube
