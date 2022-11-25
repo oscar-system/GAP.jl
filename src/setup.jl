@@ -77,7 +77,7 @@ function select_compiler(lang, candidates, extension)
             @debug "$(lang) compiler candidate '$(compiler)' not working"
         end
     end
-    @warn "Could not locate a working $(lang) compiler"
+    @debug "Could not locate a working $(lang) compiler"
     return first(candidates)
 end
 
