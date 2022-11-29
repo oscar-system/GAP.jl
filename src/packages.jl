@@ -61,16 +61,20 @@ end
 """
     load(spec::String, version::String = ""; install::Bool = false, quiet::Bool = true)
 
-Try to load the newest installed version of the GAP package with name `spec`.
+Try to load the GAP package with name `spec`.
+If `version` is specified then try to load a version of the package
+that is compatible with `version`, in the sense of
+[GAP's CompareVersionNumbers function](GAP_ref(ref:CompareVersionNumbers)),
+otherwise try to load the newest installed version.
 Return `true` if this is successful, and `false` otherwise.
 
-The function calls [GAP's `LoadPackage` function](GAP_ref(ref:LoadPackage));
-the package banner is not printed.
+If `install` is set to `true` and (the desired version of) the required
+GAP package is not yet installed then [`install`](@ref) is called first,
+in order to install the package;
+if no version is prescribed then the newest released version of the package
+will be installed.
 
-If `install` is set to `true` and the required GAP package is not yet
-installed then [`install`](@ref) is called first, in order to install
-the newest released version of the package.
-
+The function calls [GAP's `LoadPackage` function](GAP_ref(ref:LoadPackage)).
 If `quiet` is set to `false` then package banners are shown for all packages
 being loaded. It is also passed on to [`install`](@ref).
 """
@@ -81,11 +85,21 @@ function load(spec::String, version::String = ""; install::Bool = false, quiet::
     loaded = Globals.LoadPackage(gspec, gversion, !quiet)
     if loaded == true
         return true
+    elseif Globals.IsPackageLoaded(gspec)
+        # Another version is already loaded.
+        # Perhaps we could install the required version,
+        # but then we would not be able to load it into the current session
+        # and thus in any case `false` must be returned.
+        # It would be a strange side effect if the required version
+        # would afterwards be loadable in a fresh Julia session,
+        # thus we do not try to install the package here.
+        return false
     elseif install == true
-        # Try to install the package, without showing messages.
-        if Packages.install(spec; interactive = false, quiet)
+        # Try to install the given version of the package,
+        # without showing messages.
+        if Packages.install(spec, version; interactive = false, quiet)
             # Make sure that the installed version is admissible.
-            return Globals.LoadPackage(gspec, gversion, !quiet)
+            return Globals.LoadPackage(gspec, gversion, !quiet) == true
         end
     end
 
@@ -95,16 +109,25 @@ function load(spec::String, version::String = ""; install::Bool = false, quiet::
 end
 
 """
-    install(spec::String; interactive::Bool = true, quiet::Bool = false,
+    install(spec::String, version::String = "";
+                          interactive::Bool = true, quiet::Bool = false,
                           pkgdir::AbstractString = GAP.Packages.DEFAULT_PKGDIR[])
 
-Download and install the newest released version of the GAP package
-given by `spec` into the `pkgdir` directory.
-Return `true` if the installation is successful or if the package
-was already installed, and `false` otherwise.
+Download and install the GAP package given by `spec` into the `pkgdir`
+directory.
 
 `spec` can be either the name of a package or the URL of an archive or repository
 containing a package, or the URL of a `PackageInfo.g` file.
+
+If `spec` is the name of a package then the package version can be
+specified by `version`, in the format described for
+[GAP's CompareVersionNumbers function](GAP_ref(ref:CompareVersionNumbers)).
+In all other cases the newest released version of the package will get
+installed.
+
+Return `true` if the installation is successful or if
+(a version compatible with `version`) of the package was already installed,
+and `false` otherwise.
 
 The function uses [the function `InstallPackage` from GAP's package
 `PackageManager`](GAP_ref(PackageManager:InstallPackage)).
@@ -113,31 +136,26 @@ The info messages shown by this function can be suppressed by passing
 prevent `PackageManager` from prompting the user for input interactively.
 For details, please refer to its documentation.
 """
-function install(spec::String; interactive::Bool = true, quiet::Bool = false,
+function install(spec::String, version::String = "";
+                               interactive::Bool = true, quiet::Bool = false,
                                pkgdir::AbstractString = DEFAULT_PKGDIR[])
     # point PackageManager to the given pkg dir
     Globals.PKGMAN_CustomPackageDir = GapObj(pkgdir)
     mkpath(pkgdir)
 
-    try
-#T When a new PackageManager version will be available,
-#T this try/catch is no longer necessary,
-#T because no GAP error is thrown when one is offline or so.
-      if quiet
-        oldlevel = Globals.InfoLevel(Globals.InfoPackageManager)
-        Globals.SetInfoLevel(Globals.InfoPackageManager, 0)
-        res = Globals.InstallPackage(GapObj(spec), interactive)
-        Globals.SetInfoLevel(Globals.InfoPackageManager, oldlevel)
-        return res
-      else
-        return Globals.InstallPackage(GapObj(spec), interactive)
-      end
-    catch e
-      if ! quiet
-        println( "cannot install $spec:\n$e")
-      end
-      return false
+    if quiet
+      oldlevel = Globals.InfoLevel(Globals.InfoPackageManager)
+      Globals.SetInfoLevel(Globals.InfoPackageManager, 0)
     end
+    if version == ""
+      res = Globals.InstallPackage(GapObj(spec), interactive)
+    else
+      res = Globals.InstallPackage(GapObj(spec), GapObj(version), interactive)
+    end
+    if quiet
+      Globals.SetInfoLevel(Globals.InfoPackageManager, oldlevel)
+    end
+    return res
 end
 
 """
