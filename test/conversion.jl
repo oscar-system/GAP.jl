@@ -284,13 +284,13 @@
     @test [(1,)] == yy
     @test typeof(yy) == Vector{Tuple{Int64}}
 
-    x = BigInt(2)^64
-    L = GAP.evalstr("List([1..10], i -> Julia.Main.x + i)")
+    str = "JuliaEvalString(\"BigInt(2)^64\")"
+    L = GAP.evalstr("List([1..10], i -> $str + i)")
     @test Vector{GAP.GapObj}(L) == [GAP.GapObj(x) for x in L]
+  end
 end
 
 @testset "conversion to GAP" begin
-  end
 
   @testset "Defaults" begin
     @test GAP.julia_to_gap(true)
