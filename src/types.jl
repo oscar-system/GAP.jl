@@ -94,12 +94,21 @@ However, this is restricted to outputs that actually are of type `GapObj`.
 To also deal with GAP integers, finite field elements and booleans, use
 [`GAP.Obj`](@ref) instead.
 
+The keyword argument `recursive` with value `true` can be used to force
+recursive conversion of nested Julia objects (arrays, tuples, dictionaries).
+
 # Examples
 ```jldoctest
 julia> GapObj(1//3)
 GAP: 1/3
 
 julia> GapObj([1 2; 3 4])
+GAP: [ [ 1, 2 ], [ 3, 4 ] ]
+
+julia> GAP.GapObj([[1, 2], [3, 4]])
+GAP: [ <Julia: [1, 2]>, <Julia: [3, 4]> ]
+
+julia> GAP.GapObj([[1, 2], [3, 4]], recursive = true)
 GAP: [ [ 1, 2 ], [ 3, 4 ] ]
 
 julia> GapObj(42)
@@ -119,12 +128,21 @@ Moreover, it can be used as a constructor,
 in order to convert Julia objects to GAP objects,
 whenever a suitable conversion has been defined.
 
+The keyword argument `recursive` with value `true` can be used to force
+recursive conversion of nested Julia objects (arrays, tuples, dictionaries).
+
 # Examples
 ```jldoctest
 julia> GAP.Obj(1//3)
 GAP: 1/3
 
 julia> GAP.Obj([1 2; 3 4])
+GAP: [ [ 1, 2 ], [ 3, 4 ] ]
+
+julia> GAP.Obj([[1, 2], [3, 4]])
+GAP: [ <Julia: [1, 2]>, <Julia: [3, 4]> ]
+
+julia> GAP.Obj([[1, 2], [3, 4]], recursive = true)
 GAP: [ [ 1, 2 ], [ 3, 4 ] ]
 
 julia> GAP.Obj(42)
