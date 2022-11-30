@@ -470,6 +470,9 @@ end
     rec = GAP.julia_to_gap(val, recursive = true)
     @test rec[1] == GAP.julia_to_gap([1, 2])
     @test GAP.julia_to_gap(1, recursive = false) == 1
+
+    r = GAP.evalstr("rec(a:= 1, b:= 2)")
+    @test GAP.julia_to_gap(r, recursive = true) == r
   end
 
   @testset "Test function conversion" begin
