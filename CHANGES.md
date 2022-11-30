@@ -4,6 +4,9 @@
 
 - Silence scary warning about missing compiler
 - Prepare for an upcoming change to serialization in Julia 1.10
+- `Packages.install` and thus also `Packages.load` with argument
+  `install = true` admit prescribing a version number of the package
+  to be loaded/installed
 
 ## Version 0.9.1 (released 2022-11-23)
 
