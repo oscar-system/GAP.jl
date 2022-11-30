@@ -284,6 +284,9 @@
     @test [(1,)] == yy
     @test typeof(yy) == Vector{Tuple{Int64}}
 
+    x = BigInt(2)^64
+    L = GAP.evalstr("List([1..10], i -> Julia.Main.x + i)")
+    @test Vector{GAP.GapObj}(L) == [GAP.GapObj(x) for x in L]
 end
 
 @testset "conversion to GAP" begin

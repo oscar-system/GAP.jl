@@ -186,7 +186,11 @@ function gap_to_julia(
             end
             if recursive && !isbitstype(typeof(current_obj))
                 new_array[i] = get!(recursion_dict, current_obj) do
+                  if T == GapObj || T == Obj
+                    julia_to_gap(current_obj, recursion_dict; recursive = true)
+                  else
                     gap_to_julia(T, current_obj, recursion_dict; recursive = true)
+                  end
                 end
             else
                 new_array[i] = current_obj
