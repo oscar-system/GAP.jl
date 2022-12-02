@@ -1,6 +1,6 @@
 # Changes in GAP.jl
 
-## Version 0.9.2-DEV (released YYYY-MM-DD)
+## Version 0.9.2 (released 2022-12-02)
 
 - Silence scary warning about missing compiler
 - Prepare for an upcoming change to serialization in Julia 1.10
