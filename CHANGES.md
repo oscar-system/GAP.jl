@@ -7,6 +7,7 @@
 - `Packages.install` and thus also `Packages.load` with argument
   `install = true` admit prescribing a version number of the package
   to be loaded/installed
+- Document `recursive` keyword argument for `GAP.Obj` and `GAP.GapObj`
 
 ## Version 0.9.1 (released 2022-11-23)
 
