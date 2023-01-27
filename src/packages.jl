@@ -19,9 +19,12 @@ function init_packagemanager()
     # overwrite PKGMAN_DownloadURL
     Globals.MakeReadWriteGlobal(GapObj("PKGMAN_DownloadURL"))
     Globals.PKGMAN_DownloadURL = function(url)
-        # exception handling is omitted by concept, i.e. errors occurring during the download are shown to the user
+      try
         buffer = Downloads.download(String(url), IOBuffer())
         return GapObj(Dict{Symbol, Any}(:success => true, :result => String(take!(buffer))), recursive=true)
+      catch
+        return GapObj(Dict{Symbol, Any}(:success => false), recursive=true)
+      end
     end
     Globals.MakeReadOnlyGlobal(GapObj("PKGMAN_DownloadURL"))
 
