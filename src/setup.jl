@@ -122,7 +122,7 @@ function regenerate_gaproot()
     # set linker flags; since these are meant for use for GAP packages, add the necessary
     # flags to link against libgap
     gap_lib = joinpath(gap_prefix, "lib")
-    sysinfo["GAP_LDFLAGS"] = "-L$(gap_lib) "
+    sysinfo["GAP_LDFLAGS"] = "-L$(gap_lib) -lgap"
 
     GAP_VERSION = VersionNumber(sysinfo["GAP_VERSION"])
     gaproot_packages = joinpath(Base.DEPOT_PATH[1], "gaproot", "v$(GAP_VERSION.major).$(GAP_VERSION.minor)")
