@@ -1,6 +1,6 @@
 # Changes in GAP.jl
 
-## Version 0.9.3-DEV (released YYYY-MM-DD)
+## Version 0.9.3 (released 2023-02-05)
 
 - Update package archives to a newer version (corresponding to GAP 4.12.2 plus
   some updates). Among other things this should fix troubles using GAP.jl
