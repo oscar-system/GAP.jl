@@ -2,6 +2,14 @@
 
 ## Version 0.9.3-DEV (released YYYY-MM-DD)
 
+- Update package archives to a newer version (corresponding to GAP 4.12.2 plus
+  some updates). Among other things this should fix troubles using GAP.jl
+  under WSL.
+- Catch `Downloads.download` errors, for better feedback when trying to install
+  GAP packages while offline
+- Update bundled `BuildPackages.sh` script to match GAP 4.12.2
+- Fix building digraphs and a few other GAP packages
+
 ## Version 0.9.2 (released 2022-12-02)
 
 - Silence scary warning about missing compiler
