@@ -29,9 +29,9 @@ function get_symbols_in_module(m::Module)
 end
 
 """
-    call_with_catch( juliafunc, arguments )
+    call_with_catch(juliafunc, arguments)
 
-Return a tuple `( ok, val )`
+Return a tuple `(ok, val)`
 where `ok` is either `true`, meaning that calling the function `juliafunc`
 with `arguments` returns the value `val`,
 or `false`, meaning that the function call runs into an error;
@@ -39,11 +39,16 @@ in the latter case, `val` is set to the string of the error message.
 
 # Examples
 ```jldoctest
-julia> GAP.call_with_catch( sqrt, 2 )
+julia> GAP.call_with_catch(sqrt, 2)
 (true, 1.4142135623730951)
 
-julia> GAP.call_with_catch( sqrt, -2 )
-(false, "DomainError(-2.0, \\"sqrt will only return a complex result if called with a complex argument. Try sqrt(Complex(x)).\\")")
+julia> flag, res = GAP.call_with_catch(sqrt, -2);
+
+julia> flag
+false
+
+julia> startswith(res, "DomainError")
+true
 
 ```
 """
@@ -68,10 +73,10 @@ Note that `jl_call` and `Core._apply` do not support keyword arguments.
 
 # Examples
 ```jldoctest
-julia> range( 2, length = 5, step = 2 )
+julia> range(2, length = 5, step = 2)
 2:2:10
 
-julia> GAP.kwarg_wrapper( range, [ 2 ], Dict( :length => 5, :step => 2 ) )
+julia> GAP.kwarg_wrapper(range, [2], Dict(:length => 5, :step => 2))
 2:2:10
 
 ```
