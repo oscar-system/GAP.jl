@@ -27,12 +27,11 @@
 #!  Also, the interface does not provide conversions to &GAP;
 #!  for &Julia; objects whose types are defined in &Julia; packages
 #!  (that is, not in the <Q>core &Julia;</Q>).
-#!  For example, the &Julia; package <Package>Nemo.jl</Package> defines
-#!  an integer type <C>fmpz</C>.
-#!  The conversion of integers of type <C>fmpz</C> between &Julia; and &GAP;
-#!  is handled in the context of the <Package>Oscar</Package> system,
-#!  which uses both &GAP; and <Package>Nemo.jl</Package>,
-#!  but <Package>JuliaInterface</Package> does not deal with it.
+#!  For example, the &Julia; package <Package>Oscar.jl</Package> defines
+#!  several data types that correspond to objects in &GAP;.
+#!  Their conversions between &Julia; and &GAP; are handled in
+#!  <Package>Oscar.jl</Package>, see its <F>src/GAP</F> subdirectory,
+#!  <Package>JuliaInterface</Package> does not deal with these issues.
 #!
 #!  The interface consists of
 #!
