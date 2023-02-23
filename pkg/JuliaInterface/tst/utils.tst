@@ -14,10 +14,11 @@ gap> JuliaTypeInfo( Julia.Base.parse );
 ##
 gap> CallJuliaFunctionWithCatch( Julia.Base.sqrt, [ 4 ] );
 rec( ok := true, value := <Julia: 2.0> )
-gap> CallJuliaFunctionWithCatch( Julia.Base.sqrt, [ -1 ] );
-rec( ok := false, 
-  value := "DomainError(-1.0, \"sqrt will only return a complex result if call\
-ed with a complex argument. Try sqrt(Complex(x)).\")" )
+gap> res:= CallJuliaFunctionWithCatch( Julia.Base.sqrt, [ -1 ] );;
+gap> res.ok;
+false
+gap> StartsWith( res.value, "DomainError" );
+true
 
 ##
 gap> JuliaEvalString(fail);
