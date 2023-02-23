@@ -27,7 +27,7 @@
 #!  Also, the interface does not provide conversions to &GAP;
 #!  for &Julia; objects whose types are defined in &Julia; packages
 #!  (that is, not in the <Q>core &Julia;</Q>).
-#!  For example, the &Julia; package <Package>Oscar.jl</Package> defines
+#!  For example, the &Julia; package <Package>Oscar.jl</Package> provides
 #!  several data types that correspond to objects in &GAP;.
 #!  Their conversions between &Julia; and &GAP; are handled in
 #!  <Package>Oscar.jl</Package>, see its <F>src/GAP</F> subdirectory,
