@@ -5,7 +5,7 @@ BindGlobal("_JL_Dict_Any", JuliaEvalString("Dict{Symbol,Any}"));
 
 ##
 ##  We want to use &GAP's function call syntax also for certain Julia objects
-##  that are <E>not</E> functions, for example for types such as <C>fmpz</C>.
+##  that are <E>not</E> functions, for example for types such as <C>String</C>.
 ##  Note that also Julia supports this.
 ##
 InstallMethod( CallFuncList,
