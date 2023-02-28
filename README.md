@@ -8,7 +8,7 @@
 This repository contains the [GAP.jl](src/GAP.jl) Julia package, as well as the GAP packages
 [`JuliaInterface`](pkg/JuliaInterface) and [`JuliaExperimental`](pkg/JuliaExperimental)
 developed for the [GAP](https://www.gap-system.org/)-[Julia](https://julialang.org/) integration
-as part of the [OSCAR project](https://oscar.computeralgebra.de).
+as part of the [OSCAR project](https://www.oscar-system.org).
 
 *WARNING*: GAP.jl is intended as a low-level interface between GAP
 and Julia. Therefore, for the most part it does not attempt (besides some
