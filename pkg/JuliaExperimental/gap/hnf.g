@@ -24,21 +24,21 @@ JuliaImportPackage( "Nemo" );
 ##  <mat> is assumed to be a list of lists of rationals.
 ##
 BindGlobal( "NemoMatrix_fmpq", function( mat )
-    local arr, i, fmpz, div, row, entry;
+    local arr, i, ZZRingElem, div, row, entry;
 
-    # Convert the entries to 'Nemo.fmpq' objects,
-    # and use 'MatrixSpace' for creating the matrix in Julia.
+    # Convert the entries to 'Nemo.QQFieldElem' objects,
+    # and use 'matrix_space' for creating the matrix in Julia.
     arr:= [];
     i:= 1;
-    fmpz:= Julia.Nemo.fmpz;
+    ZZRingElem:= Julia.Nemo.ZZRingElem;
     div:= Julia.Base.( "//" );
     for row in mat do
       for entry in row do
         if IsInt( entry ) then
           arr[i]:= entry;
         else
-          arr[i]:= div( fmpz( NumeratorRat( entry ) ),
-                        fmpz( DenominatorRat( entry ) ) );
+          arr[i]:= div( ZZRingElem( NumeratorRat( entry ) ),
+                        ZZRingElem( DenominatorRat( entry ) ) );
         fi;
         i:= i + 1;
       od;
@@ -46,7 +46,7 @@ BindGlobal( "NemoMatrix_fmpq", function( mat )
 
     return Julia.Nemo.matrix( Julia.Nemo.QQ,
                NumberRows( mat ), NumberColumns( mat ),
-               Julia.Base.map( Julia.Nemo.fmpq, GAPToJulia( arr ) ) );
+               Julia.Base.map( Julia.Nemo.QQFieldElem, GAPToJulia( arr ) ) );
 end );
 
 
@@ -54,12 +54,12 @@ end );
 #! @Returns a Julia object
 #! @Description
 #!  For a matrix <A>intmat</A> of integers,
-#!  this function creates the matrix of <C>Nemo.fmpz</C> integers in Julia
+#!  this function creates the matrix of <C>Nemo.ZZRingElem</C> integers in Julia
 #!  that has the same entries.
 BindGlobal( "NemoMatrix_fmpz",
     mat -> Julia.Nemo.matrix( Julia.Nemo.ZZ,
                NumberRows( mat ), NumberColumns( mat ),
-               Julia.Base.map( Julia.Nemo.fmpz,
+               Julia.Base.map( Julia.Nemo.ZZRingElem,
                    GAPToJulia( Concatenation( mat ) ) ) ) );
 
 

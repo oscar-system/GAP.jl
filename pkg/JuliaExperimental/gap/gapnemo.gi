@@ -99,10 +99,10 @@ BindGlobal( "WordFromExponentVector", function( exps )
 ##
 ##  For a &GAP; list <A>coeffs</A> of integers, this function creates
 ##  a &Julia; array that contains the corresponding &Julia; objects of type
-##  <C>fmpz</C>.
+##  <C>ZZRingElem</C>.
 ##
 BindGlobal( "JuliaArrayOfFmpz",
-    coeffs -> Julia.Base.map( Julia.Nemo.fmpz, GAPToJulia( coeffs ) ) );
+    coeffs -> Julia.Base.map( Julia.Nemo.ZZRingElem, GAPToJulia( coeffs ) ) );
 
 
 #############################################################################
@@ -111,14 +111,14 @@ BindGlobal( "JuliaArrayOfFmpz",
 ##
 ##  For a list <A>coeffs</A> of rationals, this function creates
 ##  a &Julia; array that contains the corresponding &Julia; objects of type
-##  <C>fmpq</C>.
+##  <C>QQFieldElem</C>.
 ##
 BindGlobal( "JuliaArrayOfFmpq", function( coeffs )
-    local arr, i, fmpz, div, entry, num, den;
+    local arr, i, ZZRingElem, div, entry, num, den;
 
     arr:= [];
     i:= 1;
-    fmpz:= Julia.Nemo.fmpz;
+    ZZRingElem:= Julia.Nemo.ZZRingElem;
     div:= Julia.Base.("//");
     for entry in coeffs do
       if IsInt( entry ) then
@@ -126,11 +126,11 @@ BindGlobal( "JuliaArrayOfFmpq", function( coeffs )
       else
         num:= GAPToJulia( NumeratorRat( entry ) );
         den:= GAPToJulia( DenominatorRat( entry ) );
-        arr[i]:= div( fmpz( num ), fmpz( den ) );
+        arr[i]:= div( ZZRingElem( num ), ZZRingElem( den ) );
       fi;
       i:= i + 1;
     od;
-    arr:= Julia.Base.map( Julia.Nemo.fmpq, GAPToJulia( arr ) );
+    arr:= Julia.Base.map( Julia.Nemo.QQFieldElem, GAPToJulia( arr ) );
 
     return arr;
     end );
@@ -138,10 +138,10 @@ BindGlobal( "JuliaArrayOfFmpq", function( coeffs )
 
 #############################################################################
 ##
-#F  FmpzToGAP( <fmpz> )
+#F  FmpzToGAP( <ZZRingElem> )
 ##
 BindGlobal( "FmpzToGAP",
-    fmpz -> JuliaToGAP( IsInt, Julia.Base.BigInt( fmpz ) ) );
+    ZZRingElem -> JuliaToGAP( IsInt, Julia.Base.BigInt( ZZRingElem ) ) );
 
 
 #############################################################################
@@ -156,7 +156,7 @@ BindGlobal( "GAPDescriptionOfNemoPolynomial", function( C, pol )
     if IsUnivariatePolynomialRing( R ) then
       info:= Julia.GAPNemoExperimental.CoefficientsOfUnivarateNemoPolynomial(
                  pol );
-      # This is "Vector{Nemo.fmpq}", but we need "Nemo.fmpq_mat".
+      # This is "Vector{Nemo.QQFieldElem}", but we need "Nemo.QQMatrix".
       info:= Julia.Nemo.matrix( Julia.Nemo.parent( info[1] ), 1,
                  Julia.Base.length( info ), info );
       FC:= ContextGAPNemo( LeftActingDomain( R ) );
