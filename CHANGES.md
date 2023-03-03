@@ -1,5 +1,10 @@
 # Changes in GAP.jl
 
+## Version 0.9.4 (released 2023-03-04)
+
+- Tweak @gapattribute to not require `import GAP: @gapwrap`
+- Update OSCAR URL
+
 ## Version 0.9.3 (released 2023-02-05)
 
 - Update package archives to a newer version (corresponding to GAP 4.12.2 plus
