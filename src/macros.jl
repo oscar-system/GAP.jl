@@ -282,14 +282,14 @@ macro gapattribute(ex)
 
     # assemble everything
     result = quote
-        Base.@__doc__ @gapwrap $ex
+        Base.@__doc__ GAP.@gapwrap $ex
 
         """
             $($testername)(x)
 
         Return `true` if the value for `$($julianame)(x)` has already been computed.
         """
-        @gapwrap $testername($juliaarg) = GAP.Globals.$gaptester($gaparg)::Bool
+        GAP.@gapwrap $testername($juliaarg) = GAP.Globals.$gaptester($gaparg)::Bool
 
         """
             $($settername)(x, v)
@@ -297,7 +297,7 @@ macro gapattribute(ex)
         Set the value for `$($julianame)(x)` to `v` if it has't been
         set already.
         """
-        @gapwrap $settername($juliaarg,v) = GAP.Globals.$gapsetter($gaparg,v)::Nothing
+        GAP.@gapwrap $settername($juliaarg,v) = GAP.Globals.$gapsetter($gaparg,v)::Nothing
     end
 
     # ensure correct line numbers are used on all three methods, so that
