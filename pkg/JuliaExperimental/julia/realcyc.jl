@@ -19,7 +19,7 @@ function arbCyc( coeffs::Vector, R::Nemo.ArbField )
     N::Int = length( coeffs )
     for k = 1:N
       if coeffs[k] != 0
-        val = val + coeffs[k] * cospi( Nemo.fmpq( 2 * (k-1) // N ), R )
+        val = val + coeffs[k] * cospi( Nemo.QQFieldElem( 2 * (k-1) // N ), R )
       end
     end
     return val

@@ -24,7 +24,7 @@ end
 > and `denom` is the common denominator.
 """
 function NemoElementOfNumberField( f, lst, denom::Int )
-    return Nemo.elem_from_mat_row( f, lst, 1, Nemo.fmpz( denom ) )
+    return Nemo.elem_from_mat_row( f, lst, 1, Nemo.ZZRingElem( denom ) )
 end
 
 
@@ -40,7 +40,7 @@ function Nemo_Matrix_over_NumberField( f, m::Int, n::Int, lst, denom::Int )
 
     pos = 1
     mat = Array{Any}( undef, m, n )
-    d = Nemo.fmpz( denom )
+    d = Nemo.ZZRingElem( denom )
     for i = 1:m
       for j = 1:n
         mat[i,j] = Nemo.elem_from_mat_row( f, lst, pos, d )
@@ -56,12 +56,12 @@ end
 """
     CoefficientVectorOfNumberFieldElement( elm::Nemo.nf_elem, d::Int )
 > Return the coefficient vector of the number field element `elm`,
-> as an array of length `d` and consisting of `Nemo.fmpq` objects.
+> as an array of length `d` and consisting of `Nemo.QQFieldElem` objects.
 """
 function CoefficientVectorOfNumberFieldElement( elm::Nemo.nf_elem, d::Int )
     local arr, i
 
-    arr = Vector{Nemo.fmpq}( undef, d )
+    arr = Vector{Nemo.QQFieldElem}( undef, d )
     for i = 1:d
       arr[i] = Nemo.coeff( elm, i-1 )
     end
@@ -75,13 +75,13 @@ end
 > Return the tuple that consists of the coefficient vectors
 > of the numerators and the denominators of the coefficient vector
 > of the number field element `elm`,
-> as arrays of length `d` and consisting of `Nemo.fmpz` objects.
+> as arrays of length `d` and consisting of `Nemo.ZZRingElem` objects.
 """
 function CoefficientVectorsNumDenOfNumberFieldElement( elm, d )
     local num, den, i, onecoeff
 
-    num = Vector{Nemo.fmpz}( undef, d )
-    den = Vector{Nemo.fmpz}( undef, d )
+    num = Vector{Nemo.ZZRingElem}( undef, d )
+    den = Vector{Nemo.ZZRingElem}( undef, d )
     for i = 1:d
       onecoeff = Nemo.coeff( elm, i-1 )
       num[i] = numerator( onecoeff )
@@ -95,7 +95,7 @@ end
 """
     MatricesOfCoefficientVectorsNumDen( nemomat, d )
 > Return the tuple that consists of two 2-dim. (m n) times `d` arrays
-> of `Nemo.fmpz` objects that describe the numerators and the denominators
+> of `Nemo.ZZRingElem` objects that describe the numerators and the denominators
 > of the number field elements in the matrix `nemomat`.
 """
 function MatricesOfCoefficientVectorsNumDen( nemomat, d )
@@ -132,9 +132,9 @@ end
 # 
 #     f, x = Nemo.CyclotomicField( N, "x" )
 #     n = length( lst )
-#     m = MatrixSpace( Nemo.ZZ, n, length( lst[1] ) )
+#     m = matrix_space( Nemo.ZZ, n, length( lst[1] ) )
 #     mat = m( copy( transpose( hcat( lst... ) ) ) )
-#     d = Nemo.fmpz( denom )
+#     d = Nemo.ZZRingElem( denom )
 #     res = Array{Any}( undef, n )
 #     for i = 1:n
 #       res[i] = QabElem( Nemo.elem_from_mat_row( f, mat, i, d ), N )

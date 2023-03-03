@@ -6,7 +6,7 @@
 ##  their elements and matrices of them.
 ##
 
-#T TODO: if the modulus is large then the data are fmpz!
+#T TODO: if the modulus is large then the data are ZZRingElem!
 #T   how to carry back then?
 
 ##############################################################################
@@ -14,7 +14,7 @@
 #M  ContextGAPNemo( Integers mod <n> )
 ##
 ##  On the Nemo side, we have
-##  <C>Julia.Nemo.ResidueRing( Julia.Nemo.ZZ, <M>n</M> )</C>.
+##  <C>Julia.Nemo.residue_ring( Julia.Nemo.ZZ, <M>n</M> )</C>.
 ##
 InstallMethod( ContextGAPNemo,
     [ "IsRing and IsZmodnZObjNonprimeCollection and IsAttributeStoringRep" ],
@@ -28,7 +28,7 @@ InstallMethod( ContextGAPNemo,
     fi;
 
     # Create the Nemo ring.
-    juliaRing:= Julia.Nemo.ResidueRing( Julia.Nemo.ZZ, GAPToJulia( m ) );
+    juliaRing:= Julia.Nemo.residue_ring( Julia.Nemo.ZZ, GAPToJulia( m ) );
 
     # Create the GAP wrapper.
     # Note that elements from different Nemo residue rings cannot be compared,
@@ -82,7 +82,7 @@ InstallMethod( ContextGAPNemo,
       ElementJuliaToGAP:= function( C, obj )
         return JuliaToGAP( IsInt, Julia.Base.getfield( obj,
                    JuliaSymbol( "data" ) ) ) * One( C!.GAPDomain );
-#T Deal with the case of fmpz!
+#T Deal with the case of ZZRingElem!
       end,
 
       ElementWrapped:= function( C, obj )

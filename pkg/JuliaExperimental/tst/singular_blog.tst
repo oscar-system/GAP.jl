@@ -15,7 +15,7 @@ gap> LoadPackage( "JuliaExperimental", false );;
 
 ##  Now Singular has been loaded into Julia.
 ##  Create a Nemo residue ring over Singular's ring of integers.
-gap> R:= Julia.Nemo.ResidueRing( Julia.Singular.ZZ, 23 );
+gap> R:= Julia.Nemo.residue_ring( Julia.Singular.ZZ, 23 );
 <Julia: Residue Ring of Integer Ring modulo 23>
 gap> R(12) + R(7);
 <Julia: 19>
@@ -28,7 +28,7 @@ gap> Julia.Base.parent( R(12) );
 gap> vecstr := JuliaEvalString( "Vector{String}" );
 gap> indetnames:= vecstr( [ "x", "y", "z", "t" ] );
 <Julia: ["x", "y", "z", "t"]>
-gap> Rinfo:= Julia.Singular.PolynomialRing( Julia.Singular.QQ, indetnames );
+gap> Rinfo:= Julia.Singular.polynomial_ring( Julia.Singular.QQ, indetnames );
 <Julia: (Singular Polynomial Ring (QQ),(x,y,z,t),(dp(4),C), Singular.spoly{Sin\
 gular.n_Q}[x, y, z, t])>
 gap> R:= Rinfo[1];
@@ -155,7 +155,7 @@ gap> J1[2];
 ##  generic multivariate polynomial code in Nemo,
 ##  over a Singular coefficient ring
 ##  (strange: runs into Julia MethodError over QQ instead of ZZ ...)
-gap> Rinfo:= Julia.Nemo.PolynomialRing( Julia.Singular.ZZ, indetnames );
+gap> Rinfo:= Julia.Nemo.polynomial_ring( Julia.Singular.ZZ, indetnames );
 <Julia: (Multivariate Polynomial Ring in x, y, z, t over Integer Ring, Abstrac\
 tAlgebra.Generic.MPoly{Singular.n_Z}[1*x, 1*y, 1*z, 1*t])>
 gap> R:= Rinfo[1];;

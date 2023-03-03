@@ -74,7 +74,7 @@ InstallMethod( ContextGAPNemo,
 
       ElementGAPToJulia:= function( C, obj )
         if IsInt( obj ) then
-          return Julia.Nemo.fmpz( GAPToJulia( obj ) );
+          return Julia.Nemo.ZZRingElem( GAPToJulia( obj ) );
         else
           Error( "<obj> must be an integer" );
         fi;
@@ -191,7 +191,7 @@ InstallMethod( ContextGAPNemo,
       ElementType:= efam!.elementType,
 
       ElementGAPToJulia:= function( C, obj )
-        return Julia.Nemo.fmpq(
+        return Julia.Nemo.QQFieldElem(
             Julia.Base.\/\/( NumeratorRat( obj ), DenominatorRat( obj ) ) );
       end,
 
@@ -273,7 +273,7 @@ InstallMethod( ContextGAPNemo,
 ##
 #M  ContextGAPNemo( PolynomialRing( R, n ) )
 ##
-##  On the Nemo side, we have <C>Julia.Nemo.PolynomialRing( ... )</C>.
+##  On the Nemo side, we have <C>Julia.Nemo.polynomial_ring( ... )</C>.
 ##
 InstallMethod( ContextGAPNemo,
     [ "IsPolynomialRing and IsAttributeStoringRep" ],
@@ -292,7 +292,7 @@ InstallMethod( ContextGAPNemo,
     fi;
 
     # Create the Nemo ring.
-    juliaRing:= Julia.Nemo.PolynomialRing( FContext!.JuliaDomainPointer,
+    juliaRing:= Julia.Nemo.polynomial_ring( FContext!.JuliaDomainPointer,
                                            names );
 
     # Create the GAP wrappers.
@@ -375,7 +375,7 @@ InstallMethod( ContextGAPNemo,
             obj:= CoefficientsOfUnivariatePolynomial( obj );
           fi;
           obj:= GAPToNemo( FContext, obj );
-          # This yields 'Nemo.fmpq_mat', but we need 'Vector{Nemo.fmpq}'.
+          # This yields 'Nemo.QQMatrix', but we need 'Vector{Nemo.QQFieldElem}'.
           obj:= Julia.GAPNumberFields.VectorToArray( obj );
           pol:= C!.JuliaDomainPointer( obj );
         else
@@ -478,7 +478,7 @@ InstallMethod( ContextGAPNemo,
 ##
 #M  ContextGAPNemo( AlgebraicExtension( Q, pol ) )
 ##
-##  On the Nemo side, we have <C>Julia.Nemo.NumberField( ... )</C>.
+##  On the Nemo side, we have <C>Julia.Nemo.number_field( ... )</C>.
 ##
 InstallMethod( ContextGAPNemo,
     [ "IsField and IsAlgebraicExtension and IsAttributeStoringRep" ],
@@ -501,7 +501,7 @@ InstallMethod( ContextGAPNemo,
 
     # Create the Nemo ring.
     npol:= GAPToNemo( PContext, pol );
-    juliaRing:= Julia.Nemo.NumberField( npol, name );
+    juliaRing:= Julia.Nemo.number_field( npol, name );
 
     # Create the GAP wrappers.
     # Create a new family.
@@ -558,7 +558,7 @@ InstallMethod( ContextGAPNemo,
         coeffs:= coeffs * d;
 
         # Convert the list of integral coefficient vectors
-        # to a suitable matrix in Julia (Nemo.fmpz_mat).
+        # to a suitable matrix in Julia (Nemo.ZZMatrix).
         res:= Julia.GAPUtilsExperimental.MatrixFromNestedArray(
                   GAPToJulia( [ coeffs ] ) );
         res:= Julia.Nemo.matrix( Julia.Nemo.ZZ, res );
@@ -805,7 +805,7 @@ InstallMethod( Characteristic,
     local R;
 
     R:= ContextGAPNemo( FamilyObj( obj ) )!.JuliaDomain;
-    if JuliaTypeInfo( R ) = "Nemo.NmodRing" then
+    if JuliaTypeInfo( R ) = "Nemo.zzModRing" then
       # We need this for matrix groups over residue class rings.
       # Nemo does not support it.
       return JuliaToGAP( IsInt,
@@ -858,7 +858,7 @@ InstallOtherMethod( InverseMutable,
      [ "IsNemoMatrixObj" ], NEMO_RANK_SHIFT,
 #    x -> NemoElement( x, Julia.Base.inv( x ) ) );
 #T Remove the code below as soon as it becomes obsolete.
-#T (The critical case is inversion of 'Nemo.nmod_mat' objects.)
+#T (The critical case is inversion of 'Nemo.zzModMatrix' objects.)
      function( x )
      local ptr, res, modulus, m, s, arr, i, j, entry;
 
@@ -866,18 +866,18 @@ InstallOtherMethod( InverseMutable,
      res:= CallJuliaFunctionWithCatch( Julia.Base.inv, [ ptr ] );
      if res.ok then
        res:= res.value;
-     elif JuliaTypeInfo( ptr ) <> "Nemo.nmod_mat" then
+     elif JuliaTypeInfo( ptr ) <> "Nemo.zzModMatrix" then
        Error( "matrix <x> is not invertible" );
      else
        # Perhaps the object is invertible:
        # Take a preimage over the integers, invert over the rationals,
        # compute the reductions of the entries (numerators and denominators).
-       modulus:= Julia.Nemo.fmpz(
+       modulus:= Julia.Nemo.ZZRingElem(
                      Size( ContextGAPNemo( FamilyObj( x ) )!.GAPDomain ) );
        res:= Julia.Nemo.lift( x );
        m:= NumberRows( x );
 #T 'res:= Julia.Nemo.matrix( Julia.Nemo.QQ, m, m, res );' does not work
-       s:= Julia.Nemo.MatrixSpace( Julia.Nemo.QQ, m, m );
+       s:= Julia.Nemo.matrix_space( Julia.Nemo.QQ, m, m );
        res:= s( res );
        res:= Julia.Base.inv( res );
        arr:= [];
@@ -889,7 +889,7 @@ InstallOtherMethod( InverseMutable,
                                           modulus ) );
          od;
        od;
-       arr:= JuliaEvalString( "Vector{Nemo.fmpz}" )( GAPToJulia( arr ) );
+       arr:= JuliaEvalString( "Vector{Nemo.ZZRingElem}" )( GAPToJulia( arr ) );
        res:= Julia.Nemo.parent( ptr )( arr );
      fi;
 

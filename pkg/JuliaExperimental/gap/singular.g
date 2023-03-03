@@ -138,7 +138,7 @@ InstallMethod( ContextGAPSingular,
 ##
 #M  ContextGAPSingular( PolynomialRing( R, n )[:<options>] )
 ##
-##  On the Singular side, we have <C>Julia.Singular.PolynomialRing( ... )</C>.
+##  On the Singular side, we have <C>Julia.Singular.polynomial_ring( ... )</C>.
 ##
 ##  The options <C>ordering1</C>, <C>ordering2</C>, <degree_bound</C> are
 ##  supported,
@@ -212,7 +212,7 @@ InstallMethod( ContextGAPSingular,
     fi;
 
     juliaRing:= CallJuliaFunctionWithKeywordArguments(
-                    Julia.Singular.PolynomialRing,
+                    Julia.Singular.polynomial_ring,
                     [ FContext!.JuliaDomainPointer, names ],
                     rec( cached:= true,
                          ordering:= JuliaSymbol( ordering ),
