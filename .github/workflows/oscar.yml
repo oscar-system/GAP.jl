@@ -1,9 +1,19 @@
 name: OscarCI
 
 on:
+  push:
+    branches:
+      - master
    pull_request:
      branches:
        - master
+
+concurrency:
+  # group by workflow and ref; the last slightly strange component ensures that for pull
+  # requests, we limit to 1 concurrent job, but for the master branch we don't
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.ref != 'refs/heads/master' || github.run_number }}
+  # Cancel intermediate builds, but only if it is a pull request build.
+  cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
 
 jobs:
   generatematrix:
@@ -11,8 +21,8 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     env:
-      PR_NUMBER: ${{github.event.number}}
-      JULIA_PKG_SERVER: ""
+      PR_NUMBER: ${{github.event.number || '0' }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
     - uses: actions/checkout@v3
     - name: "Set up Julia"
@@ -48,7 +58,7 @@ jobs:
     continue-on-error: ${{ matrix.julia-version == 'nightly' }}
     env:
       PR_NUMBER: ${{github.event.number}}
-      JULIA_PKG_SERVER: ""
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     strategy:
       matrix: ${{fromJSON(needs.generatematrix.outputs.matrix)}}
       fail-fast: false
@@ -83,8 +93,17 @@ jobs:
                                  active_repo=\"${GITHUB_REPOSITORY}\");
                    github_env_runtests(meta;
                                        varname=\"oscar_run_tests\",
+                                       filename=\"${GITHUB_ENV}\");
+                   github_env_run_doctests(meta;
+                                           varname=\"oscar_run_doctests\",
                                        filename=\"${GITHUB_ENV}\");"
+
       - name: "Run tests"
         run: |
           echo '${{ env.oscar_run_tests }}'
           julia --project=oscar-dev/project/ -e '${{ env.oscar_run_tests }}'
+      - name: "Run doctests"
+        if: matrix.julia-version == '~1.6.0-0' || matrix.julia-version == '1.6'
+        run: |
+          echo '${{ env.oscar_run_doctests }}'
+          julia --project=oscar-dev/project/ -e '${{ env.oscar_run_doctests }}'
