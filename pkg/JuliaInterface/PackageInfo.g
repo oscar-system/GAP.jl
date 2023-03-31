@@ -71,8 +71,8 @@ IssueTrackerURL := "https://github.com/oscar-system/GAP.jl",
 PackageWWWHome := "https://github.com/oscar-system/GAP.jl/issues",
 
 ArchiveURL     := Concatenation( ~.PackageWWWHome, "JuliaInterface-", ~.Version ),
-README_URL     := Concatenation( ~.PackageWWWHome, "README" ),
 PackageInfoURL := Concatenation( ~.PackageWWWHome, "PackageInfo.g" ),
+README_URL     := Concatenation( ~.PackageWWWHome, "README.md" ),
 
 ArchiveFormats := ".tar.gz",
 
