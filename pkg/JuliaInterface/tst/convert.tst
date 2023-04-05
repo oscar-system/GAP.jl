@@ -222,5 +222,12 @@ gap> dict:= GAPToJulia( rec( juliafunc:= Julia.Base.map,
 gap> JuliaToGAP( IsRecord, dict );
 rec( juliafunc := <Julia: map> )
 
+# iterating over dict gives key-value pairs
+gap> dict:= GAPToJulia( rec( a := 1, b := 2 ) );
+<Julia: Dict{Symbol, Any}(:a => 1, :b => 2)>
+gap> for i in dict do Display(i); od;
+Pair{Symbol, Any}(:a, 1)
+Pair{Symbol, Any}(:b, 2)
+
 ##
 gap> STOP_TEST( "convert.tst", 1 );
