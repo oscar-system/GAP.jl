@@ -86,6 +86,44 @@ InstallOtherMethod( \.\:\=,
 
 #############################################################################
 ##
+##  Iterating over Julia objects
+##
+BindGlobal("NextIterator_Julia", function(it)
+  local res;
+  res := it!.state[1];
+  it!.state := Julia.iterate(it!.obj, it!.state[2]);
+  return res;
+end);
+
+BindGlobal("IsDoneIterator_Julia", function(it)
+  return Julia.isnothing(it!.state);
+end);
+
+BindGlobal("ShallowCopy_Julia", function(it)
+  return rec(NextIterator := it!.NextIterator,
+    IsDoneIterator := it!.IsDoneIterator,
+    ShallowCopy := it!.ShallowCopy,
+    state := Julia.Base.deepcopy(it!.state),
+    obj := it!.obj,
+    );
+end);
+
+InstallOtherMethod( Iterator,
+    "for a Julia object",
+    [ IsJuliaObject ],
+function(obj)
+  return IteratorByFunctions(rec(
+    NextIterator := NextIterator_Julia,
+    IsDoneIterator := IsDoneIterator_Julia,
+    ShallowCopy := ShallowCopy_Julia,
+    state := Julia.iterate(obj),
+    obj := obj,
+  ));
+end);
+
+
+#############################################################################
+##
 ##  Create random numbers via Julia random number generators.
 ##
 BindGlobal( "RandomSourceJulia",

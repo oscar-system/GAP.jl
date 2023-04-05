@@ -89,6 +89,10 @@ gap> TestBinOp({a,b} -> a = b);
 #
 gap> l := GAPToJulia([1, 2, 3]);
 <Julia: Any[1, 2, 3]>
+gap> for i in l do Display(i); od;
+1
+2
+3
 gap> l[1];
 1
 gap> l[2] := false;
@@ -101,6 +105,11 @@ gap> l;
 #
 gap> m:=JuliaEvalString("[1 2; 3 4]");
 <Julia: [1 2; 3 4]>
+gap> for i in m do Display(i); od;
+1
+3
+2
+4
 gap> m[3];
 2
 gap> m[1,2];

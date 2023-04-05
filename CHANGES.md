@@ -1,5 +1,9 @@
 # Changes in GAP.jl
 
+## Version 0.9.5-DEV (released YYYY-MM-DD)
+
+- Allow iterating over Julia objects from within GAP
+
 ## Version 0.9.4 (released 2023-03-04)
 
 - Tweak @gapattribute to not require `import GAP: @gapwrap`
