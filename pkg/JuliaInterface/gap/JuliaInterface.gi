@@ -95,19 +95,6 @@ end);
 
 InstallValue( Julia, _WrapJuliaModule( "Main", _JuliaGetGlobalVariable( "Main" ) ) );
 
-InstallOtherMethod( \[\],
-    [ "IsJuliaObject", "IsPosInt and IsSmallIntRep" ],
-    function( obj, i )
-      return Julia.Base.getindex( obj, i );
-    end );
-
-InstallOtherMethod( \[\],
-    [ "IsJuliaObject", "IsPosInt and IsSmallIntRep",
-                       "IsPosInt and IsSmallIntRep" ],
-    function( obj, i, j )
-      return Julia.Base.getindex( obj, i, j );
-    end );
-
 InstallGlobalFunction( "JuliaIncludeFile",
 function( filename, module_name... )
     if Length( module_name ) = 0 then
