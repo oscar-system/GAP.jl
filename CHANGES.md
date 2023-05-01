@@ -3,6 +3,7 @@
 ## Version 0.9.5-DEV (released YYYY-MM-DD)
 
 - Allow iterating over Julia objects from within GAP
+- Various janitorial changes
 
 ## Version 0.9.4 (released 2023-03-04)
 
