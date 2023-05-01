@@ -1,8 +1,8 @@
 title = "metadata for oscar CI run"
 
 [env]
-os = [ "ubuntu-latest" ]
-julia-version = [ "~1.6.0-0"]
+# os = [ "ubuntu-latest" ]
+# julia-version = [ "~1.6.0-0"]
 # branches = [ "release", "<matching>" ]
 
 [pkgs]
