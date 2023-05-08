@@ -8,6 +8,8 @@ include("constructors.jl")
 include("macros.jl")
 include("packages.jl")
 include("help.jl")
+include("replcompletions.jl")
+
 @testset "manual examples" begin
   include("doctest.jl")
 end
