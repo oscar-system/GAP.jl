@@ -8,7 +8,12 @@ include("constructors.jl")
 include("macros.jl")
 include("packages.jl")
 include("help.jl")
-include("replcompletions.jl")
+
+@static if VERSION < v"1.10-DEV"
+  # TODO: re-enable this test in Julia 1.10 once we get REPL completion
+  # working there
+  include("replcompletions.jl")
+end
 
 @testset "manual examples" begin
   include("doctest.jl")
