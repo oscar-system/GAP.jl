@@ -55,20 +55,25 @@ end
 
 propertynames(::GlobalsType) = Vector{Symbol}(Globals.NamesGVars())
 
+@static if VERSION < v"1.10-DEV"
+  # HACK to get tab completion to work for GAP globals accessed via GAP.Globals;
+  # e.g. if the REPL already shows `GAP.Globals.MTX.Is` and the user presses
+  # TAB, they should be shown a list of members of the GAP global variable `MTX`
+  # (which is a record) starting with `Is`. The easy part for supporting this is
+  # to implement `propertynames` for `GapObj` (at least those which are GAP
+  # records). Unfortunately that's not quite enough; we also have add methods
+  # for the `get_value` method below.
+  import REPL.REPLCompletions: get_value
+  function get_value(sym::Symbol, ::GAP.GlobalsType)
+      v = _ValueGlobalVariable(sym)
+      v === C_NULL && return (nothing, false)
+      return (_GAP_TO_JULIA(v), true)
+  end
+  get_value(sym::QuoteNode, fn::GAP.GlobalsType) = get_value(sym.value, fn)
 
-# HACK to get tab completion to work for GAP globals accessed via GAP.Globals;
-# e.g. if the REPL already shows `GAP.Globals.MTX.Is` and the user presses
-# TAB, they should be shown a list of members of the GAP global variable `MTX`
-# (which is a record) starting with `Is`. The easy part for supporting this is
-# to implement `propertynames` for `GapObj` (at least those which are GAP
-# records). Unfortunately that's not quite enough; we also have add methods
-# for the `get_value` method below
-import REPL.REPLCompletions: get_value
-function get_value(sym::Symbol, ::GAP.GlobalsType)
-    v = _ValueGlobalVariable(sym)
-    v === C_NULL && return (nothing, false)
-    return (_GAP_TO_JULIA(v), true)
+else
+  # TODO: the above HACK does not work anymore in Julia 1.10; someone needs
+  # to find out how to make it work there
 end
-get_value(sym::QuoteNode, fn::GAP.GlobalsType) = get_value(sym.value, fn)
 
-propertynames(r::GapObj) = Wrappers.IsRecord(r) ? Vector{Symbol}(Wrappers.RecNames(r)) : Vector{Symbol}()
+propertynames(r::GapObj, private::Bool=false) = Wrappers.IsRecord(r) ? Vector{Symbol}(Wrappers.RecNames(r)) : Vector{Symbol}()
