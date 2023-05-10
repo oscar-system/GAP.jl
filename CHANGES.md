@@ -1,5 +1,9 @@
 # Changes in GAP.jl
 
+## Version 0.9.6-DEV (released 2023-05-DD)
+
+- Fix compatibility issues with upcoming Julia 1.10-DEV
+
 ## Version 0.9.5 (released 2023-05-02)
 
 - Allow iterating over Julia objects from within GAP
