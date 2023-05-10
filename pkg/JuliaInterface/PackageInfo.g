@@ -10,8 +10,8 @@ SetPackageInfo( rec(
 
 PackageName := "JuliaInterface",
 Subtitle := "Interface to Julia",
-Version := "0.9.5",
-Date := "02/05/2023", # dd/mm/yyyy format
+Version := "0.9.6",
+Date := "10/05/2023", # dd/mm/yyyy format
 License := "GPL-2.0-or-later",
 
 Persons := [

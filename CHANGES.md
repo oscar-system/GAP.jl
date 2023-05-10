@@ -1,8 +1,9 @@
 # Changes in GAP.jl
 
-## Version 0.9.6-DEV (released 2023-05-DD)
+## Version 0.9.6 (released 2023-05-10)
 
 - Fix compatibility issues with upcoming Julia 1.10-DEV
+- Various janitorial changes
 
 ## Version 0.9.5 (released 2023-05-02)
 
