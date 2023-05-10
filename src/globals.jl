@@ -53,7 +53,7 @@ function setproperty!(::GlobalsType, name::Symbol, val::Any)
     _AssignGlobalVariable(name, tmp)
 end
 
-propertynames(::GlobalsType) = Vector{Symbol}(Globals.NamesGVars())
+propertynames(::GlobalsType, private::Bool=false) = Vector{Symbol}(Globals.NamesGVars())
 
 @static if VERSION < v"1.10-DEV"
   # HACK to get tab completion to work for GAP globals accessed via GAP.Globals;
