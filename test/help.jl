@@ -5,12 +5,9 @@
     function test_gap_help(topic::String)
         inp = Base.IOBuffer("qq") # exit the menu if applicable
         term = REPL.Terminals.TTYTerminal( "dumb", inp, tt.out_stream, tt.err_stream)
-        return isa(GAP.gap_help_string(topic, false, term), String) &&
-               isa(GAP.gap_help_string(topic, true, term), String)
+        return isa(GAP.gap_help_string(topic, false, term, suppress_output = true), String) &&
+               isa(GAP.gap_help_string(topic, true, term, suppress_output = true), String)
     end
-
-    # Do not print the menus.
-    REPL.TerminalMenus.config(supress_output = true)
 
     @test test_gap_help("")
     @test test_gap_help("&")

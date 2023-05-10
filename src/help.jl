@@ -3,7 +3,8 @@
 using REPL
 
 function gap_help_string(topic::String, onlyexact::Bool = false,
-    term::REPL.Terminals.TTYTerminal = REPL.TerminalMenus.terminal)
+    term::REPL.Terminals.TTYTerminal = REPL.TerminalMenus.terminal;
+    suppress_output::Bool = false)
     # Let GAP collect the information.
     info = Globals.HELP_Info(GapObj(topic), onlyexact)
 
@@ -21,7 +22,8 @@ function gap_help_string(topic::String, onlyexact::Bool = false,
                 choice = REPL.TerminalMenus.request(
                     term,
                     "Choose an entry (out of $len) to view, 'q' for none:",
-                    REPL.TerminalMenus.RadioMenu(options, pagesize = pagesize, charset = :ascii))
+                    REPL.TerminalMenus.RadioMenu(options, pagesize = pagesize, charset = :ascii),
+                    suppress_output = suppress_output)
                 if choice == -1
                     # canceled
                     return ""
