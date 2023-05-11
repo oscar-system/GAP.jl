@@ -735,6 +735,38 @@ Print( "AUTODOC_ExtractMyManualExamples: for loop, append to file ", name, "\n" 
 end);
 
 #############################################################################
+InstallMethod( WriteDocumentation, [ IsTreeForDocumentation, IsDirectory, IsInt ],
+  function( tree, path_to_xmlfiles, level_value )
+    local stream, i;
+
+Print( "WriteDocumentation with 3 arguments called\n" );
+    stream := AUTODOC_OutputTextFile( path_to_xmlfiles, _AUTODOC_GLOBAL_OPTION_RECORD.AutoDocMainFile );
+    AppendTo( stream, AUTODOC_XML_HEADER );
+Print( "WriteDocumentation: after AppendTo\n" );
+    for i in tree!.content do
+        if not IsTreeForDocumentationNodeForChapterRep( i ) then
+            Error( "this should never happen" );
+        fi;
+        ## FIXME: If there is anything else than a chapter, this will break!
+Print( "before WriteDocumentation with 4 arguments\n" );
+        WriteDocumentation( i, stream, path_to_xmlfiles, level_value );
+Print( "after WriteDocumentation with 4 arguments\n" );
+    od;
+
+Print( "WriteDocumentation: before WriteChunks\n" );
+    WriteChunks( tree, path_to_xmlfiles, level_value );
+Print( "WriteDocumentation: after WriteChunks\n" );
+
+    # Workaround for issue #65
+    if IsEmpty( tree!.content ) then
+        AppendTo( stream, "&nbsp;\n" );
+    fi;
+Print( "WriteDocumentation: before CloseStream\n" );
+    CloseStream( stream );
+Print( "leave WriteDocumentation with 3 arguments\n" );
+end );
+
+#############################################################################
 
 AutoDoc(rec(
     autodoc := true,
