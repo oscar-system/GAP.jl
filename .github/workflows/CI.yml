@@ -24,9 +24,9 @@ jobs:
       fail-fast: false
       matrix:
         julia-version:
-          - '1.6'
-          - '1.8'
-          - '~1.9.0-0'
+          #- '1.6'
+          #- '1.8'
+          #- '~1.9.0-0'
           - 'nightly'
         julia-arch:
           - x64
@@ -34,9 +34,9 @@ jobs:
           - ubuntu-latest
         include:
           # Add a few macOS jobs (not too many, the number we can run in parallel is limited)
-          - julia-version: '1.8'
-            julia-arch: x64
-            os: macOS-latest
+          #- julia-version: '1.8'
+          #  julia-arch: x64
+          #  os: macOS-latest
           - julia-version: 'nightly'
             julia-arch: x64
             os: macOS-latest
@@ -69,6 +69,8 @@ jobs:
         uses: julia-actions/julia-runtest@latest
       - name: "Add optional Julia dependencies for GAP tests"
         run: julia --color=yes -e 'using Pkg ; Pkg.add(["Singular", "Nemo"])'
+      - name: "Setup tmate session"
+        uses: mxschmitt/action-tmate@v3
       - name: "GAP tests"
         run: |
           julia --project=. -e 'import GAP; GAP.create_gap_sh("/tmp")'
