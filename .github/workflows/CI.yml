@@ -19,6 +19,7 @@ jobs:
   test:
     name: Julia ${{ matrix.julia-version }} - ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
     continue-on-error: ${{ matrix.julia-version == 'nightly' }}
     strategy:
       fail-fast: false
@@ -93,6 +94,7 @@ jobs:
   docs:
     name: "Documentation"
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v3
       - uses: julia-actions/setup-julia@v1
