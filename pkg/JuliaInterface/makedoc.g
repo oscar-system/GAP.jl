@@ -805,6 +805,33 @@ end );
 
 #############################################################################
 
+MakeReadWriteGlobal( "AUTODOC_AbsolutePath" );
+UnbindGlobal( "AUTODOC_AbsolutePath" );
+BindGlobal( "AUTODOC_AbsolutePath",
+function( dir, filename... )
+    local pwd, result;
+Print( "AUTODOC_AbsolutePath called\n" );
+    pwd := Filename( DirectoriesSystemPrograms(), "pwd" );
+    if pwd = fail then
+        Error("failed to locate 'pwd' tool");
+    fi;
+    result := "";
+Print( "AUTODOC_AbsolutePath: before Process, pwd is '", pwd, "'\n" );
+    Process(Directory(dir), pwd, InputTextNone(), OutputTextString(result, true), []);
+Print( "AUTODOC_AbsolutePath: after Process\n" );
+Print( "AUTODOC_AbsolutePath: result is '", result, "'\n" );
+    result := Chomp(result);
+    if Length(filename) > 0 and Length(filename[1]) > 0 then
+        Append(result, "/");
+        Append(result, filename[1]);
+    fi;
+Print( "AUTODOC_AbsolutePath: result is '", result, "'\n" );
+Print( "leave AUTODOC_AbsolutePath\n" );
+    return result;
+end);
+
+#############################################################################
+
 AutoDoc(rec(
     autodoc := true,
     extract_examples:= true,
