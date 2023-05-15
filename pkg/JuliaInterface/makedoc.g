@@ -768,6 +768,43 @@ end );
 
 #############################################################################
 
+MakeReadWriteGlobal( "WriteChunks" );
+UnbindGlobal( "WriteChunks" );
+BindGlobal( "WriteChunks",
+  function( tree, path_to_xmlfiles, level_value )
+    local chunks_stream, filename, chunk_names, current_chunk_name,
+          current_chunk;
+
+Print( "WriteChunks called\n" );
+    filename := "_Chunks.xml";
+    _AUTODOC_GLOBAL_CHUNKS_FILE := AUTODOC_AbsolutePath( path_to_xmlfiles, filename );
+Print( "WriteChunks: after AUTODOC_AbsolutePath\n" );
+    chunks_stream := AUTODOC_OutputTextFile( path_to_xmlfiles, filename );
+Print( "WriteChunks: after AUTODOC_OutputTextFile\n" );
+    chunk_names := RecNames( tree!.chunks );
+
+    for current_chunk_name in chunk_names do
+        current_chunk := tree!.chunks.( current_chunk_name );
+Print( "WriteChunks: before AppendTo\n" );
+        AppendTo( chunks_stream, "<#GAPDoc Label=\"", current_chunk_name, "\">\n" );
+Print( "WriteChunks: after AppendTo\n" );
+        if IsBound( current_chunk!.content ) then
+Print( "WriteChunks: call WriteDocumentation\n" );
+            WriteDocumentation( current_chunk!.content, chunks_stream, level_value );
+Print( "WriteChunks: after WriteDocumentation\n" );
+        fi;
+Print( "WriteChunks: before AppendTo\n" );
+        AppendTo( chunks_stream, "\n<#/GAPDoc>\n" );
+Print( "WriteChunks: after AppendTo\n" );
+    od;
+
+Print( "WriteChunks: before CloseStream\n" );
+    CloseStream( chunks_stream );
+Print( "leave WriteChunks\n" );
+end );
+
+#############################################################################
+
 AutoDoc(rec(
     autodoc := true,
     extract_examples:= true,
