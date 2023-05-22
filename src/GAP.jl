@@ -1,4 +1,4 @@
-@doc Markdown.doc"""
+"""
   GAP.jl is the Julia interface to the GAP-System.
 
   For more information about GAP see https://www.gap-system.org/
@@ -47,7 +47,6 @@ end
 include("setup.jl")
 
 import Libdl
-import Markdown
 import Random
 
 # setup the initial sysinfo dictionary; we'll update this later in __init__

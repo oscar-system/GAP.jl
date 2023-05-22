@@ -1,5 +1,6 @@
 ## enable access to GAP help system from Julia
 
+import Markdown
 using REPL
 
 function gap_help_string(topic::String, onlyexact::Bool = false,
