@@ -46,7 +46,6 @@ end
 
 include("setup.jl")
 
-import Base: length, finalize
 import Libdl
 import Markdown
 import Random
@@ -213,10 +212,6 @@ function initialize(argv::Vector{String})
     GAP.Globals.Read(GapObj(joinpath(@__DIR__, "..", "gap", "err.g")))
 
     return nothing
-end
-
-function finalize()
-    ccall((:GAP_finalize, libgap), Cvoid, ())
 end
 
 function exit_code()
