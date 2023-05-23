@@ -1,5 +1,5 @@
 @testset "help" begin
-    using REPL
+    using GAP.REPL
     tt = REPL.TerminalMenus.terminal
 
     function test_gap_help(topic::String)

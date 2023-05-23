@@ -142,7 +142,7 @@ InstallMethod( State,
 InstallMethod( Init,
     [ "IsRandomSourceJulia", "IsObject" ],
     function( rng, seed )
-    JuliaEvalString( "import Random" );
+    JuliaEvalString( "import GAP.Random" );
     if IsInt( seed ) then
       # This means a prescribed seed.
       seed:= AbsInt( seed );
@@ -184,7 +184,7 @@ InstallMethod( Reset,
     local old;
 
     old:= State( rng );
-    JuliaEvalString( "import Random" );
+    JuliaEvalString( "import GAP.Random" );
     if IsInt( seed ) then
       # This means a prescribed seed.
       seed:= AbsInt( seed );

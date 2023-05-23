@@ -1,5 +1,6 @@
-using Documenter, GAP
+using Documenter
+using GAP
 
-DocMeta.setdocmeta!(GAP, :DocTestSetup, :(using GAP, Random); recursive = true)
+DocMeta.setdocmeta!(GAP, :DocTestSetup, :(using GAP, GAP.Random); recursive=true)
 
-doctest(GAP; doctestfilters = GAP.GAP_doctestfilters)
+doctest(GAP; doctestfilters=GAP.GAP_doctestfilters)

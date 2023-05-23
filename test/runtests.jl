@@ -1,4 +1,6 @@
-using Test, Documenter, GAP
+using Test
+using Documenter
+using GAP
 
 include("basics.jl")
 include("adapter.jl")
