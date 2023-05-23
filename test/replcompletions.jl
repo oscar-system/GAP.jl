@@ -1,6 +1,6 @@
 # the test setup and code in this file are based on stdlib/REPL/test/replcompletions.jl
-using REPL.REPLCompletions
-using REPL
+using GAP.REPL.REPLCompletions
+using GAP.REPL
 
 function map_completion_text(completions)
     c, r, res = completions

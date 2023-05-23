@@ -1,4 +1,6 @@
-using Documenter, GAP, Markdown
+using Documenter
+using GAP
+using GAP.Markdown
 
 ## The following code inserts a step into the list of tasks
 ## that are performed by Documenter.jl's function `makedocs`.
@@ -77,7 +79,7 @@ function compute_external_reference(link, meta, page, doc)
     return true
 end
 
-DocMeta.setdocmeta!(GAP, :DocTestSetup, :(using GAP, Random); recursive = true)
+DocMeta.setdocmeta!(GAP, :DocTestSetup, :(using GAP, GAP.Random); recursive = true)
 
 makedocs(
     sitename = "GAP.jl",
