@@ -4,6 +4,7 @@ authors = ["Thomas Breuer <sam@math.rwth-aachen.de>", "Sebastian Gutsche <gutsch
 version = "0.9.6"
 
 [deps]
+Artifacts = "56f22d72-fd6d-98f1-02f0-08ddc0907c33"
 Downloads = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
 GAP_jll = "5cd7a574-2c56-5be2-91dc-c8bc375b9ddf"
 GAP_lib_jll = "de1ad85e-c930-5cd4-919d-ccd3fcafd1a3"

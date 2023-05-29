@@ -33,7 +33,7 @@ gap_prefix = abspath(gap_prefix)
 #
 @info "Install needed packages"
 using Pkg
-using Pkg.Artifacts
+using Artifacts
 Pkg.add(["GMP_jll"])
 Pkg.instantiate()
 
