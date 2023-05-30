@@ -1,7 +1,7 @@
 module Setup
 
-using Pkg
-using Pkg.Artifacts
+using Pkg: GitTools
+using Artifacts
 using GAP_jll
 using GAP_lib_jll
 using GAP_pkg_juliainterface_jll
@@ -219,9 +219,9 @@ function locate_JuliaInterface_so(sysinfo::Dict{String, String})
     # compare the C sources used to build GAP_pkg_juliainterface_jll with bundled copies
     # by comparing tree hashes
     jll = GAP_pkg_juliainterface_jll.find_artifact_dir()
-    jll_hash = Pkg.GitTools.tree_hash(joinpath(jll, "src"))
+    jll_hash = GitTools.tree_hash(joinpath(jll, "src"))
     bundled = joinpath(@__DIR__, "..", "pkg", "JuliaInterface")
-    bundled_hash = Pkg.GitTools.tree_hash(joinpath(bundled, "src"))
+    bundled_hash = GitTools.tree_hash(joinpath(bundled, "src"))
     if jll_hash == bundled_hash
         # if the tree hashes match then we can use JuliaInterface.so from the JLL
         @debug "Use JuliaInterface.so from GAP_pkg_juliainterface_jll"
