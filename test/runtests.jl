@@ -2,6 +2,8 @@ using Test
 using Documenter
 using GAP
 
+include("Aqua.jl")
+
 include("basics.jl")
 include("adapter.jl")
 include("convenience.jl")
