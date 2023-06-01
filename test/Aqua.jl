@@ -7,7 +7,7 @@ using Aqua
         unbound_args=true,
         undefined_exports=true,
         project_extras=true,
-        stale_deps=false,       # some weird error with GAP_lib_jll
+        stale_deps=true,
         deps_compat=true,
         project_toml_formatting=true,
         piracy=false            # TODO: fix
