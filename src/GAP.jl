@@ -1,7 +1,9 @@
 """
   GAP.jl is the Julia interface to the GAP-System.
 
-  For more information about GAP see https://www.gap-system.org/
+  For the package manual see https://oscar-system.github.io/GAP.jl/.
+
+  For more information about GAP see https://www.gap-system.org/.
 """ module GAP
 
 # Show a more helpful error message for users on Windows.
