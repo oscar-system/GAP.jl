@@ -2,7 +2,7 @@
 module Packages
 
 using Downloads
-import ...GAP: Globals, GapObj, sysinfo
+import ...GAP: Globals, GapObj, RNamObj, sysinfo, Wrappers
 
 const DEFAULT_PKGDIR = Ref{String}()
 
@@ -26,7 +26,7 @@ function init_packagemanager()
         return GapObj(Dict{Symbol, Any}(:success => false), recursive=true)
       end
     end
-    Globals.MakeReadOnlyGlobal(GapObj("PKGMAN_DownloadURL"))
+    Wrappers.MakeReadOnlyGlobal(GapObj("PKGMAN_DownloadURL"))
 
     # Install a method (based on Julia's Downloads package) as the first choice
     # for the `Download` function from GAP's utils package,
@@ -57,14 +57,17 @@ function init_packagemanager()
 
       # put the new method in the first position
       meths = Globals.Download_Methods
-      Globals.Add(meths, GapObj(r, recursive=true), 1)
+      Wrappers.Add(meths, GapObj(r, recursive=true), 1)
     end
 end
 
 """
     load(spec::String, version::String = ""; install::Bool = false, quiet::Bool = true)
 
-Try to load the GAP package with name `spec`.
+Try to load the GAP package given by `spec`, which can be either the name
+of the package or a local path where the package is installed
+(a directory that contains the package's `PackageInfo.g` file).
+
 If `version` is specified then try to load a version of the package
 that is compatible with `version`, in the sense of
 [GAP's CompareVersionNumbers function](GAP_ref(ref:CompareVersionNumbers)),
@@ -72,8 +75,8 @@ otherwise try to load the newest installed version.
 Return `true` if this is successful, and `false` otherwise.
 
 If `install` is set to `true` and (the desired version of) the required
-GAP package is not yet installed then [`install`](@ref) is called first,
-in order to install the package;
+GAP package is not yet installed and `spec` is the package name
+then [`install`](@ref) is called first, in order to install the package;
 if no version is prescribed then the newest released version of the package
 will be installed.
 
@@ -82,27 +85,99 @@ If `quiet` is set to `false` then package banners are shown for all packages
 being loaded. It is also passed on to [`install`](@ref).
 """
 function load(spec::String, version::String = ""; install::Bool = false, quiet::Bool = true)
-    # Try to load the package.
+    # Decide whether `spec` is a path to a directory that contains
+    # a `PackageInfo.g` file.
+    package_info = joinpath(spec, "PackageInfo.g")
+    spec_is_path = isdir(spec) && isfile(package_info)
+
+    # If `spec` contains a slash then it is not a package name.
+    '/' in spec && ! spec_is_path && return false
+
+    # The interpretation of `spec` as a package name has precedence
+    # over the interpretation as a path.
+    # Try to load the package, assuming that `spec` is its name.
     gspec = GapObj(spec)
     gversion = GapObj(version)
-    loaded = Globals.LoadPackage(gspec, gversion, !quiet)
-    if loaded == true
-        return true
-    elseif Globals.IsPackageLoaded(gspec)
-        # Another version is already loaded.
-        # Perhaps we could install the required version,
-        # but then we would not be able to load it into the current session
-        # and thus in any case `false` must be returned.
-        # It would be a strange side effect if the required version
-        # would afterwards be loadable in a fresh Julia session,
-        # thus we do not try to install the package here.
-        return false
-    elseif install == true
+    if spec_is_path
+      # If there is no package `gspec` and if the info level of
+      # `GAP.Globals.InfoWarning` is at least 1 then GAP prints a warning.
+      # Avoid this warning.
+      warning_level_orig = Wrappers.InfoLevel(Globals.InfoWarning)
+      Wrappers.SetInfoLevel(Globals.InfoWarning, 0)
+    end
+    loaded = Wrappers.LoadPackage(gspec, gversion, !quiet)
+    if spec_is_path
+      Wrappers.SetInfoLevel(Globals.InfoWarning, warning_level_orig)
+    end
+
+    loaded == true && return true
+
+    if Wrappers.IsPackageLoaded(gspec)
+      # Another version is already loaded.
+      # Perhaps we could install the required version,
+      # but then we would not be able to load it into the current session
+      # and thus in any case `false` must be returned.
+      # It would be a strange side effect if the required version
+      # would afterwards be loadable in a fresh Julia session,
+      # thus we do not try to install the package here.
+      return false
+    end
+
+    if spec_is_path
+      # Assume that the package is installed in the given path.
+      # In order to call `GAP.Globals.SetPackagePath`,
+      # we have to determine the package name.
+      # (`Wrappers.SetPackagePath` does the same,
+      # but it needs the package name as an argument.)
+      gap_info = Globals.GAPInfo::GapObj
+      Wrappers.UNB_REC(gap_info, RNamObj("PackageInfoCurrent"))
+      Wrappers.Read(GapObj(package_info))
+      record = gap_info.PackageInfoCurrent
+      Wrappers.UNB_REC(gap_info, RNamObj("PackageInfoCurrent"))
+      pkgname = Wrappers.NormalizedWhitespace(Wrappers.LowercaseString(
+                  record.PackageName))
+      rnam_pkgname = Wrappers.RNamObj(pkgname)
+
+      # If the package with name `pkgname` is already loaded then check
+      # whether the installation path is equal to `spec`.
+      # (Note that `Wrappers.SetPackagePath` throws an error if a different
+      # version of the package is already loaded.)
+      if Wrappers.IsPackageLoaded(pkgname) &&
+         Wrappers.ISB_REC(gap_info.PackagesLoaded, rnam_pkgname)
+        install_path = Wrappers.ELM_REC(gap_info.PackagesLoaded, rnam_pkgname)[1]
+        return joinpath(string(install_path), "PackageInfo.g") == package_info
+      end
+#TODO: What shall happen when `spec` is a symbolic link that points to
+#      the installation path of the loaded package?
+
+      # Call `Wrappers.SetPackagePath`.
+      # First save the available records for the package in question, ...
+      old_records = nothing
+      if Wrappers.ISB_REC(gap_info.PackagesInfo, rnam_pkgname)
+        old_records = Wrappers.ELM_REC(gap_info.PackagesInfo, rnam_pkgname)
+      end
+
+      # ... then try to load the package, ...
+      Wrappers.SetPackagePath(pkgname, gspec)
+      loaded = Wrappers.LoadPackage(pkgname, gversion, !quiet)
+
+      # ..., and reinstall the old info records
+      # (which were removed by `Wrappers.SetPackagePath`).
+      if old_records isa GapObj
+        Wrappers.Append(Wrappers.ELM_REC(gap_info.PackagesInfo, rnam_pkgname),
+            old_records)
+      end
+
+      loaded == true && return true
+      Wrappers.IsPackageLoaded(gspec) && return false
+    end
+
+    if install == true
         # Try to install the given version of the package,
         # without showing messages.
         if Packages.install(spec, version; interactive = false, quiet)
             # Make sure that the installed version is admissible.
-            return Globals.LoadPackage(gspec, gversion, !quiet) == true
+            return Wrappers.LoadPackage(gspec, gversion, !quiet) == true
         end
     end
 
@@ -147,16 +222,16 @@ function install(spec::String, version::String = "";
     mkpath(pkgdir)
 
     if quiet
-      oldlevel = Globals.InfoLevel(Globals.InfoPackageManager)
-      Globals.SetInfoLevel(Globals.InfoPackageManager, 0)
+      oldlevel = Wrappers.InfoLevel(Globals.InfoPackageManager)
+      Wrappers.SetInfoLevel(Globals.InfoPackageManager, 0)
     end
     if version == ""
-      res = Globals.InstallPackage(GapObj(spec), interactive)
+      res = Wrappers.InstallPackage(GapObj(spec), interactive)
     else
-      res = Globals.InstallPackage(GapObj(spec), GapObj(version), interactive)
+      res = Wrappers.InstallPackage(GapObj(spec), GapObj(version), interactive)
     end
     if quiet
-      Globals.SetInfoLevel(Globals.InfoPackageManager, oldlevel)
+      Wrappers.SetInfoLevel(Globals.InfoPackageManager, oldlevel)
     end
     return res
 end
@@ -187,13 +262,13 @@ function update(spec::String; interactive::Bool = true, quiet::Bool = false,
     mkpath(pkgdir)
 
     if quiet
-      oldlevel = Globals.InfoLevel(Globals.InfoPackageManager)
-      Globals.SetInfoLevel(Globals.InfoPackageManager, 0)
-      res = Globals.UpdatePackage(GapObj(spec), interactive)
-      Globals.SetInfoLevel(Globals.InfoPackageManager, oldlevel)
+      oldlevel = Wrappers.InfoLevel(Globals.InfoPackageManager)
+      Wrappers.SetInfoLevel(Globals.InfoPackageManager, 0)
+      res = Wrappers.UpdatePackage(GapObj(spec), interactive)
+      Wrappers.SetInfoLevel(Globals.InfoPackageManager, oldlevel)
       return res
     else
-      return Globals.UpdatePackage(GapObj(spec), interactive)
+      return Wrappers.UpdatePackage(GapObj(spec), interactive)
     end
 end
 # note that the updated version cannot be used in the current GAP session,
@@ -222,13 +297,13 @@ function remove(spec::String; interactive::Bool = true, quiet::Bool = false,
     mkpath(pkgdir)
 
     if quiet
-      oldlevel = Globals.InfoLevel(Globals.InfoPackageManager)
-      Globals.SetInfoLevel(Globals.InfoPackageManager, 0)
-      res = Globals.RemovePackage(GapObj(spec), interactive)
-      Globals.SetInfoLevel(Globals.InfoPackageManager, oldlevel)
+      oldlevel = Wrappers.InfoLevel(Globals.InfoPackageManager)
+      Wrappers.SetInfoLevel(Globals.InfoPackageManager, 0)
+      res = Wrappers.RemovePackage(GapObj(spec), interactive)
+      Wrappers.SetInfoLevel(Globals.InfoPackageManager, oldlevel)
       return res
     else
-      return Globals.RemovePackage(GapObj(spec), interactive)
+      return Wrappers.RemovePackage(GapObj(spec), interactive)
     end
 end
 
