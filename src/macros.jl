@@ -216,7 +216,7 @@ in whose scope the macro is called.
 
 # Examples
 ```jldoctest
-julia> @gapattribute isstrictlysortedlist(obj::GAP.GapObj) = GAP.Globals.IsSSortedList(obj)::Bool;
+julia> @gapattribute isstrictlysortedlist(obj::GapObj) = GAP.Globals.IsSSortedList(obj)::Bool;
 
 julia> l = GapObj([ 1, 3, 7 ]);
 

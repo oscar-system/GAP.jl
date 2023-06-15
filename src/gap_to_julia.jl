@@ -20,7 +20,7 @@ const RecDict = IdDict{Any,Any}
     gap_to_julia(type, x, recursion_dict::Union{Nothing,RecDict}=nothing; recursive::Bool=true)
 
 Try to convert the object `x` to a Julia object of type `type`.
-If `x` is a `GAP.GapObj` then the conversion rules are defined in the
+If `x` is a `GapObj` then the conversion rules are defined in the
 manual of the GAP package JuliaInterface.
 If `x` is another `GAP.Obj` (for example a `Int64`) then the result is
 defined in Julia by `type`.
@@ -34,10 +34,10 @@ the behaviour is controlled by `recursive`, which can be `true` or `false`.
 
 # Examples
 ```jldoctest
-julia> GAP.gap_to_julia( GAP.evalstr( "1/3" ) )
+julia> GAP.gap_to_julia(GapObj(1//3))
 1//3
 
-julia> GAP.gap_to_julia( GAP.evalstr( "\\"abc\\"" ) )
+julia> GAP.gap_to_julia(GapObj("abc"))
 "abc"
 
 julia> val = GapObj([ 1 2 ; 3 4 ])
@@ -122,7 +122,7 @@ gap_to_julia(::Type{Any}, x::Any) = x
 gap_to_julia(::T, x::Nothing) where {T<:Type} = nothing
 gap_to_julia(::Type{Any}, x::Nothing) = nothing
 
-## Handle "conversion" to GAP.Obj and GAP.GapObj (may occur in recursions).
+## Handle "conversion" to GAP.Obj and GapObj (may occur in recursions).
 gap_to_julia(::Type{Obj}, x::Obj) = x
 gap_to_julia(::Type{GapObj}, x::GapObj) = x
 

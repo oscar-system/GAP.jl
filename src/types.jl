@@ -34,7 +34,6 @@ GAP: Z(3)
 
 julia> typeof(x)
 FFE
-
 ```
 """
 primitive type FFE 64 end
@@ -48,10 +47,10 @@ This is the Julia type of all those GAP objects that are not
 
 # Examples
 ```jldoctest
-julia> typeof( GAP.evalstr( "[ 1, 2 ]" ) ) # a GAP list
+julia> typeof(GapObj([1, 2]))          # a GAP list
 GapObj
 
-julia> typeof( GAP.evalstr( "rec()" ) )    # a GAP record
+julia> typeof(GapObj(Dict(:a => 1)))   # a GAP record
 GapObj
 
 julia> typeof( GAP.evalstr( "(1,2,3)" ) )  # a GAP permutation
@@ -68,7 +67,6 @@ FFE
 
 julia> typeof( GAP.evalstr( "true" ) )     # a boolean
 Bool
-
 ```
 
 Note that this is Julia's viewpoint on GAP objects.
@@ -83,7 +81,6 @@ Base
 
 julia> typeof( GAP.evalstr( "Julia.Base" ) )        # native Julia object
 Module
-
 ```
 
 One can use `GapObj` as a constructor,
@@ -105,15 +102,14 @@ GAP: 1/3
 julia> GapObj([1 2; 3 4])
 GAP: [ [ 1, 2 ], [ 3, 4 ] ]
 
-julia> GAP.GapObj([[1, 2], [3, 4]])
+julia> GapObj([[1, 2], [3, 4]])
 GAP: [ <Julia: [1, 2]>, <Julia: [3, 4]> ]
 
-julia> GAP.GapObj([[1, 2], [3, 4]], recursive = true)
+julia> GapObj([[1, 2], [3, 4]], recursive = true)
 GAP: [ [ 1, 2 ], [ 3, 4 ] ]
 
 julia> GapObj(42)
 ERROR: TypeError: in typeassert, expected GapObj, got a value of type Int64
-
 ```
 """ GapObj
 
