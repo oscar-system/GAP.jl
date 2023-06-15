@@ -196,7 +196,7 @@ Return the record component of the GAP record `x` that is described by `f`.
 
 # Examples
 ```jldoctest
-julia> r = GAP.evalstr( "rec( a:= 1 )" )
+julia> r = GapObj(Dict(:a => 1))
 GAP: rec( a := 1 )
 
 julia> r.a
@@ -217,7 +217,7 @@ to the value `v`.
 
 # Examples
 ```jldoctest
-julia> r = GAP.evalstr( "rec( a:= 1 )" )
+julia> r = GapObj(Dict(:a => 1))
 GAP: rec( a := 1 )
 
 julia> r.b = 0
@@ -241,7 +241,7 @@ and `false` otherwise.
 
 # Examples
 ```jldoctest
-julia> r = GAP.evalstr( "rec( a:= 1 )" )
+julia> r = GapObj(Dict(:a => 1))
 GAP: rec( a := 1 )
 
 julia> hasproperty( r, :a )
@@ -528,7 +528,7 @@ julia> res1 = GAP.Globals.Random(gap_rng1, 1, 10);
 julia> rng1 == rng2   # the two rngs have diverged
 false
 
-julia> res1 == GAP.Globals.Random(gap_rng2, GAP.GapObj(1:10))
+julia> res1 == GAP.Globals.Random(gap_rng2, GapObj(1:10))
 true
 
 julia> rng1 == rng2   # now the two rngs are again in sync
