@@ -16,20 +16,20 @@ their conversion with `BigInt` is handled by Julia's methods.)
 
 # Examples
 ```jldoctest
-julia> val = GAP.evalstr("2^64")
-GAP: 18446744073709551616
+julia> val = GAP.Globals.Factorial(25)
+GAP: 15511210043330985984000000
 
 julia> BigInt(val)
-18446744073709551616
+15511210043330985984000000
 
-julia> val = GAP.evalstr("2^59")
-576460752303423488
+julia> val = GAP.Globals.Factorial(10)
+3628800
 
 julia> isa(val, GapObj)
 false
 
 julia> BigInt(val)
-576460752303423488
+3628800
 
 ```
 """
@@ -68,12 +68,14 @@ their conversion is not handled by methods installed in GAP.jl.)
 
 # Examples
 ```jldoctest
-julia> val = GAP.evalstr("2^80")
-GAP: 1208925819614629174706176
+julia> val = GAP.Globals.Factorial(25)
+GAP: 15511210043330985984000000
 
 julia> Int128(val)
-1208925819614629174706176
+15511210043330985984000000
 
+julia> Int(val)
+ERROR: InexactError: Int64(15511210043330985984000000)
 ```
 """ Int128
 
@@ -86,16 +88,16 @@ the [GAP rational](GAP_ref(ref:Rationals)) `obj`,
 
 # Examples
 ```jldoctest
-julia> val = GAP.evalstr("2^64")
-GAP: 18446744073709551616
+julia> val = GAP.Globals.Factorial(25)
+GAP: 15511210043330985984000000
 
 julia> Rational{Int128}(val)
-18446744073709551616//1
+15511210043330985984000000//1
 
 julia> Rational{BigInt}(val)
-18446744073709551616//1
+15511210043330985984000000//1
 
-julia> val = GAP.evalstr("1/3")
+julia> val = GAP.Obj(1//3)
 GAP: 1/3
 
 julia> Rational{Int64}(val)
@@ -118,7 +120,7 @@ Return the float converted from the [GAP float](GAP_ref(ref:Floats)) `obj`.
 
 # Examples
 ```jldoctest
-julia> val = GAP.evalstr("2.2")
+julia> val = GAP.Obj(2.2)
 GAP: 2.2
 
 julia> Float64(val)
@@ -143,7 +145,7 @@ Return the character converted from the
 
 # Examples
 ```jldoctest
-julia> val = GapObj('x')
+julia> val = GAP.Obj('x')
 GAP: 'x'
 
 julia> Char(val)
@@ -164,7 +166,7 @@ Return the `UInt8` that belongs to the
 
 # Examples
 ```jldoctest
-julia> val = GapObj('x')
+julia> val = GAP.Obj('x')
 GAP: 'x'
 
 julia> Cuchar(val)
@@ -188,13 +190,13 @@ this behaviour is not intended for this `String` constructor.
 
 # Examples
 ```jldoctest
-julia> val = GapObj("abc")
+julia> val = GAP.Obj("abc")
 GAP: "abc"
 
 julia> String(val)
 "abc"
 
-julia> val = GapObj([])
+julia> val = GAP.Obj([])
 GAP: [  ]
 
 julia> String(val)   # an empty GAP list is a string
@@ -217,7 +219,7 @@ Return the symbol converted from the
 
 # Examples
 ```jldoctest
-julia> str = GapObj("abc")
+julia> str = GAP.Obj("abc")
 GAP: "abc"
 
 julia> Symbol(str)
@@ -235,7 +237,7 @@ Return the bit vector converted from the
 
 # Examples
 ```jldoctest
-julia> val = GapObj([true, false, true])
+julia> val = GAP.Obj([true, false, true])
 GAP: [ true, false, true ]
 
 julia> BitVector(val)
@@ -273,7 +275,7 @@ If `T` is `UInt8` then `obj` may be a
 
 # Examples
 ```jldoctest
-julia> val = GapObj([[1], [2]], recursive = true)
+julia> val = GAP.Obj([[1], [2]]; recursive=true)
 GAP: [ [ 1 ], [ 2 ] ]
 
 julia> Vector{Any}(val)
@@ -281,21 +283,26 @@ julia> Vector{Any}(val)
  Any[1]
  Any[2]
 
-julia> Vector{Any}(val, recursive = false)
+julia> Vector{Any}(val; recursive=false)
 2-element Vector{Any}:
  GAP: [ 1 ]
  GAP: [ 2 ]
 
+julia> Vector{Vector{Int64}}(val)
+2-element Vector{Vector{Int64}}:
+ [1]
+ [2]
+
 julia> val = GAP.evalstr( "NewVector( IsPlistVectorRep, Integers, [ 0, 2, 5 ] )" )
 GAP: <plist vector over Integers of length 3>
 
-julia> Vector{Int64}( val )
+julia> Vector{Int64}(val)
 3-element Vector{Int64}:
  0
  2
  5
 
-julia> val = GapObj("abc")
+julia> val = GAP.Obj("abc")
 GAP: "abc"
 
 julia> Vector{UInt8}(val)
@@ -322,7 +329,7 @@ converted recursively, otherwise non-recursively.
 
 # Examples
 ```jldoctest
-julia> val = GapObj([[1, 2], [3, 4]], recursive = true)
+julia> val = GAP.Obj([[1, 2], [3, 4]]; recursive=true)
 GAP: [ [ 1, 2 ], [ 3, 4 ] ]
 
 julia> Matrix{Int64}(val)
@@ -360,22 +367,22 @@ Dealing with results containing GAP objects will be inefficient.
 
 # Examples
 ```julia
-julia> Set{Int}(GapObj([1, 2, 1]))
+julia> Set{Int}(GAP.Obj([1, 2, 1]))
 Set{Int64} with 2 elements:
   2
   1
 
-julia> Set{Vector{Int}}(GapObj([[1], [2], [1]], recursive = true))
+julia> Set{Vector{Int}}(GAP.Obj([[1], [2], [1]]; recursive=true))
 Set{Vector{Int64}} with 2 elements:
   [1]
   [2]
 
-julia> Set{String}(GapObj(["a", "b"], recursive = true))
+julia> Set{String}(GAP.Obj(["a", "b"]; recursive=true))
 Set{String} with 2 elements:
   "b"
   "a"
 
-julia> Set{Any}(GapObj([[1], [2], [1]], recursive = true))
+julia> Set{Any}(GAP.Obj([[1], [2], [1]]; recursive=true))
 Set{Any} with 2 elements:
   Any[1]
   Any[2]
@@ -386,12 +393,12 @@ the order in which the Julia output is shown may vary.
 
 # Examples
 ```jldoctest
-julia> s = Set{Any}(GapObj([[1], [2], [1]], recursive = true), recursive = false);
+julia> s = Set{Any}(GAP.Obj([[1], [2], [1]]; recursive=true); recursive=false);
 
-julia> s == Set{Any}([GapObj([1]), GapObj([2])])
+julia> s == Set{Any}([GAP.Obj([1]), GAP.Obj([2])])
 true
 
-julia> s = Set{Any}(GAP.evalstr("SymmetricGroup(2)"), recursive = false);
+julia> s = Set{Any}(GAP.Globals.SymmetricGroup(2); recursive=false);
 
 julia> s == Set{Any}([GAP.evalstr("()"), GAP.evalstr("(1,2)")])
 true
@@ -413,19 +420,19 @@ converted recursively, otherwise non-recursively.
 
 # Examples
 ```jldoctest
-julia> val = GapObj([1, 5])
+julia> val = GAP.Obj([1, 5])
 GAP: [ 1, 5 ]
 
 julia> Tuple{Int64,Int64}(val)
 (1, 5)
 
-julia> val = GapObj([[1], [2]], recursive = true)
+julia> val = GAP.Obj([[1], [2]]; recursive=true)
 GAP: [ [ 1 ], [ 2 ] ]
 
 julia> Tuple{Any,Any}(val)
 (Any[1], Any[2])
 
-julia> Tuple{GapObj,GapObj}(val, recursive = false)
+julia> Tuple{GapObj,GapObj}(val; recursive=false)
 (GAP: [ 1 ], GAP: [ 2 ])
 
 ```
@@ -442,7 +449,7 @@ Return the unit range converted from the
 
 # Examples
 ```jldoctest
-julia> val = GapObj(1:10)
+julia> val = GAP.Obj(1:10)
 GAP: [ 1 .. 10 ]
 
 julia> UnitRange(val)
@@ -480,7 +487,7 @@ Return the step range converted from the
 
 # Examples
 ```jldoctest
-julia> val = GapObj(1:2:11)
+julia> val = GAP.Obj(1:2:11)
 GAP: [ 1, 3 .. 11 ]
 
 julia> StepRange(val)
@@ -530,7 +537,7 @@ using [`gap_to_julia`](@ref), otherwise they are kept as they are.
 
 # Examples
 ```jldoctest
-julia> val = GapObj(Dict(:a => 1, :b => 2))
+julia> val = GAP.Obj(Dict(:a => 1, :b => 2))
 GAP: rec( a := 1, b := 2 )
 
 julia> Dict{Symbol,Int}(val)
@@ -538,18 +545,18 @@ Dict{Symbol, Int64} with 2 entries:
   :a => 1
   :b => 2
 
-julia> val = GapObj(Dict(:l => GapObj([1, 2])))
+julia> val = GAP.Obj(Dict(:l => GAP.Obj([1, 2])))
 GAP: rec( l := [ 1, 2 ] )
 
-julia> Dict{Symbol,Any}(val, recursive = false)
+julia> Dict{Symbol,Any}(val; recursive=false)
 Dict{Symbol, Any} with 1 entry:
   :l => GAP: [ 1, 2 ]
 
-julia> Dict{Symbol,Any}(val, recursive = true)
+julia> Dict{Symbol,Any}(val; recursive=true)
 Dict{Symbol, Any} with 1 entry:
   :l => Any[1, 2]
 
-julia> Dict{Symbol,Vector{Int}}(val, recursive = true)
+julia> Dict{Symbol,Vector{Int}}(val; recursive=true)
 Dict{Symbol, Vector{Int64}} with 1 entry:
   :l => [1, 2]
 

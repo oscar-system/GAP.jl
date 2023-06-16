@@ -105,7 +105,7 @@ GAP: [ [ 1, 2 ], [ 3, 4 ] ]
 julia> GapObj([[1, 2], [3, 4]])
 GAP: [ <Julia: [1, 2]>, <Julia: [3, 4]> ]
 
-julia> GapObj([[1, 2], [3, 4]], recursive = true)
+julia> GapObj([[1, 2], [3, 4]], recursive=true)
 GAP: [ [ 1, 2 ], [ 3, 4 ] ]
 
 julia> GapObj(42)
@@ -138,7 +138,7 @@ GAP: [ [ 1, 2 ], [ 3, 4 ] ]
 julia> GAP.Obj([[1, 2], [3, 4]])
 GAP: [ <Julia: [1, 2]>, <Julia: [3, 4]> ]
 
-julia> GAP.Obj([[1, 2], [3, 4]], recursive = true)
+julia> GAP.Obj([[1, 2], [3, 4]], recursive=true)
 GAP: [ [ 1, 2 ], [ 3, 4 ] ]
 
 julia> GAP.Obj(42)
