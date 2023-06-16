@@ -43,8 +43,8 @@ end
 @doc raw"""
     evalstr_ex(cmd::String)
 
-Assume that `cmd` consists of $n$ GAP commands, each terminated by `;` or `;;`.
-Let GAP execute these commands and return the GAP list of length $n$ that
+Assume that `cmd` consists of $n$ GAP statements, each terminated by `;` or `;;`.
+Let GAP execute these statements and return a GAP list of length $n$ that
 describes their results.
 Each entry of the return value is a GAP list of length 5,
 with the following meaning.
