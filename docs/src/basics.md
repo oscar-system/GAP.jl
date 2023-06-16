@@ -23,6 +23,7 @@ script. Such a script can be created in a location of your choice via [`GAP.crea
 ```@docs
 Globals
 evalstr
+evalstr_ex
 GAP.prompt
 GAP.create_gap_sh
 ```

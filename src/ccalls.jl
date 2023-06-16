@@ -40,6 +40,52 @@ function _JULIA_TO_GAP(x::Int)
 end
 
 
+@doc raw"""
+    evalstr_ex(cmd::String)
+
+Assume that `cmd` consists of $n$ GAP statements, each terminated by `;` or `;;`.
+Let GAP execute these statements and return a GAP list of length $n$ that
+describes their results.
+Each entry of the return value is a GAP list of length 5,
+with the following meaning.
+
+- The first entry is `true` if the statement was executed successfully,
+  and `false` otherwise.
+- If the first entry is `true`, then the second entry is bound to the
+  result of the statement if there was one, and unbound otherwise.
+- The third entry is unbound if an error occured,
+  `true` if the statement ends in a double semicolon,
+  and `false` otherwise.
+- The fourth entry currently is always unbound.
+- The fifth entry contains the captured output of the statement as a string.
+  If there was no double semicolon then also the output of
+  `GAP.Globals.ViewObj` applied to the result value in the second entry,
+  if any, is part of that string.
+
+# Examples
+```jldoctest
+julia> GAP.evalstr_ex( "1+2" )        # error due to missing semicolon
+GAP: [ [ false,,,, "" ] ]
+
+julia> GAP.evalstr_ex( "1+2;" )       # one statement with return value
+GAP: [ [ true, 3, false,, "3" ] ]
+
+julia> GAP.evalstr_ex( "1+2;;" )      # the same with suppressed output
+GAP: [ [ true, 3, true,, "" ] ]
+
+julia> GAP.evalstr_ex( "x:= []; Add(x, 1);" )  # two valid commands
+GAP: [ [ true, [ 1 ], false,, "[  ]" ], [ true,, false,, "" ] ]
+
+julia> GAP.evalstr_ex( "1/0; 1+1;" )  # one error, one valid command
+GAP: [ [ false,,,, "" ], [ true, 2, false,, "2" ] ]
+
+julia> GAP.evalstr_ex( "Print(1);" )  # no return value but output
+GAP: [ [ true,, false,, "1" ] ]
+
+julia> GAP.evalstr_ex( "" )           # empty input
+GAP: [  ]
+```
+"""
 function evalstr_ex(cmd::String)
     res = ccall((:GAP_EvalString, libgap), GapObj, (Cstring,), cmd)
     return res
@@ -61,12 +107,30 @@ julia> GAP.evalstr( "1+2" )
 julia> GAP.evalstr( "x:= []" )
 GAP: [  ]
 
-julia> GAP.evalstr( "y:= 2; Add( x, 1 )" )
+julia> GAP.evalstr( "y:= 2; Add( x, y )" )
 
 julia> GAP.evalstr( "x" )
-GAP: [ 1 ]
+GAP: [ 2 ]
 
+julia> GAP.evalstr( "Print( x )" )
 ```
+
+Note that screen outputs caused by evaluating `cmd` are not shown
+by `evalstr`; use [`evalstr_ex`](@ref) for accessing both the outputs
+and the return values of the command(s).
+
+Note also that using `evalstr` is often not the best way to create
+GAP objects or to call GAP functions.
+(In fact, it is likely that something is missing from GAP.jl
+if `evalstr` is the only way to formulate some lines of code.)
+Alternatively, use `GAP.GapObj` or `GAP.Obj` for constructing GAP objects
+that correspond to given Julia objects,
+and call GAP functions directly in the Julia session.
+For example, executing `GAP.evalstr( "x:= []; Add( x, 2 )" )`
+can be replaced by the Julia code `x = GAP.GapObj([]); GAP.Globals.Add(x, 2)`.
+Note that the variable `x` in the former example lives in the GAP session,
+i.e., it can be accessed as `GAP.Globals.x` after the call of `GAP.evalstr`,
+whereas `x` in the latter example lives in the Julia session.
 """
 function evalstr(cmd::String)
     res = evalstr_ex(cmd * ";")
