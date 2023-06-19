@@ -1,5 +1,5 @@
 # Replacement for the GAP kernel function ExecuteProcess
-const use_orig_ExecuteProcess = Ref{Bool}(false)
+const use_orig_ExecuteProcess = Ref{Bool}(true)
 function GAP_ExecuteProcess(dir::GapObj, prg::GapObj, in::Int, out::Int, args::GapObj)
     if use_orig_ExecuteProcess[]
         return GAP.Globals._ORIG_ExecuteProcess(dir, prg, in, out, args)
