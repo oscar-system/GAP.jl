@@ -150,7 +150,6 @@ function load(spec::String, version::String = ""; install::Bool = false, quiet::
 #TODO: What shall happen when `spec` is a symbolic link that points to
 #      the installation path of the loaded package?
 
-      # Call `Wrappers.SetPackagePath`.
       # First save the available records for the package in question, ...
       old_records = nothing
       if Wrappers.ISB_REC(gap_info.PackagesInfo, rnam_pkgname)
