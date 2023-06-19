@@ -59,7 +59,7 @@ GAP: (1,2)(3,4)
 ```
 """
 macro gap(str)
-    return evalstr(string(str))
+    return :(evalstr($(string(str))))
 end
 
 export @gap
@@ -101,7 +101,7 @@ not all strings representing valid GAP strings can be processed.
 
 ```jldoctest
 julia> g"\\\\"
-ERROR: LoadError: Error thrown by GAP: Syntax error: String must end with " before end of file in stream:1
+ERROR: Error thrown by GAP: Syntax error: String must end with " before end of file in stream:1
 [...]
 
 ```
@@ -116,7 +116,7 @@ GAP: "\\c"
 ```
 """
 macro g_str(str)
-    return gap_string_macro_helper(str)
+    return :(gap_string_macro_helper($str))
 end
 
 export @g_str
