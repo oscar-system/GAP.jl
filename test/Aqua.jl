@@ -10,6 +10,6 @@ using Aqua
         stale_deps=true,
         deps_compat=true,
         project_toml_formatting=true,
-        piracy=true
+        piracy=(GAP.use_jl_reinit_foreign_type() ? true : (treat_as_own=[GapObj],))
     )
 end
