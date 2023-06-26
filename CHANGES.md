@@ -1,5 +1,15 @@
 # Changes in GAP.jl
 
+## Version 0.9.7-DEV (released 2023-MM-DD)
+
+- Allow passing a path to `GAP.Packages.load` instead of a package name
+- Quote `@gap` and `g_str` results, to make those macros useful in functions
+  (not just in the REPL)
+- Improve documentation of `evalstr_ex`, `evalstr`
+- Reduce the occurrences of `evalstr` in docstrings
+- Prevent a race condition when doing `@everywhere using GAP`
+- Various janitorial changes
+
 ## Version 0.9.6 (released 2023-05-10)
 
 - Fix compatibility issues with upcoming Julia 1.10-DEV
