@@ -1,6 +1,6 @@
 # Changes in GAP.jl
 
-## Version 0.9.7-DEV (released 2023-MM-DD)
+## Version 0.9.7 (released 2023-06-26)
 
 - Allow passing a path to `GAP.Packages.load` instead of a package name
 - Quote `@gap` and `g_str` results, to make those macros useful in functions
