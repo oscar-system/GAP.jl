@@ -125,6 +125,11 @@ function regenerate_gaproot()
     gap_lib = joinpath(gap_prefix, "lib")
     sysinfo["GAP_LDFLAGS"] = "-L$(gap_lib) -lgap"
 
+    # adjust linker flags for GAP kernel extensions on macOS
+    if Sys.isapple()
+        sysinfo["GAC_LDFLAGS"] = "-bundle -L$(gap_lib) -lgap"
+    end
+
     GAP_VERSION = VersionNumber(sysinfo["GAP_VERSION"])
     gaproot_packages = joinpath(Base.DEPOT_PATH[1], "gaproot", "v$(GAP_VERSION.major).$(GAP_VERSION.minor)")
     sysinfo["DEFAULT_PKGDIR"] = joinpath(gaproot_packages, "pkg")
