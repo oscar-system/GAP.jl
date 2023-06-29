@@ -323,6 +323,11 @@ BindGlobal( "HELP_GET_MATCHES2", function( books, topic, frombegin )
   return [exact, match];
 end);
 
+BindGlobal( "HELP_SCREEN_WIDTH_LINE", function()
+  local s;
+  s := ListWithIdenticalEntries(SizeScreen()[1], "─");
+  return Concatenation(s);
+end );
 
 #############################################################################
 ##
@@ -344,7 +349,7 @@ BindGlobal( "HELP_DESC_MATCHES", function( books, topic, frombegin, onlyexact...
   if 0 = Length(match) and 0 = Length(exact)  then
     return [ false, [ "Help: no matching entry found" ] ];
   else
-    sep:= [ "", RepeatedUTF8String( "─", SizeScreen()[1] ), "" ];
+    sep:= [ "", HELP_SCREEN_WIDTH_LINE(), "" ];
     HELP_LAST.TOPICS:=[];
     # show exact matches first
     match := Concatenation(exact, match);
@@ -569,7 +574,7 @@ InstallGlobalFunction( HELP_String, function( str, onlyexact )
       return info;
     fi;
 
-    sep:= [ "", RepeatedUTF8String( "─", SizeScreen()[1] ), "" ];
+    sep:= [ "", HELP_SCREEN_WIDTH_LINE(), "" ];
     lines:= [];
     for i in [ 1 .. Length( info.entries ) ] do
       Add( lines, Concatenation( info.entries[i][1].bookname, ":" ) );
@@ -627,7 +632,7 @@ BindGlobal( "ComposedHelpString", function( entry )
     desc:= HELP_DESC_MATCH( entry )[2];
     Add( lines, Concatenation( entry[1].bookname, ":" ) );
     Append( lines, desc );
-    sep:= [ "", RepeatedUTF8String( "─", SizeScreen()[1] ), "" ];
+    sep:= [ "", HELP_SCREEN_WIDTH_LINE(), "" ];
     Append( lines, sep );
     res:= "";
     if IsBound( entry[1].start ) then

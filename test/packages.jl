@@ -13,7 +13,7 @@
 
     # Load packages via their local paths.
     # - a package that was already loaded, with the same path
-    path = string(GAP.Globals.GAPInfo.PackagesLoaded.ctbllib[1])
+    path = string(GAP.Globals.GAPInfo.PackagesLoaded.juliainterface[1])
     @test GAP.Packages.load(path)
 
     # - a package that was already loaded, with another installation path
