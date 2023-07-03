@@ -22,16 +22,18 @@
     @test occursin("Set the value", string(doc))
 
     # Do tester and setter refer to the right objects?
+    # (Choose a group `G` whose center is different from the center
+    # of its derived subgroup.)
     @gapattribute cendersub(G::GapObj) = GAP.Globals.Centre(dersub(G))
-    G = GAP.Globals.SmallGroup(72, 15)
+    G = GAP.Globals.SymmetricGroup(3)
     @test GAP.Globals.Size(GAP.Globals.Centre(G)) == 1
-    G = GAP.Globals.SmallGroup(72, 15)  # create the group anew
+    G = GAP.Globals.SymmetricGroup(3)  # create the group anew
     @test ! GAP.Globals.HasCentre(G)
     @test ! has_dersub(G)
     @test ! has_cendersub(G)
     @test has_dersub(G)  # the previous call has set the value
     ggens = GAP.Globals.GeneratorsOfGroup(G)
-    set_cendersub(G, GAP.Globals.Subgroup(G, GAP.GapObj([ggens[3]])))
+    set_cendersub(G, GAP.Globals.Subgroup(G, GAP.GapObj([ggens[1]])))
     @test has_cendersub(G)
     @test GAP.Globals.HasCentre(GAP.Globals.DerivedSubgroup(G))
     @test GAP.Globals.Size(GAP.Globals.Centre(G)) == 1

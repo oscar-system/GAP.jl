@@ -251,17 +251,11 @@ For convenience, one can use the syntax `func(args...; kwargs...)`.
 julia> GAP.Globals.Factors( 12 )
 GAP: [ 2, 2, 3 ]
 
-julia> g = GAP.Globals.SylowSubgroup( GAP.Globals.SymmetricGroup( 6 ), 2 )
-GAP: Group([ (1,2), (3,4), (1,3)(2,4), (5,6) ])
+julia> GAP.Globals.Cyc(GAP.Obj(1.41421356))
+GAP: 35355339/25000000
 
-julia> GAP.Globals.StructureDescription( g )
-GAP: "C2 x D8"
-
-julia> g = GAP.Globals.SylowSubgroup( GAP.Globals.SymmetricGroup( 6 ), 2 );
-
-julia> GAP.Globals.StructureDescription( g, short = true )
-GAP: "2xD8"
-
+julia> GAP.Globals.Cyc(GAP.Obj(1.41421356); bits=20)
+GAP: E(8)-E(8)^3
 ```
 """
 function call_gap_func(func::GapObj, args...; kwargs...)
