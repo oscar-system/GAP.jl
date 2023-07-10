@@ -70,10 +70,6 @@ propertynames(::GlobalsType, private::Bool=false) = Vector{Symbol}(Globals.Names
       return (_GAP_TO_JULIA(v), true)
   end
   get_value(sym::QuoteNode, fn::GAP.GlobalsType) = get_value(sym.value, fn)
-
-else
-  # TODO: the above HACK does not work anymore in Julia 1.10; someone needs
-  # to find out how to make it work there
 end
 
 propertynames(r::GapObj, private::Bool=false) = Wrappers.IsRecord(r) ? Vector{Symbol}(Wrappers.RecNames(r)) : Vector{Symbol}()
