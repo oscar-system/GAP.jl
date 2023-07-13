@@ -16,7 +16,7 @@ typedef struct {
 // Helper used to call GAP functions from Julia.
 //
 // This function is used by GAP.jl
-jl_value_t * call_gap_func(Obj func, jl_value_t * args)
+Obj call_gap_func(Obj func, jl_value_t * args)
 {
     if (!jl_is_tuple(args))
         jl_error("<args> must be a tuple");
@@ -74,10 +74,7 @@ jl_value_t * call_gap_func(Obj func, jl_value_t * args)
         return_value = CallFuncList(func, arg_list);
     }
     END_GAP_SYNC();
-    if (return_value == NULL) {
-        return jl_nothing;
-    }
-    return julia_gap(return_value);
+    return return_value;
 }
 
 

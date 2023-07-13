@@ -279,10 +279,11 @@ end
 # specialize call_gap_func for the no-keywords case, for performance
 function call_gap_func_nokw(func::GapObj, args...)
     if TNUM_OBJ(func) == T_FUNCTION && length(args) <= 6
-        _call_gap_func(func, args...)
+        ret = _call_gap_func(func, args...)
     else
-        ccall((:call_gap_func, JuliaInterface_path()), Any, (Any, Any), func, args)
+        ret = ccall((:call_gap_func, JuliaInterface_path()), Ptr{Cvoid}, (Any, Any), func, args)
     end
+    return _GAP_TO_JULIA(ret)
 end
 
 # make all GapObj callable
@@ -307,7 +308,7 @@ end
 function _call_gap_func(func::GapObj)
     fptr = GET_FUNC_PTR(func, 0)
     ret = ccall(fptr, Ptr{Cvoid}, (Ptr{Cvoid},), pointer_from_objref(func))
-    return _GAP_TO_JULIA(ret)
+    return ret
 end
 
 # 1 argument
@@ -320,7 +321,7 @@ function _call_gap_func(func::GapObj, a1)
         pointer_from_objref(func),
         _JULIA_TO_GAP(a1),
     )
-    return _GAP_TO_JULIA(ret)
+    return ret
 end
 
 # 2 arguments
@@ -334,7 +335,7 @@ function _call_gap_func(func::GapObj, a1, a2)
         _JULIA_TO_GAP(a1),
         _JULIA_TO_GAP(a2),
     )
-    return _GAP_TO_JULIA(ret)
+    return ret
 end
 
 # 3 arguments
@@ -349,7 +350,7 @@ function _call_gap_func(func::GapObj, a1, a2, a3)
         _JULIA_TO_GAP(a2),
         _JULIA_TO_GAP(a3),
     )
-    return _GAP_TO_JULIA(ret)
+    return ret
 end
 
 # 4 arguments
@@ -365,7 +366,7 @@ function _call_gap_func(func::GapObj, a1, a2, a3, a4)
         _JULIA_TO_GAP(a3),
         _JULIA_TO_GAP(a4),
     )
-    return _GAP_TO_JULIA(ret)
+    return ret
 end
 
 # 5 arguments
@@ -382,7 +383,7 @@ function _call_gap_func(func::GapObj, a1, a2, a3, a4, a5)
         _JULIA_TO_GAP(a4),
         _JULIA_TO_GAP(a5),
     )
-    return _GAP_TO_JULIA(ret)
+    return ret
 end
 
 # 6 arguments
@@ -408,5 +409,5 @@ function _call_gap_func(func::GapObj, a1, a2, a3, a4, a5, a6)
         _JULIA_TO_GAP(a5),
         _JULIA_TO_GAP(a6),
     )
-    return _GAP_TO_JULIA(ret)
+    return ret
 end
