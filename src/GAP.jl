@@ -286,13 +286,7 @@ function __init__()
         push!(cmdline_options, "-b")
     end
 
-
-    # The following withenv is needed to get readline input to work right; see also
-    # https://github.com/JuliaPackaging/Yggdrasil/issues/455 and
-    # https://github.com/oscar-system/GAP.jl/issues/415
-    withenv("TERMINFO_DIRS" => joinpath(GAP_jll.Readline_jll.Ncurses_jll.find_artifact_dir(), "share", "terminfo")) do
-        initialize(cmdline_options)
-    end
+    initialize(cmdline_options)
 
     if !show_banner
         # Leave it to GAP's `LoadPackage` whether package banners are shown.
