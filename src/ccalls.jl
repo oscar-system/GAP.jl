@@ -188,15 +188,15 @@ MakeString(val::String) = GC.@preserve val ccall((:MakeStringWithLen, libgap), G
 #TODO: As soon as libgap provides :GAP_MakeStringWithLen, use it.
 
 function CSTR_STRING(val::GapObj)
+    len = ccall((:GAP_LenString, libgap), Int, (Any,), val)
     char_ptr = ccall((:GAP_CSTR_STRING, libgap), Ptr{UInt8}, (Any,), val)
-    len = ccall((:GAP_LenString, libgap), Culong, (Any,), val)
     return deepcopy(unsafe_string(char_ptr, len))::String
 end
 
 function CSTR_STRING_AS_ARRAY(val::GapObj)::Vector{UInt8}
-    string_len = Int64(ccall((:GAP_LenString, libgap), Cuint, (Any,), val))
+    len = ccall((:GAP_LenString, libgap), Int, (Any,), val)
     char_ptr = ccall((:GAP_CSTR_STRING, libgap), Ptr{UInt8}, (Any,), val)
-    return deepcopy(unsafe_wrap(Vector{UInt8}, char_ptr, string_len))
+    return deepcopy(unsafe_wrap(Vector{UInt8}, char_ptr, len))
 end
 
 
