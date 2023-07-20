@@ -20,6 +20,24 @@ DocTestSetup = :(using GAP)
 This section describes how one can manipulate GAP objects from the Julia side,
 using Julia syntax features.
 
+In particular, the following is available on the Julia side
+in order to support special GAP syntax beyond function calls with arguments.
+
+- Access list/matrix entries via [`getindex`](@ref).
+
+- Access record components via [`getproperty`](@ref).
+
+- Access entries of a positional object via [`getbangindex`](@ref),
+  equivalent to GAP's `![]` operator.
+
+- Access components of a component object via [`getbangproperty`](@ref),
+  equivalent to GAP's `!.` operator.
+
+- Check for bound record components via [`hasproperty`](@ref).
+
+- Call functions with global options via [`call_gap_func`](@ref)
+  or using Julia's keyword argument syntax.
+
 ```@docs
 call_gap_func
 call_with_catch
