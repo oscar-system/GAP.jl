@@ -23,7 +23,7 @@ Scratch = "6c6a2e73-6563-6170-7368-637461726353"
 [compat]
 GAP_jll = "~400.1200.101"
 GAP_lib_jll = "~400.1201.100"
-GAP_pkg_juliainterface_jll = "=0.800.201, =0.800.202"
+GAP_pkg_juliainterface_jll = "=0.800.300"
 MacroTools = "0.5"
 Ncurses_jll = "6.4.1"
 Pidfile = "1.3"
