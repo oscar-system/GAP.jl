@@ -205,24 +205,24 @@
 #!    <C>UInt64</C>,
 #!    <C>UInt128</C>,
 #!    <C>BigInt</C>,
-#!    <C>Rational{T} where T &lt;:&nbsp;Integer</C>,
+#!    or <C>Rational{T} where T &lt;:&nbsp;Integer</C>,
 #!  </Item>
 #!  <Item>
 #!    <C>GapObj and IsInt</C> to
 #!    <C>BigInt</C> (default),
-#!    <C>Rational{T} where T &lt;:&nbsp;Integer</C>,
+#!    or <C>Rational{T} where T &lt;:&nbsp;Integer</C>,
 #!  </Item>
 #!  <Item>
 #!    <C>GapObj and IsRat</C> to
 #!    <C>Rational{BigInt}</C> (default),
-#!    <C>Rational{T} where T &lt;:&nbsp;Integer</C>,
+#!    or <C>Rational{T} where T &lt;:&nbsp;Integer</C>,
 #!  </Item>
 #!  <Item>
 #!    <C>IsFloat</C> to
 #!    <C>Float16</C>,
 #!    <C>Float32</C>,
 #!    <C>Float64</C> (default),
-#!    <C>BigFloat</C>,
+#!    or <C>BigFloat</C>,
 #!  </Item>
 #!  <Item>
 #!    <C>IsChar</C> to
@@ -254,12 +254,12 @@
 #!    <C>Vector{Union{Any,Nothing}}</C> (default),
 #!    <C>Vector{T}</C>,
 #!    <C>Matrix{T}</C>,
-#!    <C>T &lt;: Tuple</C>,
+#!    or <C>T &lt;: Tuple</C>,
 #!  </Item>
 #!  <Item>
 #!    <C>IsRecord</C> to
-#!    <C>Dict{Symbol,Any}</C> (default),
-#!    <C>Dict{Symbol,T}</C>.
+#!    <C>Dict{Symbol,Any}</C> (default)
+#!    or <C>Dict{Symbol,T}</C>.
 #!  </Item>
 #!  </List>
 #!
@@ -271,16 +271,33 @@
 #!
 #!  <E>Conversion from &Julia; to &GAP;</E>
 #!
-#!  The function <Ref Constr="JuliaToGAP" Label="for IsObject, IsObject"/>
-#!  is a &GAP; constructor taking two arguments,
-#!  a &GAP; filter and an object to be converted.
+#!  There are two alternatives for this direction,
+#!  the Julia constructor <Ref Func="Julia.GAP.Obj"/>
+#!  and the &GAP; constructor
+#!  <Ref Constr="JuliaToGAP" Label="for IsObject, IsObject"/>.
+#!
+#!  <Ref Func="Julia.GAP.Obj"/> is a &Julia; function
+#!  that takes one or two arguments,
+#!  the object to be converted and optionally the value <K>true</K>
+#!  indicating recursive conversion of nested objects.
+#!  The chosen method depends on the &Julia; type of the first argument.
+#!
+#!  The function <Ref Constr="JuliaToGAP" Label="for IsObject, IsObject"/>.
+#!  takes two or three arguments,
+#!  a &GAP; filter and an object to be converted,
+#!  and optionally the value <K>true</K> indicating recursive conversion
+#!  of nested objects.
 #!  Various methods for this constructor then take care of input validation
 #!  and the actual conversion, either by delegating to the &Julia; function
 #!  <C>julia_to_gap</C>
-#!  (which takes just one argument and chooses the &GAP; filters of its
-#!  result depending on the &Julia; type),
+#!  (which takes just one or two arguments and chooses the &GAP; filters of
+#!  its result depending on the &Julia; type),
 #!  or by automatic conversion.
-#!  The supported &Julia; types are as follows.
+#!
+#!  The supported &Julia; types of the second argument of
+#!  <Ref Constr="JuliaToGAP" Label="for IsObject, IsObject"/>
+#!  are as follows;
+#!  more &Julia; types may be supported for <Ref Func="Julia.GAP.Obj"/>.
 #!
 #!  <Table Align="|l|l|l|">
 #!    <HorLine/>
@@ -350,6 +367,46 @@
 
 #! @Section Conversion functions
 #! @SectionLabel Conversion_functions
+#!
+#! <ManSection>
+#! <Func Name="Julia.GAP.Obj" Arg="juliaobj[, recursive]"/>
+#! <Func Name="Julia.GAP.GapObj" Arg="juliaobj[, recursive]"/>
+#! <Returns>a &GAP; object</Returns>
+#! <Description>
+#! The &Julia; constructor <Ref Func="Julia.GAP.Obj"/> takes an object
+#! <A>juliaobj</A> and chooses a method depending on its &Julia; type
+#! for computing a &GAP; object corresponding to <A>juliaobj</A>.
+#! If <A>recursive</A> is <K>true</K> then nested objects are converted
+#! recursively.
+#! <P/>
+#! <!-- Note that the Julia output contains the "forbidden" sequence "]]>",
+#!      thus the CDATA syntax cannot be used. -->
+#!<Example>
+#!gap> Julia.GAP.Obj( 42 );
+#!42
+#!gap> m:= GAPToJulia( [ [ 1, 2 ], [ 3, 4 ] ] );
+#!&lt;Julia: Any[Any[1, 2], Any[3, 4]]>
+#!gap> Julia.GAP.Obj( m );
+#![ &lt;Julia: Any[1, 2]>, &lt;Julia: Any[3, 4]> ]
+#!gap> Julia.GAP.Obj( m, true );
+#![ [ 1, 2 ], [ 3, 4 ] ]
+#!</Example>
+#! <P/>
+#! One advantage of <Ref Func="Julia.GAP.Obj"/> compared to the &GAP;
+#! constructor <Ref Constr="JuliaToGAP" Label="for IsObject, IsObject"/> is
+#! that it is easy to extend the scope of <Ref Func="Julia.GAP.Obj"/>
+#! on the &Julia; side, whereas extending
+#! <Ref Constr="JuliaToGAP" Label="for IsObject, IsObject"/>
+#! would require changing its methods.
+#! For example, the <Package>Oscar</Package> system provides &Julia; types
+#! of matrices for which conversions to &GAP; matrices are installed,
+#! via suitable methods for <Ref Func="Julia.GAP.Obj"/>.
+#! <P/>
+#! If one is sure that the result of the conversion to &GAP; is not an
+#! immediate &GAP; object then one can call <Ref Func="Julia.GAP.GapObj"/>
+#! instead of <Ref Func="Julia.GAP.Obj"/>.
+#! </Description>
+#! </ManSection>
 
 #! @Arguments filt, juliaobj[, recursive]
 #! @Returns a &GAP; object in the filter <A>filt</A>
@@ -360,6 +417,17 @@
 #!  such that the corresponding &GAP; object is in the filter <A>filt</A>.
 #!  Then <Ref Constr="JuliaToGAP" Label="for IsObject, IsObject"/>
 #!  returns this &GAP; object.
+#!
+#! @BeginExampleSession
+#! gap> s:= GAPToJulia( "abc" );
+#! <Julia: "abc">
+#! gap> JuliaToGAP( IsString, s );
+#! "abc"
+#! gap> l:= GAPToJulia( [ 1, 2, 4 ] );
+#! <Julia: Any[1, 2, 4]>
+#! gap> JuliaToGAP( IsList, l );
+#! [ 1, 2, 4 ]
+#! @EndExampleSession
 #!
 #!  For recursive structures (&GAP; lists and records),
 #!  only the outermost level is converted except if the optional argument
@@ -375,14 +443,12 @@
 #!  something useful on the &GAP; side.
 #!
 #! @BeginExampleSession
-#! gap> s:= GAPToJulia( "abc" );
-#! <Julia: "abc">
-#! gap> JuliaToGAP( IsString, s );
-#! "abc"
-#! gap> l:= GAPToJulia( [ 1, 2, 4 ] );
-#! <Julia: Any[1, 2, 4]>
-#! gap> JuliaToGAP( IsList, l );
-#! [ 1, 2, 4 ]
+#! gap> m:= GAPToJulia( [ [ 1, 2 ], [ 3, 4 ] ] );
+#! <Julia: Any[Any[1, 2], Any[3, 4]]>
+#! gap> JuliaToGAP( IsList, m );
+#! [ <Julia: Any[1, 2]>, <Julia: Any[3, 4]> ]
+#! gap> JuliaToGAP( IsList, m, true );
+#! [ [ 1, 2 ], [ 3, 4 ] ]
 #! @EndExampleSession
 #!
 #!  The following values for <A>filt</A> are supported.
