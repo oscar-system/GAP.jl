@@ -1,6 +1,6 @@
 @testset "conversion from GAP using constructors" begin
 
-  ## Analogous tests for conversion using convert are in convert.jl.
+  ## Analogous tests for conversion using convert are in conversion.jl.
 
   @testset "Conversion to GAP.Obj and GAP.GapObj" begin
     x = GAP.evalstr("2^100")
@@ -9,6 +9,19 @@
     x = GAP.evalstr("Z(3)")
     @test GAP.Obj(x) == x
     @test GAP.Obj(0) == 0
+
+    # recursive conversion of nested objects
+    m = [[1, 2], [3, 4]]
+    c = GAP.Obj(m)
+    @test c[1] isa Vector
+    @test c == GAP.Obj(m, false)
+    c = GAP.Obj(m, true)
+    @test c[1] isa GAP.Obj
+    c = GAP.GapObj(m)
+    @test c[1] isa Vector
+    @test c == GAP.GapObj(m, false)
+    c = GAP.GapObj(m, true)
+    @test c[1] isa GAP.GapObj
   end
 
   @testset "Border cases" begin
