@@ -1,5 +1,7 @@
 # Changes in GAP.jl
 
+## Version 0.9.8-DEV (released YYYY-MM-DD)
+
 ## Version 0.9.7 (released 2023-06-26)
 
 - Allow passing a path to `GAP.Packages.load` instead of a package name
