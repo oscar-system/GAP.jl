@@ -1,5 +1,12 @@
 # Changes in GAP.jl
 
+## Version 0.9.8-DEV (released YYYY-MM-DD)
+
+- Allow GAP.Obj(x,true) for recursive conversion (#910. #925)
+- Improve documentation on special GAP syntax (#922)
+- Work around a potential crash when GAP launches subprocesses (#906)
+- Various janitorial changes
+
 ## Version 0.9.7 (released 2023-06-26)
 
 - Allow passing a path to `GAP.Packages.load` instead of a package name
