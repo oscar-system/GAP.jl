@@ -286,6 +286,10 @@ function __init__()
         push!(cmdline_options, "-b")
     end
 
+    if haskey(ENV, "GAP_BARE_DEPS")
+        push!(cmdline_options, "-A")
+    end
+
     initialize(cmdline_options)
 
     if !show_banner

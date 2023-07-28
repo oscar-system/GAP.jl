@@ -6,6 +6,9 @@
     # and such that it is available when user files get read
     # via the GAP command line.
     deps:= SHALLOW_COPY_OBJ( GAPInfo.Dependencies.NeededOtherPackages );
+    if IsBound(GAPInfo.KernelInfo.ENVIRONMENT.GAP_BARE_DEPS) then
+        deps:= [];
+    fi;
     APPEND_LIST_INTR( deps, [ [ "JuliaInterface", ">=0.9.8-DEV" ] ] );
     GAPInfo.Dependencies:= MakeImmutable( rec( NeededOtherPackages:= deps ) );
 
