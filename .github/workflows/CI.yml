@@ -59,6 +59,8 @@ jobs:
         uses: julia-actions/julia-buildpkg@latest
       - name: "Run tests"
         uses: julia-actions/julia-runtest@latest
+        with:
+          depwarn: error
       - name: "Add optional Julia dependencies for GAP tests"
         run: julia --color=yes -e 'using Pkg ; Pkg.add(["Singular", "Nemo"])'
       - name: "GAP tests"
