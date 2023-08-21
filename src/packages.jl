@@ -56,6 +56,14 @@ function init_packagemanager()
       # put the new method in the first position
       meths = Globals.Download_Methods
       Wrappers.Add(meths, GapObj(r, recursive=true), 1)
+
+      # monkey patch PackageManager so that we can disable removal of
+      # package directories for debugging purposes
+      orig_PKGMAN_RemoveDir = Globals.PKGMAN_RemoveDir
+      replace_global!(:PKGMAN_RemoveDir, function(dir)
+        Globals.ValueOption(GapObj("debug")) == true && return
+        orig_PKGMAN_RemoveDir(dir)
+      end)
     end
 end
 
@@ -186,6 +194,7 @@ end
 """
     install(spec::String, version::String = "";
                           interactive::Bool = true, quiet::Bool = false,
+                          debug::Bool = false,
                           pkgdir::AbstractString = GAP.Packages.DEFAULT_PKGDIR[])
 
 Download and install the GAP package given by `spec` into the `pkgdir`
@@ -213,21 +222,22 @@ For details, please refer to its documentation.
 """
 function install(spec::String, version::String = "";
                                interactive::Bool = true, quiet::Bool = false,
+                               debug::Bool = false,
                                pkgdir::AbstractString = DEFAULT_PKGDIR[])
     # point PackageManager to the given pkg dir
     Globals.PKGMAN_CustomPackageDir = GapObj(pkgdir)
     mkpath(pkgdir)
 
-    if quiet
+    if quiet || debug
       oldlevel = Wrappers.InfoLevel(Globals.InfoPackageManager)
-      Wrappers.SetInfoLevel(Globals.InfoPackageManager, 0)
+      Wrappers.SetInfoLevel(Globals.InfoPackageManager, quiet ? 0 : 3)
     end
     if version == ""
-      res = Wrappers.InstallPackage(GapObj(spec), interactive)
+      res = Globals.InstallPackage(GapObj(spec), interactive; debug)
     else
-      res = Wrappers.InstallPackage(GapObj(spec), GapObj(version), interactive)
+      res = Globals.InstallPackage(GapObj(spec), GapObj(version), interactive; debug)
     end
-    if quiet
+    if quiet || debug
       Wrappers.SetInfoLevel(Globals.InfoPackageManager, oldlevel)
     end
     return res
@@ -235,6 +245,7 @@ end
 
 """
     update(spec::String; interactive::Bool = true, quiet::Bool = false,
+                         debug::Bool = false,
                          pkgdir::AbstractString = GAP.Packages.DEFAULT_PKGDIR[])
 
 Update the GAP package given by `spec` that is installed in the
@@ -253,19 +264,20 @@ prevent `PackageManager` from prompting the user for input interactively.
 For details, please refer to its documentation.
 """
 function update(spec::String; interactive::Bool = true, quiet::Bool = false,
+                              debug::Bool = false,
                               pkgdir::AbstractString = DEFAULT_PKGDIR[])
     # point PackageManager to the given pkg dir
     Globals.PKGMAN_CustomPackageDir = GapObj(pkgdir)
     mkpath(pkgdir)
 
-    if quiet
+    if quiet || debug
       oldlevel = Wrappers.InfoLevel(Globals.InfoPackageManager)
-      Wrappers.SetInfoLevel(Globals.InfoPackageManager, 0)
-      res = Wrappers.UpdatePackage(GapObj(spec), interactive)
+      Wrappers.SetInfoLevel(Globals.InfoPackageManager, quiet ? 0 : 3)
+      res = Globals.UpdatePackage(GapObj(spec), interactive; debug)
       Wrappers.SetInfoLevel(Globals.InfoPackageManager, oldlevel)
       return res
     else
-      return Wrappers.UpdatePackage(GapObj(spec), interactive)
+      return Globals.UpdatePackage(GapObj(spec), interactive)
     end
 end
 # note that the updated version cannot be used in the current GAP session,
@@ -274,6 +286,7 @@ end
 
 """
     remove(spec::String; interactive::Bool = true, quiet::Bool = false,
+                         debug::Bool = false,
                          pkgdir::AbstractString = GAP.Packages.DEFAULT_PKGDIR[])
 
 Remove the GAP package with name `spec` that is installed in the
@@ -288,19 +301,20 @@ prevent `PackageManager` from prompting the user for input interactively.
 For details, please refer to its documentation.
 """
 function remove(spec::String; interactive::Bool = true, quiet::Bool = false,
+                              debug::Bool = false,
                               pkgdir::AbstractString = DEFAULT_PKGDIR[])
     # point PackageManager to the given pkg dir
     Globals.PKGMAN_CustomPackageDir = GapObj(pkgdir)
     mkpath(pkgdir)
 
-    if quiet
+    if quiet || debug
       oldlevel = Wrappers.InfoLevel(Globals.InfoPackageManager)
-      Wrappers.SetInfoLevel(Globals.InfoPackageManager, 0)
-      res = Wrappers.RemovePackage(GapObj(spec), interactive)
+      Wrappers.SetInfoLevel(Globals.InfoPackageManager, quiet ? 0 : 3)
+      res = Globals.RemovePackage(GapObj(spec), interactive; debug)
       Wrappers.SetInfoLevel(Globals.InfoPackageManager, oldlevel)
       return res
     else
-      return Wrappers.RemovePackage(GapObj(spec), interactive)
+      return Globals.RemovePackage(GapObj(spec), interactive)
     end
 end
 
