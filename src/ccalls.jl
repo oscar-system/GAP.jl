@@ -119,11 +119,12 @@ Note that screen outputs caused by evaluating `cmd` are not shown
 by `evalstr`; use [`evalstr_ex`](@ref) for accessing both the outputs
 and the return values of the command(s).
 
-Note also that using `evalstr` is often not the best way to create
-GAP objects or to call GAP functions.
-(In fact, it is likely that something is missing from GAP.jl
-if `evalstr` is the only way to formulate some lines of code.)
-Alternatively, use `GAP.GapObj` or `GAP.Obj` for constructing GAP objects
+In general we recommend to avoid using `evalstr`, but it sometimes can
+be a useful escape hatch to access GAP functionality that is otherwise
+impossible to difficult to reach. But in most typical scenarios it
+should not be necessary to use it at all.
+
+Instead, use `GAP.GapObj` or `GAP.Obj` for constructing GAP objects
 that correspond to given Julia objects,
 and call GAP functions directly in the Julia session.
 For example, executing `GAP.evalstr( "x:= []; Add( x, 2 )" )`
