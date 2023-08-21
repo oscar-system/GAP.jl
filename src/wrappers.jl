@@ -24,8 +24,6 @@ import GAP: @wrap
 @wrap IN(x::Any, y::Any)::Bool
 @wrap InfoLevel(x::GapObj)::Int
 @wrap INT_CHAR(x::Any)::Int
-@wrap InstallPackage(x::GapObj, y::Bool)::Bool
-@wrap InstallPackage(x::GapObj, y::GapObj, z::Bool)::Bool
 @wrap InverseSameMutability(x::Any)::Any
 @wrap IS_JULIA_FUNC(x::Any)::Bool
 @wrap ISB_LIST(x::Any, i::Int)::Bool
@@ -68,7 +66,6 @@ import GAP: @wrap
 @wrap QUO(x::Any, y::Any)::Any
 @wrap Read(x::GapObj)::Nothing
 @wrap RecNames(x::Any)::Any
-@wrap RemovePackage(x::GapObj, y::Bool)::Bool
 @wrap RNamObj(x::Any)::Int
 @wrap SetInfoLevel(x::GapObj, y::Int)::Nothing
 @wrap SetPackagePath(x::GapObj, y::GapObj)::Nothing
@@ -79,7 +76,6 @@ import GAP: @wrap
 @wrap StructuralCopy(x::Any)::Any
 @wrap SUM(x::Any, y::Any)::Any
 @wrap UNB_REC(x::GapObj, y::Int)::Nothing
-@wrap UpdatePackage(x::GapObj, y::Bool)::Bool
 @wrap ZeroSameMutability(x::Any)::Any
 
 end
