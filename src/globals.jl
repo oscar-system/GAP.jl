@@ -55,6 +55,13 @@ end
 
 propertynames(::GlobalsType, private::Bool=false) = Vector{Symbol}(Globals.NamesGVars())
 
+function replace_global!(name::Symbol, val::Any)
+    n = GapObj(name)
+    Wrappers.MakeReadWriteGlobal(n)
+    setproperty!(Globals, name, val)
+    Wrappers.MakeReadOnlyGlobal(n)
+end
+
 @static if VERSION < v"1.10-DEV"
   # HACK to get tab completion to work for GAP globals accessed via GAP.Globals;
   # e.g. if the REPL already shows `GAP.Globals.MTX.Is` and the user presses

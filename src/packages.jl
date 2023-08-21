@@ -2,7 +2,7 @@
 module Packages
 
 using Downloads
-import ...GAP: Globals, GapObj, RNamObj, sysinfo, Wrappers
+import ...GAP: Globals, GapObj, replace_global!, RNamObj, sysinfo, Wrappers
 
 const DEFAULT_PKGDIR = Ref{String}()
 
@@ -17,16 +17,14 @@ function init_packagemanager()
     global DEFAULT_PKGDIR[] = sysinfo["DEFAULT_PKGDIR"]
 
     # overwrite PKGMAN_DownloadURL
-    Globals.MakeReadWriteGlobal(GapObj("PKGMAN_DownloadURL"))
-    Globals.PKGMAN_DownloadURL = function(url)
+    replace_global!(:PKGMAN_DownloadURL, function(url)
       try
         buffer = Downloads.download(String(url), IOBuffer())
         return GapObj(Dict{Symbol, Any}(:success => true, :result => String(take!(buffer))), recursive=true)
       catch
         return GapObj(Dict{Symbol, Any}(:success => false), recursive=true)
       end
-    end
-    Wrappers.MakeReadOnlyGlobal(GapObj("PKGMAN_DownloadURL"))
+    end)
 
     # Install a method (based on Julia's Downloads package) as the first choice
     # for the `Download` function from GAP's utils package,
