@@ -23,20 +23,24 @@ using Julia syntax features.
 In particular, the following is available on the Julia side
 in order to support special GAP syntax beyond function calls with arguments.
 
-- Access list/matrix entries via [`getindex`](@ref).
+- Call functions with global options via [`call_gap_func`](@ref)
+  or using Julia's keyword argument syntax. For example,
+  `Cyc(1.41421356 : bits:=20)` in GAP translates to
+  `GAP.Globals.Cyc(GAP.Obj(1.41421356); bits=20)` in Julia.
 
-- Access record components via [`getproperty`](@ref).
+- Access list/matrix entries via [`getindex`](@ref) and [`setindex!`](@ref)
+  respectively the corresponding Julia syntax (described there).
+
+- Access record components via [`getproperty`](@ref) and [`setproperty!`](@ref)
+  respectively the corresponding Julia syntax (described there).
+
+- Check for bound record components via [`hasproperty`](@ref).
 
 - Access entries of a positional object via [`getbangindex`](@ref),
   equivalent to GAP's `![]` operator.
 
 - Access components of a component object via [`getbangproperty`](@ref),
   equivalent to GAP's `!.` operator.
-
-- Check for bound record components via [`hasproperty`](@ref).
-
-- Call functions with global options via [`call_gap_func`](@ref)
-  or using Julia's keyword argument syntax.
 
 ```@docs
 call_gap_func
