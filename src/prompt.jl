@@ -22,9 +22,7 @@ function prompt()
 
     # restore GAP's error output
     disable_error_handler[] = true
-    Globals.MakeReadWriteGlobal(GapObj("ERROR_OUTPUT"))
-    Globals.ERROR_OUTPUT = Globals._JULIAINTERFACE_ORIGINAL_ERROR_OUTPUT
-    Globals.MakeReadOnlyGlobal(GapObj("ERROR_OUTPUT"))
+    replace_global!(:ERROR_OUTPUT, Globals._JULIAINTERFACE_ORIGINAL_ERROR_OUTPUT)
 
     # enable break loop
     Globals.BreakOnError = true
@@ -40,9 +38,7 @@ function prompt()
 
     # restore GAP.jl error handler
     disable_error_handler[] = false
-    Globals.MakeReadWriteGlobal(GapObj("ERROR_OUTPUT"))
-    Globals.ERROR_OUTPUT = Globals._JULIAINTERFACE_ERROR_OUTPUT
-    Globals.MakeReadOnlyGlobal(GapObj("ERROR_OUTPUT"))
+    replace_global!(:ERROR_OUTPUT, Globals._JULIAINTERFACE_ERROR_OUTPUT)
 end
 
 # helper function for `gap.sh` scripts created by create_gap_sh()

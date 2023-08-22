@@ -53,6 +53,7 @@ import GAP: @wrap
 @wrap LQUO(x::Any, y::Any)::Any
 @wrap LT(x::Any, y::Any)::Bool
 @wrap MakeReadOnlyGlobal(x::Any)::Nothing
+@wrap MakeReadWriteGlobal(x::Any)::Nothing
 @wrap MOD(x::Any, y::Any)::Any
 @wrap NextIterator(x::Any)::Any
 @wrap NormalizedWhitespace(x::GapObj)::GapObj
