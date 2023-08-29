@@ -199,12 +199,12 @@ the code contains exactly one call of the form `GAP.Globals.Something(X)`,
 where `Something` is a GAP attribute such as `Centre` or `IsSolvableGroup`,
 and `attr` returns the corresponding attribute value for its argument.
 
-The macro defines three functions `attr`, `hasattr`, and `setattr`, where
+The macro defines three functions `attr`, `has_attr`, and `set_attr`, where
 `attr` takes an argument of type `T` and returns what the given
 method definition says,
-`hasattr` takes an argument of type `T` and returns the result of
+`has_attr` takes an argument of type `T` and returns the result of
 `GAP.Globals.HasSomething(X)` (which is either `true` or `false`),
-`setattr` takes an argument of type `T` and an object `obj` and
+`set_attr` takes an argument of type `T` and an object `obj` and
 calls `GAP.Globals.SetSomething(X, obj)`.
 
 In order to avoid runtime access via `GAP.Globals.Something` etc.,
