@@ -5,6 +5,7 @@ version = "0.9.8-DEV"
 
 [deps]
 Artifacts = "56f22d72-fd6d-98f1-02f0-08ddc0907c33"
+Compat = "34da2185-b29b-5c13-b0c7-acf172513d20"
 Downloads = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
 GAP_jll = "5cd7a574-2c56-5be2-91dc-c8bc375b9ddf"
 GAP_lib_jll = "de1ad85e-c930-5cd4-919d-ccd3fcafd1a3"
@@ -21,6 +22,7 @@ Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Scratch = "6c6a2e73-6563-6170-7368-637461726353"
 
 [compat]
+Compat = "4.4.0"
 GAP_jll = "~400.1200.101"
 GAP_lib_jll = "~400.1201.100"
 GAP_pkg_juliainterface_jll = "=0.800.300"
