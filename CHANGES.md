@@ -1,6 +1,6 @@
 # Changes in GAP.jl
 
-## Version 0.9.8-DEV (released YYYY-MM-DD)
+## Version 0.9.8 (released 2023-09-11)
 
 - Allow GAP.Obj(x,true) for recursive conversion (#910. #925)
 - Improve documentation on special GAP syntax (#922, #929, #932)
