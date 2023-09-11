@@ -3,8 +3,10 @@
 ## Version 0.9.8-DEV (released YYYY-MM-DD)
 
 - Allow GAP.Obj(x,true) for recursive conversion (#910. #925)
-- Improve documentation on special GAP syntax (#922)
+- Improve documentation on special GAP syntax (#922, #929, #932)
 - Work around a potential crash when GAP launches subprocesses (#906)
+- If the environment variable `GAP_BARE_DEPS` is set, then GAP skips loading
+  any of its packages, except for JuliaInterface (#912)
 - Various janitorial changes
 
 ## Version 0.9.7 (released 2023-06-26)
