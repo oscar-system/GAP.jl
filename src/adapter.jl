@@ -416,6 +416,9 @@ Random.Sampler(::Type{<:AbstractGAPRNG}, x::AbstractUnitRange, ::Random.Repetiti
     Random.SamplerTrivial(x)
 
 # avoid ambiguities
+Random.Sampler(::Type{<:AbstractGAPRNG}, x::AbstractUnitRange{BigInt}, ::Random.Repetition) =
+    Random.SamplerTrivial(x)
+
 for U in (Base.BitInteger64, Union{Int128,UInt128})
     @eval Random.Sampler(::Type{<:AbstractGAPRNG}, x::AbstractUnitRange{T}, ::Random.Repetition
                          ) where {T<:$U} = Random.SamplerTrivial(x)
