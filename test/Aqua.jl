@@ -3,7 +3,7 @@ using Aqua
 @testset "Aqua.jl" begin
     Aqua.test_all(
         GAP;
-        ambiguities=false,      # TODO: fix ambiguities
+        ambiguities=true,
         unbound_args=true,
         undefined_exports=true,
         project_extras=true,
