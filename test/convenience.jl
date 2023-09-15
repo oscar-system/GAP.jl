@@ -119,7 +119,12 @@ end
     @test sym5.:1 === sym5."1"
 end
 
-## Need to be created outside of test
-module test3
-SymmetricGroup = 5
+@testset "functionloc" begin
+
+    file, line = Base.functionloc(GAP.Globals.DirectoriesPackagePrograms)
+    @test Base.samefile(file, joinpath(@__DIR__, "../gap/pkg.g"))
+    @test line == 5
+
+    @test_throws ArgumentError Base.functionloc(GAP.Globals.LETTERS)
+    @test_throws ErrorException Base.functionloc(GAP.Globals.IsAbelian)
 end

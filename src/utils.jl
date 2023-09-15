@@ -91,3 +91,21 @@ end
 function Display(x::GapObj)
     print(AbstractString(Wrappers.StringDisplayObj(x)))
 end
+
+function Base.functionloc(f::GapObj)
+    GAP.Globals.IsFunction(f) || throw(ArgumentError("`f` must be GAP function"))
+    file = GAP.Globals.FilenameFunc(f)::GAP.Obj
+    if file == GAP.Globals.fail
+        error("could not determine file of GAP function definition")
+    end
+    ln = GAP.Globals.StartlineFunc(f)::GAP.Obj
+    if !isa(ln, Int)
+        error("could not determine line of GAP function definition")
+    end
+    return (String(file), ln)
+end
+
+# Allow `InteractiveUtils.edit(GAP.Globals.Group)` and similar for any global
+# function. Not (yet?) useful for GAP operations, but better than nothing.
+import InteractiveUtils: edit
+edit(m::GapObj) = edit(functionloc(m)...)
