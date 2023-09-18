@@ -336,7 +336,7 @@ InstallGlobalFunction( EvaluateMolienSeries, function( R, d )
 ##
 InstallGlobalFunction( MonomialsOfGivenDegree, function( R, d )
     if not IsInt( d ) or d < 0 then
-      Error( "<d> must be a nonnegative integer" );
+      Error( "<d> must be a non-negative integer" );
     elif d = 0 then
       return [ One( R ) ];
     fi;
