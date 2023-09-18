@@ -168,7 +168,7 @@ InstallMethod( Init,
         SetJuliaPointer( rng, seed );
       fi;
     else
-      Error( "<seed> must be a nonnegative integer ",
+      Error( "<seed> must be a non-negative integer ",
              "or a Julia random number generator" );
     fi;
     return rng;
@@ -194,7 +194,7 @@ InstallMethod( Reset,
       # This means a prescribed state.
       Julia.Base.copy\!( JuliaPointer( rng ), seed );
     else
-      Error( "<seed> must be a nonnegative integer ",
+      Error( "<seed> must be a non-negative integer ",
              "or a Julia random number generator" );
     fi;
 

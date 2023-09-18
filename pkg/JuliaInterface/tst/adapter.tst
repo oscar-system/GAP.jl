@@ -213,9 +213,9 @@ true
 
 # possible errors
 gap> RandomSource( IsRandomSourceJulia, "random" );
-Error, <seed> must be a nonnegative integer or a Julia random number generator
+Error, <seed> must be a non-negative integer or a Julia random number generator
 gap> Reset( rs, "random" );;
-Error, <seed> must be a nonnegative integer or a Julia random number generator
+Error, <seed> must be a non-negative integer or a Julia random number generator
 
 #
 gap> STOP_TEST( "adapter.tst", 1 );
