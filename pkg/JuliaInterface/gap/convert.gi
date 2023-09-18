@@ -72,14 +72,7 @@ InstallMethod(JuliaToGAP, ["IsRecord", "IsJuliaObject"],
 InstallMethod(JuliaToGAP, ["IsRecord", "IsJuliaObject", "IsBool"],
 function(filter, obj, recursive)
     if Julia.isa(obj, _JL_Dict_Symbol) or Julia.isa(obj, _JL_Dict_AbstractString) then
-        if recursive then
-            return CallJuliaFunctionWithKeywordArguments(
-                       Julia.GAP.julia_to_gap,
-                       [ obj ],
-                       rec( recursive:= true ) );
-        else
-            return Julia.GAP.julia_to_gap(obj);
-        fi;
+        return Julia.GAP.Obj(obj, recursive);
     fi;
     Error("<obj> must be a Julia Dict{Symbol} or Dict{AbstractString}");
 end);
@@ -91,14 +84,7 @@ InstallMethod(JuliaToGAP, ["IsList", "IsJuliaObject", "IsBool"],
 function(filter, obj, recursive)
     if Julia.isa(obj, Julia.Base.Array) or Julia.isa(obj, Julia.Base.Tuple)
        or Julia.isa(obj, Julia.Base.AbstractRange) then
-        if recursive then
-            return CallJuliaFunctionWithKeywordArguments(
-                       Julia.GAP.julia_to_gap,
-                       [ obj ],
-                       rec( recursive:= true ) );
-        else
-            return Julia.GAP.julia_to_gap(obj);
-        fi;
+        return Julia.GAP.Obj(obj, recursive);
     fi;
     Error("<obj> must be a Julia array or tuple or range");
 end);
@@ -110,14 +96,7 @@ InstallMethod(JuliaToGAP, ["IsRange", "IsJuliaObject"],
 InstallMethod(JuliaToGAP, ["IsRange", "IsJuliaObject", "IsBool"],
 function(filter, obj, recursive)
     if Julia.isa(obj, Julia.Base.AbstractRange) then
-        if recursive then
-            return CallJuliaFunctionWithKeywordArguments(
-                       Julia.GAP.julia_to_gap,
-                       [ obj ],
-                       rec( recursive:= true ) );
-        else
-            return Julia.GAP.julia_to_gap(obj);
-        fi;
+        return Julia.GAP.Obj(obj, recursive);
     fi;
     Error("<obj> must be a Julia range");
 end);
@@ -131,14 +110,7 @@ InstallMethod(JuliaToGAP, ["IsBlist", "IsJuliaObject"],
 InstallMethod(JuliaToGAP, ["IsBlist", "IsJuliaObject", "IsBool"],
 function(filter, obj, recursive)
     if Julia.isa(obj, _JL_Vector_Bool) or Julia.isa(obj, _JL_BitVector) then
-        if recursive then
-            return CallJuliaFunctionWithKeywordArguments(
-                       Julia.GAP.julia_to_gap,
-                       [ obj ],
-                       rec( recursive:= true ) );
-        else
-            return Julia.GAP.julia_to_gap(obj);
-        fi;
+        return Julia.GAP.Obj(obj, recursive);
     fi;
     Error("<obj> must be a Julia Vector{Bool} or BitVector");
 end);
