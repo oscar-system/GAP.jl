@@ -389,23 +389,6 @@ Set{Any} with 2 elements:
   Any[1]
   Any[2]
 ```
-
-In the following examples,
-the order in which the Julia output is shown may vary.
-
-# Examples
-```jldoctest
-julia> s = Set{Any}(GAP.Obj([[1], [2], [1]]; recursive=true); recursive=false);
-
-julia> s == Set{Any}([GAP.Obj([1]), GAP.Obj([2])])
-true
-
-julia> s = Set{Any}(GAP.Globals.SymmetricGroup(2); recursive=false);
-
-julia> s == Set{Any}([GAP.evalstr("()"), GAP.evalstr("(1,2)")])
-true
-
-```
 """
 Base.Set{T}(obj::GapObj; recursive::Bool = true) where {T} =
     gap_to_julia(Set{T}, obj; recursive)

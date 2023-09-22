@@ -361,11 +361,12 @@ for (left, right) in typecombinations
 end
 
 # Since we define the equality of GAP objects (see above),
-# we must provide a safe `hash` method, otherwise `==` results may be wrong.
+# we must provide a safe `hash` method, otherwise using GAP objects
+# in dictionaries or `Set`s can lead to inconsistent results.
 # For example, `==` for `Set`s of GAP objects may erroneously return
 # `false` if the default `hash` is used.
-Base.hash(::GapObj, h::UInt) = h
-Base.hash(::FFE, h::UInt) = h
+Base.hash(::GapObj, h::UInt) = error("hash for GAP objects is not implemented")
+Base.hash(::FFE, h::UInt) = error("hash for GAP objects is not implemented")
 
 ### RNGs
 

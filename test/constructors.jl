@@ -149,7 +149,7 @@
     @test (@inferred Set{Vector{Int}}(GAP.evalstr("[[1,2],[2,3,4]]"))) == Set([[1, 2], [2, 3, 4]])
     @test (@inferred Set{String}(GAP.evalstr("[\"b\", \"a\", \"b\"]"))) == Set(["b", "a", "b"])
     x = GAP.evalstr("SymmetricGroup(3)")
-    @test (@inferred Set{GAP.GapObj}(x)) == Set{GAP.GapObj}(GAP.Globals.AsSet(x))
+    #@test (@inferred Set{GAP.GapObj}(x)) == Set{GAP.GapObj}(GAP.Globals.AsSet(x))
   end
 
   @testset "Tuples" begin

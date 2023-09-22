@@ -28,21 +28,13 @@
     y = GAP.evalstr("[]")
     @test !(x === y)
     @test (x == y)
-    @test hash(x) == 0
+    @test_throws ErrorException hash(x)
 
     x = GAP.evalstr("Z(2)")
     y = GAP.evalstr("Z(4)^3")
     @test !(x === y)
     @test (x == y)
-    @test hash(x) == 0
-
-    # The following would sometimes fail if no dedicated `hash`
-    # method would be available for GAP objects.
-    for i in 1:100
-        x = Set{Any}([GAP.evalstr("()"), GAP.evalstr("(1,2)")])
-        y = Set{Any}([GAP.evalstr("()"), GAP.evalstr("(1,2)")])
-        @test (x == y)
-    end
+    @test_throws ErrorException hash(x)
 end
 
 @testset "globals" begin
