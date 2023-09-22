@@ -53,7 +53,7 @@ end
 
     @test_throws ErrorException GAP.Globals.FOOBARQUX
 
-    str = GAP.gap_to_julia(AbstractString, GAP.ValueGlobalVariable("IdentifierLetters"))
+    str = GAP.gap_to_julia(String, GAP.ValueGlobalVariable("IdentifierLetters"))
     @test str == "0123456789@ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz"
 
     @test GAP.CanAssignGlobalVariable("Read") == false

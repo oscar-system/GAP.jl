@@ -90,7 +90,6 @@
     @test (@inferred GAP.gap_to_julia(String, x)) == "abc"
     x = GAP.evalstr("\"foo\"")
     @test (@inferred GAP.gap_to_julia(String, x)) == "foo"
-    @test GAP.gap_to_julia(AbstractString, x) == "foo"
     @test GAP.gap_to_julia(x) == "foo"
     x = "abc\000def"
     @test GAP.gap_to_julia(GAP.julia_to_gap(x)) == x
@@ -102,7 +101,7 @@
     x = GAP.evalstr("\"foo\"")
     @test (@inferred GAP.gap_to_julia(Symbol, x)) == :foo
     x = GAP.evalstr("(1,2,3)")
-    @test_throws GAP.ConversionError GAP.gap_to_julia(AbstractString, x)
+    @test_throws GAP.ConversionError GAP.gap_to_julia(String, x)
 
     # Convert GAP string to Vector{UInt8} (==Vector{UInt8})
     x = GAP.evalstr("\"foo\"")

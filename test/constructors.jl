@@ -77,14 +77,13 @@
     @test (@inferred String(x)) == "abc"
     x = GAP.evalstr("\"foo\"")
     @test (@inferred String(x)) == "foo"
-    @test AbstractString(x) == "foo"
   end
 
   @testset "Symbols" begin
     x = GAP.evalstr("\"foo\"")
     @test (@inferred Symbol(x)) == :foo
     x = GAP.evalstr("(1,2,3)")
-    @test_throws GAP.ConversionError AbstractString(x)
+    @test_throws GAP.ConversionError String(x)
 
     # Convert GAP string to Vector{UInt8} (==Vector{UInt8})
     x = GAP.evalstr("\"foo\"")

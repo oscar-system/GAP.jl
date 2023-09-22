@@ -169,7 +169,7 @@ gap> ForAll([0..64], n -> Julia.GAP.Obj( -big2^n ) = -2^n);
 true
 
 #
-gap> string := GAPToJulia( Julia.Base.AbstractString, "bla" );
+gap> string := GAPToJulia( Julia.Base.String, "bla" );
 <Julia: "bla">
 gap> JuliaToGAP( IsString, string );
 "bla"
@@ -221,7 +221,7 @@ Error, <obj> must be a Julia range
 ##  empty list vs. empty string
 gap> emptylist:= GAPToJulia( JuliaEvalString( "Vector{Any}"), [] );
 <Julia: Any[]>
-gap> emptystring:= GAPToJulia( Julia.Base.AbstractString, "" );
+gap> emptystring:= GAPToJulia( Julia.Base.String, "" );
 <Julia: "">
 gap> JuliaToGAP( IsList, emptylist );
 [  ]

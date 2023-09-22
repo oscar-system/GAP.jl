@@ -212,7 +212,6 @@ function String(obj::GapObj)
     Wrappers.IsString(obj) && return CSTR_STRING(Wrappers.CopyToStringRep(obj))
     throw(ConversionError(obj, String))
 end
-(::Type{T})(obj::GapObj) where {T<:AbstractString} = convert(T, String(obj))
 
 """
     Symbol(obj::GapObj)

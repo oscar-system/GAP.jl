@@ -141,7 +141,6 @@ gap_to_julia(::Type{Cuchar}, obj::GapObj) = Cuchar(obj)
 
 ## Strings
 gap_to_julia(::Type{String}, obj::GapObj) = String(obj)
-gap_to_julia(::Type{T}, obj::GapObj) where {T<:AbstractString} = T(obj)
 
 ## Symbols
 gap_to_julia(::Type{Symbol}, obj::GapObj) = Symbol(obj)
@@ -333,7 +332,7 @@ function gap_to_julia(x::GapObj; recursive::Bool = true)
     GAP_IS_MACFLOAT(x) && return gap_to_julia(Float64, x)
     GAP_IS_CHAR(x) && return gap_to_julia(Cuchar, x)
     # Do not choose this conversion for other lists in 'IsString'.
-    Wrappers.IsStringRep(x) && return gap_to_julia(AbstractString, x)
+    Wrappers.IsStringRep(x) && return gap_to_julia(String, x)
     # Do not choose this conversion for other lists in 'IsRange'.
     Wrappers.IsRangeRep(x) && return gap_to_julia(StepRange{Int64,Int64}, x)
     # Do not choose this conversion for other lists in 'IsBlist'.
