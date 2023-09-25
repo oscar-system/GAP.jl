@@ -48,11 +48,13 @@ call_with_catch
 getindex
 setindex!
 getbangindex
+hasbangindex
 setbangindex!
 getproperty
 setproperty!
 hasproperty
 getbangproperty
+hasbangproperty
 setbangproperty!
 wrap_rng
 randseed!

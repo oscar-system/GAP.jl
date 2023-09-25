@@ -7,12 +7,18 @@
 ## Access data from component and positional objects
 BindGlobal( "BangComponent", { obj, nam } -> obj!.( nam ) );
 
+BindGlobal( "HasBangComponent",
+  { obj, nam } -> nam in REC_NAMES_COMOBJ( obj ) );
+
 BindGlobal( "SetBangComponent",
   function( obj, nam, val )
     obj!.( nam ):= val;
   end );
 
 BindGlobal( "BangPosition", { obj, pos } -> obj![ pos ] );
+
+BindGlobal( "HasBangPosition",
+  { obj, pos } -> pos <= LEN_POSOBJ( obj ) );
 
 BindGlobal( "SetBangPosition",
   function( obj, pos, val )
