@@ -18,7 +18,7 @@ BindGlobal( "SetBangComponent",
 BindGlobal( "BangPosition", { obj, pos } -> obj![ pos ] );
 
 BindGlobal( "HasBangPosition",
-  { obj, pos } -> pos <= LEN_POSOBJ( obj ) );
+  { obj, pos } -> IsBound( obj![ pos ] ) );
 
 BindGlobal( "SetBangPosition",
   function( obj, pos, val )
