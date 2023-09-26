@@ -3,7 +3,7 @@
 
 import Base: getindex, setindex!, length, show
 
-export getbangindex, setbangindex!, getbangproperty, setbangproperty!
+export getbangindex, hasbangindex, setbangindex!, getbangproperty, hasbangproperty, setbangproperty!
 
 function show_string(io::IO, obj::Union{GapObj,FFE})
     str = Wrappers.StringViewObj(obj)
@@ -70,7 +70,6 @@ julia> m[1,2]
 
 julia> m[2,1]
 3
-
 ```
 """
 Base.getindex(x::GapObj, i::Int64) = Wrappers.ELM_LIST(x, i)
@@ -120,7 +119,6 @@ julia> m[1,2] = 0
 
 julia> m
 GAP: [ [ 1, 0 ], [ 3, 4 ] ]
-
 ```
 """
 Base.setindex!(x::GapObj, v::Any, i::Int64) = Wrappers.ASS_LIST(x, i, v)
@@ -152,10 +150,32 @@ true
 
 julia> getbangindex(x, 1)
 1
-
 ```
 """
 getbangindex(x::GapObj, i::Int64) = Globals.BangPosition(x, i)
+
+"""
+    hasbangindex(x::GapObj, i::Int64)
+
+Return whether the entry at position `i` exists in the
+[positional object](GAP_ref(ref:IsPositionalObjectRep)) `x`.
+
+# Examples
+```jldoctest
+julia> x = GAP.Globals.ZmodnZObj(1, 6)
+GAP: ZmodnZObj( 1, 6 )
+
+julia> GAP.Globals.IsPositionalObjectRep(x)
+true
+
+julia> hasbangindex(x, 1)
+true
+
+julia> hasbangindex(x, 2)
+false
+```
+"""
+hasbangindex(x::GapObj, i::Int64) = Globals.HasBangPosition(x, i)
 
 """
     setbangindex!(x::GapObj, v::Any, i::Int64)
@@ -174,7 +194,6 @@ true
 
 julia> setbangindex!(x, 0, 1)
 GAP: ZmodnZObj( 0, 6 )
-
 ```
 """
 function setbangindex!(x::GapObj, v::Any, i::Int64)
@@ -201,7 +220,6 @@ GAP: rec( a := 1 )
 
 julia> r.a
 1
-
 ```
 """
 Base.getproperty(x::GapObj, f::Symbol) = Wrappers.ELM_REC(x, RNamObj(f))
@@ -225,7 +243,6 @@ julia> r.b = 0
 
 julia> r
 GAP: rec( a := 1, b := 0 )
-
 ```
 """
 Base.setproperty!(x::GapObj, f::Symbol, v) = Wrappers.ASS_REC(x, RNamObj(f), v)
@@ -258,7 +275,6 @@ true
 
 julia> r
 GAP: rec( a := 1, b := 2 )
-
 ```
 """
 Base.hasproperty(x::GapObj, f::Symbol) = Wrappers.ISB_REC(x, RNamObj(f))
@@ -282,11 +298,34 @@ true
 
 julia> getbangproperty(x, :counter)
 0
-
 ```
 """
 getbangproperty(x::GapObj, f::Union{AbstractString,Int64,Symbol}) =
     Globals.BangComponent(x, Obj(f))
+
+"""
+    hasbangproperty(x::GapObj, f::Union{AbstractString,Int64,Symbol})
+
+Return whether the [component object](GAP_ref(ref:IsComponentObjectRep)) `x`
+has the component `f`.
+
+# Examples
+```jldoctest
+julia> x = GAP.Globals.Iterator(GAP.Globals.Integers)
+GAP: <iterator of Integers at 0>
+
+julia> GAP.Globals.IsComponentObjectRep(x)
+true
+
+julia> hasbangproperty(x, :counter)
+true
+
+julia> hasbangproperty(x, :x)
+false
+```
+"""
+hasbangproperty(x::GapObj, f::Union{AbstractString,Int64,Symbol}) =
+    Globals.HasBangComponent(x, Obj(f))
 
 """
     setbangproperty!(x::GapObj, f::Union{AbstractString,Int64,Symbol}, v)
@@ -308,7 +347,6 @@ GAP: <iterator of Integers at -1>
 
 julia> getbangproperty(x, :counter)
 3
-
 ```
 """
 function setbangproperty!(x::GapObj, f::Union{AbstractString,Int64,Symbol}, v)
@@ -547,7 +585,6 @@ true
 
 julia> GAP.Globals.Random(gap_rng1, GAP.Globals.GF(2)^10)
 GAP: <a GF2 vector of length 10>
-
 ```
 """
 function wrap_rng(rng::Random.AbstractRNG)
