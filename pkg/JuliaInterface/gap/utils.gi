@@ -8,7 +8,7 @@
 BindGlobal( "BangComponent", { obj, nam } -> obj!.( nam ) );
 
 BindGlobal( "HasBangComponent",
-  { obj, nam } -> IsBound( obj!.( nam ) );
+  { obj, nam } -> IsBound( obj!.( nam ) ) );
 
 BindGlobal( "SetBangComponent",
   function( obj, nam, val )
