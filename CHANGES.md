@@ -1,6 +1,6 @@
 # Changes in GAP.jl
 
-## Version 0.10.0-DEV (released YYYY-MM-DD)
+## Version 0.10.0 (released 2023-10-10)
 
 - Add `hasbangindex`, `hasbangproperty`
 - Change `hash(::GapObj)` to throw an error (no general non-trivial
