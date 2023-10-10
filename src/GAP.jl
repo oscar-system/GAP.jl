@@ -4,7 +4,8 @@
   For the package manual see https://oscar-system.github.io/GAP.jl/.
 
   For more information about GAP see https://www.gap-system.org/.
-""" module GAP
+"""
+module GAP
 
 # Show a more helpful error message for users on Windows.
 windows_error() = error("""
