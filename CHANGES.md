@@ -2,11 +2,15 @@
 
 ## Version 0.10.0-DEV (released YYYY-MM-DD)
 
-- Changed `hash(::GapObj)` to throw an error (no general non-trivial hashing is
-  possible for general GAP objects)
-- Remove support for conversion to `AbstractString` (it was not meaningful anyway,
-  and hopefully nobody used it; but if you did, just convert to `String` instead
-  for an identical outcome)
+- Add `hasbangindex`, `hasbangproperty`
+- Change `hash(::GapObj)` to throw an error (no general non-trivial
+  hashing is possible for general GAP objects)
+- Remove support for conversion to `AbstractString` (it was not
+  meaningful anyway, and hopefully nobody used it; but if you did, just
+  convert to `String` instead for an identical outcome)
+- Teach `InteractiveUtils.edit` about GAP function
+- Add options to `GAP.Package.install` etc. to help debug issues with it
+- Various janitorial changes
 
 ## Version 0.9.8 (released 2023-09-11)
 
