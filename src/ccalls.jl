@@ -278,12 +278,18 @@ function call_gap_func(func::GapObj, args...; kwargs...)
     end
 end
 
+function slow_call_gap_func_nokw(func::GapObj, args)
+    ccall((:call_gap_func, JuliaInterface_path()), Ptr{Cvoid}, (Any, Any), func, args)
+end
+
+is_func(func::GapObj) = TNUM_OBJ(func) == T_FUNCTION
+
 # specialize call_gap_func for the no-keywords case, for performance
 function call_gap_func_nokw(func::GapObj, args...)
-    if TNUM_OBJ(func) == T_FUNCTION && length(args) <= 6
+    if is_func(func) && length(args) <= 6
         ret = _call_gap_func(func, args...)
     else
-        ret = ccall((:call_gap_func, JuliaInterface_path()), Ptr{Cvoid}, (Any, Any), func, args)
+        ret = slow_call_gap_func_nokw(func, args)
     end
     return _GAP_TO_JULIA(ret)
 end
@@ -292,13 +298,13 @@ end
 (func::GapObj)(args...; kwargs...) = call_gap_func(func, args...; kwargs...)
 
 # specialize non-kwargs versions, which increases performance
-(func::GapObj)() = call_gap_func_nokw(func)
-(func::GapObj)(a1) = call_gap_func_nokw(func, a1)
-(func::GapObj)(a1, a2) = call_gap_func_nokw(func, a1, a2)
-(func::GapObj)(a1, a2, a3) = call_gap_func_nokw(func, a1, a2, a3)
-(func::GapObj)(a1, a2, a3, a4) = call_gap_func_nokw(func, a1, a2, a3, a4)
-(func::GapObj)(a1, a2, a3, a4, a5) = call_gap_func_nokw(func, a1, a2, a3, a4, a5)
-(func::GapObj)(a1, a2, a3, a4, a5, a6) = call_gap_func_nokw(func, a1, a2, a3, a4, a5, a6)
+(f::GapObj)() = _GAP_TO_JULIA(is_func(f) ? _call_gap_func(f) : slow_call_gap_func_nokw(f, ()))
+(f::GapObj)(a1) = _GAP_TO_JULIA(is_func(f) ? _call_gap_func(f, a1) : slow_call_gap_func_nokw(f, (a1,)))
+(f::GapObj)(a1, a2) = _GAP_TO_JULIA(is_func(f) ? _call_gap_func(f, a1, a2) : slow_call_gap_func_nokw(f, (a1, a2)))
+(f::GapObj)(a1, a2, a3) = _GAP_TO_JULIA(is_func(f) ? _call_gap_func(f, a1, a2, a3) : slow_call_gap_func_nokw(f, (a1, a2, a3)))
+(f::GapObj)(a1, a2, a3, a4) = _GAP_TO_JULIA(is_func(f) ? _call_gap_func(f, a1, a2, a3, a4) : slow_call_gap_func_nokw(f, (a1, a2, a3, a4)))
+(f::GapObj)(a1, a2, a3, a4, a5) = _GAP_TO_JULIA(is_func(f) ? _call_gap_func(f, a1, a2, a3, a4, a5) : slow_call_gap_func_nokw(f, (a1, a2, a3, a4, a5)))
+(f::GapObj)(a1, a2, a3, a4, a5, a6) = _GAP_TO_JULIA(is_func(f) ? _call_gap_func(f, a1, a2, a3, a4, a5, a6) : slow_call_gap_func_nokw(f, (a1, a2, a3, a4, a5, a6)))
 
 #
 # below several "fastpath" methods for call_gap_func follow which directly
