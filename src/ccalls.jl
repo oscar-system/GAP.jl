@@ -309,7 +309,7 @@ end
 # 0 arguments
 function _call_gap_func(func::GapObj)
     fptr = GET_FUNC_PTR(func, 0)
-    ret = ccall(fptr, Ptr{Cvoid}, (Ptr{Cvoid},), pointer_from_objref(func))
+    ret = ccall(fptr, Ptr{Cvoid}, (GapObj,), func)
     return ret
 end
 
@@ -319,8 +319,8 @@ function _call_gap_func(func::GapObj, a1)
     ret = ccall(
         fptr,
         Ptr{Cvoid},
-        (Ptr{Cvoid}, Ptr{Cvoid}),
-        pointer_from_objref(func),
+        (GapObj, Ptr{Cvoid}),
+        func,
         _JULIA_TO_GAP(a1),
     )
     return ret
@@ -332,8 +332,8 @@ function _call_gap_func(func::GapObj, a1, a2)
     ret = ccall(
         fptr,
         Ptr{Cvoid},
-        (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}),
-        pointer_from_objref(func),
+        (GapObj, Ptr{Cvoid}, Ptr{Cvoid}),
+        func,
         _JULIA_TO_GAP(a1),
         _JULIA_TO_GAP(a2),
     )
@@ -346,8 +346,8 @@ function _call_gap_func(func::GapObj, a1, a2, a3)
     ret = ccall(
         fptr,
         Ptr{Cvoid},
-        (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}),
-        pointer_from_objref(func),
+        (GapObj, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}),
+        func,
         _JULIA_TO_GAP(a1),
         _JULIA_TO_GAP(a2),
         _JULIA_TO_GAP(a3),
@@ -361,8 +361,8 @@ function _call_gap_func(func::GapObj, a1, a2, a3, a4)
     ret = ccall(
         fptr,
         Ptr{Cvoid},
-        (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}),
-        pointer_from_objref(func),
+        (GapObj, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}),
+        func,
         _JULIA_TO_GAP(a1),
         _JULIA_TO_GAP(a2),
         _JULIA_TO_GAP(a3),
@@ -377,8 +377,8 @@ function _call_gap_func(func::GapObj, a1, a2, a3, a4, a5)
     ret = ccall(
         fptr,
         Ptr{Cvoid},
-        (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}),
-        pointer_from_objref(func),
+        (GapObj, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}),
+        func,
         _JULIA_TO_GAP(a1),
         _JULIA_TO_GAP(a2),
         _JULIA_TO_GAP(a3),
@@ -395,7 +395,7 @@ function _call_gap_func(func::GapObj, a1, a2, a3, a4, a5, a6)
         fptr,
         Ptr{Cvoid},
         (
-            Ptr{Cvoid},
+            GapObj,
             Ptr{Cvoid},
             Ptr{Cvoid},
             Ptr{Cvoid},
@@ -403,7 +403,7 @@ function _call_gap_func(func::GapObj, a1, a2, a3, a4, a5, a6)
             Ptr{Cvoid},
             Ptr{Cvoid},
         ),
-        pointer_from_objref(func),
+        func,
         _JULIA_TO_GAP(a1),
         _JULIA_TO_GAP(a2),
         _JULIA_TO_GAP(a3),
