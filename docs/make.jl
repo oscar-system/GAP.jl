@@ -23,6 +23,25 @@ using GAP.Markdown
 ## the evaluation of external references.
 abstract type ExternalReference <: Documenter.Builder.DocumentPipeline end
 
+## helper function that computes a "GAP documentation URL"
+function compute_GAP_URL(url::String)
+  startswith(url, "GAP_ref") || return nothing
+  @info "Computing external reference: $(url)."
+  reference = match(r"GAP_ref\((.*)\)", url)
+  (! isnothing(reference) && length(reference.captures) == 1) || return nothing
+  reference = string(reference.captures[1])
+  key = split(reference, ":")
+  length(key) == 2 || return nothing
+  key = GapObj(string(key[2]))
+  # Find all matches of `"<bookname>:<label>"`.
+  urls = GAP.Globals.MatchURLs(GapObj(reference),
+             GapObj("https://docs.gap-system.org/"))
+  # Take only exact matches, this should be unique.
+  urls = GAP.Globals.Filtered(urls, x -> x[2] == key)
+  length(urls) == 1 || return nothing
+  return String(urls[1][3])
+end
+
 ## Distinguish different versions of Documenter.jl.
 if isdefined(Documenter, :Document)
   # version at least 1.0
@@ -60,23 +79,10 @@ if isdefined(Documenter, :Document)
     # Do something only if the current element is a `MarkdownAST.Link`.
     link = node.element
     isa(link, Documenter.MarkdownAST.Link) || return true
-    url = link.destination
-    startswith(url, "GAP_ref") || return true
-    @info "Computing external reference: $(url)."
-    reference = match(r"GAP_ref\((.*)\)", url)
-    (! isnothing(reference) && length(reference.captures) == 1) || return true
-    reference = string(reference.captures[1])
-    key = split(reference, ":")
-    length(key) == 2 || return true
-    key = GapObj(string(key[2]))
-    # Find all matches of `"<bookname>:<label>"`.
-    urls = GAP.Globals.MatchURLs(GapObj(reference),
-               GapObj("https://www.gap-system.org/Manuals/"))
-    # Take only exact matches, this should be unique.
-    urls = GAP.Globals.Filtered(urls, x -> x[2] == key)
-    if length(urls) == 1
+    url = compute_GAP_URL(link.destination)
+    if url != nothing
       # Replace the URL in the link.
-      link.destination = String(urls[1][3])
+      link.destination = url
     end
     return true
   end
@@ -109,25 +115,11 @@ else
 
   function compute_external_reference(link, meta, page, doc)
     # Do something only if the current element has the type `Markdown.Link`.
-    if isa(link, Markdown.Link) && startswith(link.url, "GAP_ref")
-        @info "Computing external reference: $(link.url)."
-        reference = match(r"GAP_ref\((.*)\)", link.url)
-        if ! isnothing(reference) && length(reference.captures) == 1
-            reference = string(reference.captures[1])
-            key = split(reference, ":")
-            if length(key) == 2
-                key = GapObj(string(key[2]))
-                # Find all matches of `"<bookname>:<label>"`.
-                urls = GAP.Globals.MatchURLs(GapObj(reference),
-                           GapObj("https://www.gap-system.org/Manuals/"))
-                # Take only exact matches, this should be unique.
-                urls = GAP.Globals.Filtered(urls, x -> x[2] == key)
-                if length(urls) == 1
-                    # Replace the URL in the link.
-                    link.url = String(urls[1][3])
-                end
-            end
-        end
+    isa(link, Markdown.Link) || return true
+    url = compute_GAP_URL(link.url)
+    if url != nothing
+      # Replace the URL in the link.
+      link.url = url
     end
     return true
   end

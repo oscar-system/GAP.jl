@@ -173,12 +173,3 @@ true
 ```@docs
 show_gap_help
 ```
-
-## Objects that must be documented, otherwise Documenter.jl throws an error.
-
-```@docs
-GAP.get_symbols_in_module
-GAP.GAP
-GAP.RecDict
-GAP.kwarg_wrapper
-```
