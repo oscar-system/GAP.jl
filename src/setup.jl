@@ -57,7 +57,7 @@ function read_sysinfo_gap(dir::String)
     return d
 end
 
-function select_compiler(lang, candidates, extension)
+function select_compiler(lang::String, candidates::Vector{String}, extension::String)
     tmpfilename = tempname()
     open(tmpfilename * extension, "w") do file
         write(file, """
@@ -109,7 +109,7 @@ function regenerate_gaproot()
     # Locate  C++ compiler (for use by GAP packages)
     cxx_candidates = [ "c++", "g++", "clang++" ]
     haskey(ENV, "CXX") && pushfirst!(cxx_candidates, ENV["CXX"])
-    haskey(ENV, "GAP_CXX") && pushfirst!(GAP_CXX_candidates, ENV["GAP_CXX"])
+    haskey(ENV, "GAP_CXX") && pushfirst!(cxx_candidates, ENV["GAP_CXX"])
     CXX = sysinfo["GAP_CXX"] = select_compiler("C++", cxx_candidates, ".cc")
 
     sysinfo["GAP_CFLAGS"] = " -g -O2"

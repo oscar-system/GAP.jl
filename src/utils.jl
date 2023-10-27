@@ -21,7 +21,7 @@ Return all symbols in the module `m`.
 This is used in a GAP method for `RecNames`.
 """
 function get_symbols_in_module(m::Module)
-    name = string(nameof(m))
+    name = string(nameof(m))::String
     list = completions(name * ".", length(name) + 1)[1]
     list = [Symbol(x.mod) for x in list]
     list = filter(i -> isdefined(m, i), list)
@@ -89,12 +89,12 @@ end
 ## convenience function
 
 function Display(x::GapObj)
-    print(AbstractString(Wrappers.StringDisplayObj(x)))
+    print(String(Wrappers.StringDisplayObj(x)))
 end
 
 function Base.functionloc(f::GapObj)
     GAP.Globals.IsFunction(f) || throw(ArgumentError("`f` must be GAP function"))
-    file = GAP.Globals.FilenameFunc(f)::GAP.Obj
+    file = GAP.Globals.FilenameFunc(f)::GapObj
     if file == GAP.Globals.fail
         error("could not determine file of GAP function definition")
     end
