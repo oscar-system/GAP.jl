@@ -25,5 +25,6 @@ GAP_docs_pages = [
         "packages.md",
         "other.md",
         "examples.md",
+        "internal.md",
         "manualindex.md",
         ]
