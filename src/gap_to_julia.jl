@@ -159,7 +159,7 @@ gap_to_julia(::Type{BitVector}, obj::GapObj) = BitVector(obj)
 function gap_to_julia(
     ::Type{Vector{T}},
     obj::GapObj,
-    recursion_dict::Union{Nothing,RecDict} = IdDict();
+    recursion_dict::RecDict = IdDict();
     recursive::Bool = true,
 ) where {T}
     if Wrappers.IsList(obj)
@@ -199,15 +199,15 @@ end
 function gap_to_julia(
     type::Type{Matrix{T}},
     obj::GapObj,
-    recursion_dict::Union{Nothing,RecDict} = IdDict();
+    recursion_dict::RecDict = IdDict();
     recursive::Bool = true,
 ) where {T}
     if haskey(recursion_dict, obj)
         return recursion_dict[obj]::Matrix{T}
     end
     if Wrappers.IsMatrixObj(obj)
-        nrows = Wrappers.NumberRows(obj)
-        ncols = Wrappers.NumberColumns(obj)
+        nrows = Wrappers.NumberRows(obj)::Int
+        ncols = Wrappers.NumberColumns(obj)::Int
     elseif Wrappers.IsList(obj)
         nrows = length(obj)
         ncols = nrows == 0 ? 0 : length(obj[1])
@@ -249,7 +249,7 @@ function gap_to_julia(::Type{Set{T}}, obj::GapObj; recursive::Bool = true) where
     else
         throw(ConversionError(obj, Set{T}))
     end
-    len_list = Wrappers.Length(obj)
+    len_list = Wrappers.Length(obj)::Int
     new_array = Vector{T}(undef, len_list)
     if recursive
         recursion_dict = IdDict()
@@ -274,7 +274,7 @@ end
 function gap_to_julia(
     ::Type{T},
     obj::GapObj,
-    recursion_dict::Union{Nothing,RecDict} = IdDict();
+    recursion_dict::RecDict = IdDict();
     recursive::Bool = true,
 ) where {T<:Tuple}
     !Wrappers.IsList(obj) && throw(ConversionError(obj, T))
@@ -300,7 +300,7 @@ gap_to_julia(::Type{T}, obj::GapObj) where {T<:StepRange} = T(obj)
 function gap_to_julia(
     ::Type{Dict{Symbol,T}},
     obj::GapObj,
-    recursion_dict::Union{Nothing,RecDict} = IdDict();
+    recursion_dict::RecDict = IdDict();
     recursive::Bool = true,
 ) where {T}
     !Wrappers.IsRecord(obj) && throw(ConversionError(obj, Dict{Symbol,T}))

@@ -71,8 +71,8 @@ import GAP: @wrap
 @wrap SetPackagePath(x::GapObj, y::GapObj)::Nothing
 @wrap ShallowCopy(x::Any)::Any
 @wrap String(x::Any)::Any
-@wrap StringDisplayObj(x::Any)::Any
-@wrap StringViewObj(x::Any)::Any
+@wrap StringDisplayObj(x::Any)::GapObj
+@wrap StringViewObj(x::Any)::GapObj
 @wrap StructuralCopy(x::Any)::Any
 @wrap SUM(x::Any, y::Any)::Any
 @wrap UNB_REC(x::GapObj, y::Int)::Nothing
