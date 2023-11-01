@@ -69,8 +69,8 @@ function error_handler()
     if disable_error_handler[]
         return
     end
-    last_error[] = String(Globals._JULIAINTERFACE_ERROR_BUFFER)
-    ccall((:SET_LEN_STRING, libgap), Cvoid, (GapObj, Cuint), Globals._JULIAINTERFACE_ERROR_BUFFER, 0)
+    last_error[] = String(Globals._JULIAINTERFACE_ERROR_BUFFER::GapObj)
+    ccall((:SET_LEN_STRING, libgap), Cvoid, (GapObj, Cuint), Globals._JULIAINTERFACE_ERROR_BUFFER::GapObj, 0)
 end
 
 function ThrowObserver(depth::Cint)

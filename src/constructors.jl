@@ -209,7 +209,7 @@ julia> String(val)   # an empty GAP list is a string
 """
 function String(obj::GapObj)
     Wrappers.IsStringRep(obj) && return CSTR_STRING(obj)
-    Wrappers.IsString(obj) && return CSTR_STRING(Wrappers.CopyToStringRep(obj))
+    Wrappers.IsString(obj) && return CSTR_STRING(Wrappers.CopyToStringRep(obj)::GapObj)
     throw(ConversionError(obj, String))
 end
 
@@ -257,7 +257,7 @@ function BitVector(obj::GapObj)
     len = Wrappers.Length(obj)::Int
     result = BitVector(undef, len)
     for i = 1:len
-        result[i] = obj[i]
+        result[i] = obj[i]::Bool
     end
     return result
 end

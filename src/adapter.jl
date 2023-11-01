@@ -9,7 +9,7 @@ function show_string(io::IO, obj::Union{GapObj,FFE})
     str = Wrappers.StringViewObj(obj)
     stri = CSTR_STRING(str)
     lines = split(stri, "\n")
-    rows = displaysize(io)[1]-3  # the maximum number of lines to show
+    rows = displaysize(io)[1]::Int - 3  # the maximum number of lines to show
     if length(lines) > rows
       # For objects that do not fit on the screen,
       # show only the first and the last lines.
