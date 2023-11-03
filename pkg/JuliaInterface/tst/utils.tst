@@ -86,4 +86,14 @@ function ( arg... )
 end
 
 ##
+gap> IsBound(Julia.Main.f00bar);
+false
+gap> Julia.Main.f00bar := 1;
+1
+gap> IsBound(Julia.Main.f00bar);
+true
+gap> Unbind(Julia.Main.f00bar);
+Error, cannot unbind Julia variables
+
+##
 gap> STOP_TEST( "utils.tst", 1 );

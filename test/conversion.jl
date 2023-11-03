@@ -75,6 +75,7 @@
     x = GAP.evalstr("'x'")
     @test (@inferred GAP.gap_to_julia(Cuchar, x)) == Cuchar('x')
     @test GAP.gap_to_julia(x) == Cuchar('x')
+    @test GAP.gap_to_julia(Char, x) == Char('x')
     x = GAP.evalstr("(1,2,3)")
     @test_throws GAP.ConversionError GAP.gap_to_julia(Cuchar, x)
   end
@@ -108,6 +109,8 @@
     @test (@inferred GAP.gap_to_julia(Vector{UInt8}, x)) == UInt8[0x66, 0x6f, 0x6f]
     x = GAP.evalstr("[1,2,3]")
     @test (@inferred GAP.gap_to_julia(Vector{UInt8}, x)) == UInt8[1, 2, 3]
+    x = GAP.evalstr("(1,2,3)")
+    @test_throws GAP.ConversionError GAP.gap_to_julia(Vector{UInt8}, x)
   end
 
   @testset "BitVectors" begin
