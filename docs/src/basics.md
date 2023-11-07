@@ -17,7 +17,7 @@ DocTestSetup = :(using GAP)
   Ctrl-D) returns one to a Julia prompt. From the GAP prompt, one can access
   Julia variables via the `Julia` object, for example `Julia.binomial(5,3)`.
   For more details on how to access Julia from GAP, please consult
-  [the manual of the GAP package JuliaInterface](https://oscar-system.github.io/GAP.jl/stable/assets/html/JuliaInterface/chap0_mj.html).
+  [the manual of the GAP package JuliaInterface](assets/html/JuliaInterface/chap0_mj.html).
 
 - Alternatively, one can start GAP in the traditional way,
   by executing a shell script.
@@ -38,7 +38,7 @@ GAP.create_gap_sh
 
 The GAP-Julia interface is fully bidirectional, so it is also possible to access all
 Julia functionality from GAP. To learn more about this, please consult
-[the manual of the GAP package JuliaInterface](https://oscar-system.github.io/GAP.jl/stable/assets/html/JuliaInterface/chap0_mj.html).
+[the manual of the GAP package JuliaInterface](assets/html/JuliaInterface/chap0_mj.html).
 
 ## Types
 

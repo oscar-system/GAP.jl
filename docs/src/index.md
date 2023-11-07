@@ -30,7 +30,7 @@ as soon as GAP packages provide functionality that is based on
 using Julia code from the GAP side.
 
 The viewpoint of an interface from GAP to Julia is described in
-[the manual of the GAP package JuliaInterface](https://oscar-system.github.io/GAP.jl/stable/assets/html/JuliaInterface/chap0_mj.html).
+[the manual of the GAP package JuliaInterface](assets/html/JuliaInterface/chap0_mj.html).
 
 ## Table of contents
 
