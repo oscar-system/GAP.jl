@@ -286,10 +286,13 @@
     @test [(1,)] == yy
     @test typeof(yy) == Vector{Tuple{Int64}}
 
+    str = "JuliaEvalString(\"BigInt(2)^64\")"
+    L = GAP.evalstr("List([1..10], i -> $str + i)")
+    @test Vector{GAP.GapObj}(L) == [GAP.GapObj(x) for x in L]
+  end
 end
 
 @testset "conversion to GAP" begin
-  end
 
   @testset "Defaults" begin
     @test GAP.julia_to_gap(true)
@@ -469,6 +472,9 @@ end
     rec = GAP.julia_to_gap(val, recursive = true)
     @test rec[1] == GAP.julia_to_gap([1, 2])
     @test GAP.julia_to_gap(1, recursive = false) == 1
+
+    r = GAP.evalstr("rec(a:= 1, b:= 2)")
+    @test GAP.julia_to_gap(r, recursive = true) == r
   end
 
   @testset "Test function conversion" begin

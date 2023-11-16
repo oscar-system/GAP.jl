@@ -220,7 +220,8 @@ function julia_to_gap(
         ret_val = NewPrecord(0)
         recursion_dict[obj] = ret_val
         for x in Vector{String}(Wrappers.RecNames(obj))
-            Wrappers.ASS_REC(ret_val, x, julia_to_gap(Wrappers.ELM_REC(obj, x), recursion_dict; recursive = true))
+            xx = RNamObj(x)
+            Wrappers.ASS_REC(ret_val, xx, julia_to_gap(Wrappers.ELM_REC(obj, xx), recursion_dict; recursive = true))
         end
     else
         ret_val = obj
