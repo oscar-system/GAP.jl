@@ -136,17 +136,17 @@ whereas `x` in the latter example lives in the Julia session.
 """
 function evalstr(cmd::String)
     res = evalstr_ex(cmd * ";")
-    if any(x->x[1] == false, res)
+    if any(x::GapObj->x[1] === false, res)
       # error
       global last_error
       # HACK HACK HACK: if there is an error string on the GAP side, call
       # error_handler to copy it into `last_error`
-      if !Wrappers.IsEmpty(Globals._JULIAINTERFACE_ERROR_BUFFER)
+      if !Wrappers.IsEmpty(Globals._JULIAINTERFACE_ERROR_BUFFER::GapObj)
         error_handler()
       end
       error("Error thrown by GAP: $(last_error[])")
     end
-    res = res[end]
+    res = res[end]::GapObj
     if Wrappers.ISB_LIST(res, 2)
       return res[2]
     else

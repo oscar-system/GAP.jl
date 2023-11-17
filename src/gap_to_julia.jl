@@ -348,7 +348,12 @@ end
 ## for the GAP function GAPToJulia:
 ## turning arguments into keyword arguments is easier in Julia than in GAP
 _gap_to_julia(x::Obj) = gap_to_julia(x)
-_gap_to_julia(x::Obj, recursive::Bool) = gap_to_julia(x; recursive)
+
+_gap_to_julia(x::Bool, recursive::Bool) = x
+_gap_to_julia(x::Int, recursive::Bool) = x
+_gap_to_julia(x::FFE, recursive::Bool) = x
+_gap_to_julia(x::GapObj, recursive::Bool) = gap_to_julia(x; recursive)
+
 _gap_to_julia(::Type{T}, x::Obj) where {T} = gap_to_julia(T, x)
 _gap_to_julia(::Type{T}, x::Obj, recursive::Bool) where {T} =
     gap_to_julia(T, x; recursive)

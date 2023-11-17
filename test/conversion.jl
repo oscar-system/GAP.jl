@@ -413,12 +413,17 @@ end
 
   @testset "Dictionaries" begin
     x = GAP.evalstr("rec( foo := 1, bar := \"foo\" )")
-    # ... recursive conversion
     y = Dict{Symbol,Any}(:foo => 1, :bar => "foo")
+    z = GAP.evalstr("rec( foo := 1, bar := JuliaEvalString(\"\\\"foo\\\"\") )")
+    # ... recursive conversion
     @test GAP.julia_to_gap(y; recursive = true) == x
     # ... non-recursive conversion
-    x = GAP.evalstr("rec( foo := 1, bar := JuliaEvalString(\"\\\"foo\\\"\") )")
-    @test GAP.julia_to_gap(y) == x
+    @test GAP.julia_to_gap(y) == z
+
+    # also test the case were the top level is a GapObj but inside
+    # there are Julia objects
+    @test GAP.julia_to_gap(z; recursive=true) == x
+    @test GAP.julia_to_gap(z; recursive=false) == z  # nothing happens without recursion
   end
 
   @testset "Conversions with identical sub-objects" begin
