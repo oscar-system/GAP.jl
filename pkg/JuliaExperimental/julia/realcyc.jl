@@ -42,7 +42,7 @@ function isPositiveRealPartCyc( coeffs::Vector )
       x::Nemo.arb = arbCyc( coeffs, R )
       if Nemo.ispositive( x )
         return ( true, prec )
-      elseif Nemo.isnegative( x )
+      elseif Nemo.is_negative( x )
         return ( false, prec )
       end
       prec = 2 * prec
