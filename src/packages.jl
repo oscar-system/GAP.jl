@@ -2,6 +2,7 @@
 module Packages
 
 using Downloads
+import Pidfile
 import ...GAP: Globals, GapObj, replace_global!, RNamObj, sysinfo, Wrappers
 
 const DEFAULT_PKGDIR = Ref{String}()
@@ -227,20 +228,21 @@ function install(spec::String, version::String = "";
     # point PackageManager to the given pkg dir
     Globals.PKGMAN_CustomPackageDir = GapObj(pkgdir)
     mkpath(pkgdir)
-
-    if quiet || debug
-      oldlevel = Wrappers.InfoLevel(Globals.InfoPackageManager)
-      Wrappers.SetInfoLevel(Globals.InfoPackageManager, quiet ? 0 : 3)
+    Pidfile.mkpidlock("$pkgdir.lock") do
+      if quiet || debug
+        oldlevel = Wrappers.InfoLevel(Globals.InfoPackageManager)
+        Wrappers.SetInfoLevel(Globals.InfoPackageManager, quiet ? 0 : 3)
+      end
+      if version == ""
+        res = Globals.InstallPackage(GapObj(spec), interactive; debug)
+      else
+        res = Globals.InstallPackage(GapObj(spec), GapObj(version), interactive; debug)
+      end
+      if quiet || debug
+        Wrappers.SetInfoLevel(Globals.InfoPackageManager, oldlevel)
+      end
+      return res
     end
-    if version == ""
-      res = Globals.InstallPackage(GapObj(spec), interactive; debug)
-    else
-      res = Globals.InstallPackage(GapObj(spec), GapObj(version), interactive; debug)
-    end
-    if quiet || debug
-      Wrappers.SetInfoLevel(Globals.InfoPackageManager, oldlevel)
-    end
-    return res
 end
 
 """
