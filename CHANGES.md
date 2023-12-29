@@ -1,5 +1,13 @@
 # Changes in GAP.jl
 
+## Version 0.10.1 (released 2023-12-29)
+
+- Optimize GAP function calls
+- Improve type stability in a bunch of places
+- Enhance `GAP.Packages.install` to work right if multiple Julia processes
+  invoke it to install the same package simultaneously
+- Various janitorial changes
+
 ## Version 0.10.0 (released 2023-10-10)
 
 - Add `hasbangindex`, `hasbangproperty`
