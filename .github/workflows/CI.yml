@@ -26,8 +26,8 @@ jobs:
       matrix:
         julia-version:
           - '1.6'
-          - '1.9'
-          - '~1.10.0-0'
+          - '1.9'    # to be removed in the near future
+          - '1.10'
           - 'nightly'
         julia-arch:
           - x64
@@ -35,7 +35,7 @@ jobs:
           - ubuntu-latest
         include:
           # Add a few macOS jobs (not too many, the number we can run in parallel is limited)
-          - julia-version: '1.9'
+          - julia-version: '1.10'
             julia-arch: x64
             os: macOS-latest
           - julia-version: 'nightly'
