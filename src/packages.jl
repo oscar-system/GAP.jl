@@ -83,18 +83,18 @@ Return `true` if this is successful, and `false` otherwise.
 
 If `install` is set to `true` or to a string and (the desired version of)
 the required GAP package is not yet installed and `spec` is the package name
-then [`GAP.Packages.install`](@ref) is called first, in order to install
+then [`install`](@ref) is called first, in order to install
 the package;
 if no version is prescribed then the newest released version of the package
 will be installed.
 A string value of `install` can be the URL of an archive or repository
 containing a package, or the URL of a `PackageInfo.g` file,
-like the first argument of [`GAP.Packages.install`](@ref).
+like the first argument of [`install`](@ref).
 
 The function calls [GAP's `LoadPackage` function](GAP_ref(ref:LoadPackage)).
 If `quiet` is set to `false` then package banners are shown for all packages
 being loaded.
-The `quiet` value is also passed on to [`GAP.Packages.install`](@ref).
+The `quiet` value is also passed on to [`install`](@ref).
 """
 function load(spec::String, version::String = ""; install::Union{Bool, String} = false, quiet::Bool = true)
     # Decide whether `spec` is a path to a directory that contains
@@ -331,6 +331,19 @@ function remove(spec::String; interactive::Bool = true, quiet::Bool = false,
     else
       return Globals.RemovePackage(GapObj(spec), interactive)
     end
+end
+
+"""
+    locate_package(name::String)
+
+Return the path where the GAP package with name `name` is installed
+if this package is loaded, and `""` otherwise.
+"""
+function locate_package(name::String)
+  loaded = Globals.GAPInfo.PackagesLoaded::GapObj
+  lname = RNamObj(lowercase(name))
+  Wrappers.ISB_REC(loaded, lname) || return ""
+  return String(Wrappers.ELM_REC(loaded, lname)[1])
 end
 
 end
