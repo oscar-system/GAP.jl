@@ -69,7 +69,7 @@ function init_packagemanager()
 end
 
 """
-    load(spec::String, version::String = ""; install::Bool = false, quiet::Bool = true)
+    load(spec::String, version::String = ""; install::Union{Bool, String} = false, quiet::Bool = true)
 
 Try to load the GAP package given by `spec`, which can be either the name
 of the package or a local path where the package is installed
@@ -81,17 +81,22 @@ that is compatible with `version`, in the sense of
 otherwise try to load the newest installed version.
 Return `true` if this is successful, and `false` otherwise.
 
-If `install` is set to `true` and (the desired version of) the required
-GAP package is not yet installed and `spec` is the package name
-then [`install`](@ref) is called first, in order to install the package;
+If `install` is set to `true` or to a string and (the desired version of)
+the required GAP package is not yet installed and `spec` is the package name
+then [`install`](@ref) is called first, in order to install
+the package;
 if no version is prescribed then the newest released version of the package
 will be installed.
+A string value of `install` can be the URL of an archive or repository
+containing a package, or the URL of a `PackageInfo.g` file,
+like the first argument of [`install`](@ref).
 
 The function calls [GAP's `LoadPackage` function](GAP_ref(ref:LoadPackage)).
 If `quiet` is set to `false` then package banners are shown for all packages
-being loaded. It is also passed on to [`install`](@ref).
+being loaded.
+The `quiet` value is also passed on to [`install`](@ref).
 """
-function load(spec::String, version::String = ""; install::Bool = false, quiet::Bool = true)
+function load(spec::String, version::String = ""; install::Union{Bool, String} = false, quiet::Bool = true)
     # Decide whether `spec` is a path to a directory that contains
     # a `PackageInfo.g` file.
     package_info = joinpath(spec, "PackageInfo.g")
@@ -178,11 +183,19 @@ function load(spec::String, version::String = ""; install::Bool = false, quiet::
       Wrappers.IsPackageLoaded(gspec) && return false
     end
 
+    # The package is not yet loaded, and `spec` is its name.
     if install == true
         # Try to install the given version of the package,
         # without showing messages.
         if Packages.install(spec, version; interactive = false, quiet)
             # Make sure that the installed version is admissible.
+            return Wrappers.LoadPackage(gspec, gversion, !quiet) == true
+        end
+    elseif install isa String
+        # `Packages.install` deals with the `install` information.
+        if Packages.install(install, version; interactive = false, quiet)
+            # Make sure that the installed version is admissible
+            # (and that the package given by `install` fits to `spec`).
             return Wrappers.LoadPackage(gspec, gversion, !quiet) == true
         end
     end
@@ -318,6 +331,19 @@ function remove(spec::String; interactive::Bool = true, quiet::Bool = false,
     else
       return Globals.RemovePackage(GapObj(spec), interactive)
     end
+end
+
+"""
+    locate_package(name::String)
+
+Return the path where the GAP package with name `name` is installed
+if this package is loaded, and `""` otherwise.
+"""
+function locate_package(name::String)
+  loaded = Globals.GAPInfo.PackagesLoaded::GapObj
+  lname = RNamObj(lowercase(name))
+  Wrappers.ISB_REC(loaded, lname) || return ""
+  return String(Wrappers.ELM_REC(loaded, lname)[1])
 end
 
 end

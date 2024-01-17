@@ -3,8 +3,11 @@
     @test GAP.Packages.load("PackageManager")
     @test ! GAP.Packages.load("no such package")
     @test ! GAP.Packages.load("no such package", install = true)
+    @test GAP.Packages.locate_package("no such package") == ""
 
     @test GAP.Packages.install("fga", interactive = false)
+    @test ! isempty(GAP.Packages.locate_package("fga"))
+    @test ! isempty(GAP.Packages.locate_package("FGA"))
     @test GAP.Packages.remove("fga", interactive = false)
 
 #    pkgdir = mktempdir()
