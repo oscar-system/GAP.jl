@@ -6,6 +6,7 @@ import Pidfile
 import ...GAP: Globals, GapObj, replace_global!, RNamObj, sysinfo, Wrappers
 
 const DEFAULT_PKGDIR = Ref{String}()
+const DOWNLOAD_HELPER = Ref{Downloads.Downloader}()
 
 function init_packagemanager()
 #TODO:
@@ -16,11 +17,12 @@ function init_packagemanager()
     @assert res
 
     global DEFAULT_PKGDIR[] = sysinfo["DEFAULT_PKGDIR"]
+    global DOWNLOAD_HELPER[] = Downloads.Downloader(; grace=0.1)
 
     # overwrite PKGMAN_DownloadURL
     replace_global!(:PKGMAN_DownloadURL, function(url)
       try
-        buffer = Downloads.download(String(url), IOBuffer())
+        buffer = Downloads.download(String(url), IOBuffer(), downloader=DOWNLOAD_HELPER[])
         return GapObj(Dict{Symbol, Any}(:success => true, :result => String(take!(buffer))), recursive=true)
       catch
         return GapObj(Dict{Symbol, Any}(:success => false), recursive=true)
@@ -41,10 +43,10 @@ function init_packagemanager()
            :download => function(url, opt)
              try
                if hasproperty(opt, :target)
-                 Downloads.download(String(url), String(opt.target))
+                 Downloads.download(String(url), String(opt.target), downloader=DOWNLOAD_HELPER[])
                  return GapObj(Dict{Symbol, Any}(:success => true), recursive=true)
                else
-                 buffer = Downloads.download(String(url), IOBuffer())
+                 buffer = Downloads.download(String(url), IOBuffer(), downloader=DOWNLOAD_HELPER[])
                  return GapObj(Dict{Symbol, Any}(:success => true, :result => String(take!(buffer))), recursive=true)
                end
              catch e
