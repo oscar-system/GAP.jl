@@ -1,5 +1,13 @@
 # Changes in GAP.jl
 
+## Version 0.10.2 (released YYYY-MM-DD)
+
+- Add `GAP.Packages.locate_package`
+- Enhance `GAP.Packages.load` to accept a URL string for the `install`
+  keyword argument (see its documentation for details)
+- Change package downloader code to a custom Downloader object to
+  work around certain technical issues in Julia 1.10 and upwards
+
 ## Version 0.10.1 (released 2023-12-29)
 
 - Optimize GAP function calls
