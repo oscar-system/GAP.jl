@@ -1,6 +1,6 @@
 # Changes in GAP.jl
 
-## Version 0.10.2 (released YYYY-MM-DD)
+## Version 0.10.2 (released 2024-01-26)
 
 - Add `GAP.Packages.locate_package`
 - Enhance `GAP.Packages.load` to accept a URL string for the `install`
