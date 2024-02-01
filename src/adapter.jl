@@ -485,6 +485,8 @@ function Base.iterate(obj::GapObj)
             # we can still allow iteration util some large bound
             iterate(obj, (1, typemax(Int)))
         end
+    elseif Wrappers.IsIterator(obj)
+        iterate(obj, Wrappers.ShallowCopy(obj))
     elseif Wrappers.IsCollection(obj)
         iterate(obj, Wrappers.Iterator(obj)::GapObj)
     else
@@ -505,6 +507,9 @@ function Base.iterate(obj::GapObj, iter::GapObj)
         (x, iter)
     end
 end
+
+Base.IteratorEltype(::Type{GapObj}) = Base.EltypeUnknown()
+Base.IteratorSize(::Type{GapObj}) = Base.SizeUnknown()
 
 # copy and deepcopy:
 # The following is just a preliminary solution,
