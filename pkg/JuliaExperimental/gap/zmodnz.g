@@ -28,7 +28,7 @@ InstallMethod( ContextGAPNemo,
     fi;
 
     # Create the Nemo ring.
-    juliaRing:= Julia.Nemo.residue_ring( Julia.Nemo.ZZ, GAPToJulia( m ) );
+    juliaRing:= Julia.Nemo.residue_ring( Julia.Nemo.ZZ, GAPToJulia( m ) )[1];
 
     # Create the GAP wrapper.
     # Note that elements from different Nemo residue rings cannot be compared,

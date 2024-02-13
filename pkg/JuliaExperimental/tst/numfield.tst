@@ -68,11 +68,11 @@ gap> Characteristic( nmat );
 gap> tr:= TraceMat( nmat );
 <<Julia: 2>>
 gap> JuliaTypeInfo( JuliaPointer( tr ) );
-"Nemo.nf_elem"
+"Nemo.AbsSimpleNumFieldElem"
 gap> det:= DeterminantMat( nmat );
 <<Julia: 1>>
 gap> JuliaTypeInfo( JuliaPointer( det ) );
-"Nemo.nf_elem"
+"Nemo.AbsSimpleNumFieldElem"
 gap> NemoToGAP( c, nmat );
 [ [ !1, 1/2*a ], [ !0, !1 ] ]
 gap> no:= GAPToNemo( c, One( f ) );

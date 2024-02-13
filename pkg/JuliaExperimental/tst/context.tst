@@ -140,13 +140,13 @@ gap> c:= ContextGAPNemo( f );
 gap> gap_elm:= One( f );;
 gap> elm:= GAPToNemo( c, gap_elm );;
 gap> JuliaTypeInfo( JuliaPointer( elm ) );
-"Nemo.nf_elem"
+"Nemo.AbsSimpleNumFieldElem"
 gap> NemoToGAP( c, elm ) = gap_elm;
 true
 gap> a:= RootOfDefiningPolynomial( f );;
 gap> elm:= GAPToNemo( c, a );;
 gap> JuliaTypeInfo( JuliaPointer( elm ) );
-"Nemo.nf_elem"
+"Nemo.AbsSimpleNumFieldElem"
 gap> NemoToGAP( c, elm ) = a;
 true
 gap> gap_vec:= [ a+1, a-1 ];;
