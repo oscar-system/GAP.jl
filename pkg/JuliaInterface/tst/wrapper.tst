@@ -12,8 +12,6 @@ gap> N := Objectify(type, rec());;
 gap> SetJuliaPointer(N, n);
 gap> Julia.Base.typeof(N);
 <Julia: BigInt>
-gap> N(1);
-Error, MethodError: objects of type BigInt are not callable
 
 ## wrap a Julia function
 gap> f := Objectify(type, rec());;

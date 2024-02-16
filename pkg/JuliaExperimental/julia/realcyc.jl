@@ -40,7 +40,7 @@ function isPositiveRealPartCyc( coeffs::Vector )
     while true
       R::Nemo.ArbField = Nemo.ArbField( prec )
       x::Nemo.arb = arbCyc( coeffs, R )
-      if Nemo.ispositive( x )
+      if Nemo.is_positive( x )
         return ( true, prec )
       elseif Nemo.is_negative( x )
         return ( false, prec )
