@@ -6,7 +6,9 @@ import Base: getproperty, hasproperty, setproperty!, propertynames
 #
 # low-level GAP -> Julia conversion
 #
-Compat.@assume_effects :effect_free :terminates_globally function _GAP_TO_JULIA(ptr::Ptr{Cvoid})
+# The 'assume_effects' is needed for tab completion of "nested" constructs,
+# e.g. when entering `GAP.Globals.MTX.S` on the REPL then pressing TAB.
+Compat.@assume_effects :foldable !:consistent function _GAP_TO_JULIA(ptr::Ptr{Cvoid})
     ptr == C_NULL && return nothing
     # convert immediate ints and FFEs directly, to avoid (un)boxing
     as_int = reinterpret(Int, ptr)
@@ -157,7 +159,10 @@ end
 
 # Retrieve the value of a global GAP variable given its name. This function
 # returns a raw Ptr value, and should only be called by plumbing code.
-Compat.@assume_effects :effect_free :terminates_globally function _ValueGlobalVariable(name::Union{AbstractString,Symbol})
+#
+# The 'assume_effects' is needed for tab completion of "nested" constructs,
+# e.g. when entering `GAP.Globals.MTX.S` on the REPL then pressing TAB.
+Compat.@assume_effects :foldable !:consistent function _ValueGlobalVariable(name::Union{AbstractString,Symbol})
     return ccall((:GAP_ValueGlobalVariable, libgap), Ptr{Cvoid}, (Cstring,), name)
 end
 
