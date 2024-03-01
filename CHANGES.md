@@ -1,5 +1,9 @@
 # Changes in GAP.jl
 
+## Version 0.10.3-DEV (released XXX)
+
+- Fix TAB completion for e.g. 'GAP.Globals.MTX.S' in Julia >= 1.11
+
 ## Version 0.10.2 (released 2024-01-26)
 
 - Add `GAP.Packages.locate_package`
