@@ -20,7 +20,7 @@ if Sys.iswindows()
   windows_error()
 end
 
-using GAP_jll
+using GAP_jll: GAP_jll, gap, libgap
 
 GAP_jll.is_available() ||
    error("""This platform or julia version is currently not supported by GAP:

@@ -1,7 +1,7 @@
 ## enable access to GAP help system from Julia
 
 import Markdown
-using REPL
+using REPL: REPL
 
 function gap_help_string(topic::String, onlyexact::Bool = false,
     term::REPL.Terminals.TTYTerminal = REPL.TerminalMenus.terminal;
@@ -74,8 +74,6 @@ end
 
 ## If one enters `?GAP.Globals.Size` then the following dispatch mechanism
 ## does the job.
-
-import Base.Docs: Binding, getdoc, docstr
 
 ## Create a helper type that gets returned by Binding
 struct GAPHelpType

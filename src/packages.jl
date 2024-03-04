@@ -1,7 +1,7 @@
 ## dealing with GAP packages
 module Packages
 
-using Downloads
+using Downloads: Downloads
 import Pidfile
 import ...GAP: Globals, GapObj, replace_global!, RNamObj, sysinfo, Wrappers
 
