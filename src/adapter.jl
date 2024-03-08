@@ -1,7 +1,7 @@
 ## Basic list / matrix / "record" access as well as arithmetics,
 ## for GAP objects in Julia
 
-import Base: getindex, setindex!, length, show
+import Base: length
 
 export getbangindex, hasbangindex, setbangindex!, getbangproperty, hasbangproperty, setbangproperty!
 
