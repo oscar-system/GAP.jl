@@ -1,7 +1,7 @@
 ## enable access to GAP help system from Julia
 
 import Markdown
-using REPL: REPL
+import REPL
 
 function gap_help_string(topic::String, onlyexact::Bool = false,
     term::REPL.Terminals.TTYTerminal = REPL.TerminalMenus.terminal;

@@ -1,11 +1,11 @@
 module Setup
 
 using Pkg: GitTools
-using Artifacts: Artifacts, @artifact_str
-using GAP_jll: GAP_jll
-using GAP_lib_jll: GAP_lib_jll
-using GAP_pkg_juliainterface_jll: GAP_pkg_juliainterface_jll
-using Scratch: Scratch, @get_scratch!
+import Artifacts: @artifact_str
+import GAP_jll
+import GAP_lib_jll
+import GAP_pkg_juliainterface_jll
+import Scratch: @get_scratch!
 import Pidfile
 
 # to separate the scratchspaces of different GAP.jl copies and Julia versions
