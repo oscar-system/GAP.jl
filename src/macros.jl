@@ -189,6 +189,68 @@ end
 
 export @gapwrap
 
+
+function gapattribute_helper(def_dict, source::LineNumberNode)
+    # The method must have exactly one argument.
+    length(def_dict[:args]) == 1 || error("the method must have exactly one argument")
+
+    # take the body of the function
+    body = def_dict[:body]
+
+    # Find the (unique) occurrence of GAP.Globals.<name>(<arg>),
+    # and record <name> and <arg>.
+    fun_arg = Set{Tuple{Symbol,Any}}()
+    MacroTools.postwalk(body) do x
+        MacroTools.@capture(x, GAP.Globals.sym_(arg_)) || return x
+        push!(fun_arg, (sym, arg))
+        return x
+    end
+    length(fun_arg) == 1 || error("there must be a unique call to a function in GAP.Globals")
+    pair = pop!(fun_arg)
+    gapname = string(pair[1])
+    gaparg = pair[2]
+
+    # Define the function names on the GAP side ...
+    gaptester = Symbol("Has" * gapname)
+    gapsetter = Symbol("Set" * gapname)
+
+    # ... and on the Julia side.
+    julianame = string(def_dict[:name])
+    juliaarg = def_dict[:args][1]
+    testername = Symbol("has_" * julianame)
+    settername = Symbol("set_" * julianame)
+
+    # assemble everything
+    result = quote
+        Base.@__doc__ GAP.@gapwrap $(MacroTools.combinedef(def_dict))
+
+        """
+            $($testername)(x)
+
+        Return `true` if the value for `$($julianame)(x)` has already been computed.
+        """
+        GAP.@gapwrap $testername($juliaarg) = GAP.Globals.$gaptester($gaparg)::Bool
+
+        """
+            $($settername)(x, v)
+
+        Set the value for `$($julianame)(x)` to `v` if it has't been
+        set already.
+        """
+        GAP.@gapwrap $settername($juliaarg,v) = GAP.Globals.$gapsetter($gaparg,v)::Nothing
+    end
+
+    # ensure correct line numbers are used on all three methods, so that
+    # e.g. @less, @edit etc. work for them
+    Meta.replace_sourceloc!(source, result)
+
+    # we must prevent Julia from applying gensym to all locals, as these
+    # substitutions do not get applied to the quoted part of the new body,
+    # leading to trouble if the wrapped function has arguments (as the
+    # argument names will be replaced, but not their uses in the quoted part
+    return esc(result)
+end
+
 """
     @gapattribute
 
@@ -251,67 +313,60 @@ macro gapattribute(ex)
         error("@gapattribute must be applied to a method definition")
     end
 
-    # The method must have exactly one argument.
-    length(def_dict[:args]) == 1 || error("the method must have exactly one argument")
+    return gapattribute_helper(def_dict, __source__)
+end
 
-    # take the body of the function
-    body = def_dict[:body]
+"""
+    @gapproperty
 
-    # Find the (unique) occurrence of GAP.Globals.<name>(<arg>),
-    # and record <name> and <arg>.
-    fun_arg = Set{Tuple{Symbol,Any}}()
-    MacroTools.postwalk(body) do x
-        MacroTools.@capture(x, GAP.Globals.sym_(arg_)) || return x
-        push!(fun_arg, (sym, arg))
-        return x
-    end
-    length(fun_arg) == 1 || error("there must be a unique call to a function in GAP.Globals")
-    pair = pop!(fun_arg)
-    gapname = string(pair[1])
-    gaparg = pair[2]
+This macro is a variant of [`@gapattribute`](@ref) for properties, i.e. boolean-valued attributes.
+The semantics are the same as for [`@gapattribute`](@ref), but the type assertion `::Bool` is not needed
+(see the two corresponding examples).
 
-    # Define the function names on the GAP side ...
-    gaptester = Symbol("Has" * gapname)
-    gapsetter = Symbol("Set" * gapname)
+# Examples
+```jldoctest
+julia> @gapproperty isstrictlysortedlist(obj::GapObj) = GAP.Globals.IsSSortedList(obj);
 
-    # ... and on the Julia side.
-    julianame = string(def_dict[:name])
-    juliaarg = def_dict[:args][1]
-    testername = Symbol("has_" * julianame)
-    settername = Symbol("set_" * julianame)
+julia> l = GapObj([ 1, 3, 7 ]);
 
-    # assemble everything
-    result = quote
-        Base.@__doc__ GAP.@gapwrap $ex
+julia> has_isstrictlysortedlist( l )
+false
 
-        """
-            $($testername)(x)
+julia> isstrictlysortedlist( l )
+true
 
-        Return `true` if the value for `$($julianame)(x)` has already been computed.
-        """
-        GAP.@gapwrap $testername($juliaarg) = GAP.Globals.$gaptester($gaparg)::Bool
+julia> has_isstrictlysortedlist( l )
+true
 
-        """
-            $($settername)(x, v)
+julia> l = GapObj([ 1, 3, 7 ]);
 
-        Set the value for `$($julianame)(x)` to `v` if it has't been
-        set already.
-        """
-        GAP.@gapwrap $settername($juliaarg,v) = GAP.Globals.$gapsetter($gaparg,v)::Nothing
+julia> has_isstrictlysortedlist( l )
+false
+
+julia> set_isstrictlysortedlist( l, true )
+
+julia> has_isstrictlysortedlist( l )
+true
+
+julia> isstrictlysortedlist( l )
+true
+
+```
+"""
+macro gapproperty(ex)
+    def_dict = try
+        MacroTools.splitdef(ex)
+    catch
+        error("@gapproperty must be applied to a method definition")
     end
 
-    # ensure correct line numbers are used on all three methods, so that
-    # e.g. @less, @edit etc. work for them
-    Meta.replace_sourceloc!(__source__, result)
+    def_dict[:body] = :($(def_dict[:body])::Bool)
 
-    # we must prevent Julia from applying gensym to all locals, as these
-    # substitutions do not get applied to the quoted part of the new body,
-    # leading to trouble if the wrapped function has arguments (as the
-    # argument names will be replaced, but not their uses in the quoted part
-    return esc(result)
+    return gapattribute_helper(def_dict, __source__)
 end
 
 export @gapattribute
+export @gapproperty
 
 
 
