@@ -1,5 +1,9 @@
 # Changes in GAP.jl
 
+## Version 0.X.X (released 202X-XX-XX)
+
+- Add `@gapproperty` macro as bool-valued alternative to `@gapattribute`
+
 ## Version 0.10.3 (released 2024-03-01)
 
 - Fix TAB completion for e.g. 'GAP.Globals.MTX.S' in Julia >= 1.11
