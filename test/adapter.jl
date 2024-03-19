@@ -1,18 +1,30 @@
 @testset "iteration" begin
+    # iterating over a GAP plain list, which uses index based iteration
     l = GAP.evalstr("[1, 2, 3]")
     lj = collect(l)
-    @test lj isa Vector{Any}
+    @test lj isa Vector{Int}
     @test lj == [1, 2, 3]
     lj = collect(Int, l)
     @test lj isa Vector{Int}
     @test lj == [1, 2, 3]
 
+    # iterating over a GAP object (here, a group) which creates a GAP Iterator object
     s = GAP.Globals.SymmetricGroup(3)
     xs = []
     for x in s
         push!(xs, x)
     end
     @test length(xs) == 6
+
+    # iterating over a GAP iterator
+    gap_iter = GAP.Globals.IteratorOfCombinations(GAP.Obj([1,1,1]))
+    # iterate twice to verify we don't "eat up" the GAP iterator
+    # and don't otherwise change its state
+    for i in 1:2
+        collect(gap_iter)
+        vs = Vector{Int}.(gap_iter)
+        @test vs == [[], [1], [1, 1], [1, 1, 1]]
+    end
 end
 
 @testset "deepcopy" begin
