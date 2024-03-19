@@ -1,6 +1,6 @@
 @testset "help" begin
     using GAP.REPL
-    tt = REPL.TerminalMenus.terminal
+    tt = GAP.default_terminal()
 
     function test_gap_help(topic::String)
         inp = Base.IOBuffer("qq") # exit the menu if applicable
