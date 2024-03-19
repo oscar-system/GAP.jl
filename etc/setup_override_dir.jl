@@ -80,6 +80,7 @@ if debugmode
     # compile GAP in debug mode (enables many additional assertions in the kernel)
     # and disable optimizations, so that debugging the resulting binary with gdb or lldb
     # gets easier
+    @info "Debug mode is enabled"
     extraargs = ["CFLAGS=-g", "CXXFLAGS=-g", "--enable-debug"]
 else
     extraargs = []
@@ -115,7 +116,7 @@ run(`make -j$(Sys.CPU_THREADS)`)
 @info "Installing GAP to $(prefix)"
 
 # install GAP binaries, headers, libraries
-run(`make install-bin install-headers install-libgap install-sysinfo`)
+run(`make install-bin install-headers install-libgap install-sysinfo install-gaproot`)
 
 
 # We deliberately do NOT install the GAP library, documentation, etc. because
