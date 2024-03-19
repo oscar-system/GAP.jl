@@ -3,7 +3,7 @@
 import Markdown
 import REPL
 
-if isdefined( REPL.TerminalMenus, :default_terminal)
+if isdefined(REPL.TerminalMenus, :default_terminal)
   import REPL.TerminalMenus: default_terminal
 # default_terminal = REPL.TerminalMenus.default_terminal
 else
