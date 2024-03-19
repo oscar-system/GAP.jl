@@ -94,7 +94,6 @@ function regenerate_gaproot()
 
     # load the existing sysinfo.gap
     sysinfo = read_sysinfo_gap(joinpath(gap_prefix, "lib", "gap"))
-    sysinfo_keys = collect(keys(sysinfo))
 
     #
     # now we modify sysinfo for our needs
@@ -112,23 +111,29 @@ function regenerate_gaproot()
     haskey(ENV, "GAP_CXX") && pushfirst!(cxx_candidates, ENV["GAP_CXX"])
     CXX = sysinfo["GAP_CXX"] = select_compiler("C++", cxx_candidates, ".cc")
 
-    sysinfo["GAP_CFLAGS"] = " -g -O2"
-    sysinfo["GAP_CXXFLAGS"] = " -g -O2"
+    ##sysinfo["GAP_CFLAGS"] = " -g -O2"
+    ##sysinfo["GAP_CXXFLAGS"] = " -g -O2"
+    #sysinfo["GAP_CFLAGS"] = " -pthread -g -O2"
+    #sysinfo["GAP_CXXFLAGS"] = " -pthread -g -O2"
 
     # set include flags
     gap_include = joinpath(gap_prefix, "include", "gap")
     gap_include2 = joinpath(gaproot_mutable) # for code doing `#include "src/compiled.h"`
     sysinfo["GAP_CPPFLAGS"] = "-I$(gap_include) -I$(gap_include2) -DUSE_JULIA_GC=1"
 
-    # set linker flags; since these are meant for use for GAP packages, add the necessary
-    # flags to link against libgap
+    # set linker flags; since these are meant for use for GAP packages,
+    # add the necessary flags to link against libgap
     gap_lib = joinpath(gap_prefix, "lib")
     sysinfo["GAP_LDFLAGS"] = "-L$(gap_lib) -lgap"
 
-    # adjust linker flags for GAP kernel extensions on macOS
+    # set gac compiler flags (get appended to GAP_CFLAGS and GAP_CXXFLAGS)
+    sysinfo["GAC_CFLAGS"] = "-fPIC"
     if Sys.isapple()
-        sysinfo["GAC_LDFLAGS"] = "-bundle -L$(gap_lib) -lgap"
+        sysinfo["GAC_CFLAGS"] = "-fno-common"
     end
+
+    # set gac linker flags (get appended to GAP_LDFLAGS)
+    sysinfo["GAC_LDFLAGS"] = Sys.isapple() ? "-bundle" : "-shared -fPIC"
 
     GAP_VERSION = VersionNumber(sysinfo["GAP_VERSION"])
     gaproot_packages = joinpath(Base.DEPOT_PATH[1], "gaproot", "v$(GAP_VERSION.major).$(GAP_VERSION.minor)")
@@ -146,6 +151,8 @@ function regenerate_gaproot()
     # path to gap & gac (used by some package build systems)
     sysinfo["GAP"] = joinpath(gaproot_mutable, "bin", "gap.sh")
     sysinfo["GAC"] = joinpath(gaproot_mutable, "gac")
+
+    #sysinfo["GMP_PREFIX"] = TODO
 
     # create the mutable gaproot
     mkpath(gaproot_mutable)

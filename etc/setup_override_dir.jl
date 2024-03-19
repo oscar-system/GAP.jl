@@ -85,6 +85,8 @@ if debugmode
 else
     extraargs = []
 end
+push!(extraargs, "CPPFLAGS=-DUSE_GAP_INSIDE_JULIA=1")
+
 # TODO: redirect the output of configure into a log file
 @show run(`$(gap_prefix)/configure
     --prefix=$(prefix)
