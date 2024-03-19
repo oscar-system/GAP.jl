@@ -96,7 +96,7 @@ static void JuliaObjCleanFunc(Obj obj)
 {
 }
 
-static Int JuliaObjIsMutableFunc(Obj obj)
+static BOOL JuliaObjIsMutableFunc(Obj obj)
 {
     /* always immutable as GAP object */
     return 0L;
@@ -275,6 +275,18 @@ static Obj Func_JuliaGetGapModule(Obj self)
 }
 
 // Mark the Julia pointer inside the GAP JuliaObj
+#ifdef GAP_MARK_FUNC_WITH_REF
+// for GAP >= 4.13.0
+static void MarkJuliaObject(Bag bag, void * ref)
+{
+#ifdef DEBUG_MASTERPOINTERS
+    MarkJuliaObjSafe((void *)GET_JULIA_OBJ(bag), ref);
+#else
+    MarkJuliaObj((void *)GET_JULIA_OBJ(bag), ref);
+#endif
+}
+#else
+// for GAP <= 4.12.x
 static void MarkJuliaObject(Bag bag)
 {
 #ifdef DEBUG_MASTERPOINTERS
@@ -283,6 +295,7 @@ static void MarkJuliaObject(Bag bag)
     MarkJuliaObj((void *)GET_JULIA_OBJ(bag));
 #endif
 }
+#endif
 
 // Table of functions to export
 static StructGVarFunc GVarFuncs[] = {
