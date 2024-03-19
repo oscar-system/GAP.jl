@@ -40,6 +40,28 @@
 
 end
 
+@testset "@gapproperty" begin
+
+    """
+        isoddint_GAP(x)
+    
+    Return `true` if the input integer is odd.
+    """
+    @gapproperty isoddint_GAP(x::Int) = GAP.Globals.IsOddInt(x)
+
+    doc = string(@doc isoddint_GAP)
+    @test !occursin("No documentation found", string(doc))
+    @test occursin("if the input integer is odd", string(doc))
+
+    doc = string(@doc has_isoddint_GAP)
+    @test !occursin("No documentation found", string(doc))
+    @test occursin("has already been computed", string(doc))
+
+    doc = string(@doc set_isoddint_GAP)
+    @test !occursin("No documentation found", string(doc))
+    @test occursin("Set the value", string(doc))
+end
+
 @testset "compat" begin
 
     x = @gap (1, 2, 3)

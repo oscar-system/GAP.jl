@@ -12,6 +12,7 @@ DocTestSetup = :(using GAP)
 @g_str
 @gapwrap
 @gapattribute
+@gapproperty
 @wrap
 ```
 
