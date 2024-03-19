@@ -13,6 +13,7 @@ gapoverride = abspath(gapoverride)
 @info "Install needed packages"
 using Pkg
 Pkg.add(["GAP_jll"])
+Pkg.add(["GAP_lib_jll"])
 Pkg.develop(path=dirname(dirname(@__FILE__)))
 Pkg.instantiate()
 
@@ -40,6 +41,7 @@ tmpdepot = mktempdir(; cleanup=true)
 
 # create override file for GAP_jll
 add_jll_override(tmpdepot, "GAP", gapoverride)
+add_jll_override(tmpdepot, "GAP_lib", gapoverride)
 
 # prepend our temporary depot to the depot list...
 withenv("JULIA_DEPOT_PATH"=>tmpdepot*":") do

@@ -67,7 +67,7 @@ For this to work, follow these instructions:
 
    To give a concrete example you could invoke
 
-        julia --proj=override etc/setup_override_dir.jl GAPROOT /tmp/gap_jll_override
+        julia --proj=override etc/setup_override_dir.jl $GAPROOT /tmp/gap_jll_override
 
 4. Use the `etc/run_with_override.jl` script with the exact same Julia executable
    and the override environment we just prepared.
