@@ -1,5 +1,7 @@
 # Changes in GAP.jl
 
+## Version 0.11.0-DEV (released YYYY-MM-DD)
+
 ## Version 0.10.3 (released 2024-03-01)
 
 - Fix TAB completion for e.g. 'GAP.Globals.MTX.S' in Julia >= 1.11
