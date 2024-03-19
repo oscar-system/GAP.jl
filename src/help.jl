@@ -3,8 +3,17 @@
 import Markdown
 import REPL
 
+if isdefined(REPL.TerminalMenus, :default_terminal)
+  import REPL.TerminalMenus: default_terminal
+else
+  # before Julia 1.12
+  function default_terminal()
+    return REPL.TerminalMenus.terminal
+  end
+end
+
 function gap_help_string(topic::String, onlyexact::Bool = false,
-    term::REPL.Terminals.TTYTerminal = REPL.TerminalMenus.terminal;
+    term::REPL.Terminals.TTYTerminal = default_terminal();
     suppress_output::Bool = false)
     # Let GAP collect the information.
     info = Globals.HELP_Info(GapObj(topic), onlyexact)
