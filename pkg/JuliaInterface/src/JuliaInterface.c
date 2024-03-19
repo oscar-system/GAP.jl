@@ -8,9 +8,9 @@
 #include "convert.h"
 #include "sync.h"
 
-#include <src/julia_gc.h>
+#include <julia_gc.h>    // GAP header
 
-#include <julia_gcext.h>
+#include <julia_gcext.h>    // Julia header
 
 jl_module_t * gap_module;
 
