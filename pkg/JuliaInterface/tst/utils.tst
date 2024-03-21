@@ -81,6 +81,7 @@ gap> _JuliaGetGlobalVariableByModule("sqrt", JuliaModule("Base"));
 gap> NameFunction(Julia.Base.parse);
 "parse"
 gap> Display(Julia.Base.parse);
+# Julia:parse
 function ( arg... )
     <<kernel code>> from Julia:parse
 end

@@ -929,8 +929,8 @@ InstallMethod( ZeroMatrix,
     end );
 
 # Assume that 'R' is a GAP ring, not a Nemo ring.
-InstallMethod( NewZeroMatrix,
-    [ "IsNemoMatrixObj", "IsRing", "IsInt", "IsInt" ],
+InstallTagBasedMethod( NewZeroMatrix,
+    IsNemoMatrixObj,
     function( filt, R, m, n )
     local C, zero;
 
@@ -956,8 +956,8 @@ InstallMethod( IdentityMatrix,
     end );
 
 # Assume that 'R' is a GAP ring, not a Nemo ring.
-InstallMethod( NewIdentityMatrix,
-    [ "IsNemoMatrixObj", "IsRing", "IsInt" ],
+InstallTagBasedMethod( NewIdentityMatrix,
+    IsNemoMatrixObj,
     function( filt, R, n )
     local C, id;
 
