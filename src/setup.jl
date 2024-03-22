@@ -47,10 +47,8 @@ function read_sysinfo_gap(dir::String)
             if length(ln) == 0 || ln[1] == '#'
                 continue
             end
-            s = split(ln, "=")
-            if length(s) != 2
-                continue
-            end
+            s = split(ln, "="; limit=2)
+            length(s) == 2 || continue
             d[s[1]] = strip(s[2], ['"'])
         end
     end
