@@ -192,10 +192,6 @@ function regenerate_gaproot()
         force_symlink("../../gac",
                       joinpath(gaproot_mutable, "bin", sysinfo["GAParch"], "gac"))
 
-        # for building GAP packages
-        force_symlink(joinpath(gaproot_gapjl, "etc", "BuildPackages.sh"),
-                      joinpath(gaproot_mutable, "bin", "BuildPackages.sh"))
-
         # create a `pkg` symlink to the GAP packages artifact
         force_symlink(artifact"gap_packages", "$gaproot_mutable/pkg")
 

@@ -3,6 +3,7 @@
 ## Version 0.11.0-DEV (released YYYY-MM-DD)
 
 - Update to GAP 4.13.0
+- Removed bundled `etc/BuildPackages.sh` (no longer needed)
 - Fix GAP help access for Julia nightly
 - Various janitorial changes
 
