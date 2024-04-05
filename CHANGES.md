@@ -3,6 +3,8 @@
 ## Version 0.11.0-DEV (released YYYY-MM-DD)
 
 - Update to GAP 4.13.0
+- Fix GAP help access for Julia nightly
+- Various janitorial changes
 
 ## Version 0.10.3 (released 2024-03-01)
 
