@@ -1,6 +1,6 @@
 # Changes in GAP.jl
 
-## Version 0.11.0-DEV (released YYYY-MM-DD)
+## Version 0.11.0 (released 2024-04-05)
 
 - Update to GAP 4.13.0
 - Removed bundled `etc/BuildPackages.sh` (no longer needed)
