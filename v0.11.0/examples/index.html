@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Examples · GAP.jl</title><meta name="title" content="Examples · GAP.jl"/><meta property="og:title" content="Examples · GAP.jl"/><meta property="twitter:title" content="Examples · GAP.jl"/><meta name="description" content="Documentation for GAP.jl."/><meta property="og:description" content="Documentation for GAP.jl."/><meta property="twitter:description" content="Documentation for GAP.jl."/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../">GAP.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">GAP.jl</a></li><li><a class="tocitem" href="../basics/">Basics</a></li><li><a class="tocitem" href="../conversion/">Conversions</a></li><li><a class="tocitem" href="../packages/">Managing GAP packages</a></li><li><a class="tocitem" href="../other/">Other stuff</a></li><li class="is-active"><a class="tocitem" href>Examples</a><ul class="internal"><li><a class="tocitem" href="#Analyzing-Rubik&#39;s-Cube-using-GAP.jl"><span>Analyzing Rubik&#39;s Cube using GAP.jl</span></a></li></ul></li><li><a class="tocitem" href="../internal/">Internal</a></li><li><a class="tocitem" href="../manualindex/">Index</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Examples</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Examples</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/oscar-system/GAP.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/oscar-system/GAP.jl/blob/master/docs/src/examples.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Examples"><a class="docs-heading-anchor" href="#Examples">Examples</a><a id="Examples-1"></a><a class="docs-heading-anchor-permalink" href="#Examples" title="Permalink"></a></h1><h2 id="Analyzing-Rubik&#39;s-Cube-using-GAP.jl"><a class="docs-heading-anchor" href="#Analyzing-Rubik&#39;s-Cube-using-GAP.jl">Analyzing Rubik&#39;s Cube using GAP.jl</a><a id="Analyzing-Rubik&#39;s-Cube-using-GAP.jl-1"></a><a class="docs-heading-anchor-permalink" href="#Analyzing-Rubik&#39;s-Cube-using-GAP.jl" title="Permalink"></a></h2><p>The following Julia session shows the GAP computations from the <a href="https://www.gap-system.org/Doc/Examples/rubik.html">Rubik&#39;s Cube example</a> from the GAP webpages.</p><p>We consider the group of transformations of Rubik&#39;s magic cube. If we number the faces of this cube as follows</p><pre><code class="nohighlight hljs">                     +--------------+
+                     |              |
+                     |  1    2    3 |
+                     |              |
+                     |  4  top    5 |
+                     |              |
+                     |  6    7    8 |
+                     |              |
+      +--------------+--------------+--------------+--------------+
+      |              |              |              |              |
+      |  9   10   11 | 17   18   19 | 25   26   27 | 33   34   35 |
+      |              |              |              |              |
+      | 12  left  13 | 20 front  21 | 28 right  29 | 36  rear  37 |
+      |              |              |              |              |
+      | 14   15   16 | 22   23   24 | 30   31   32 | 38   39   40 |
+      |              |              |              |              |
+      +--------------+--------------+--------------+--------------+
+                     |              |
+                     | 41   42   43 |
+                     |              |
+                     | 44 bottom 45 |
+                     |              |
+                     | 46   47   48 |
+                     |              |
+                     +--------------+</code></pre><p>then the group is generated by the following generators, corresponding to the six faces of the cube.</p><pre><code class="language-julia-repl hljs">julia&gt; cube = @gap(&quot;Group(
+        ( 1, 3, 8, 6)( 2, 5, 7, 4)( 9,33,25,17)(10,34,26,18)(11,35,27,19),
+        ( 9,11,16,14)(10,13,15,12)( 1,17,41,40)( 4,20,44,37)( 6,22,46,35),
+        (17,19,24,22)(18,21,23,20)( 6,25,43,16)( 7,28,42,13)( 8,30,41,11),
+        (25,27,32,30)(26,29,31,28)( 3,38,43,19)( 5,36,45,21)( 8,33,48,24),
+        (33,35,40,38)(34,37,39,36)( 3, 9,46,32)( 2,12,47,29)( 1,14,48,27),
+        (41,43,48,46)(42,45,47,44)(14,22,30,38)(15,23,31,39)(16,24,32,40) );&quot;)
+GAP: &lt;permutation group with 6 generators&gt;</code></pre><p>First we want to know the size of this group.</p><pre><code class="language-julia-repl hljs">julia&gt; cube_size = GAP.Globals.Size(cube)
+GAP: 43252003274489856000</code></pre><p>Since this is a little bit unhandy, let us factorize this number.</p><pre><code class="language-julia-repl hljs">julia&gt; cf = GAP.Globals.Collected(GAP.Globals.Factors(cube_size))
+GAP: [ [ 2, 27 ], [ 3, 14 ], [ 5, 3 ], [ 7, 2 ], [ 11, 1 ] ]</code></pre><p>(The result tells us that the size is <span>$2^{27} 3^{14} 5^3 7^2 11$</span>.)</p><p>In order to convert this GAP list to Julia, we can either use <a href="../conversion/#GAP.gap_to_julia"><code>gap_to_julia</code></a> or a suitable <code>Vector</code> constructor, see <a href="../conversion/#Conversions">Conversions</a>. Note that the one-argument version of the former returns a vector of <code>Any</code> objects.</p><pre><code class="language-julia-repl hljs">julia&gt; GAP.gap_to_julia(cf)
+5-element Vector{Any}:
+ Any[2, 27]
+ Any[3, 14]
+ Any[5, 3]
+ Any[7, 2]
+ Any[11, 1]
+
+julia&gt; Vector{Vector{Int}}(cf)
+5-element Vector{Vector{Int64}}:
+ [2, 27]
+ [3, 14]
+ [5, 3]
+ [7, 2]
+ [11, 1]</code></pre><p>Next let us investigate the operation of the group on the 48 points.</p><pre><code class="language-julia-repl hljs">julia&gt; orbs = GAP.Globals.Orbits(cube, GAP.GapObj(1:48))
+GAP: [ [ 1, 3, 17, 14, 8, 38, 9, 41, 19, 48, 22, 6, 30, 33, 43, 11, 46, 40, 24, 27, 25, 35, 16, 32 ], [ 2, 5, 12, 7, 36, 10, 47, 4, 28, 45, 34, 13, 29, 44, 20, 42, 26, 21, 37, 15, 31, 18, 23, 39 ] ]
+
+julia&gt; length(orbs)
+2</code></pre><p>The first orbit contains the points at the corners, the second those at the edges; clearly the group cannot move a point at a corner onto a point at an edge.</p><p>So to investigate the cube group we first investigate the operation on the corner points. Note that the constructed group that describes this operation will operate on the set <code>[1..24]</code>, not on the original set <code>orbs[1]</code>.</p><pre><code class="language-julia-repl hljs">julia&gt; cube1 = GAP.Globals.Action(cube, orbs[1])
+GAP: &lt;permutation group with 6 generators&gt;
+
+julia&gt; GAP.Globals.NrMovedPoints(cube1)
+24
+
+julia&gt; GAP.Globals.Size(cube1)
+88179840</code></pre><p>Now this group obviously operates transitively, but let us test whether it is also primitive.</p><pre><code class="language-julia-repl hljs">julia&gt; corners = GAP.Globals.Blocks(cube1, GAP.Globals.MovedPoints(cube1))
+GAP: [ [ 1, 7, 22 ], [ 2, 14, 20 ], [ 3, 12, 16 ], [ 4, 17, 18 ], [ 5, 9, 21 ], [ 6, 10, 24 ], [ 8, 11, 23 ], [ 13, 15, 19 ] ]</code></pre><p>Those eight blocks correspond to the eight corners of the cube; on the one hand the group permutes those and on the other hand it permutes the three points at each corner cyclically.</p><pre><code class="language-julia-repl hljs">julia&gt; blockhom1 = GAP.Globals.ActionHomomorphism(cube1, corners, GAP.Globals.OnSets)
+GAP: &lt;action homomorphism&gt;
+
+julia&gt; cube1b = GAP.Globals.Image(blockhom1)
+GAP: Group([ (1,2,4,3), (1,3,6,5), (1,5,8,2), (3,4,7,6), (5,6,7,8), (2,8,7,4) ])
+
+julia&gt; GAP.Globals.Size(cube1b)
+40320</code></pre><p>Now a permutation group of degree 8 that has order 40320 must be the full symmetric group <code>Sym(8)</code> on eight points.</p><p>The next thing then is to investigate the kernel of this operation on blocks, i.e., the subgroup of <code>cube1</code> of those elements that fix the blocks setwise.</p><pre><code class="language-julia-repl hljs">julia&gt; ker1 = GAP.Globals.Kernel(blockhom1)
+GAP: &lt;permutation group with 7 generators&gt;
+
+julia&gt; println(Vector{Int}(GAP.Globals.Factors(GAP.Globals.Size(ker1))))
+[3, 3, 3, 3, 3, 3, 3]
+
+julia&gt; GAP.Globals.IsElementaryAbelian(ker1)
+true</code></pre><p>We can show that the product of this elementary abelian group <span>$3^7$</span> with the <code>Sym(8)</code> is semidirect by finding a complement, i.e., a subgroup that has trivial intersection with the kernel and that generates <code>cube1</code> together with the kernel.</p><pre><code class="language-julia-repl hljs">julia&gt; cmpl1 = GAP.Globals.ComplementClassesRepresentatives(cube1, ker1)
+GAP: [ &lt;permutation group of size 40320 with 7 generators&gt; ]
+
+julia&gt; cmpl1 = cmpl1[1]; GAP.Globals.Size(cmpl1)
+40320</code></pre><p>We verify the complement properties:</p><pre><code class="language-julia-repl hljs">julia&gt; GAP.Globals.Size(GAP.Globals.Intersection(cmpl1, ker1))
+1
+
+julia&gt; GAP.Globals.ClosureGroup(cmpl1, ker1) == cube1
+true</code></pre><p>There is even a more elegant way to show that <code>cmpl1</code> is a complement.</p><pre><code class="language-julia-repl hljs">julia&gt; GAP.Globals.IsBijective(GAP.Globals.RestrictedMapping(blockhom1, cmpl1))
+true</code></pre><p>Of course, theoretically it is clear that <code>cmpl1</code> must indeed be a complement.</p><p>In fact we know that <code>cube1</code> is a subgroup of index 3 in the wreath product of a cyclic 3 with <code>Sym(8)</code>. This missing index 3 tells us that we do not have total freedom in turning the corners. The following tests show that whenever we turn one corner clockwise we must turn another corner counterclockwise.</p><pre><code class="language-julia-repl hljs">julia&gt; @gap(&quot;(1, 7, 22)&quot;) in cube1
+false
+
+julia&gt; @gap(&quot;(1, 7, 22)(2, 20, 14)&quot;) in cube1
+true</code></pre><p>More or less the same things happen when we consider the operation of the cube group on the edges.</p><pre><code class="language-julia-repl hljs">julia&gt; cube2 = GAP.Globals.Action(cube, orbs[2]); GAP.Globals.Size(cube2)
+980995276800
+
+julia&gt; edges = GAP.Globals.Blocks(cube2, GAP.Globals.MovedPoints(cube2))
+GAP: [ [ 1, 11 ], [ 2, 17 ], [ 3, 19 ], [ 4, 22 ], [ 5, 13 ], [ 6, 8 ], [ 7, 24 ], [ 9, 18 ], [ 10, 21 ], [ 12, 15 ], [ 14, 20 ], [ 16, 23 ] ]
+
+julia&gt; blockhom2 = GAP.Globals.ActionHomomorphism(cube2, edges, GAP.Globals.OnSets);
+
+julia&gt; cube2b = GAP.Globals.Image(blockhom2); GAP.Globals.Size(cube2b)
+479001600
+
+julia&gt; ker2 = GAP.Globals.Kernel(blockhom2)
+GAP: &lt;permutation group with 11 generators&gt;
+
+julia&gt; GAP.Globals.Factors(GAP.Globals.Size(ker2))
+GAP: [ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 ]
+
+julia&gt; GAP.Globals.IsElementaryAbelian(ker2)
+true
+
+julia&gt; cmpl2 = GAP.Globals.ComplementClassesRepresentatives(cube2, ker2); length(cmpl2)
+4</code></pre><p>So there are even 4 classes of complements here. This time we get a semidirect product of a <span>$2^11$</span> with an <code>Sym(12)</code>, namely a subgroup of index 2 of the wreath product of a cyclic 2 with <code>Sym(12)</code>. Here the missing index 2 tells us again that we do not have total freedom in turning the edges. The following tests show that whenever we flip one edge we must also flip another edge.</p><pre><code class="language-julia-repl hljs">julia&gt; @gap(&quot;(1, 11)&quot;) in cube2
+false
+
+julia&gt; @gap(&quot;(1, 11)(2, 17)&quot;) in cube2
+true</code></pre><p>Since <code>cube1</code> and <code>cube2</code> are the groups describing the actions on the two orbits of <code>cube</code>, it is clear that <code>cube</code> is a subdirect product of those groups, i.e., a subgroup of the direct product. Comparing the sizes of <code>cube1</code>, <code>cube2</code>, and <code>cube</code> we see that <code>cube</code> must be a subgroup of index 2 in the direct product of those two groups.</p><pre><code class="language-julia-repl hljs">julia&gt; BigInt(GAP.Globals.Size(cube1)) * BigInt(GAP.Globals.Size(cube2))
+86504006548979712000
+
+julia&gt; GAP.Globals.Size(cube)
+GAP: 43252003274489856000</code></pre><p>(Note that both <code>GAP.Globals.Size(cube1)</code> and <code>GAP.Globals.Size(cube2)</code> have the Julia type <code>Int64</code>, and forming their product yields an overflow. In order to obtain the correct value we have created arbitrary precision integers for the two values before multiplying them.)</p><p>This final missing index 2 tells us that we cannot operate on corners and edges totally independently. The following tests show that whenever we exchange a pair of corners we must also exchange a pair of edges (and vice versa).</p><pre><code class="language-julia-repl hljs">julia&gt; @gap(&quot;(17, 19)(11, 8)(6, 25)&quot;) in cube
+false
+
+julia&gt; @gap(&quot;(7, 28)(18, 21)&quot;) in cube
+false
+
+julia&gt; @gap(&quot;(17, 19)(11, 8)(6, 25)(7, 28)(18, 21)&quot;) in cube
+true</code></pre><p>As a last part of the structure analysis of the cube group let us compute the centre of the cube group, i.e., the subgroup of those operations that can be performed either before or after any other operation with the same result.</p><pre><code class="language-julia-repl hljs">julia&gt; z = GAP.Globals.Centre(cube)
+GAP: Group([ (2,34)(4,10)(5,26)(7,18)(12,37)(13,20)(15,44)(21,28)(23,42)(29,36)(31,45)(39,47) ])</code></pre><p>We see that the centre contains one nontrivial element, namely the operation that flips all 12 edges simultaneously.</p><p>Finally we turn to the original idea connected with the cube, namely to find a sequence of turns of the faces that will transform the cube back into its original state. This amounts to a decomposition of a given element of the cube group into a product of the generators. For this purpose we introduce a free group and a homomorphism of it onto the cube group.</p><pre><code class="language-julia-repl hljs">julia&gt; f = GAP.Globals.FreeGroup(GAP.GapObj([&quot;t&quot;, &quot;l&quot;, &quot;f&quot;, &quot;r&quot;, &quot;e&quot;, &quot;b&quot;], recursive =  true))
+GAP: &lt;free group on the generators [ t, l, f, r, e, b ]&gt;
+
+julia&gt; fhom = GAP.Globals.GroupHomomorphismByImages(f, cube)
+GAP: [ t, l, f, r, e, b ] -&gt; [ (1,3,8,6)(2,5,7,4)(9,33,25,17)(10,34,26,18)(11,35,27,19), (1,17,41,40)(4,20,44,37)(6,22,46,35)(9,11,16,14)(10,13,15,12), (6,25,43,16)(7,28,42,13)(8,30,41,11)(17,19,24,22)(18,21,23,20), (3,38,43,19)(5,36,45,21)(8,33,48,24)(25,27,32,30)(26,29,31,28), (1,14,48,27)(2,12,47,29)(3,9,46,32)(33,35,40,38)(34,37,39,36), (14,22,30,38)(15,23,31,39)(16,24,32,40)(41,43,48,46)(42,45,47,44) ]</code></pre><p>Using this homomorphism, we can now decompose elements into generators. The method used utilizes a stabilizer chain and does not enumerate all group elements, therefore the words obtained are not the shortest possible, though they are short enough for hand solutions.</p><p>The computed decompositions may be different in different sessions, because they involve the computation of pseudo random elements. Therefore the results shown in the following may look different in actual Julia sessions.</p><p>First we decompose the nonidentity centre element:</p><pre><code class="language-julia-repl hljs">julia&gt; zgen = GAP.Globals.GeneratorsOfGroup(z)[1]
+GAP: (2,34)(4,10)(5,26)(7,18)(12,37)(13,20)(15,44)(21,28)(23,42)(29,36)(31,45)(39,47)
+
+julia&gt; pre1 = GAP.Globals.PreImagesRepresentative(fhom, zgen)
+GAP: t^-1*l*t*l^-1*e^-1*t*f^-1*e*l*f*(t^-1*l^-1)^2*t*l*f*t*r*t^-1*r^-1*f^-1*l^-1*e^-1*t^-1*e*t*l*t*f*t*r*t^-1*r^-1*f^-1*t^-2*f*t^-1*f^-1*t^2*e*l^-1*e^-1*t^-1*l*t*l*f*t^-1*f^-1*l^-1*t*l*t^2*l^-1*t^-1*l*t^-1*l^-1*t^2*f^-1*l^-1*t^-1*l*t*f*t*l^-1*t*l*f^-1*l*f*l^-1*t^-2*l^-1*f^-1*l*f*l*t*e^-1*t*e*l*t*l^-1*e*l*e^-1*t^-1*f*l*f*l^-1*f^-1*t^-2*f^-1*t*l^-1*f*t^-2*f^-2*b*r^-1*b^-1*t^-2*e^-1*r^-2*e*t^-1*r*b*e^-1*b^-1*l^-1*r^-2*t^-2*l^-1*b^-1*r^-1*e^-1
+
+julia&gt; length(pre1)
+134</code></pre><p>Next we decompose some element arbitrarily chosen by us:</p><pre><code class="language-julia-repl hljs">julia&gt; pre2 = GAP.Globals.PreImagesRepresentative(fhom, @gap(&quot;(17, 19)(11, 8)(6, 25)(7, 28)(18, 21)&quot;))
+GAP: l^-1*t^-1*l*f*r*t*r^-1*f^-1*l*t*f*t^-1*f^-1*l^-1*t^2*f*t*l*t*l^-1*f^-1*l*t^-1*l^-1*f*t^-1*f^-1*l*t*l^-1*t*l*t^-2*l^-1*f*(t*r*t^-1*r^-1)^2*f^-1*t*l*f^-1*l^-1*f*l^-1*t^-1*l*t^-2*f*t*(f^-1*l^-1)^2*l^-1*f*l*e^-1*t*e*l*t^-1*e^-1*t^-1*e*l*b*f^-1*b^-1
+
+julia&gt; length(pre2)
+77</code></pre><p>Last we let GAP choose a random element ...</p><pre><code class="language-julia-repl hljs">julia&gt; r = GAP.Globals.Random(cube)
+GAP: (1,6,9,17,35,11)(2,13,29,42,4,34,20,36,23,10)(3,22,14,8,38,24,27,16,40,19,32,43,33,41,46,25,48,30)(5,39,28,37,18,31,44,26,47,21,12,7,45,15)
+
+julia&gt; pre3 = GAP.Globals.PreImagesRepresentative(fhom, r)
+GAP: r*e^-1*t^-1*e^-1*r^-2*e*f*t^2*b^-1*e^-1*b*l*f^-1*r*t^-1*r^-1*l*b*f^-2*b^-1*f^-1*l*f*t^-1*l^-1*f^-1*l^-1*f*e*l^-1*e^-1*l^-2*t^-1*l*f^-1*l^-1*f*l^-1*t^-1*l^2*f*t*f^-1*(t^-1*l^-1)^3*e*l*e^-1*t*l*t^-1*l*t^2*l^-1*t^-1*l*t^-1*l^-1*f*t*f^-1*l*t*l^-1*f*l*t^-1*l^-1*t^-1*f^-1*t^-1*f*r*t*r^-1*t^-1*f^-1*t^-1*l^-1*t^-1*e^-1*t*e*l*f*r*t*r^-1*t^-1*f^-1*l^-1*t^-1*(l*t)^2*f^-1*l^-1*e^-1*f*t^-1*e*l*t^-1*l^-1*t
+
+julia&gt; length(pre3)
+116</code></pre><p>... and we verify that the decomposition is correct:</p><pre><code class="language-julia-repl hljs">julia&gt; GAP.Globals.Image(fhom, pre3) == r
+true</code></pre><p>This concludes our example.</p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../other/">« Other stuff</a><a class="docs-footer-nextpage" href="../internal/">Internal »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.3.0 on <span class="colophon-date" title="Friday 5 April 2024 10:18">Friday 5 April 2024</span>. Using Julia version 1.10.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
