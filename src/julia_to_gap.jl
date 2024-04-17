@@ -71,6 +71,11 @@ julia_to_gap(x::UInt32) = Int64(x)
 julia_to_gap(x::UInt16) = Int64(x)
 julia_to_gap(x::UInt8) = Int64(x)
 
+function julia_to_gap(x::UInt)
+    x < (1<<60) && return Int64(x)
+    return ccall((:ObjInt_UInt, libgap), GapObj, (UInt64, ), x)
+end
+
 ## BigInts are converted via a ccall
 function julia_to_gap(x::BigInt)
     x in -1<<60:(1<<60-1) && return Int64(x)
