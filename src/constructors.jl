@@ -9,6 +9,10 @@ GapObj(obj; recursive::Bool = false) = julia_to_gap(obj, IdDict(); recursive)::G
 Obj(obj, recursive::Bool) = julia_to_gap(obj, IdDict(); recursive)::Obj
 GapObj(obj, recursive::Bool) = julia_to_gap(obj, IdDict(); recursive)::GapObj
 
+## Conversion to gap integers
+GapInt(x::Integer) = julia_to_gap(x)
+
+
 """
     BigInt(obj::GapObj)
 
