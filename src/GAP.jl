@@ -234,7 +234,7 @@ function __init__()
     end
 
     if isdefined(Threads, :ngcthreads) && Threads.ngcthreads() > 1
-        error("GAP.jl currently does not support multithreaded garbace collection. Please run julia with `--gcthreads=1` to for now.")
+        error("GAP.jl currently does not support multithreaded garbage collection. Please run julia with `--gcthreads=1` for now.")
     end
 
     # always regenerate our custom GAP root dir, to accommodate for changes
