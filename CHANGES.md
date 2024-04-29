@@ -1,5 +1,13 @@
 # Changes in GAP.jl
 
+## Version 0.10.4-DEV (released YYYY-MM-DD)
+
+- Fix GAP help access for Julia nightly
+- Add helpful error message when loading GAP.jl while multithreaded GC is on
+- Allow `GapInt(x)` as shorthand for producing a GAP integer
+- Optimize conversion of `UInt` to `GapObj`
+- Various janitorial changes
+
 ## Version 0.10.3 (released 2024-03-01)
 
 - Fix TAB completion for e.g. 'GAP.Globals.MTX.S' in Julia >= 1.11
