@@ -1,6 +1,6 @@
 # Changes in GAP.jl
 
-## Version 0.10.4-DEV (released YYYY-MM-DD)
+## Version 0.10.4 (released 2024-04-29)
 
 - Fix GAP help access for Julia nightly
 - Add helpful error message when loading GAP.jl while multithreaded GC is on
