@@ -414,6 +414,11 @@ end
     r = GAP.evalstr("[ 1, 4 .. 10 ]")
     @test GAP.julia_to_gap(1:3:10) == r
     @test_throws GAP.ConversionError GAP.julia_to_gap(1:2^62)
+
+    r = GAP.julia_to_gap(1:2:11, IdDict(), recursive = false)
+    @test GAP.gap_to_julia(GAP.Globals.TNAM_OBJ(r)) == "list (range,ssort)"
+    r = GAP.Obj(1:10)
+    @test GAP.gap_to_julia(GAP.Globals.TNAM_OBJ(r)) == "list (range,ssort)"
   end
 
   @testset "Dictionaries" begin

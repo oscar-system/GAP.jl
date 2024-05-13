@@ -172,10 +172,18 @@ function julia_to_gap(
 end
 
 ## Ranges
-function julia_to_gap(r::AbstractRange{<:Integer})
+function julia_to_gap(r::AbstractRange{<:Integer}, recursive::Bool = false)
     res = NewRange(length(r), first(r), step(r))
     Wrappers.IsRange(res) || throw(ConversionError(r, GapObj))
     return res
+end
+
+function julia_to_gap(
+    r::AbstractRange{<:Integer},
+    recursion_dict::IdDict{Any,Any};
+    recursive::Bool = false)
+
+    return julia_to_gap(r)
 end
 
 ## Dictionaries
