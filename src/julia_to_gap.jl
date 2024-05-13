@@ -116,7 +116,7 @@ julia_to_gap(obj::Any, recursion_dict::IdDict{Any,Any}; recursive::Bool = true) 
 
 ## Arrays (including BitVector)
 function julia_to_gap(
-    obj::Vector{T},
+    obj::AbstractVector{T},
     recursion_dict::IdDict{Any,Any} = IdDict();
     recursive::Bool = false,
 ) where {T}

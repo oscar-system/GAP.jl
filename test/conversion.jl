@@ -387,6 +387,11 @@ end
     y = GAP.julia_to_gap([true, false])
     @test y == x
     @test GAP.gap_to_julia(GAP.Globals.TNAM_OBJ(y)) == "list (boolean)"
+
+    v = BitVector([true, false])
+    gap_v = GAP.julia_to_gap(v)
+    @test gap_v == x
+    @test GAP.gap_to_julia(GAP.Globals.TNAM_OBJ(gap_v)) == "list (boolean)"
   end
 
   @testset "Tuples" begin
