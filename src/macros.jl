@@ -328,6 +328,9 @@ However, the generated function actually caches the GAP object `GAP.Globals.NAME
 This minimizes the call overhead. So @wrap typically is used to provide an optimized
 way to call certain GAP functions.
 
+If an argument is annotated as `::GapObj`, the resulting function accepts arguments
+of any type and wraps them in `GapObj(...)` before passing them to the GAP function.
+
 Another use case for this macro is to improve type stability of code calling into
 GAP, via the type annotations for the arguments and return value contained in the
 function declaration.
@@ -343,6 +346,12 @@ Jacobi (generic function with 1 method)
 
 julia> Jacobi(11,35)
 1
+
+julia> GAP.@wrap IsString(x::GapObj)::Bool
+IsString (generic function with 1 method)
+
+julia> IsString("abc")
+true
 ```
 """
 macro wrap(ex)
@@ -360,8 +369,9 @@ macro wrap(ex)
     fullargs = ex.args[2:length(ex.args)]
 
     # splits the arguments with type annotations into expressions for the lhs and rhs
-    # of the call of the form `func(args) = GAP.Globals.func(args)`, e.g. type annotations
-    # have to be removed for the rhs
+    # of the call of the form `func(args) = GAP.Globals.func(args)`:
+    # - type annotations have to be removed for the rhs
+    # - if the type annotation is `GapObj`, the rhs has to be wrapped in `GAP.GapObj(...)` and the lhs has no type annotation
     tempargs = [
         begin
             if x isa Symbol
@@ -369,7 +379,11 @@ macro wrap(ex)
             elseif x.head == :(::) && length(x.args) == 2
                 var = x.args[1]
                 typeannot = x.args[2]
-                (x, var)
+                if typeannot in [:GapObj, :(GAP.GapObj)]
+                    (var, :(GAP.GapObj($var)))
+                else
+                    (x, var)
+                end
             else
                 error("unknown argument syntax around `$x`")
             end
