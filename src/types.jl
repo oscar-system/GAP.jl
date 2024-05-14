@@ -92,7 +92,7 @@ To also deal with GAP integers, finite field elements and booleans, use
 [`GAP.Obj`](@ref) instead.
 
 Recursive conversion of nested Julia objects (arrays, tuples, dictionaries)
-can be forced either by a second agument `true`
+can be forced either by a second argument `true`
 or by the keyword argument `recursive` with value `true`.
 
 # Examples
@@ -129,7 +129,7 @@ in order to convert Julia objects to GAP objects,
 whenever a suitable conversion has been defined.
 
 Recursive conversion of nested Julia objects (arrays, tuples, dictionaries)
-can be forced either by a second agument `true`
+can be forced either by a second argument `true`
 or by the keyword argument `recursive` with value `true`.
 
 # Examples
