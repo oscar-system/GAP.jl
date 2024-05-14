@@ -379,7 +379,7 @@ macro wrap(ex)
     rhsargs = map(last, tempargs)
     
     # the "outer" part of the body
-    body = quote
+    body = MacroTools.@qq begin
                global $newsym
                if !isassigned($newsym)
                    $newsym[] = GAP.Globals.$name::GapObj
@@ -387,10 +387,8 @@ macro wrap(ex)
                return $newsym[]($(rhsargs...))::$retval
            end
 
-    # insert the correct line number
-    body.args[1] = __source__
 
-    return esc(quote
+    return esc(MacroTools.@qq begin
        @eval const $newsym = Ref{GapObj}()
        Base.@__doc__ $(Expr(:call, name, lhsargs...)) = $body
     end)
