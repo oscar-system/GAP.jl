@@ -178,8 +178,8 @@ gap> g6 := JuliaEvalString("function g6(a,b,c,d,e,f) return f end");;
 gap> g7 := JuliaEvalString("function g7(a,b,c,d,e,f,g) return g end");;
 
 #
-gap> g0();
-<Julia: Ptr{Nothing} @0x0000000000000000>
+gap> Julia.typeof( g0() );
+<Julia: Ptr{Nothing}>
 gap> g1(true);
 true
 gap> g2(true,2);
@@ -237,4 +237,4 @@ gap> _JuliaFunctionByModule("parse", "Base");
 <Julia: parse>
 
 #
-gap> STOP_TEST( "calls.tst", 1 );
+gap> STOP_TEST( "calls.tst" );
