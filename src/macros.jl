@@ -359,16 +359,32 @@ macro wrap(ex)
 
     fullargs = ex.args[2:length(ex.args)]
 
-    # strip type annotation from arguments for use in the call to GAP
-    args = [x isa Symbol ? x : x.args[1] for x in fullargs]
-
+    # splits the arguments with type annotations into expressions for the lhs and rhs
+    # of the call of the form `func(args) = GAP.Globals.func(args)`, e.g. type annotations
+    # have to be removed for the rhs
+    tempargs = [
+        begin
+            if x isa Symbol
+                (x, x)
+            elseif x.head == :(::) && length(x.args) == 2
+                var = x.args[1]
+                typeannot = x.args[2]
+                (x, var)
+            else
+                error("unknown argument syntax around `$x`")
+            end
+        end for x in fullargs
+    ]
+    lhsargs = map(first, tempargs)
+    rhsargs = map(last, tempargs)
+    
     # the "outer" part of the body
     body = quote
                global $newsym
                if !isassigned($newsym)
                    $newsym[] = GAP.Globals.$name::GapObj
                end
-               return $newsym[]($(args...))::$retval
+               return $newsym[]($(rhsargs...))::$retval
            end
 
     # insert the correct line number
@@ -376,6 +392,6 @@ macro wrap(ex)
 
     return esc(quote
        @eval const $newsym = Ref{GapObj}()
-       Base.@__doc__ $ex = $body
+       Base.@__doc__ $(Expr(:call, name, lhsargs...)) = $body
     end)
 end
