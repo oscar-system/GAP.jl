@@ -387,6 +387,11 @@ end
     y = GAP.julia_to_gap([true, false])
     @test y == x
     @test GAP.gap_to_julia(GAP.Globals.TNAM_OBJ(y)) == "list (boolean)"
+
+    v = BitVector([true, false])
+    gap_v = GAP.julia_to_gap(v)
+    @test gap_v == x
+    @test GAP.gap_to_julia(GAP.Globals.TNAM_OBJ(gap_v)) == "list (boolean)"
   end
 
   @testset "Tuples" begin
@@ -409,6 +414,11 @@ end
     r = GAP.evalstr("[ 1, 4 .. 10 ]")
     @test GAP.julia_to_gap(1:3:10) == r
     @test_throws GAP.ConversionError GAP.julia_to_gap(1:2^62)
+
+    r = GAP.julia_to_gap(1:2:11, IdDict(), recursive = false)
+    @test GAP.gap_to_julia(GAP.Globals.TNAM_OBJ(r)) == "list (range,ssort)"
+    r = GAP.Obj(1:10)
+    @test GAP.gap_to_julia(GAP.Globals.TNAM_OBJ(r)) == "list (range,ssort)"
   end
 
   @testset "Dictionaries" begin
