@@ -35,12 +35,12 @@ gap> Julia.Base.foo_bar_quux_not_defined;
 #
 gap> IsBound( Julia.Base.C_NULL );
 true
-gap> Julia.Base.C_NULL;
-<Julia: Ptr{Nothing} @0x0000000000000000>
+gap> Julia.typeof( Julia.Base.C_NULL );
+<Julia: Ptr{Nothing}>
 gap> IsBound( Julia.Base.C_NULL );
 true
 gap> Unbind( Julia.Base.C_NULL );
 Error, cannot unbind Julia variables
 
 ##
-gap> STOP_TEST( "import.tst", 1 );
+gap> STOP_TEST( "import.tst" );
