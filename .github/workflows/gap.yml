@@ -69,5 +69,5 @@ jobs:
           julia --proj=override etc/setup_override_dir.jl GAPROOT /tmp/gap_jll_override
       - name: "Run tests"
         run: |
-           julia --proj=override etc/run_with_override.jl /tmp/gap_jll_override --depwarn=error -e "using Pkg; Pkg.test()"
+           julia --proj=override etc/run_with_override.jl /tmp/gap_jll_override --depwarn=error -e "using Pkg; Pkg.test(\"GAP\")"
 
