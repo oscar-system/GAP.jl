@@ -381,6 +381,10 @@ macro wrap(ex)
                 typeannot = x.args[2]
                 if typeannot in [:GapObj, :(GAP.GapObj)]
                     (var, :(GAP.GapObj($var)::GAP.GapObj))
+                elseif typeannot == :(GAP.Obj)
+                    (var, :(GAP.Obj($var)::GAP.Obj))
+                elseif typeannot in [:GapInt, :(GAP.GapInt)]
+                    (var, :(GAP.GapInt($var)::GAP.GapInt))
                 else
                     (x, var)
                 end
