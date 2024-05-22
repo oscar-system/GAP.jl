@@ -50,7 +50,7 @@ function gmp_artifact_dir()
         hash = Base.SHA1(meta["git-tree-sha1"])
         if !artifact_exists(hash)
             dl_info = first(meta["download"])
-            download_artifact(hash, dl_info["url"], dl_info["sha256"])
+            Pkg.Artifacts.download_artifact(hash, dl_info["url"], dl_info["sha256"])
         end
         return artifact_path(hash)
     end
