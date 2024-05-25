@@ -21,13 +21,14 @@ import GAP_lib_jll
 #
 #
 #
-function add_jll_override(depot, pkgname, newdir)
+function add_jll_override(depot, pkgname, pkguuid, newdir)
     pkgid = Base.identify_package("$(pkgname)_jll")
-    uuid = string(pkgid.uuid)
+    # does not work with julia 1.12-dev
+    # pkguuid = string(pkgid.uuid)
     mkpath(joinpath(depot, "artifacts"))
     open(joinpath(depot, "artifacts", "Overrides.toml"), "a") do f
         write(f, """
-        [$(uuid)]
+        [$(pkguuid)]
         $(pkgname) = "$(newdir)"
         """)
     end
@@ -41,8 +42,8 @@ tmpdepot = mktempdir(; cleanup=true)
 @info "Created temporary depot at $(tmpdepot)"
 
 # create override file for GAP_jll
-add_jll_override(tmpdepot, "GAP", gapoverride)
-add_jll_override(tmpdepot, "GAP_lib", gapoverride)
+add_jll_override(tmpdepot, "GAP", "5cd7a574-2c56-5be2-91dc-c8bc375b9ddf", gapoverride)
+add_jll_override(tmpdepot, "GAP_lib", "de1ad85e-c930-5cd4-919d-ccd3fcafd1a3", gapoverride)
 
 # trivially change JuliaInterface for rebuild
 run(`touch $(abspath(dirname(dirname(@__FILE__)), "pkg", "JuliaInterface", "src", "JuliaInterface.c"))`)
