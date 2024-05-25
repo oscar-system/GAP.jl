@@ -1,4 +1,4 @@
-name: CI with gap master
+name: CI with gap
 
 on:
   push:
@@ -24,10 +24,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        gap-version:
+          # - 'master'
+          # - 'stable-4.13'
+          - 'v4.13.0'       # latest release
         julia-version:
-          #- '1.6'
+          # - '1.6'
           - '1.10'
-          #- 'nightly'
+          # - 'nightly'
         julia-arch:
           - x64
         os:
@@ -43,10 +47,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-        with:
-          # For Codecov, we must also fetch the parent of the HEAD commit to
-          # be able to properly deal with PRs / merges
-          fetch-depth: 2
       - name: "Set up Julia"
         uses: julia-actions/setup-julia@v2
         with:
@@ -56,14 +56,14 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: 'gap-system/gap'
-          ref: 'v4.13.0'
+          ref: ${{ matrix.gap-version }}
           path: 'GAPROOT'
       - name: "Build GAP"
         run: |
           cd GAPROOT
           ./autogen.sh
           ./configure
-          make
+          make -j`nproc`
       - name: "Override bundled GAP"
         run: |
           julia --proj=override etc/setup_override_dir.jl GAPROOT /tmp/gap_jll_override

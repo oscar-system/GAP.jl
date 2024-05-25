@@ -17,6 +17,8 @@ Pkg.add(["GAP_lib_jll"])
 Pkg.develop(path=dirname(dirname(@__FILE__)))
 Pkg.instantiate()
 
+import GAP_lib_jll
+
 #
 #
 #
@@ -42,6 +44,12 @@ tmpdepot = mktempdir(; cleanup=true)
 # create override file for GAP_jll
 add_jll_override(tmpdepot, "GAP", gapoverride)
 add_jll_override(tmpdepot, "GAP_lib", gapoverride)
+
+# trivially change JuliaInterface for rebuild
+run(`touch $(abspath(dirname(dirname(@__FILE__)), "pkg", "JuliaInterface", "src", "JuliaInterface.c"))`)
+
+# HACK: use the documentation from GAP_lib_jll instead of rebuilding it
+run(`ln -s $(abspath(GAP_lib_jll.find_artifact_dir(), "share", "gap", "doc")) $(abspath(gapoverride, "share", "gap", "doc"))`)
 
 # prepend our temporary depot to the depot list...
 withenv("JULIA_DEPOT_PATH"=>tmpdepot*":", "FORCE_JULIAINTERFACE_COMPILATION" => "true") do
