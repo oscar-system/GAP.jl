@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   test:
-    name: Julia ${{ matrix.julia-version }} - ${{ matrix.os }} - GAP ${{ matrix.gap-version }}
+    name: Julia ${{ matrix.julia-version }} - GAP ${{ matrix.gap-version }} - ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
     continue-on-error: ${{ matrix.julia-version == 'nightly' }}
@@ -55,6 +55,10 @@ jobs:
           repository: 'gap-system/gap'
           ref: ${{ matrix.gap-version }}
           path: 'GAPROOT'
+      - name: "Install dependencies (for macOS)"
+        if: runner.os == 'macOS'
+        run: |
+          brew install autoconf gmp zlib pkg-config
       - name: "Build GAP"
         run: |
           mv GAPROOT /tmp/GAPROOT
