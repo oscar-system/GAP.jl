@@ -1,4 +1,4 @@
-name: CI with gap
+name: CI with GAP
 
 on:
   push:
@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   test:
-    name: Julia ${{ matrix.julia-version }} - ${{ matrix.os }}
+    name: Julia ${{ matrix.julia-version }} - ${{ matrix.os }} - GAP ${{ matrix.gap-version }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
     continue-on-error: ${{ matrix.julia-version == 'nightly' }}
@@ -25,25 +25,22 @@ jobs:
       fail-fast: false
       matrix:
         gap-version:
-          # - 'master'
-          # - 'stable-4.13'
+          - 'master'
+          - 'stable-4.13'
           - 'v4.13.0'       # latest release
         julia-version:
-          # - '1.6'
+          - '1.6'
           - '1.10'
-          # - 'nightly'
+          - 'nightly'
         julia-arch:
           - x64
         os:
           - ubuntu-latest
-        # include:
-          # Add a few macOS jobs (not too many, the number we can run in parallel is limited)
-          # - julia-version: '1.10'
-          #   julia-arch: x64
-          #   os: macOS-latest
-          # - julia-version: 'nightly'
-          #   julia-arch: x64
-          #   os: macOS-latest
+          - macOS-latest
+        exclude:
+          # Remove a few macOS jobs (the number we can run in parallel is limited)
+          - julia-version: '1.6'
+            os: macOS-latest
 
     steps:
       - uses: actions/checkout@v4
@@ -60,13 +57,14 @@ jobs:
           path: 'GAPROOT'
       - name: "Build GAP"
         run: |
-          cd GAPROOT
+          mv GAPROOT /tmp/GAPROOT
+          cd /tmp/GAPROOT
           ./autogen.sh
           ./configure
           make -j`nproc`
       - name: "Override bundled GAP"
         run: |
-          julia --proj=override etc/setup_override_dir.jl GAPROOT /tmp/gap_jll_override
+          julia --proj=override etc/setup_override_dir.jl /tmp/GAPROOT /tmp/gap_jll_override
       - name: "Run tests"
         run: |
            julia --proj=override etc/run_with_override.jl /tmp/gap_jll_override --depwarn=error -e "using Pkg; Pkg.test(\"GAP\")"
