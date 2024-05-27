@@ -58,7 +58,7 @@ jobs:
       - name: "Install dependencies (for macOS)"
         if: runner.os == 'macOS'
         run: |
-          brew install autoconf gmp zlib pkg-config
+          brew install autoconf zlib # gmp pkg-config
       - name: "Build GAP"
         run: |
           mv GAPROOT /tmp/GAPROOT
