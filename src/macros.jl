@@ -369,23 +369,27 @@ macro wrap(ex)
     fullargs = ex.args[2:length(ex.args)]
 
     # splits the arguments with type annotations into expressions for the lhs and rhs
-    # of the call of the form `func(args) = GAP.Globals.func(args)`:
-    # - type annotations have to be removed for the rhs
-    # - if the type annotation is `GapObj`, the rhs has to be wrapped in `GAP.GapObj(...)` and the lhs has no type annotation
+    # of the call of the form `func(args) = GAP.Globals.func(args)` (see below)
     tempargs = [
         begin
             if x isa Symbol
+                # no type annotations -> use x for lhs and rhs
                 (x, x)
             elseif x.head == :(::) && length(x.args) == 2
+                # type annotations -> split and decide what to do
                 var = x.args[1]
                 typeannot = x.args[2]
                 if typeannot in [:GapObj, :(GAP.GapObj)]
+                    # the lhs has no type annotation, rhs gets wrapped in `GAP.GapObj(...)::GAP.GapObj` 
                     (var, :(GAP.GapObj($var)::GAP.GapObj))
                 elseif typeannot == :(GAP.Obj)
+                    # the lhs has no type annotation, rhs gets wrapped in `GAP.Obj(...)::GAP.Obj`
                     (var, :(GAP.Obj($var)::GAP.Obj))
                 elseif typeannot in [:GapInt, :(GAP.GapInt)]
+                    # the lhs has no type annotation, rhs gets wrapped in `GAP.GapInt(...)::GAP.GapInt`
                     (var, :(GAP.GapInt($var)::GAP.GapInt))
                 else
+                    # remove type annotation on the rhs
                     (x, var)
                 end
             else
