@@ -45,9 +45,6 @@ tmpdepot = mktempdir(; cleanup=true)
 add_jll_override(tmpdepot, "GAP", "5cd7a574-2c56-5be2-91dc-c8bc375b9ddf", gapoverride)
 add_jll_override(tmpdepot, "GAP_lib", "de1ad85e-c930-5cd4-919d-ccd3fcafd1a3", gapoverride)
 
-# trivially change JuliaInterface for rebuild
-run(`touch $(abspath(dirname(dirname(@__FILE__)), "pkg", "JuliaInterface", "src", "JuliaInterface.c"))`)
-
 # HACK: use the documentation from GAP_lib_jll instead of rebuilding it
 run(`ln -sf $(abspath(GAP_lib_jll.find_artifact_dir(), "share", "gap", "doc")) $(abspath(gapoverride, "share", "gap", "doc"))`)
 
