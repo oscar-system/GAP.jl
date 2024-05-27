@@ -23,20 +23,20 @@ gaproot() = @get_scratch!(scratch_key)
 #
 #############################################################################
 
-# ensure `source` is a symlink pointing to `target` in a way that is hopefully
+# ensure `link` is a symlink pointing to `target` in a way that is hopefully
 # safe against races with other Julia processes doing the exact same thing
-function force_symlink(source::AbstractString, target::AbstractString)
+function force_symlink(target::AbstractString, link::AbstractString)
     # We previously used `rm` followed by `symlink`, but this can cause a
     # race if multiple processes invoke `rm` concurrently (which works if
     # one uses `force=true`), and then try to invoke `symlink`
     # concurrently (which then fails in all but one process).
     #
     # So instead we create the symlink with a temporary name, and then use
-    # an atomic `rename` to rename it to the `target` name. The latter
+    # an atomic `rename` to rename it to the `link` name. The latter
     # unfortunately requires invoking an undocumented function.
-    tmpfile = tempname(dirname(abspath(target)); cleanup=false)
-    symlink(source, tmpfile)
-    Base.Filesystem.rename(tmpfile, target)
+    tmpfile = tempname(dirname(abspath(link)); cleanup=false)
+    symlink(target, tmpfile)
+    Base.Filesystem.rename(tmpfile, link)
     return nothing
 end
 
