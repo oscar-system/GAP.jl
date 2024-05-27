@@ -341,17 +341,20 @@ reference the original GAP object.
 
 # Examples
 ```jldoctest
+julia> GAP.@wrap IsString(x::GapObj)::Bool
+IsString (generic function with 1 method)
+
+julia> IsString("abc")
+true
+
 julia> GAP.@wrap Jacobi(x::GapInt, y::GapInt)::Int
 Jacobi (generic function with 1 method)
 
 julia> Jacobi(11,35)
 1
 
-julia> GAP.@wrap IsString(x::GapObj)::Bool
-IsString (generic function with 1 method)
-
-julia> IsString("abc")
-true
+julia> Jacobi(big(35)^100+11, 35)
+1
 ```
 """
 macro wrap(ex)
