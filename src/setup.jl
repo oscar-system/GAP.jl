@@ -232,12 +232,12 @@ function locate_JuliaInterface_so(sysinfo::Dict{String, String})
     jll_hash = GitTools.tree_hash(joinpath(jll, "src"))
     bundled = joinpath(@__DIR__, "..", "pkg", "JuliaInterface")
     bundled_hash = GitTools.tree_hash(joinpath(bundled, "src"))
-    if jll_hash == bundled_hash
+    if jll_hash == bundled_hash && get(ENV, "FORCE_JULIAINTERFACE_COMPILATION", "false") != "true"
         # if the tree hashes match then we can use JuliaInterface.so from the JLL
         @debug "Use JuliaInterface.so from GAP_pkg_juliainterface_jll"
         path = joinpath(jll, "lib", "gap")
     else
-        # tree hashes differ: we must compile the bundled sources
+        # tree hashes differ: we must compile the bundled sources (or requested re-compilation via ENV)
         path = build_JuliaInterface(sysinfo)
         @debug "Use JuliaInterface.so from $(path)"
     end

@@ -44,7 +44,7 @@ add_jll_override(tmpdepot, "GAP", gapoverride)
 add_jll_override(tmpdepot, "GAP_lib", gapoverride)
 
 # prepend our temporary depot to the depot list...
-withenv("JULIA_DEPOT_PATH"=>tmpdepot*":") do
+withenv("JULIA_DEPOT_PATH"=>tmpdepot*":", "FORCE_JULIAINTERFACE_COMPILATION" => "true") do
 
     # ... and start Julia, by default with the same project environment
     run(`$(Base.julia_cmd()) --project=$(Base.active_project()) $(ARGS)`)
