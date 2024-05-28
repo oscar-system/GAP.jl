@@ -31,8 +31,6 @@ jobs:
           - '1.6'
           - '1'         # latest stable release
           - 'nightly'
-        julia-arch:
-          - x64
         os:
           - ubuntu-latest
         include:
@@ -50,7 +48,6 @@ jobs:
         uses: julia-actions/setup-julia@v2
         with:
           version: ${{ matrix.julia-version }}
-          arch: ${{ matrix.julia-arch }}
       - name: Checkout GAP
         uses: actions/checkout@v4
         with:
