@@ -27,19 +27,21 @@ jobs:
         gap-version:
           - 'master'
           - 'stable-4.13'
-          - 'v4.13.0'       # latest release
         julia-version:
           - '1.6'
-          - '1.10'
+          - '1'         # latest stable release
           - 'nightly'
         julia-arch:
           - x64
         os:
           - ubuntu-latest
-          - macOS-latest
-        exclude:
-          # Remove a few macOS jobs (the number we can run in parallel is limited)
-          - julia-version: '1.6'
+        include:
+          # Add a few macOS jobs (the number we can run in parallel is limited)
+          - gap-version: 'master'
+            julia-version: '1'
+            os: macOS-latest
+          - gap-version: 'stable-4.13'
+            julia-version: '1'
             os: macOS-latest
 
     steps:
