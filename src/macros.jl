@@ -328,6 +328,9 @@ However, the generated function actually caches the GAP object `GAP.Globals.NAME
 This minimizes the call overhead. So @wrap typically is used to provide an optimized
 way to call certain GAP functions.
 
+If an argument is annotated as `::GapObj`, the resulting function accepts arguments
+of any type and wraps them in `GapObj(...)` before passing them to the GAP function.
+
 Another use case for this macro is to improve type stability of code calling into
 GAP, via the type annotations for the arguments and return value contained in the
 function declaration.
@@ -338,10 +341,19 @@ reference the original GAP object.
 
 # Examples
 ```jldoctest
+julia> GAP.@wrap IsString(x::GapObj)::Bool
+IsString (generic function with 1 method)
+
+julia> IsString("abc")
+true
+
 julia> GAP.@wrap Jacobi(x::GapInt, y::GapInt)::Int
 Jacobi (generic function with 1 method)
 
 julia> Jacobi(11,35)
+1
+
+julia> Jacobi(big(35)^100+11, 35)
 1
 ```
 """
@@ -359,23 +371,50 @@ macro wrap(ex)
 
     fullargs = ex.args[2:length(ex.args)]
 
-    # strip type annotation from arguments for use in the call to GAP
-    args = [x isa Symbol ? x : x.args[1] for x in fullargs]
-
+    # splits the arguments with type annotations into expressions for the lhs and rhs
+    # of the call of the form `func(args) = GAP.Globals.func(args)` (see below)
+    tempargs = [
+        begin
+            if x isa Symbol
+                # no type annotations -> use x for lhs and rhs
+                (x, x)
+            elseif x.head == :(::) && length(x.args) == 2
+                # type annotations -> split and decide what to do
+                var = x.args[1]
+                typeannot = x.args[2]
+                if typeannot in [:GapObj, :(GAP.GapObj)]
+                    # the lhs has no type annotation, rhs gets wrapped in `GAP.GapObj(...)::GAP.GapObj` 
+                    (var, :(GAP.GapObj($var)::GAP.GapObj))
+                elseif typeannot == :(GAP.Obj)
+                    # the lhs has no type annotation, rhs gets wrapped in `GAP.Obj(...)::GAP.Obj`
+                    (var, :(GAP.Obj($var)::GAP.Obj))
+                elseif typeannot in [:GapInt, :(GAP.GapInt)]
+                    # the lhs has no type annotation, rhs gets wrapped in `GAP.GapInt(...)::GAP.GapInt`
+                    (var, :(GAP.GapInt($var)::GAP.GapInt))
+                else
+                    # remove type annotation on the rhs
+                    (x, var)
+                end
+            else
+                error("unknown argument syntax around `$x`")
+            end
+        end for x in fullargs
+    ]
+    lhsargs = map(first, tempargs)
+    rhsargs = map(last, tempargs)
+    
     # the "outer" part of the body
-    body = quote
+    body = MacroTools.@qq begin
                global $newsym
                if !isassigned($newsym)
                    $newsym[] = GAP.Globals.$name::GapObj
                end
-               return $newsym[]($(args...))::$retval
+               return $newsym[]($(rhsargs...))::$retval
            end
 
-    # insert the correct line number
-    body.args[1] = __source__
 
-    return esc(quote
+    return esc(MacroTools.@qq begin
        @eval const $newsym = Ref{GapObj}()
-       Base.@__doc__ $ex = $body
+       Base.@__doc__ $(Expr(:call, name, lhsargs...)) = $body
     end)
 end
