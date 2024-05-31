@@ -23,7 +23,8 @@ import GAP_lib_jll
 #
 function add_jll_override(depot, pkgname, pkguuid, newdir)
     pkgid = Base.identify_package("$(pkgname)_jll")
-    # does not work with julia 1.12-dev
+    # does not work with julia 1.12-dev, see https://github.com/JuliaLang/julia/issues/54599
+    # TODO: remove pkguuid argument again once that bug is fixed
     # pkguuid = string(pkgid.uuid)
     mkpath(joinpath(depot, "artifacts"))
     open(joinpath(depot, "artifacts", "Overrides.toml"), "a") do f
