@@ -21,11 +21,9 @@ import GAP_lib_jll
 #
 #
 #
-function add_jll_override(depot, pkgname, pkguuid, newdir)
+function add_jll_override(depot, pkgname, newdir)
     pkgid = Base.identify_package("$(pkgname)_jll")
-    # does not work with julia 1.12-dev, see https://github.com/JuliaLang/julia/issues/54599
-    # TODO: remove pkguuid argument again once that bug is fixed
-    # pkguuid = string(pkgid.uuid)
+    pkguuid = string(pkgid.uuid)
     mkpath(joinpath(depot, "artifacts"))
     open(joinpath(depot, "artifacts", "Overrides.toml"), "a") do f
         write(f, """
@@ -43,8 +41,8 @@ tmpdepot = mktempdir(; cleanup=true)
 @info "Created temporary depot at $(tmpdepot)"
 
 # create override file for GAP_jll
-add_jll_override(tmpdepot, "GAP", "5cd7a574-2c56-5be2-91dc-c8bc375b9ddf", gapoverride)
-add_jll_override(tmpdepot, "GAP_lib", "de1ad85e-c930-5cd4-919d-ccd3fcafd1a3", gapoverride)
+add_jll_override(tmpdepot, "GAP", gapoverride)
+add_jll_override(tmpdepot, "GAP_lib", gapoverride)
 
 # HACK: use the documentation from GAP_lib_jll instead of rebuilding it
 run(`ln -sf $(abspath(GAP_lib_jll.find_artifact_dir(), "share", "gap", "doc")) $(abspath(gapoverride, "share", "gap", "doc"))`)
