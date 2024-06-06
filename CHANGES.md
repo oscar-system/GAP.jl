@@ -6,6 +6,8 @@
 - Allow `GapInt(x)` as shorthand for producing a GAP integer
 - Show an error when trying to load GAP.jl while multithreaded GC is enabled
 - Support `gap_to_julia(::AbstractVector)`
+- Enhance `@wrap` so that it can produce wrapper functions which coerce
+  arguments to GAP objects (see its docstring for details and examples)
 - Various janitorial changes
 
 ## Version 0.11.0 (released 2024-04-05)
