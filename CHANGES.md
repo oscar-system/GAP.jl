@@ -1,6 +1,6 @@
 # Changes in GAP.jl
 
-## Version 0.11.1-DEV (released YYYY-MM-DD)
+## Version 0.11.1 (released 2024-06-06)
 
 - Optimize conversion from `UInt` to `GapObj`
 - Allow `GapInt(x)` as shorthand for producing a GAP integer
