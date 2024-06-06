@@ -328,8 +328,9 @@ However, the generated function actually caches the GAP object `GAP.Globals.NAME
 This minimizes the call overhead. So @wrap typically is used to provide an optimized
 way to call certain GAP functions.
 
-If an argument is annotated as `::GapObj`, the resulting function accepts arguments
-of any type and wraps them in `GapObj(...)` before passing them to the GAP function.
+If an argument is annotated as `::GapObj` (respectively `::GAP.Obj` or `::GapInt`),
+the resulting function accepts arguments of any type and attempts to convert them
+to `GapObj` (respectively `GAP.Obj` or `GapInt`) before passing them to the GAP function.
 
 Another use case for this macro is to improve type stability of code calling into
 GAP, via the type annotations for the arguments and return value contained in the

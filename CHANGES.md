@@ -1,5 +1,15 @@
 # Changes in GAP.jl
 
+## Version 0.11.1-DEV (released YYYY-MM-DD)
+
+- Optimize conversion from `UInt` to `GapObj`
+- Allow `GapInt(x)` as shorthand for producing a GAP integer
+- Show an error when trying to load GAP.jl while multithreaded GC is enabled
+- Support `gap_to_julia(::AbstractVector)`
+- Enhance `@wrap` so that it can produce wrapper functions which coerce
+  arguments to GAP objects (see its docstring for details and examples)
+- Various janitorial changes
+
 ## Version 0.11.0 (released 2024-04-05)
 
 - Update to GAP 4.13.0
