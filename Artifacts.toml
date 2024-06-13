@@ -1,6 +1,6 @@
 [gap_packages]
-git-tree-sha1 = "1e4da4944af996a96c81addcc8034d122d0a5738"
+git-tree-sha1 = "a24cceaecaac91adaf0f67802e4670ff5de4afa7"
 
     [[gap_packages.download]]
-    sha256 = "43d75100eb75d3f1e7470d1a7b11164882dca66c70f7ad9d56915c9e4d90bc0f"
-    url = "https://github.com/gap-system/gap/releases/download/v4.13.0/packages-v4.13.0.tar.gz"
+    sha256 = "77b1dfaf3ec6cc9e45aab2ed3f33187fc507e18f3c0bc13bbf6741748f0c6e7c"
+    url = "https://github.com/gap-system/PackageDistro/releases/download/v4.13.1/packages.tar.gz"
