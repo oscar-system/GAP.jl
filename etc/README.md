@@ -84,6 +84,7 @@ using ArtifactUtils
 add_artifact!(
   "Artifacts.toml",
   "gap_packages",
-  "https://github.com/gap-system/PackageDistro/releases/download/v4.12.2-GAP.jl/packages.tar.gz"
+  "https://github.com/gap-system/PackageDistro/releases/download/v4.13.1/packages.tar.gz";
+  force=true
 )
 ```

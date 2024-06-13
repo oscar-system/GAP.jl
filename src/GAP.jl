@@ -233,10 +233,6 @@ function __init__()
         windows_error()
     end
 
-    if isdefined(Threads, :ngcthreads) && Threads.ngcthreads() > 1
-        error("GAP.jl currently does not support multithreaded garbage collection. Please run julia with `--gcthreads=1` for now.")
-    end
-
     # always regenerate our custom GAP root dir, to accommodate for changes
     # in the system configuration (artifact paths, available compilers, ...)
     global sysinfo
