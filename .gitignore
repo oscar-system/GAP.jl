@@ -3,5 +3,5 @@
 Manifest.toml
 /tags
 *.log
-
-proj*
+/coverage/
+/override/
