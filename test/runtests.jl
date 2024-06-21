@@ -24,3 +24,13 @@ end
 @testset "manual examples" begin
   include("doctest.jl")
 end
+
+@testset "JuliaInterface tests" begin
+  GAP.Wrappers.Read(joinpath(dirname(dirname(pathof(GAP))), "pkg/JuliaInterface/tst/testsetup.g"))
+  GAP.Globals.TestDirectory(GAP.Globals.dir, GapObj(Dict(:exitGAP => false, :testOptions => Dict(:compareFunction => GAP.Globals.compare)); recursive=true))
+end
+
+@testset "JuliaExperimental tests" begin
+  GAP.Wrappers.Read(joinpath(dirname(dirname(pathof(GAP))), "pkg/JuliaExperimental/tst/testsetup.g"))
+  GAP.Globals.TestDirectory(GAP.Globals.files, GapObj(Dict(:exitGAP => false, :testOptions => Dict(:compareFunction => "uptowhitespace")); recursive=true))
+end

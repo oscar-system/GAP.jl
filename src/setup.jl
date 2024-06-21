@@ -269,7 +269,7 @@ function create_gap_sh(dstdir::String)
     ## Create Project.toml & Manifest.toml for use by gap.sh
     ##
     @info "Generating custom Julia project ..."
-    run(pipeline(`$(Base.julia_cmd()) --startup-file=no --project=$(dstdir) -e "using Pkg; Pkg.develop(PackageSpec(path=\"$(gaproot_gapjl)\"))"`))
+    run(`$(Base.julia_cmd()) --startup-file=no --project=$(dstdir) -e "using Pkg; Pkg.develop(PackageSpec(path=\"$(gaproot_gapjl)\"))"`)
 
     ##
     ## Create custom gap.sh
