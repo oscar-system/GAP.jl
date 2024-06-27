@@ -80,8 +80,8 @@ CallFuncList( function()
     if IsReadableFile( filename ) then
       res:= JuliaEvalString(
                 Concatenation( "try include( \"", filename, "\" ); ",
-                    "; return true; catch e; return e; end" ) );
-      if res = true then
+                    "; return true; catch e; return string(e); end" ) );
+      if IsIdenticalObj( res, true ) then
         return;
       fi;
     fi;
