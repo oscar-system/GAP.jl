@@ -1,5 +1,13 @@
 # Changes in GAP.jl
 
+- Remove the GAP user preference `IncludeJuliaStartupFile`
+  that was used to control whether `~/.julia/config/startup.jl`
+  gets included by Julia when GAP is started together with Julia
+  via a `gap.sh` script.
+  In this situation, one can now use the environment variable
+  `JULIA_STARTUP_FILE_IN_GAP`;
+  if its value is `yes` then the startup file gets included, otherwise not.
+
 ## Version 0.11.1 (released 2024-06-06)
 
 - Optimize conversion from `UInt` to `GapObj`

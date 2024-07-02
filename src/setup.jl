@@ -286,7 +286,13 @@ function create_gap_sh(dstdir::String)
         # But you can always instead load this file as if it was a .jl file via any
         # other Julia executable.
         #=
-        exec $(joinpath(Sys.BINDIR, Base.julia_exename())) --startup-file=no --project=$(dstdir) -i -- "$(gap_sh_path)" "\$@"
+        if [ "\$JULIA_STARTUP_FILE_IN_GAP" = "yes" ]
+        then
+            READ_STARTUP_FILE="yes"
+        else
+            READ_STARTUP_FILE="no"
+        fi
+        exec $(joinpath(Sys.BINDIR, Base.julia_exename())) --startup-file=\$READ_STARTUP_FILE --project=$(dstdir) -i -- "$(gap_sh_path)" "\$@"
         =#
 
         # pass command line arguments to GAP.jl via a small hack

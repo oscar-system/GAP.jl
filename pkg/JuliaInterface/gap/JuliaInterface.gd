@@ -86,9 +86,6 @@
 #!  <URL><Link>https://github.com/oscar-system/GAP.jl</Link>
 #!  <LinkText>the &Julia; package <C>GAP.jl</C></LinkText></URL>,
 #!  hence it can be found there.
-#!
-#! @Section User preferences in the <Package>JuliaInterface</Package> package
-#! @InsertChunk IncludeJuliaStartupFile
 
 #! @Chapter Using &Julia; from &GAP;
 #! @Section Filters for <Package>JuliaInterface</Package>
