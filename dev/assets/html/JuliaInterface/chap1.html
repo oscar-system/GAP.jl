@@ -28,12 +28,6 @@
 <div class="ContSect"><span class="tocline"><span class="nocss">&nbsp;</span><a href="chap1.html#X80E761808323A91E">1.2 <span class="Heading">Installation of the <strong class="pkg">JuliaInterface</strong> package</span></a>
 </span>
 </div>
-<div class="ContSect"><span class="tocline"><span class="nocss">&nbsp;</span><a href="chap1.html#X78B45CA17952269B">1.3 <span class="Heading">User preferences in the <strong class="pkg">JuliaInterface</strong> package</span></a>
-</span>
-<div class="ContSSBlock">
-<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap1.html#X7A8949AE84273FCC">1.3-1 <span class="Heading">User preference <code class="code">IncludeJuliaStartupFile</code></span></a>
-</span>
-</div></div>
 </div>
 
 <h3>1 <span class="Heading">Introduction to <strong class="pkg">JuliaInterface</strong></span></h3>
@@ -93,25 +87,6 @@
 <div class="example"><pre>using GAP; GAP.create_gap_sh(dstdir)</pre></div>
 
 <p>Note that the <strong class="pkg">JuliaInterface</strong> code belongs to <span class="URL"><a href="https://github.com/oscar-system/GAP.jl">the <strong class="pkg">Julia</strong> package <code class="code">GAP.jl</code></a></span>, hence it can be found there.</p>
-
-<p><a id="X78B45CA17952269B" name="X78B45CA17952269B"></a></p>
-
-<h4>1.3 <span class="Heading">User preferences in the <strong class="pkg">JuliaInterface</strong> package</span></h4>
-
-<p><a id="X7A8949AE84273FCC" name="X7A8949AE84273FCC"></a></p>
-
-<h5>1.3-1 <span class="Heading">User preference <code class="code">IncludeJuliaStartupFile</code></span></h5>
-
-<p>When one starts an interactive <strong class="pkg">Julia</strong> session, the <strong class="pkg">Julia</strong> startup file <code class="file">~/.julia/config/startup.jl</code> gets included automatically by default, see <span class="URL"><a href="https://docs.julialang.org/en/v1/stdlib/REPL">the section <q>The Julia REPL</q> in the <strong class="pkg">Julia</strong> documentation</a></span>. Hence the effects of this inclusion can be used in a <strong class="pkg">GAP</strong> session which one gets via the following input.</p>
-
-
-<div class="example"><pre>using GAP; GAP.prompt()</pre></div>
-
-<p>However, this <strong class="pkg">Julia</strong> startup file is <em>not</em> included into <strong class="pkg">Julia</strong> by default when <strong class="pkg">GAP</strong> gets started via the <code class="file">gap.sh</code> script that is created during the installation of <strong class="pkg">GAP</strong> (controlled by <strong class="pkg">Julia</strong>).</p>
-
-<p>The user preference <code class="code">IncludeJuliaStartupFile</code> can be used to force that the startup file gets included also in the latter situation, as follows.</p>
-
-<p>If the value is <code class="keyw">true</code> then the file <code class="file">~/.julia/config/startup.jl</code> gets included into <strong class="pkg">Julia</strong> after startup. If the value is a nonempty string that is the name of a directory then the <code class="file">startup.jl</code> file in this directory gets included into <strong class="pkg">Julia</strong>. Otherwise (this is the default) no <code class="file">startup.jl</code> file will be included automatically.</p>
 
 
 <div class="chlinkprevnextbot">&nbsp;<a href="chap0.html">[Top of Book]</a>&nbsp;  <a href="chap0.html#contents">[Contents]</a>&nbsp;  &nbsp;<a href="chap0.html">[Previous Chapter]</a>&nbsp;  &nbsp;<a href="chap2.html">[Next Chapter]</a>&nbsp;  </div>
