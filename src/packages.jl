@@ -251,6 +251,32 @@ function install(spec::String, version::String = "";
       if version == ""
         res = Globals.InstallPackage(GapObj(spec), interactive; debug)
       else
+        # We assume that `spec` is a package name.
+        # If the required version is already installed and can be loaded
+        # then do not ask for installing it again.
+        # (This avoids for example downloading the `PackageInfo.g` info.)
+#TODO: Remove this step as soon as PackageManager contains it.
+        info = Globals.GAPInfo.PackagesLoaded
+        if hasproperty(info, spec)
+          # The package is already loaded.
+          # If the loaded version is the same as the required one
+          # then nothing is to do.
+          # (If the loaded version is *not* the required one
+          # then we can still try to install the required version.)
+          version == string(getproperty(info, spec)[2]) && return true
+        end
+        info = Globals.GAPInfo.PackagesInfo
+        if hasproperty(info, spec)
+          # The package is not yet loaded but may be available.
+          # If an available version has the required version number
+          # then nothing is to do.
+          for inforec in getproperty(info, spec)
+            if version == string(getproperty(inforec, :Version))
+              fun = getproperty(inforec, :AvailabilityTest)
+              fun() && return true
+            end
+          end
+        end
         res = Globals.InstallPackage(GapObj(spec), GapObj(version), interactive; debug)
       end
       if quiet || debug
