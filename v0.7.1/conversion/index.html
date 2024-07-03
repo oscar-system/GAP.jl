@@ -1,9 +1,50 @@
-<!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Conversions · GAP.jl</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit">GAP.jl</span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">GAP.jl</a></li><li><a class="tocitem" href="../basics/">Basics</a></li><li class="is-active"><a class="tocitem" href>Conversions</a><ul class="internal"><li><a class="tocitem" href="#Automatic-GAP-to-Julia-and-Julia-to-GAP-Conversions"><span>Automatic GAP-to-Julia and Julia-to-GAP Conversions</span></a></li><li><a class="tocitem" href="#Explicit-GAP-to-Julia-and-Julia-to-GAP-Conversions"><span>Explicit GAP-to-Julia and Julia-to-GAP Conversions</span></a></li><li><a class="tocitem" href="#Constructor-Methods-for-GAP-to-Julia-Conversions"><span>Constructor Methods for GAP-to-Julia Conversions</span></a></li></ul></li><li><a class="tocitem" href="../packages/">Managing GAP packages</a></li><li><a class="tocitem" href="../other/">Other stuff</a></li><li><a class="tocitem" href="../manualindex/">Index</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Conversions</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Conversions</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/oscar-system/GAP.jl/blob/master/docs/src/conversion.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Conversions"><a class="docs-heading-anchor" href="#Conversions">Conversions</a><a id="Conversions-1"></a><a class="docs-heading-anchor-permalink" href="#Conversions" title="Permalink"></a></h1><p>One of the main ideas of GAP.jl is that automatic conversions of Julia objects to GAP objects and vice versa shall be avoided whenever this is possible. For a few types of objects, such conversions are unavoidable, see <a href="#Automatic-GAP-to-Julia-and-Julia-to-GAP-Conversions">Automatic GAP-to-Julia and Julia-to-GAP Conversions</a>. In all other situations, the conversions between GAP objects and corresponding Julia objects can be performed using <a href="#GAP.gap_to_julia"><code>gap_to_julia</code></a> and <a href="#GAP.julia_to_gap"><code>julia_to_gap</code></a>, see <a href="#Explicit-GAP-to-Julia-and-Julia-to-GAP-Conversions">Explicit GAP-to-Julia and Julia-to-GAP Conversions</a>, respectively.</p><p>For convenience, also constructor methods are provided, for example <code>Vector{Int64}(obj)</code> can be used instead of <code>GAP.gap_to_julia(Vector{Int64}, obj)</code>, where <code>obj</code> is a GAP list of integers; see <a href="#Constructor-Methods-for-GAP-to-Julia-Conversions">Constructor Methods for GAP-to-Julia Conversions</a> for a description of these methods. For Julia-to-GAP conversions, one can use for example <code>GapObj(obj)</code>, where <code>obj</code> is a Julia object, see <a href="../basics/#GAP.GapObj"><code>GapObj</code></a>.</p><h2 id="Automatic-GAP-to-Julia-and-Julia-to-GAP-Conversions"><a class="docs-heading-anchor" href="#Automatic-GAP-to-Julia-and-Julia-to-GAP-Conversions">Automatic GAP-to-Julia and Julia-to-GAP Conversions</a><a id="Automatic-GAP-to-Julia-and-Julia-to-GAP-Conversions-1"></a><a class="docs-heading-anchor-permalink" href="#Automatic-GAP-to-Julia-and-Julia-to-GAP-Conversions" title="Permalink"></a></h2><p>When one calls a GAP function with Julia objects as arguments, or a Julia function with GAP objects as arguments, the arguments are in general not automatically converted to GAP objects or Julia objects, respectively. The exceptions are as follows.</p><ul><li><p>GAP&#39;s immediate integers (in the range -2^60 to 2^60-1) are automatically converted to Julia&#39;s <code>Int64</code> objects; Julia&#39;s <code>Int64</code> objects are automatically converted to GAP&#39;s immediate integers if they fit, and to GAP&#39;s large integers otherwise.</p></li><li><p>GAP&#39;s immediate finite field elements are automatically converted to Julia&#39;s <code>GAP.FFE</code> objects, and vice versa.</p></li><li><p>GAP&#39;s <code>true</code> and <code>false</code> are automatically converted to Julia&#39;s <code>true</code> and <code>false</code>, and vice versa.</p></li></ul><h2 id="Explicit-GAP-to-Julia-and-Julia-to-GAP-Conversions"><a class="docs-heading-anchor" href="#Explicit-GAP-to-Julia-and-Julia-to-GAP-Conversions">Explicit GAP-to-Julia and Julia-to-GAP Conversions</a><a id="Explicit-GAP-to-Julia-and-Julia-to-GAP-Conversions-1"></a><a class="docs-heading-anchor-permalink" href="#Explicit-GAP-to-Julia-and-Julia-to-GAP-Conversions" title="Permalink"></a></h2><article class="docstring"><header><a class="docstring-binding" id="GAP.gap_to_julia" href="#GAP.gap_to_julia"><code>GAP.gap_to_julia</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia">gap_to_julia(type, x, recursion_dict=nothing; recursive::Bool=true)</code></pre><p>Try to convert the object <code>x</code> to a Julia object of type <code>type</code>. If <code>x</code> is a <code>GAP.GapObj</code> then the conversion rules are defined in the manual of the GAP package JuliaInterface. If <code>x</code> is another <code>GAP.Obj</code> (for example a <code>Int64</code>) then the result is defined in Julia by <code>type</code>.</p><p>The parameter <code>recursion_dict</code> is used to preserve the identity of converted subobjects and should never be given by the user.</p><p>For GAP lists and records, it makes sense to convert also the subobjects recursively, or to keep the subobjects as they are; the behaviour is controlled by <code>recursive</code>, which can be <code>true</code> or <code>false</code>.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; GAP.gap_to_julia( GAP.evalstr( &quot;1/3&quot; ) )
+<!DOCTYPE html><HTML lang="en"><head><meta charset="UTF-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><title>Conversions · GAP.jl</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script data-main="../assets/documenter.js" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" data-theme-name="documenter-dark" href="../assets/themes/documenter-dark.css" rel="stylesheet" type="text/css"/><link class="docs-theme-link" data-theme-name="documenter-light" data-theme-primary="" href="../assets/themes/documenter-light.css" rel="stylesheet" type="text/css"/><script src="../assets/themeswap.js"></script><script data-outdated-warner="">function maybeAddWarning () {
+    const head = document.getElementsByTagName('head')[0];
+
+    // Add a noindex meta tag (unless one exists) so that search engines don't index this version of the docs.
+    if (document.body.querySelector('meta[name="robots"]') === null) {
+        const meta = document.createElement('meta');
+        meta.name = 'robots';
+        meta.content = 'noindex';
+
+        head.appendChild(meta);
+    };
+
+    // Add a stylesheet to avoid inline styling
+    const style = document.createElement('style');
+    style.type = 'text/css';
+    style.appendChild(document.createTextNode('.outdated-warning-overlay {  position: fixed;  top: 0;  left: 0;  right: 0;  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);  z-index: 999;  background-color: #ffaba7;  color: rgba(0, 0, 0, 0.7);  border-bottom: 3px solid #da0b00;  padding: 10px 35px;  text-align: center;  font-size: 15px; }  .outdated-warning-overlay .outdated-warning-closer {    position: absolute;    top: calc(50% - 10px);    right: 18px;    cursor: pointer;    width: 12px; }  .outdated-warning-overlay a {    color: #2e63b8; }    .outdated-warning-overlay a:hover {      color: #363636; }'));
+    head.appendChild(style);
+
+    const div = document.createElement('div');
+    div.classList.add('outdated-warning-overlay');
+    const closer = document.createElement('div');
+    closer.classList.add('outdated-warning-closer');
+
+    // Icon by font-awesome (license: https://fontawesome.com/license, link: https://fontawesome.com/icons/times?style=solid)
+    closer.innerHTML = '<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="times" class="svg-inline--fa fa-times fa-w-11" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 352 512"><path fill="currentColor" d="M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z"></path></svg>';
+    closer.addEventListener('click', function () {
+        document.body.removeChild(div);
+    });
+    let href = '/stable';
+    if (window.documenterBaseURL) {
+        href = window.documenterBaseURL + '/../stable';
+    }
+    div.innerHTML = 'This documentation is not for the latest version. <br> <a href="' + href + '">Go to the latest documentation</a>.';
+    div.appendChild(closer);
+    document.body.appendChild(div);
+};
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', maybeAddWarning);
+} else {
+    maybeAddWarning();
+};
+</script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit">GAP.jl</span></div><form action="../search/" class="docs-search"><input class="docs-search-query" id="documenter-search-query" name="q" placeholder="Search docs" type="text"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">GAP.jl</a></li><li><a class="tocitem" href="../basics/">Basics</a></li><li class="is-active"><a class="tocitem" href="">Conversions</a><ul class="internal"><li><a class="tocitem" href="#Automatic-GAP-to-Julia-and-Julia-to-GAP-Conversions"><span>Automatic GAP-to-Julia and Julia-to-GAP Conversions</span></a></li><li><a class="tocitem" href="#Explicit-GAP-to-Julia-and-Julia-to-GAP-Conversions"><span>Explicit GAP-to-Julia and Julia-to-GAP Conversions</span></a></li><li><a class="tocitem" href="#Constructor-Methods-for-GAP-to-Julia-Conversions"><span>Constructor Methods for GAP-to-Julia Conversions</span></a></li></ul></li><li><a class="tocitem" href="../packages/">Managing GAP packages</a></li><li><a class="tocitem" href="../other/">Other stuff</a></li><li><a class="tocitem" href="../manualindex/">Index</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href="">Conversions</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href="">Conversions</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/oscar-system/GAP.jl/blob/master/docs/src/conversion.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" href="#" id="documenter-settings-button" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" href="#" id="documenter-sidebar-button"></a></div></header><article class="content" id="documenter-page"><h1 id="Conversions"><a class="docs-heading-anchor" href="#Conversions">Conversions</a><a id="Conversions-1"></a><a class="docs-heading-anchor-permalink" href="#Conversions" title="Permalink"></a></h1><p>One of the main ideas of GAP.jl is that automatic conversions of Julia objects to GAP objects and vice versa shall be avoided whenever this is possible. For a few types of objects, such conversions are unavoidable, see <a href="#Automatic-GAP-to-Julia-and-Julia-to-GAP-Conversions">Automatic GAP-to-Julia and Julia-to-GAP Conversions</a>. In all other situations, the conversions between GAP objects and corresponding Julia objects can be performed using <a href="#GAP.gap_to_julia"><code>gap_to_julia</code></a> and <a href="#GAP.julia_to_gap"><code>julia_to_gap</code></a>, see <a href="#Explicit-GAP-to-Julia-and-Julia-to-GAP-Conversions">Explicit GAP-to-Julia and Julia-to-GAP Conversions</a>, respectively.</p><p>For convenience, also constructor methods are provided, for example <code>Vector{Int64}(obj)</code> can be used instead of <code>GAP.gap_to_julia(Vector{Int64}, obj)</code>, where <code>obj</code> is a GAP list of integers; see <a href="#Constructor-Methods-for-GAP-to-Julia-Conversions">Constructor Methods for GAP-to-Julia Conversions</a> for a description of these methods. For Julia-to-GAP conversions, one can use for example <code>GapObj(obj)</code>, where <code>obj</code> is a Julia object, see <a href="../basics/#GAP.GapObj"><code>GapObj</code></a>.</p><h2 id="Automatic-GAP-to-Julia-and-Julia-to-GAP-Conversions"><a class="docs-heading-anchor" href="#Automatic-GAP-to-Julia-and-Julia-to-GAP-Conversions">Automatic GAP-to-Julia and Julia-to-GAP Conversions</a><a id="Automatic-GAP-to-Julia-and-Julia-to-GAP-Conversions-1"></a><a class="docs-heading-anchor-permalink" href="#Automatic-GAP-to-Julia-and-Julia-to-GAP-Conversions" title="Permalink"></a></h2><p>When one calls a GAP function with Julia objects as arguments, or a Julia function with GAP objects as arguments, the arguments are in general not automatically converted to GAP objects or Julia objects, respectively. The exceptions are as follows.</p><ul><li><p>GAP's immediate integers (in the range -2^60 to 2^60-1) are automatically converted to Julia's <code>Int64</code> objects; Julia's <code>Int64</code> objects are automatically converted to GAP's immediate integers if they fit, and to GAP's large integers otherwise.</p></li><li><p>GAP's immediate finite field elements are automatically converted to Julia's <code>GAP.FFE</code> objects, and vice versa.</p></li><li><p>GAP's <code>true</code> and <code>false</code> are automatically converted to Julia's <code>true</code> and <code>false</code>, and vice versa.</p></li></ul><h2 id="Explicit-GAP-to-Julia-and-Julia-to-GAP-Conversions"><a class="docs-heading-anchor" href="#Explicit-GAP-to-Julia-and-Julia-to-GAP-Conversions">Explicit GAP-to-Julia and Julia-to-GAP Conversions</a><a id="Explicit-GAP-to-Julia-and-Julia-to-GAP-Conversions-1"></a><a class="docs-heading-anchor-permalink" href="#Explicit-GAP-to-Julia-and-Julia-to-GAP-Conversions" title="Permalink"></a></h2><article class="docstring"><header><a class="docstring-binding" href="#GAP.gap_to_julia" id="GAP.gap_to_julia"><code>GAP.gap_to_julia</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia">gap_to_julia(type, x, recursion_dict=nothing; recursive::Bool=true)</code></pre><p>Try to convert the object <code>x</code> to a Julia object of type <code>type</code>. If <code>x</code> is a <code>GAP.GapObj</code> then the conversion rules are defined in the manual of the GAP package JuliaInterface. If <code>x</code> is another <code>GAP.Obj</code> (for example a <code>Int64</code>) then the result is defined in Julia by <code>type</code>.</p><p>The parameter <code>recursion_dict</code> is used to preserve the identity of converted subobjects and should never be given by the user.</p><p>For GAP lists and records, it makes sense to convert also the subobjects recursively, or to keep the subobjects as they are; the behaviour is controlled by <code>recursive</code>, which can be <code>true</code> or <code>false</code>.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; GAP.gap_to_julia( GAP.evalstr( "1/3" ) )
 1//3
 
-julia&gt; GAP.gap_to_julia( GAP.evalstr( &quot;\&quot;abc\&quot;&quot; ) )
-&quot;abc&quot;
+julia&gt; GAP.gap_to_julia( GAP.evalstr( "\"abc\"" ) )
+"abc"
 
 julia&gt; val = GapObj([ 1 2 ; 3 4 ])
 GAP: [ [ 1, 2 ], [ 3, 4 ] ]
@@ -26,29 +67,29 @@ julia&gt; GAP.gap_to_julia( Vector{GapObj}, val )
 julia&gt; GAP.gap_to_julia( Matrix{Int}, val )
 2×2 Matrix{Int64}:
  1  2
- 3  4</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/4e1f64ccfbdeccd9a1647a1bca4c7ed775486b39/src/gap_to_julia.jl#L13-L60">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="GAP.julia_to_gap" href="#GAP.julia_to_gap"><code>GAP.julia_to_gap</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia">julia_to_gap(input, recursion_dict = IdDict(); recursive::Bool = false)</code></pre><p>Convert a julia object <code>input</code> to an appropriate GAP object. If <code>recursive</code> is set to <code>true</code>, recursive conversions on arrays, tuples, and dictionaries is performed.</p><p>The input <code>recursion_dict</code> should never be set by the user, it is meant to keep egality of input data, by converting egal data to identical objects in GAP.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; GAP.julia_to_gap(1//3)
+ 3  4</code></pre></div><a class="docs-sourcelink" href="https://github.com/oscar-system/GAP.jl/blob/4e1f64ccfbdeccd9a1647a1bca4c7ed775486b39/src/gap_to_julia.jl#L13-L60" target="_blank">source</a></section></article><article class="docstring"><header><a class="docstring-binding" href="#GAP.julia_to_gap" id="GAP.julia_to_gap"><code>GAP.julia_to_gap</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia">julia_to_gap(input, recursion_dict = IdDict(); recursive::Bool = false)</code></pre><p>Convert a julia object <code>input</code> to an appropriate GAP object. If <code>recursive</code> is set to <code>true</code>, recursive conversions on arrays, tuples, and dictionaries is performed.</p><p>The input <code>recursion_dict</code> should never be set by the user, it is meant to keep egality of input data, by converting egal data to identical objects in GAP.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; GAP.julia_to_gap(1//3)
 GAP: 1/3
 
-julia&gt; GAP.julia_to_gap(&quot;abc&quot;)
-GAP: &quot;abc&quot;
+julia&gt; GAP.julia_to_gap("abc")
+GAP: "abc"
 
 julia&gt; GAP.julia_to_gap([ [1, 2], [3, 4]])
 GAP: [ &lt;Julia: [1, 2]&gt;, &lt;Julia: [3, 4]&gt; ]
 
 julia&gt; GAP.julia_to_gap([ [1, 2], [3, 4]], recursive = true)
 GAP: [ [ 1, 2 ], [ 3, 4 ] ]
-</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/4e1f64ccfbdeccd9a1647a1bca4c7ed775486b39/src/julia_to_gap.jl#L2-L27">source</a></section></article><h2 id="Constructor-Methods-for-GAP-to-Julia-Conversions"><a class="docs-heading-anchor" href="#Constructor-Methods-for-GAP-to-Julia-Conversions">Constructor Methods for GAP-to-Julia Conversions</a><a id="Constructor-Methods-for-GAP-to-Julia-Conversions-1"></a><a class="docs-heading-anchor-permalink" href="#Constructor-Methods-for-GAP-to-Julia-Conversions" title="Permalink"></a></h2><p>(For Julia-to-GAP conversions, one can use <a href="../basics/#GAP.GapObj"><code>GapObj</code></a> and <a href="../basics/#GAP.Obj"><code>GAP.Obj</code></a> as constructors.)</p><article class="docstring"><header><a class="docstring-binding" id="Core.Int128" href="#Core.Int128"><code>Core.Int128</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia">Int128(obj::GapObj)</code></pre><p>Return the <code>Int128</code> converted from the <a href="https://www.gap-system.org/Manuals/doc/ref/chap14.html#X853DF11B80068ED5">GAP integer</a> <code>obj</code>. (Note that small GAP integers are represented by Julia <code>Int64</code> objects, in particular they are not <code>GapObj</code>s; their conversion is not handled by methods installed in GAP.jl.)</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; val = GAP.evalstr(&quot;2^80&quot;)
+</code></pre></div><a class="docs-sourcelink" href="https://github.com/oscar-system/GAP.jl/blob/4e1f64ccfbdeccd9a1647a1bca4c7ed775486b39/src/julia_to_gap.jl#L2-L27" target="_blank">source</a></section></article><h2 id="Constructor-Methods-for-GAP-to-Julia-Conversions"><a class="docs-heading-anchor" href="#Constructor-Methods-for-GAP-to-Julia-Conversions">Constructor Methods for GAP-to-Julia Conversions</a><a id="Constructor-Methods-for-GAP-to-Julia-Conversions-1"></a><a class="docs-heading-anchor-permalink" href="#Constructor-Methods-for-GAP-to-Julia-Conversions" title="Permalink"></a></h2><p>(For Julia-to-GAP conversions, one can use <a href="../basics/#GAP.GapObj"><code>GapObj</code></a> and <a href="../basics/#GAP.Obj"><code>GAP.Obj</code></a> as constructors.)</p><article class="docstring"><header><a class="docstring-binding" href="#Core.Int128" id="Core.Int128"><code>Core.Int128</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia">Int128(obj::GapObj)</code></pre><p>Return the <code>Int128</code> converted from the <a href="https://www.gap-system.org/Manuals/doc/ref/chap14.html#X853DF11B80068ED5">GAP integer</a><code>obj</code>. (Note that small GAP integers are represented by Julia <code>Int64</code> objects, in particular they are not <code>GapObj</code>s; their conversion is not handled by methods installed in GAP.jl.)</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; val = GAP.evalstr("2^80")
 GAP: 1208925819614629174706176
 
 julia&gt; Int128(val)
 1208925819614629174706176
-</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/4e1f64ccfbdeccd9a1647a1bca4c7ed775486b39/src/constructors.jl#L43-L61">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Base.GMP.BigInt" href="#Base.GMP.BigInt"><code>Base.GMP.BigInt</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia">BigInt(obj::GapObj)</code></pre><p>Return the big integer converted from the <a href="https://www.gap-system.org/Manuals/doc/ref/chap14.html#X853DF11B80068ED5">GAP integer</a> <code>obj</code>. (Note that small GAP integers are not represented by <code>GapObj</code>s, their conversion with <code>BigInt</code> is handled by Julia&#39;s methods.)</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; val = GAP.evalstr(&quot;2^64&quot;)
+</code></pre></div><a class="docs-sourcelink" href="https://github.com/oscar-system/GAP.jl/blob/4e1f64ccfbdeccd9a1647a1bca4c7ed775486b39/src/constructors.jl#L43-L61" target="_blank">source</a></section></article><article class="docstring"><header><a class="docstring-binding" href="#Base.GMP.BigInt" id="Base.GMP.BigInt"><code>Base.GMP.BigInt</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia">BigInt(obj::GapObj)</code></pre><p>Return the big integer converted from the <a href="https://www.gap-system.org/Manuals/doc/ref/chap14.html#X853DF11B80068ED5">GAP integer</a><code>obj</code>. (Note that small GAP integers are not represented by <code>GapObj</code>s, their conversion with <code>BigInt</code> is handled by Julia's methods.)</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; val = GAP.evalstr("2^64")
 GAP: 18446744073709551616
 
 julia&gt; BigInt(val)
 18446744073709551616
 
-julia&gt; val = GAP.evalstr(&quot;2^59&quot;)
+julia&gt; val = GAP.evalstr("2^59")
 576460752303423488
 
 julia&gt; isa(val, GapObj)
@@ -56,7 +97,7 @@ false
 
 julia&gt; BigInt(val)
 576460752303423488
-</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/4e1f64ccfbdeccd9a1647a1bca4c7ed775486b39/src/constructors.jl#L10-L36">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Base.Rational" href="#Base.Rational"><code>Base.Rational</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia">Rational{T}(obj::GapObj) where {T&lt;:Integer}</code></pre><p>Return the rational converted from the <a href="https://www.gap-system.org/Manuals/doc/ref/chap14.html#X853DF11B80068ED5">GAP integer</a> or the <a href="https://www.gap-system.org/Manuals/doc/ref/chap17.html#X7B6029D18570C08A">GAP rational</a> <code>obj</code>,</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; val = GAP.evalstr(&quot;2^64&quot;)
+</code></pre></div><a class="docs-sourcelink" href="https://github.com/oscar-system/GAP.jl/blob/4e1f64ccfbdeccd9a1647a1bca4c7ed775486b39/src/constructors.jl#L10-L36" target="_blank">source</a></section></article><article class="docstring"><header><a class="docstring-binding" href="#Base.Rational" id="Base.Rational"><code>Base.Rational</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia">Rational{T}(obj::GapObj) where {T&lt;:Integer}</code></pre><p>Return the rational converted from the <a href="https://www.gap-system.org/Manuals/doc/ref/chap14.html#X853DF11B80068ED5">GAP integer</a> or the <a href="https://www.gap-system.org/Manuals/doc/ref/chap17.html#X7B6029D18570C08A">GAP rational</a><code>obj</code>,</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; val = GAP.evalstr("2^64")
 GAP: 18446744073709551616
 
 julia&gt; Rational{Int128}(val)
@@ -65,12 +106,12 @@ julia&gt; Rational{Int128}(val)
 julia&gt; Rational{BigInt}(val)
 18446744073709551616//1
 
-julia&gt; val = GAP.evalstr(&quot;1/3&quot;)
+julia&gt; val = GAP.evalstr("1/3")
 GAP: 1/3
 
 julia&gt; Rational{Int64}(val)
 1//3
-</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/4e1f64ccfbdeccd9a1647a1bca4c7ed775486b39/src/constructors.jl#L104-L129">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Core.Float64" href="#Core.Float64"><code>Core.Float64</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia">Float64(obj::GapObj)</code></pre><p>Return the float converted from the <a href="https://www.gap-system.org/Manuals/doc/ref/chap19.html#X81AA901181CA568F">GAP float</a> <code>obj</code>.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; val = GAP.evalstr(&quot;2.2&quot;)
+</code></pre></div><a class="docs-sourcelink" href="https://github.com/oscar-system/GAP.jl/blob/4e1f64ccfbdeccd9a1647a1bca4c7ed775486b39/src/constructors.jl#L104-L129" target="_blank">source</a></section></article><article class="docstring"><header><a class="docstring-binding" href="#Core.Float64" id="Core.Float64"><code>Core.Float64</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia">Float64(obj::GapObj)</code></pre><p>Return the float converted from the <a href="https://www.gap-system.org/Manuals/doc/ref/chap19.html#X81AA901181CA568F">GAP float</a><code>obj</code>.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; val = GAP.evalstr("2.2")
 GAP: 2.2
 
 julia&gt; Float64(val)
@@ -78,50 +119,50 @@ julia&gt; Float64(val)
 
 julia&gt; Float32(val)
 2.2f0
-</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/4e1f64ccfbdeccd9a1647a1bca4c7ed775486b39/src/constructors.jl#L133-L150">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Base.big" href="#Base.big"><code>Base.big</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia">big(obj::GapObj)</code></pre><p>Return the big integer converted from the <a href="https://www.gap-system.org/Manuals/doc/ref/chap14.html#X853DF11B80068ED5">GAP integer</a> <code>obj</code>, or the big rational converted from the <a href="https://www.gap-system.org/Manuals/doc/ref/chap17.html#X7B6029D18570C08A">GAP rational</a> <code>obj</code>, or the big float converted from the <a href="https://www.gap-system.org/Manuals/doc/ref/chap19.html#X81AA901181CA568F">GAP float</a> <code>obj</code>.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; val = GAP.evalstr(&quot;2^64&quot;)
+</code></pre></div><a class="docs-sourcelink" href="https://github.com/oscar-system/GAP.jl/blob/4e1f64ccfbdeccd9a1647a1bca4c7ed775486b39/src/constructors.jl#L133-L150" target="_blank">source</a></section></article><article class="docstring"><header><a class="docstring-binding" href="#Base.big" id="Base.big"><code>Base.big</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia">big(obj::GapObj)</code></pre><p>Return the big integer converted from the <a href="https://www.gap-system.org/Manuals/doc/ref/chap14.html#X853DF11B80068ED5">GAP integer</a><code>obj</code>, or the big rational converted from the <a href="https://www.gap-system.org/Manuals/doc/ref/chap17.html#X7B6029D18570C08A">GAP rational</a><code>obj</code>, or the big float converted from the <a href="https://www.gap-system.org/Manuals/doc/ref/chap19.html#X81AA901181CA568F">GAP float</a><code>obj</code>.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; val = GAP.evalstr("2^64")
 GAP: 18446744073709551616
 
 julia&gt; big(val)
 18446744073709551616
 
-julia&gt; val = GAP.evalstr(&quot;1/3&quot;)
+julia&gt; val = GAP.evalstr("1/3")
 GAP: 1/3
 
 julia&gt; big(val)
 1//3
 
-julia&gt; val = GAP.evalstr(&quot;1.1&quot;)
+julia&gt; val = GAP.evalstr("1.1")
 GAP: 1.1
 
 julia&gt; big(val)
 1.100000000000000088817841970012523233890533447265625
-</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/4e1f64ccfbdeccd9a1647a1bca4c7ed775486b39/src/constructors.jl#L64-L95">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Core.Char" href="#Core.Char"><code>Core.Char</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia">Char(obj::GapObj)</code></pre><p>Return the character converted from the <a href="https://www.gap-system.org/Manuals/doc/ref/chap27.html#X7D28329B7EDB8F47">GAP character</a> <code>obj</code>.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; val = GAP.evalstr(&quot;&#39;x&#39;&quot;)
-GAP: &#39;x&#39;
+</code></pre></div><a class="docs-sourcelink" href="https://github.com/oscar-system/GAP.jl/blob/4e1f64ccfbdeccd9a1647a1bca4c7ed775486b39/src/constructors.jl#L64-L95" target="_blank">source</a></section></article><article class="docstring"><header><a class="docstring-binding" href="#Core.Char" id="Core.Char"><code>Core.Char</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia">Char(obj::GapObj)</code></pre><p>Return the character converted from the <a href="https://www.gap-system.org/Manuals/doc/ref/chap27.html#X7D28329B7EDB8F47">GAP character</a><code>obj</code>.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; val = GAP.evalstr("'x'")
+GAP: 'x'
 
 julia&gt; Char(val)
-&#39;x&#39;: ASCII/Unicode U+0078 (category Ll: Letter, lowercase)
-</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/4e1f64ccfbdeccd9a1647a1bca4c7ed775486b39/src/constructors.jl#L155-L170">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Base.Cuchar" href="#Base.Cuchar"><code>Base.Cuchar</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia">Cuchar(obj::GapObj)</code></pre><p>Return the <code>UInt8</code> that belongs to the <a href="https://www.gap-system.org/Manuals/doc/ref/chap27.html#X7D28329B7EDB8F47">GAP character</a> <code>obj</code>.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; val = GAP.evalstr(&quot;&#39;x&#39;&quot;)
-GAP: &#39;x&#39;
+'x': ASCII/Unicode U+0078 (category Ll: Letter, lowercase)
+</code></pre></div><a class="docs-sourcelink" href="https://github.com/oscar-system/GAP.jl/blob/4e1f64ccfbdeccd9a1647a1bca4c7ed775486b39/src/constructors.jl#L155-L170" target="_blank">source</a></section></article><article class="docstring"><header><a class="docstring-binding" href="#Base.Cuchar" id="Base.Cuchar"><code>Base.Cuchar</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia">Cuchar(obj::GapObj)</code></pre><p>Return the <code>UInt8</code> that belongs to the <a href="https://www.gap-system.org/Manuals/doc/ref/chap27.html#X7D28329B7EDB8F47">GAP character</a><code>obj</code>.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; val = GAP.evalstr("'x'")
+GAP: 'x'
 
 julia&gt; Cuchar(val)
 0x78
-</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/4e1f64ccfbdeccd9a1647a1bca4c7ed775486b39/src/constructors.jl#L173-L188">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Core.String" href="#Core.String"><code>Core.String</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia">String(obj::GapObj)</code></pre><p>Return the Julia string converted from the <a href="https://www.gap-system.org/Manuals/doc/ref/chap27.html#X7D28329B7EDB8F47">GAP string</a> <code>obj</code>. Note that <a href="https://www.gap-system.org/Manuals/doc/ref/chap27.html#X81FB5BE27903EC32">GAP&#39;s String function</a> can be applied to arbitrary GAP objects, similar to Julia&#39;s <code>string</code> function; this behaviour is not intended for this <code>String</code> constructor.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; val = GAP.evalstr(&quot;\&quot;abc\&quot;&quot;)
-GAP: &quot;abc&quot;
+</code></pre></div><a class="docs-sourcelink" href="https://github.com/oscar-system/GAP.jl/blob/4e1f64ccfbdeccd9a1647a1bca4c7ed775486b39/src/constructors.jl#L173-L188" target="_blank">source</a></section></article><article class="docstring"><header><a class="docstring-binding" href="#Core.String" id="Core.String"><code>Core.String</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia">String(obj::GapObj)</code></pre><p>Return the Julia string converted from the <a href="https://www.gap-system.org/Manuals/doc/ref/chap27.html#X7D28329B7EDB8F47">GAP string</a><code>obj</code>. Note that <a href="https://www.gap-system.org/Manuals/doc/ref/chap27.html#X81FB5BE27903EC32">GAP's String function</a> can be applied to arbitrary GAP objects, similar to Julia's <code>string</code> function; this behaviour is not intended for this <code>String</code> constructor.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; val = GAP.evalstr("\"abc\"")
+GAP: "abc"
 
 julia&gt; String(val)
-&quot;abc&quot;
+"abc"
 
-julia&gt; val = GAP.evalstr(&quot;[]&quot;)
+julia&gt; val = GAP.evalstr("[]")
 GAP: [  ]
 
 julia&gt; String(val)   # an empty GAP list is a string
-&quot;&quot;
-</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/4e1f64ccfbdeccd9a1647a1bca4c7ed775486b39/src/constructors.jl#L192-L216">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Core.Symbol" href="#Core.Symbol"><code>Core.Symbol</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia">Symbol(obj::GapObj)</code></pre><p>Return the symbol converted from the <a href="https://www.gap-system.org/Manuals/doc/ref/chap27.html#X7D28329B7EDB8F47">GAP string</a> <code>obj</code>.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; str = GAP.evalstr(&quot;\&quot;abc\&quot;&quot;)
-GAP: &quot;abc&quot;
+""
+</code></pre></div><a class="docs-sourcelink" href="https://github.com/oscar-system/GAP.jl/blob/4e1f64ccfbdeccd9a1647a1bca4c7ed775486b39/src/constructors.jl#L192-L216" target="_blank">source</a></section></article><article class="docstring"><header><a class="docstring-binding" href="#Core.Symbol" id="Core.Symbol"><code>Core.Symbol</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia">Symbol(obj::GapObj)</code></pre><p>Return the symbol converted from the <a href="https://www.gap-system.org/Manuals/doc/ref/chap27.html#X7D28329B7EDB8F47">GAP string</a><code>obj</code>.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; str = GAP.evalstr("\"abc\"")
+GAP: "abc"
 
 julia&gt; Symbol(str)
 :abc
-</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/4e1f64ccfbdeccd9a1647a1bca4c7ed775486b39/src/constructors.jl#L221-L236">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Base.UnitRange" href="#Base.UnitRange"><code>Base.UnitRange</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia">UnitRange(obj::GapObj)</code></pre><p>Return the unit range converted from the <a href="https://www.gap-system.org/Manuals/doc/ref/chap21.html#X79596BDE7CAF8491">GAP range</a> <code>obj</code>, which has step width 1.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; val = GAP.evalstr(&quot;[ 1 .. 10 ]&quot;)
+</code></pre></div><a class="docs-sourcelink" href="https://github.com/oscar-system/GAP.jl/blob/4e1f64ccfbdeccd9a1647a1bca4c7ed775486b39/src/constructors.jl#L221-L236" target="_blank">source</a></section></article><article class="docstring"><header><a class="docstring-binding" href="#Base.UnitRange" id="Base.UnitRange"><code>Base.UnitRange</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia">UnitRange(obj::GapObj)</code></pre><p>Return the unit range converted from the <a href="https://www.gap-system.org/Manuals/doc/ref/chap21.html#X79596BDE7CAF8491">GAP range</a><code>obj</code>, which has step width 1.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; val = GAP.evalstr("[ 1 .. 10 ]")
 GAP: [ 1 .. 10 ]
 
 julia&gt; UnitRange(val)
@@ -129,7 +170,7 @@ julia&gt; UnitRange(val)
 
 julia&gt; UnitRange{Int32}(val)
 1:10
-</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/4e1f64ccfbdeccd9a1647a1bca4c7ed775486b39/src/constructors.jl#L444-L462">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Base.StepRange" href="#Base.StepRange"><code>Base.StepRange</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia">StepRange(obj::GapObj)</code></pre><p>Return the step range converted from the <a href="https://www.gap-system.org/Manuals/doc/ref/chap21.html#X79596BDE7CAF8491">GAP range</a> <code>obj</code>, which may have arbitrary step width.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; val = GAP.evalstr(&quot;[ 1, 3 .. 11 ]&quot;)
+</code></pre></div><a class="docs-sourcelink" href="https://github.com/oscar-system/GAP.jl/blob/4e1f64ccfbdeccd9a1647a1bca4c7ed775486b39/src/constructors.jl#L444-L462" target="_blank">source</a></section></article><article class="docstring"><header><a class="docstring-binding" href="#Base.StepRange" id="Base.StepRange"><code>Base.StepRange</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia">StepRange(obj::GapObj)</code></pre><p>Return the step range converted from the <a href="https://www.gap-system.org/Manuals/doc/ref/chap21.html#X79596BDE7CAF8491">GAP range</a><code>obj</code>, which may have arbitrary step width.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; val = GAP.evalstr("[ 1, 3 .. 11 ]")
 GAP: [ 1, 3 .. 11 ]
 
 julia&gt; StepRange(val)
@@ -140,13 +181,13 @@ julia&gt; r = StepRange{Int8,Int8}(val)
 
 julia&gt; typeof(r)
 StepRange{Int8, Int8}
-</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/4e1f64ccfbdeccd9a1647a1bca4c7ed775486b39/src/constructors.jl#L465-L486">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Core.Tuple" href="#Core.Tuple"><code>Core.Tuple</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia">Tuple{Types...}(obj::GapObj; recursive = true)</code></pre><p>Return the tuple converted from the <a href="https://www.gap-system.org/Manuals/doc/ref/chap21.html#X7B256AE5780F140A">GAP list</a> <code>obj</code>. The entries of the list are converted to the required types <code>Types...</code>, using <a href="#GAP.gap_to_julia"><code>gap_to_julia</code></a>. If <code>recursive</code> is <code>true</code> then the entries of the list are converted recursively, otherwise non-recursively.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; val = GAP.evalstr(&quot;[ 1, 5 ]&quot;)
+</code></pre></div><a class="docs-sourcelink" href="https://github.com/oscar-system/GAP.jl/blob/4e1f64ccfbdeccd9a1647a1bca4c7ed775486b39/src/constructors.jl#L465-L486" target="_blank">source</a></section></article><article class="docstring"><header><a class="docstring-binding" href="#Core.Tuple" id="Core.Tuple"><code>Core.Tuple</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia">Tuple{Types...}(obj::GapObj; recursive = true)</code></pre><p>Return the tuple converted from the <a href="https://www.gap-system.org/Manuals/doc/ref/chap21.html#X7B256AE5780F140A">GAP list</a><code>obj</code>. The entries of the list are converted to the required types <code>Types...</code>, using <a href="#GAP.gap_to_julia"><code>gap_to_julia</code></a>. If <code>recursive</code> is <code>true</code> then the entries of the list are converted recursively, otherwise non-recursively.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; val = GAP.evalstr("[ 1, 5 ]")
 GAP: [ 1, 5 ]
 
 julia&gt; Tuple{Int64,Int64}(val)
 (1, 5)
 
-julia&gt; val = GAP.evalstr(&quot;[ [ 1 ], [ 2 ] ]&quot;)
+julia&gt; val = GAP.evalstr("[ [ 1 ], [ 2 ] ]")
 GAP: [ [ 1 ], [ 2 ] ]
 
 julia&gt; Tuple{Any,Any}(val)
@@ -154,7 +195,7 @@ julia&gt; Tuple{Any,Any}(val)
 
 julia&gt; Tuple{GapObj,GapObj}(val, recursive = false)
 (GAP: [ 1 ], GAP: [ 2 ])
-</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/4e1f64ccfbdeccd9a1647a1bca4c7ed775486b39/src/constructors.jl#L412-L440">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Base.BitVector" href="#Base.BitVector"><code>Base.BitVector</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia">BitVector(obj::GapObj)</code></pre><p>Return the bit vector converted from the <a href="https://www.gap-system.org/Manuals/doc/ref/chap22.html#X7AC531DD79B6938E">GAP list of booleans</a> <code>obj</code>.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; val = GAP.evalstr(&quot;[ true, false, true ]&quot;)
+</code></pre></div><a class="docs-sourcelink" href="https://github.com/oscar-system/GAP.jl/blob/4e1f64ccfbdeccd9a1647a1bca4c7ed775486b39/src/constructors.jl#L412-L440" target="_blank">source</a></section></article><article class="docstring"><header><a class="docstring-binding" href="#Base.BitVector" id="Base.BitVector"><code>Base.BitVector</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia">BitVector(obj::GapObj)</code></pre><p>Return the bit vector converted from the <a href="https://www.gap-system.org/Manuals/doc/ref/chap22.html#X7AC531DD79B6938E">GAP list of booleans</a><code>obj</code>.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; val = GAP.evalstr("[ true, false, true ]")
 GAP: [ true, false, true ]
 
 julia&gt; BitVector(val)
@@ -162,7 +203,7 @@ julia&gt; BitVector(val)
  1
  0
  1
-</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/4e1f64ccfbdeccd9a1647a1bca4c7ed775486b39/src/constructors.jl#L240-L258">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Base.Vector" href="#Base.Vector"><code>Base.Vector</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia">Vector{T}(obj::GapObj; recursive = true)</code></pre><p>Return the 1-dimensional array converted from the <a href="https://www.gap-system.org/Manuals/doc/ref/chap21.html#X7B256AE5780F140A">GAP list</a> <code>obj</code>. The entries of the list are converted to the type <code>T</code>, using <a href="#GAP.gap_to_julia"><code>gap_to_julia</code></a>. If <code>recursive</code> is <code>true</code> then the entries of the list are converted recursively, otherwise non-recursively.</p><p>If <code>T</code> is <code>UInt8</code> then <code>obj</code> may be a <a href="https://www.gap-system.org/Manuals/doc/ref/chap27.html#X7D28329B7EDB8F47">GAP string</a>.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; val = GAP.evalstr(&quot;[ [ 1 ], [ 2 ] ]&quot;)
+</code></pre></div><a class="docs-sourcelink" href="https://github.com/oscar-system/GAP.jl/blob/4e1f64ccfbdeccd9a1647a1bca4c7ed775486b39/src/constructors.jl#L240-L258" target="_blank">source</a></section></article><article class="docstring"><header><a class="docstring-binding" href="#Base.Vector" id="Base.Vector"><code>Base.Vector</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia">Vector{T}(obj::GapObj; recursive = true)</code></pre><p>Return the 1-dimensional array converted from the <a href="https://www.gap-system.org/Manuals/doc/ref/chap21.html#X7B256AE5780F140A">GAP list</a><code>obj</code>. The entries of the list are converted to the type <code>T</code>, using <a href="#GAP.gap_to_julia"><code>gap_to_julia</code></a>. If <code>recursive</code> is <code>true</code> then the entries of the list are converted recursively, otherwise non-recursively.</p><p>If <code>T</code> is <code>UInt8</code> then <code>obj</code> may be a <a href="https://www.gap-system.org/Manuals/doc/ref/chap27.html#X7D28329B7EDB8F47">GAP string</a>.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; val = GAP.evalstr("[ [ 1 ], [ 2 ] ]")
 GAP: [ [ 1 ], [ 2 ] ]
 
 julia&gt; Vector{Any}(val)
@@ -175,7 +216,7 @@ julia&gt; Vector{Any}(val, recursive = false)
  GAP: [ 1 ]
  GAP: [ 2 ]
 
-julia&gt; val = GAP.evalstr( &quot;NewVector( IsPlistVectorRep, Integers, [ 0, 2, 5 ] )&quot; )
+julia&gt; val = GAP.evalstr( "NewVector( IsPlistVectorRep, Integers, [ 0, 2, 5 ] )" )
 GAP: &lt;plist vector over Integers of length 3&gt;
 
 julia&gt; Vector{Int64}( val )
@@ -184,15 +225,15 @@ julia&gt; Vector{Int64}( val )
  2
  5
 
-julia&gt; val = GAP.evalstr(&quot;\&quot;abc\&quot;&quot;)
-GAP: &quot;abc&quot;
+julia&gt; val = GAP.evalstr("\"abc\"")
+GAP: "abc"
 
 julia&gt; Vector{UInt8}(val)
 3-element Vector{UInt8}:
  0x61
  0x62
  0x63
-</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/4e1f64ccfbdeccd9a1647a1bca4c7ed775486b39/src/constructors.jl#L263-L310">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Base.Matrix" href="#Base.Matrix"><code>Base.Matrix</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia">Matrix{T}(obj::GapObj; recursive = true)</code></pre><p>Return the 2-dimensional array converted from the GAP matrix <code>obj</code>, which can be a <a href="https://www.gap-system.org/Manuals/doc/ref/chap24.html#X812CCAB278643A59">GAP list of lists</a> or a <a href="https://www.gap-system.org/Manuals/doc/ref/chap26.html#X856C23B87E50F118">GAP matrix object</a>. The entries of the matrix are converted to the type <code>T</code>, using <a href="#GAP.gap_to_julia"><code>gap_to_julia</code></a>. If <code>recursive</code> is <code>true</code> then the entries are converted recursively, otherwise non-recursively.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; val = GAP.evalstr(&quot;[ [ 1, 2 ], [ 3, 4 ] ]&quot;)
+</code></pre></div><a class="docs-sourcelink" href="https://github.com/oscar-system/GAP.jl/blob/4e1f64ccfbdeccd9a1647a1bca4c7ed775486b39/src/constructors.jl#L263-L310" target="_blank">source</a></section></article><article class="docstring"><header><a class="docstring-binding" href="#Base.Matrix" id="Base.Matrix"><code>Base.Matrix</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia">Matrix{T}(obj::GapObj; recursive = true)</code></pre><p>Return the 2-dimensional array converted from the GAP matrix <code>obj</code>, which can be a <a href="https://www.gap-system.org/Manuals/doc/ref/chap24.html#X812CCAB278643A59">GAP list of lists</a> or a <a href="https://www.gap-system.org/Manuals/doc/ref/chap26.html#X856C23B87E50F118">GAP matrix object</a>. The entries of the matrix are converted to the type <code>T</code>, using <a href="#GAP.gap_to_julia"><code>gap_to_julia</code></a>. If <code>recursive</code> is <code>true</code> then the entries are converted recursively, otherwise non-recursively.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; val = GAP.evalstr("[ [ 1, 2 ], [ 3, 4 ] ]")
 GAP: [ [ 1, 2 ], [ 3, 4 ] ]
 
 julia&gt; Matrix{Int64}(val)
@@ -200,42 +241,42 @@ julia&gt; Matrix{Int64}(val)
  1  2
  3  4
 
-julia&gt; val = GAP.evalstr( &quot;NewMatrix( IsPlistMatrixRep, Integers, 2, [ 0, 1, 2, 3 ] )&quot; )
+julia&gt; val = GAP.evalstr( "NewMatrix( IsPlistMatrixRep, Integers, 2, [ 0, 1, 2, 3 ] )" )
 GAP: &lt;2x2-matrix over Integers&gt;
 
 julia&gt; Matrix{Int64}(val)
 2×2 Matrix{Int64}:
  0  1
  2  3
-</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/4e1f64ccfbdeccd9a1647a1bca4c7ed775486b39/src/constructors.jl#L315-L345">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Base.Set" href="#Base.Set"><code>Base.Set</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia">Set{T}(obj::GapObj; recursive = true)</code></pre><p>Return the set converted from the <a href="https://www.gap-system.org/Manuals/doc/ref/chap21.html#X7B256AE5780F140A">GAP list</a> or <a href="https://www.gap-system.org/Manuals/doc/ref/chap30.html#X8050A8037984E5B6">GAP collection</a> <code>obj</code>. The elements of <code>obj</code> are converted to the required type <code>T</code>, using <a href="#GAP.gap_to_julia"><code>gap_to_julia</code></a>. If <code>recursive</code> is <code>true</code> then the elements are converted recursively, otherwise non-recursively.</p><p>This constructor method is intended for situations where the result involves only native Julia objects such as integers and strings. Dealing with results containing GAP objects will be inefficient.</p><p><strong>Examples</strong></p><pre><code class="language-julia">julia&gt; Set{Int}(GAP.evalstr(&quot;[ 1, 2, 1 ]&quot;))
+</code></pre></div><a class="docs-sourcelink" href="https://github.com/oscar-system/GAP.jl/blob/4e1f64ccfbdeccd9a1647a1bca4c7ed775486b39/src/constructors.jl#L315-L345" target="_blank">source</a></section></article><article class="docstring"><header><a class="docstring-binding" href="#Base.Set" id="Base.Set"><code>Base.Set</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia">Set{T}(obj::GapObj; recursive = true)</code></pre><p>Return the set converted from the <a href="https://www.gap-system.org/Manuals/doc/ref/chap21.html#X7B256AE5780F140A">GAP list</a> or <a href="https://www.gap-system.org/Manuals/doc/ref/chap30.html#X8050A8037984E5B6">GAP collection</a><code>obj</code>. The elements of <code>obj</code> are converted to the required type <code>T</code>, using <a href="#GAP.gap_to_julia"><code>gap_to_julia</code></a>. If <code>recursive</code> is <code>true</code> then the elements are converted recursively, otherwise non-recursively.</p><p>This constructor method is intended for situations where the result involves only native Julia objects such as integers and strings. Dealing with results containing GAP objects will be inefficient.</p><p><strong>Examples</strong></p><pre><code class="language-julia">julia&gt; Set{Int}(GAP.evalstr("[ 1, 2, 1 ]"))
 Set{Int64} with 2 elements:
   2
   1
 
-julia&gt; Set{Vector{Int}}(GAP.evalstr(&quot;[[1], [2], [1]]&quot;))
+julia&gt; Set{Vector{Int}}(GAP.evalstr("[[1], [2], [1]]"))
 Set{Vector{Int64}} with 2 elements:
   [1]
   [2]
 
-julia&gt; Set{String}(GAP.evalstr(&quot;[\&quot;a\&quot;, \&quot;b\&quot;]&quot;))
+julia&gt; Set{String}(GAP.evalstr("[\"a\", \"b\"]"))
 Set{String} with 2 elements:
-  &quot;b&quot;
-  &quot;a&quot;
+  "b"
+  "a"
 
-julia&gt; Set{Any}(GAP.evalstr(&quot;[[1], [2], [1]]&quot;))
+julia&gt; Set{Any}(GAP.evalstr("[[1], [2], [1]]"))
 Set{Any} with 2 elements:
   Any[1]
   Any[2]
-</code></pre><p>In the following examples, the order in which the Julia output is shown may vary.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; s = Set{Any}(GAP.evalstr(&quot;[[1], [2], [1]]&quot;), recursive = false);
+</code></pre><p>In the following examples, the order in which the Julia output is shown may vary.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; s = Set{Any}(GAP.evalstr("[[1], [2], [1]]"), recursive = false);
 
-julia&gt; s == Set{Any}([GAP.evalstr(&quot;[ 1 ]&quot;), GAP.evalstr(&quot;[ 2 ]&quot;)])
+julia&gt; s == Set{Any}([GAP.evalstr("[ 1 ]"), GAP.evalstr("[ 2 ]")])
 true
 
-julia&gt; s = Set{Any}(GAP.evalstr(&quot;SymmetricGroup(2)&quot;), recursive = false);
+julia&gt; s = Set{Any}(GAP.evalstr("SymmetricGroup(2)"), recursive = false);
 
-julia&gt; s == Set{Any}([GAP.evalstr(&quot;()&quot;), GAP.evalstr(&quot;(1,2)&quot;)])
+julia&gt; s == Set{Any}([GAP.evalstr("()"), GAP.evalstr("(1,2)")])
 true
-</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/4e1f64ccfbdeccd9a1647a1bca4c7ed775486b39/src/constructors.jl#L350-L405">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Base.Dict" href="#Base.Dict"><code>Base.Dict</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia">Dict{Symbol,T}(obj::GapObj; recursive = true)</code></pre><p>Return the dictionary converted from the <a href="https://www.gap-system.org/Manuals/doc/ref/chap29.html#X7AA1073C7E943DD7">GAP record</a> <code>obj</code>. If <code>recursive</code> is <code>true</code> then the values of the record components are recursively converted to objects of the type <code>T</code>, using <a href="#GAP.gap_to_julia"><code>gap_to_julia</code></a>, otherwise they are kept as they are.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; val = GAP.evalstr(&quot;rec( a:= 1, b:= 2 )&quot;)
+</code></pre></div><a class="docs-sourcelink" href="https://github.com/oscar-system/GAP.jl/blob/4e1f64ccfbdeccd9a1647a1bca4c7ed775486b39/src/constructors.jl#L350-L405" target="_blank">source</a></section></article><article class="docstring"><header><a class="docstring-binding" href="#Base.Dict" id="Base.Dict"><code>Base.Dict</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia">Dict{Symbol,T}(obj::GapObj; recursive = true)</code></pre><p>Return the dictionary converted from the <a href="https://www.gap-system.org/Manuals/doc/ref/chap29.html#X7AA1073C7E943DD7">GAP record</a><code>obj</code>. If <code>recursive</code> is <code>true</code> then the values of the record components are recursively converted to objects of the type <code>T</code>, using <a href="#GAP.gap_to_julia"><code>gap_to_julia</code></a>, otherwise they are kept as they are.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl">julia&gt; val = GAP.evalstr("rec( a:= 1, b:= 2 )")
 GAP: rec( a := 1, b := 2 )
 
 julia&gt; Dict{Symbol,Int}(val)
@@ -243,7 +284,7 @@ Dict{Symbol, Int64} with 2 entries:
   :a =&gt; 1
   :b =&gt; 2
 
-julia&gt; val = GAP.evalstr(&quot;rec( l:= [ 1, 2 ] )&quot;)
+julia&gt; val = GAP.evalstr("rec( l:= [ 1, 2 ] )")
 GAP: rec( l := [ 1, 2 ] )
 
 julia&gt; Dict{Symbol,Any}(val, recursive = false)
@@ -257,4 +298,4 @@ Dict{Symbol, Any} with 1 entry:
 julia&gt; Dict{Symbol,Vector{Int}}(val, recursive = true)
 Dict{Symbol, Vector{Int64}} with 1 entry:
   :l =&gt; [1, 2]
-</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/4e1f64ccfbdeccd9a1647a1bca4c7ed775486b39/src/constructors.jl#L489-L524">source</a></section></article></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../basics/">« Basics</a><a class="docs-footer-nextpage" href="../packages/">Managing GAP packages »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Friday 29 October 2021 13:27">Friday 29 October 2021</span>. Using Julia version 1.6.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+</code></pre></div><a class="docs-sourcelink" href="https://github.com/oscar-system/GAP.jl/blob/4e1f64ccfbdeccd9a1647a1bca4c7ed775486b39/src/constructors.jl#L489-L524" target="_blank">source</a></section></article></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../basics/">« Basics</a><a class="docs-footer-nextpage" href="../packages/">Managing GAP packages »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label></p><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div><p></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Friday 29 October 2021 13:27">Friday 29 October 2021</span>. Using Julia version 1.6.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></HTML>
