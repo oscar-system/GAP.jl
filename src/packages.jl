@@ -243,7 +243,9 @@ function install(spec::String, version::String = "";
     # point PackageManager to the given pkg dir
     Globals.PKGMAN_CustomPackageDir = GapObj(pkgdir)
     mkpath(pkgdir)
-    Pidfile.mkpidlock("$pkgdir.lock") do
+    # pidlock timeout: 300 seconds = 5 minutes should suffice; about the
+    # slowest packages to install are Semigroups and NormalizInterface.
+    Pidfile.mkpidlock("$pkgdir.lock"; stale_age=300) do
       if quiet || debug
         oldlevel = Wrappers.InfoLevel(Globals.InfoPackageManager)
         Wrappers.SetInfoLevel(Globals.InfoPackageManager, quiet ? 0 : 3)

@@ -159,7 +159,7 @@ function regenerate_gaproot()
 
     # create the mutable gaproot
     mkpath(gaproot_mutable)
-    Pidfile.mkpidlock("$gaproot_mutable.lock") do
+    Pidfile.mkpidlock("$gaproot_mutable.lock"; stale_age=10) do
         # create fake sysinfo.gap
         unquoted = Set(["GAParch", "GAP_ABI", "GAP_HPCGAP", "GAP_KERNEL_MAJOR_VERSION", "GAP_KERNEL_MINOR_VERSION", "GAP_OBJEXT"])
         open("$gaproot_mutable/sysinfo.gap", "w") do file
