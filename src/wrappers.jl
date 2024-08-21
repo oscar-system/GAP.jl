@@ -69,6 +69,8 @@ import GAP: @wrap
 @wrap RNamObj(x::Any)::Int
 @wrap SetInfoLevel(x::GapObj, y::Int)::Nothing
 @wrap SetPackagePath(x::GapObj, y::GapObj)::Nothing
+@wrap SetUserPreference(x::GapObj, y::Any)::Nothing
+@wrap SetUserPreference(x::GapObj, y::GapObj, z::Any)::Nothing
 @wrap ShallowCopy(x::Any)::Any
 @wrap String(x::Any)::Any
 @wrap StringDisplayObj(x::Any)::GapObj
@@ -76,6 +78,8 @@ import GAP: @wrap
 @wrap StructuralCopy(x::Any)::Any
 @wrap SUM(x::Any, y::Any)::Any
 @wrap UNB_REC(x::GapObj, y::Int)::Nothing
+@wrap UserPreference(x::GapObj)::Any
+@wrap UserPreference(x::GapObj, y::GapObj)::Any
 @wrap ZeroSameMutability(x::Any)::Any
 
 end

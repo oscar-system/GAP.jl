@@ -306,6 +306,9 @@ function __init__()
     end
 
     Packages.init_packagemanager()
+
+    # The AtlasRep package may get loaded automatically when GAP starts.
+    Packages.init_atlasrep()
 end
 
 """

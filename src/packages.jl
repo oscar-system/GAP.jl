@@ -3,6 +3,7 @@ module Packages
 
 import Downloads
 import Pidfile
+import Scratch: @get_scratch!
 import ...GAP: Globals, GapObj, replace_global!, RNamObj, sysinfo, Wrappers
 
 const DEFAULT_PKGDIR = Ref{String}()
@@ -119,7 +120,7 @@ function load(spec::String, version::String = ""; install::Union{Bool, String} =
       warning_level_orig = Wrappers.InfoLevel(Globals.InfoWarning)
       Wrappers.SetInfoLevel(Globals.InfoWarning, 0)
     end
-    loaded = Wrappers.LoadPackage(gspec, gversion, !quiet)
+    loaded = _load_internal(gspec, gversion, !quiet)
     if spec_is_path
       Wrappers.SetInfoLevel(Globals.InfoWarning, warning_level_orig)
     end
@@ -172,7 +173,7 @@ function load(spec::String, version::String = ""; install::Union{Bool, String} =
 
       # ... then try to load the package, ...
       Wrappers.SetPackagePath(pkgname, gspec)
-      loaded = Wrappers.LoadPackage(pkgname, gversion, !quiet)
+      loaded = _load_internal(pkgname, gversion, !quiet)
 
       # ..., and reinstall the old info records
       # (which were removed by `Wrappers.SetPackagePath`).
@@ -191,20 +192,32 @@ function load(spec::String, version::String = ""; install::Union{Bool, String} =
         # without showing messages.
         if Packages.install(spec, version; interactive = false, quiet)
             # Make sure that the installed version is admissible.
-            return Wrappers.LoadPackage(gspec, gversion, !quiet) == true
+            return _load_internal(gspec, gversion, !quiet) == true
         end
     elseif install isa String
         # `Packages.install` deals with the `install` information.
         if Packages.install(install, version; interactive = false, quiet)
             # Make sure that the installed version is admissible
             # (and that the package given by `install` fits to `spec`).
-            return Wrappers.LoadPackage(gspec, gversion, !quiet) == true
+            return _load_internal(gspec, gversion, !quiet) == true
         end
     end
 
     return false
     # TODO: can we provide more information in case of a failure?
     # GAP unfortunately only gives us info messages...
+end
+
+function _load_internal(gspec::GapObj, gversion::GapObj, quiet::Bool)
+    loaded = Wrappers.LoadPackage(gspec, gversion, quiet)
+
+    # If the AtlasRep package is loaded afterwards (perhaps indirectly)
+    # then provide its scratchspace if necessary.
+    if atlasrep_download_cache == "" && Wrappers.IsPackageLoaded(GapObj("AtlasRep"))
+      init_atlasrep()
+    end
+
+    return loaded
 end
 
 """
@@ -372,6 +385,55 @@ function locate_package(name::String)
   lname = RNamObj(lowercase(name))
   Wrappers.ISB_REC(loaded, lname) || return ""
   return String(Wrappers.ELM_REC(loaded, lname)[1])
+end
+
+
+##############################################################################
+#
+# special handling for the GAP package AtlasRep
+#
+# GAP.jl supports Julia artifacts for GAP packages.
+# One feature of the AtlasRep package is to download data files and
+# (if wanted) to store them in a local directory.
+# The path of this directory is either explicitly set in the user preference
+# `AtlasRepDataDirectory` of the package, or it is computed when the AtlasRep
+# package gets loaded.
+# The value of the user preference is an empty string if and only if
+# GAP does not know a path to a writable directory for the data files,
+# which means that downloaded files cannot be cached;
+# in this case, GAP.jl provides a scratchspace for the data,
+# and sets the value of the user preference accordingly.
+# We can use this scratchspace independent of the version of Julia, GAP.jl,
+# and AtlasRep.
+
+# The path to the scratchspace, will be filled by `init_atlasrep()`
+atlasrep_download_cache = ""
+
+# If GAP's AtlasRep package does not yet know a writable directory
+# for storing downloaded data, provide a Julia scratch space.
+function init_atlasrep()
+  atlasrep_download_cache == "" || return
+  atlasrep = GapObj("atlasrep")
+  AtlasRepDataDirectory = GapObj("AtlasRepDataDirectory")
+  val = Wrappers.UserPreference(atlasrep, AtlasRepDataDirectory)
+  if Wrappers.IsString(val)
+    # A default is set.
+    if length(val) == 0
+      # There is no writable directory yet.
+      # If the scratch space is not yet there, create it and the relevant
+      # subdirectories.
+      # (The AtlasRep package is perhaps not yet loaded at this time.)
+      global atlasrep_download_cache = @get_scratch!("atlasrep_cache")
+      Wrappers.SetUserPreference(atlasrep, AtlasRepDataDirectory,
+          GapObj(atlasrep_download_cache))
+      for dir in ["datagens", "dataword", "dataext"]
+        fname = joinpath(atlasrep_download_cache, dir)
+        isdir(fname) || mkdir(fname)
+      end
+    else
+      global atlasrep_download_cache = String(val)
+    end
+  end
 end
 
 end
