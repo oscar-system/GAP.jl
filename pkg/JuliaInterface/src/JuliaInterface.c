@@ -223,6 +223,16 @@ static Obj FuncJuliaSymbol(Obj self, Obj name)
     return NewJuliaObj((jl_value_t *)julia_symbol);
 }
 
+// internal wrapper for jl_boundp to deal with API change in Julia 1.12
+static int gap_jl_boundp(jl_module_t * m, jl_sym_t * var)
+{
+#if JULIA_VERSION_MAJOR == 1 && JULIA_VERSION_MINOR >= 12
+    return jl_boundp(m, var, 1);
+#else
+    return jl_boundp(m, var);
+#endif
+}
+
 // Returns the julia object GAP object that holds a pointer to the value
 // currently bound to the julia identifier <name>.
 static Obj Func_JuliaGetGlobalVariable(Obj self, Obj name)
@@ -232,7 +242,7 @@ static Obj Func_JuliaGetGlobalVariable(Obj self, Obj name)
 
     jl_sym_t * symbol = jl_symbol(CONST_CSTR_STRING(name));
     END_GAP_SYNC();
-    if (!jl_boundp(jl_main_module, symbol)) {
+    if (!gap_jl_boundp(jl_main_module, symbol)) {
         return Fail;
     }
     jl_value_t * value = jl_get_global(jl_main_module, symbol);
@@ -262,7 +272,7 @@ static Obj Func_JuliaGetGlobalVariableByModule(Obj self, Obj name, Obj module)
     }
     jl_sym_t * symbol = jl_symbol(CONST_CSTR_STRING(name));
     END_GAP_SYNC();
-    if (!jl_boundp(m, symbol)) {
+    if (!gap_jl_boundp(m, symbol)) {
         return Fail;
     }
     jl_value_t * value = jl_get_global(m, symbol);
