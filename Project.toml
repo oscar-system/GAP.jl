@@ -4,6 +4,7 @@ authors = ["Thomas Breuer <sam@math.rwth-aachen.de>", "Sebastian Gutsche <gutsch
 version = "0.11.1"
 
 [deps]
+AbstractAlgebra = "c3fe647b-3220-5bb0-a1ea-a7954cac585d"
 Artifacts = "56f22d72-fd6d-98f1-02f0-08ddc0907c33"
 Compat = "34da2185-b29b-5c13-b0c7-acf172513d20"
 Downloads = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
@@ -22,6 +23,7 @@ Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Scratch = "6c6a2e73-6563-6170-7368-637461726353"
 
 [compat]
+AbstractAlgebra = "0.41.11, 0.42.1"
 Artifacts = "1.6"
 Compat = "4.4.0"
 Downloads = "1.4.3"
