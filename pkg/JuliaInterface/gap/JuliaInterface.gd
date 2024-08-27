@@ -245,7 +245,7 @@ DeclareGlobalFunction( "JuliaImportPackage" );
 
 #! @Description
 #!  This global variable represents the &Julia; module <C>Main</C>,
-#!  see <Ref Filt="IsJuliaModule" Label="for IsJuliaWrapper and IsRecord"/>.
+#!  see <Ref Filt="IsJuliaModule" Label="for IsJuliaObject and IsRecord"/>.
 #!
 #!  The variables from the underlying &Julia; session can be accessed via
 #!  <Ref Var="Julia"/>, as follows.

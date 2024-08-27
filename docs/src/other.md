@@ -43,6 +43,66 @@ in order to support special GAP syntax beyond function calls with arguments.
 - Access components of a component object via [`getbangproperty`](@ref),
   equivalent to GAP's `!.` operator.
 
+- Iterate over a GAP list or collection (such as a GAP domain) `obj`
+  via `for x in obj`,
+  or `map(f, obj)` for a unary function `f`,
+  or `[f(x) for x in obj]`.
+  If `obj` is not a list then a GAP iterator for `obj` gets constructed.
+
+```jldoctest
+julia> l = [1, 2, 3];  gl = GapObj(l)
+GAP: [ 1, 2, 3 ]
+
+julia> ll = [];  for x in gl push!(ll, x); end;  ll == l
+true
+
+julia> map(x -> x, gl) == l
+true
+
+julia> [x for x in gl] == l
+true
+```
+
+- Iterating in Julia over a GAP list `obj` skips the unbound entries in `obj`,
+  like iterating in GAP does.
+
+```jldoctest
+julia> gl = GAP.evalstr("[1,, 3]")
+GAP: [ 1,, 3 ]
+
+julia> ll = [];  for x in gl push!(ll, x); end;  ll
+2-element Vector{Any}:
+ 1
+ 3
+```
+
+- Note that iterating in Julia over a GAP iterator object `obj` does *not*
+  change `obj`, whereas iterating in GAP over `obj` changes `obj`.
+
+```jldoctest
+julia> g = GAP.Globals.SymmetricGroup(3)
+GAP: Sym( [ 1 .. 3 ] )
+
+julia> iter = GAP.Globals.Iterator(g)
+GAP: <iterator>
+
+julia> [x for x in iter] == collect(g)
+true
+
+julia> [x for x in iter] == collect(g)
+true
+
+julia> f = GAP.evalstr("function(itr) local res; res:= [];" *
+             "for i in itr do Add( res, i ); od; return res; end")
+GAP: function( itr ) ... end
+
+julia> f( iter )
+GAP: [ (), (2,3), (1,3), (1,3,2), (1,2,3), (1,2) ]
+
+julia> f( iter )
+GAP: [  ]
+```
+
 ```@docs
 call_gap_func
 call_with_catch

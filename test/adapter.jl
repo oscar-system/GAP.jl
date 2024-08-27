@@ -25,6 +25,12 @@
         vs = Vector{Int}.(gap_iter)
         @test vs == [[], [1], [1, 1], [1, 1, 1]]
     end
+
+    # skip holes when iterating over GAP lists
+    @test xs == [x for x in s]
+    @test xs == map(x -> x, s)
+    l = GAP.evalstr("[1, 2,,,, 6]")
+    @test collect(l) == [1, 2, 6]
 end
 
 @testset "deepcopy" begin
