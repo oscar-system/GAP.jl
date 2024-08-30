@@ -15,6 +15,8 @@ An internal type of GAP.jl used for tracking conversion results in `gap_to_julia
 """
 const RecDict = IdDict{Any,Any}
 
+const GapCacheDict = Union{Nothing,RecDict}
+
 ## Conversion from GAP to Julia
 """
     gap_to_julia(type, x, recursion_dict::Union{Nothing,RecDict}=nothing; recursive::Bool=true)
