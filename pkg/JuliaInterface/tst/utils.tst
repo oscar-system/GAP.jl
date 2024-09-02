@@ -97,4 +97,11 @@ gap> Unbind(Julia.Main.f00bar);
 Error, cannot unbind Julia variables
 
 ##
-gap> STOP_TEST( "utils.tst", 1 );
+gap> GetJuliaScratchspace( true);
+Error, GetJuliaScratchspace: <key> must be a string
+gap> path:= GetJuliaScratchspace( "test_scratch" );;
+gap> IsDirectoryPath( path );
+true
+
+##
+gap> STOP_TEST( "utils.tst" );

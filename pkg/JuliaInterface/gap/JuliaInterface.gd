@@ -535,3 +535,17 @@ DeclareGlobalFunction( "CallJuliaFunctionWithKeywordArguments" );
 #TODO: add the cross-references to MatElm, SetMatElm when they are documented
 
 #! @InsertChunk JuliaHelpInGAP
+
+#! @Section Utilities
+
+#! @Arguments key
+#! @Returns a string
+#! @Description
+#!  Returns the path of a &Julia; scratchspace.
+#!  This scratchspace gets created if it did not exist already,
+#!  one can rely on the fact that the returned path describes a writable
+#!  directory.
+#!  Subsequent calls with the same key yield the same result.
+#!  The directory may be removed by &Julia; as soon as the &Julia; package
+#!  <C>GAP.jl</C> gets uninstalled.
+DeclareGlobalFunction( "GetJuliaScratchspace" );
