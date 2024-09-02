@@ -108,14 +108,10 @@ end
 
 import Scratch: get_scratch!
 
-"""
-    get_scratch_helper!(key)
-
-Return the path of a Julia scratchspace with name `key`.
-This scratchspace gets created if it did not exist already.
-The scratchspace may be removed by Julia as soon as the Julia package GAP.jl
-gets uninstalled.
-"""
+# Return the path of a Julia scratchspace with name `key`.
+# This scratchspace gets created if it did not exist already.
+# The scratchspace may be removed by Julia as soon as the Julia package GAP.jl
+# gets uninstalled.
 get_scratch_helper!(key::String) = get_scratch!(GAP, key)
 
 # Allow `InteractiveUtils.edit(GAP.Globals.Group)` and similar for any global
