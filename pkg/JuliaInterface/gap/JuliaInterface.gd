@@ -541,11 +541,12 @@ DeclareGlobalFunction( "CallJuliaFunctionWithKeywordArguments" );
 #! @Arguments key
 #! @Returns a string
 #! @Description
-#!  Returns the path of a &Julia; scratchspace.
+#!  Returns the path of a &Julia; scratchspace associated to the given key.
 #!  This scratchspace gets created if it did not exist already,
 #!  one can rely on the fact that the returned path describes a writable
 #!  directory.
-#!  Subsequent calls with the same key yield the same result.
+#!  Subsequent calls with the same key yield the same result,
+#!  and calls with different keys yield different results.
 #!  The directory may be removed by &Julia; as soon as the &Julia; package
 #!  <C>GAP.jl</C> gets uninstalled.
 DeclareGlobalFunction( "GetJuliaScratchspace" );

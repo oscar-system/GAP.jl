@@ -174,5 +174,5 @@ InstallGlobalFunction( GetJuliaScratchspace,
     fi;
     key:= Julia.Base.string( key );
     return JuliaToGAP( IsString,
-             Julia.GAP.( "get_scratch_helper!" )( key ) );
+             Julia.GAP.get_scratch_helper\!( key ) );
 end );
