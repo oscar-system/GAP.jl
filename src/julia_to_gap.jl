@@ -51,8 +51,11 @@ function julia_to_gap end
 # default
 julia_to_gap(x, cache::GapCacheDict = nothing; recursive::Bool = false) = julia_to_gap_internal(x, cache, recursive)
 
-julia_to_gap_internal(x::FFE, cache::GapCacheDict, recursive::Bool) = x    # Default for actual GAP objects is to do nothing
-julia_to_gap_internal(x::Bool, cache::GapCacheDict, recursive::Bool) = x   # Default for actual GAP objects is to do nothing
+# The calls to `GAP.@install` install methods for `julia_to_gap_internal`
+function julia_to_gap_internal end
+
+GAP.@install GapObj(x::FFE) = x    # Default for actual GAP objects is to do nothing
+GAP.@install GapObj(x::Bool) = x    # Default for actual GAP objects is to do nothing
 
 ## Integers: general case first deal with things that fit into immediate
 ## integers, then falls back to converting to BigInt and calling into the GAP
@@ -68,21 +71,21 @@ end
 
 ## Small integers types always fit into GAP immediate integers, and thus are
 ## represented by Int64 on the Julia side.
-julia_to_gap_internal(x::Int64, cache::GapCacheDict, recursive::Bool) = x
-julia_to_gap_internal(x::Int32, cache::GapCacheDict, recursive::Bool) = Int64(x)
-julia_to_gap_internal(x::Int16, cache::GapCacheDict, recursive::Bool) = Int64(x)
-julia_to_gap_internal(x::Int8, cache::GapCacheDict, recursive::Bool) = Int64(x)
-julia_to_gap_internal(x::UInt32, cache::GapCacheDict, recursive::Bool) = Int64(x)
-julia_to_gap_internal(x::UInt16, cache::GapCacheDict, recursive::Bool) = Int64(x)
-julia_to_gap_internal(x::UInt8, cache::GapCacheDict, recursive::Bool) = Int64(x)
+GAP.@install GapObj(x::Int64) = x
+GAP.@install GapObj(x::Int32) = Int64(x)
+GAP.@install GapObj(x::Int16) = Int64(x)
+GAP.@install GapObj(x::Int8) = Int64(x)
+GAP.@install GapObj(x::UInt32) = Int64(x)
+GAP.@install GapObj(x::UInt16) = Int64(x)
+GAP.@install GapObj(x::UInt8) = Int64(x)
 
-function julia_to_gap_internal(x::UInt, cache::GapCacheDict, recursive::Bool)
+GAP.@install function GapObj(x::UInt)
     x < (1<<60) && return Int64(x)
     return ccall((:ObjInt_UInt, libgap), GapObj, (UInt64, ), x)
 end
 
 ## BigInts are converted via a ccall
-function julia_to_gap_internal(x::BigInt, cache::GapCacheDict, recursive::Bool)
+GAP.@install function GapObj(x::BigInt)
     x in -1<<60:(1<<60-1) && return Int64(x)
     return GC.@preserve x ccall((:MakeObjInt, libgap), GapObj, (Ptr{UInt64}, Cint), x.d, x.size)
 end
@@ -104,20 +107,16 @@ function julia_to_gap_internal(x::Rational{T}, cache::GapCacheDict, recursive::B
 end
 
 ## Floats
-julia_to_gap_internal(x::Float64, cache::GapCacheDict, recursive::Bool) = NEW_MACFLOAT(x)
-julia_to_gap_internal(x::Float32, cache::GapCacheDict, recursive::Bool) = NEW_MACFLOAT(Float64(x))
-julia_to_gap_internal(x::Float16, cache::GapCacheDict, recursive::Bool) = NEW_MACFLOAT(Float64(x))
+GAP.@install GapObj(x::Float64) = NEW_MACFLOAT(x)
+GAP.@install GapObj(x::Float32) = NEW_MACFLOAT(Float64(x))
+GAP.@install GapObj(x::Float16) = NEW_MACFLOAT(Float64(x))
 
 ## Chars
-julia_to_gap_internal(x::Char, cache::GapCacheDict, recursive::Bool) = CharWithValue(Cuchar(x))
+GAP.@install GapObj(x::Char) = CharWithValue(Cuchar(x))
 
 ## Strings and symbols
-julia_to_gap_internal(x::AbstractString, cache::GapCacheDict, recursive::Bool) = MakeString(string(x))
-julia_to_gap_internal(x::Symbol, cache::GapCacheDict, recursive::Bool) = MakeString(string(x))
-
-# ## Generic caller for optional arguments
-# julia_to_gap(obj::Any; recursive::Bool) = julia_to_gap(obj)
-# julia_to_gap(obj::Any, recursion_dict::IdDict{Any,Any}; recursive::Bool = true) = julia_to_gap(obj)
+GAP.@install GapObj(x::AbstractString) = MakeString(string(x))
+GAP.@install GapObj(x::Symbol) = MakeString(string(x))
 
 ## Arrays (including BitVector)
 function julia_to_gap_internal(
@@ -186,7 +185,7 @@ function julia_to_gap_internal(
 end
 
 ## Ranges
-function julia_to_gap_internal(r::AbstractRange{<:Integer}, recursion_dict::GapCacheDict, recursive::Bool)
+GAP.@install function GapObj(r::AbstractRange{<:Integer})
     res = NewRange(length(r), first(r), step(r))
     Wrappers.IsRange(res) || throw(ConversionError(r, GapObj))
     return res
@@ -258,4 +257,4 @@ function julia_to_gap_internal(
     return ret_val
 end
 
-julia_to_gap_internal(func::Function, recursion_dict::GapCacheDict, recursive::Bool) = WrapJuliaFunc(func)
+GAP.@install GapObj(func::Function) = WrapJuliaFunc(func)

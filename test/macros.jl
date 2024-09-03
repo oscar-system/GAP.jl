@@ -59,3 +59,15 @@ end
     @test_throws ErrorException g"\\"
 
 end
+
+@testset "@install GapObj" begin
+    a = GAP.evalstr("(1,2)")
+
+    struct TestType1 X::GapObj end
+    GAP.@install GapObj(x::TestType1) = x.X
+    @test GapObj(TestType1(a)) === a
+
+    struct TestType2 X::GapObj end
+    GAP.@install function GapObj(x::TestType2) return x.X; end
+    @test GapObj(TestType2(a)) === a
+end

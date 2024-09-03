@@ -13,6 +13,7 @@ DocTestSetup = :(using GAP)
 @gapwrap
 @gapattribute
 @wrap
+@install
 ```
 
 ## Convenience adapters
