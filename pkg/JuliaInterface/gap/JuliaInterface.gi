@@ -166,3 +166,13 @@ InstallGlobalFunction( JuliaModule,
     return JuliaPointer( Julia.(name) );
 end );
 
+
+InstallGlobalFunction( GetJuliaScratchspace,
+  function( key )
+    if not IsString( key ) then
+        Error( "GetJuliaScratchspace: <key> must be a string" );
+    fi;
+    key:= Julia.Base.string( key );
+    return JuliaToGAP( IsString,
+             Julia.GAP.get_scratch_helper\!( key ) );
+end );

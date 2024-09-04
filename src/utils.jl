@@ -106,6 +106,14 @@ function Base.functionloc(f::GapObj)
     return (String(file), ln)
 end
 
+import Scratch: get_scratch!
+
+# Return the path of a Julia scratchspace with name `key`.
+# This scratchspace gets created if it did not exist already.
+# The scratchspace may be removed by Julia as soon as the Julia package GAP.jl
+# gets uninstalled.
+get_scratch_helper!(key::String) = get_scratch!(GAP, key)
+
 # Allow `InteractiveUtils.edit(GAP.Globals.Group)` and similar for any global
 # function. Not (yet?) useful for GAP operations, but better than nothing.
 import InteractiveUtils: edit
