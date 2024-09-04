@@ -420,6 +420,34 @@ macro wrap(ex)
     end)
 end
 
+function install_macro_helper(ex::Expr)
+    errmsg = "GAP.@install must be applied to a unary method definition for GapObj"
+
+    # split the method definition
+    def_dict = try
+        MacroTools.splitdef(ex)
+    catch
+        error(errmsg)
+    end
+    def_dict[:name] === :GapObj || def_dict[:name] == :(GAP.GapObj) || error(errmsg)
+    length(def_dict[:args]) == 1 || error(errmsg)
+
+    # extend the arguments list of the function
+    push!(def_dict[:args], :(cache::GAP.GapCacheDict))
+    push!(def_dict[:args], :(recursive::Bool))
+
+    # replace the function name
+    def_dict[:name] = :(GAP.julia_to_gap_internal)
+
+    # assemble the method definition again
+    ex = MacroTools.combinedef(def_dict)
+
+    return esc(Expr(
+        :block,
+        :(Base.@__doc__ $ex),
+        ))
+end
+
 """
     @install
 
@@ -437,29 +465,5 @@ The calls of the macro have the form `GAP.@install GapObj(x::T) = f(x)`
 or `GAP.@install function GapObj(x::T) ... end`.
 """
 macro install(ex)
-    errmsg = "GAP.@install must be applied to a unary method definition for GapObj"
-
-    # split the method definition
-    def_dict = try
-        MacroTools.splitdef(ex)
-    catch
-        error(errmsg)
-    end
-    def_dict[:name] === :GapObj || throw(ArgumentError(errmsg))
-    length(def_dict[:args]) == 1 || throw(ArgumentError(errmsg))
-
-    # extend the arguments list of the function
-    push!(def_dict[:args], :(cache::GAP.GapCacheDict))
-    push!(def_dict[:args], :(recursive::Bool))
-
-    # replace the function name
-    def_dict[:name] = :(GAP.julia_to_gap_internal)
-
-    # assemble the method definition again
-    ex = MacroTools.combinedef(def_dict)
-
-    return esc(Expr(
-        :block,
-        :(Base.@__doc__ $ex),
-        ))
+    return install_macro_helper(ex)
 end

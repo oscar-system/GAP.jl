@@ -68,6 +68,10 @@ end
     @test GapObj(TestType1(a)) === a
 
     struct TestType2 X::GapObj end
-    GAP.@install function GapObj(x::TestType2) return x.X; end
+    GAP.@install function GAP.GapObj(x::TestType2) return x.X; end
     @test GapObj(TestType2(a)) === a
+
+    @test_throws ErrorException GAP.install_macro_helper(:(GAP.@install true))
+    @test_throws ErrorException GAP.install_macro_helper(:(GAP.@install Obj(x::Bool) = x))
+    @test_throws ErrorException GAP.install_macro_helper(:(GAP.@install GapObj(x::Bool, y::Bool) = x))
 end
