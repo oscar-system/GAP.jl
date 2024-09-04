@@ -3,6 +3,7 @@
 #
 KEXT_NAME = JuliaInterface
 KEXT_SOURCES = src/JuliaInterface.c src/calls.c src/convert.c src/sync.c
+KEXT_CFLAGS = -ftest-coverage
 
 # include shared GAP package build system
 GAPPATH = @GAPPATH@
