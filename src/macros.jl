@@ -420,7 +420,24 @@ macro wrap(ex)
     end)
 end
 
-function install_macro_helper(ex::Expr)
+
+"""
+    @install
+
+When applied to a unary method definition for the function `GapObj`,
+with argument of type `T`,
+this macro installs instead a three argument method for
+`GAP.julia_to_gap_internal`, with second argument of type
+`GAP.GapCacheDict` and third argument of type `Bool`.
+
+This way, the intended `GapObj(x::T)` method becomes available,
+and additionally its code is applicable in recursive calls,
+for example when `GapObj` is called with a vector of objects of type `T`.
+
+The calls of the macro have the form `GAP.@install GapObj(x::T) = f(x)`
+or `GAP.@install function GapObj(x::T) ... end`.
+"""
+macro install(ex)
     errmsg = "GAP.@install must be applied to a unary method definition for GapObj"
 
     # split the method definition
@@ -446,24 +463,4 @@ function install_macro_helper(ex::Expr)
         :block,
         :(Base.@__doc__ $ex),
         ))
-end
-
-"""
-    @install
-
-When applied to a unary method definition for the function `GapObj`,
-with argument of type `T`,
-this macro installs instead a three argument method for
-`GAP.julia_to_gap_internal`, with second argument of type
-`GAP.GapCacheDict` and third argument of type `Bool`.
-
-This way, the intended `GapObj(x::T)` method becomes available,
-and additionally its code is applicable in recursive calls,
-for example when `GapObj` is called with a vector of objects of type `T`.
-
-The calls of the macro have the form `GAP.@install GapObj(x::T) = f(x)`
-or `GAP.@install function GapObj(x::T) ... end`.
-"""
-macro install(ex)
-    return install_macro_helper(ex)
 end

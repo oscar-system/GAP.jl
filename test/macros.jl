@@ -71,7 +71,7 @@ end
     GAP.@install function GAP.GapObj(x::TestType2) return x.X; end
     @test GapObj(TestType2(a)) === a
 
-    @test_throws ErrorException GAP.install_macro_helper(:(GAP.@install true))
-    @test_throws ErrorException GAP.install_macro_helper(:(GAP.@install Obj(x::Bool) = x))
-    @test_throws ErrorException GAP.install_macro_helper(:(GAP.@install GapObj(x::Bool, y::Bool) = x))
+    @test_throws ErrorException @macroexpand GAP.@install Obj(x::Bool)
+    @test_throws ErrorException @macroexpand GAP.@install Obj(x::Bool) = x
+    @test_throws ErrorException @macroexpand GAP.@install GapObj(x::Bool, y::Bool) = x
 end
