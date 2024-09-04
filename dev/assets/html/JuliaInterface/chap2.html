@@ -53,7 +53,12 @@
 <span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2.html#X821EFEF1843BA0F1">2.4-1 <span class="Heading">Convenience methods for <strong class="pkg">Julia</strong> objects</span></a>
 </span>
 </div></div>
-<div class="ContSect"><span class="tocline"><span class="nocss">&nbsp;</span><a href="chap2.html#X7CD54DB37ADC782D">2.5 <span class="Heading">Access <strong class="pkg">Julia</strong> help from a <strong class="pkg">GAP</strong> session</span></a>
+<div class="ContSect"><span class="tocline"><span class="nocss">&nbsp;</span><a href="chap2.html#X7DFC90B87DC503A1">2.5 <span class="Heading">Utilities</span></a>
+</span>
+<div class="ContSSBlock">
+<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2.html#X7DB0F01F81D2DEB5">2.5-1 GetJuliaScratchspace</a></span>
+</div></div>
+<div class="ContSect"><span class="tocline"><span class="nocss">&nbsp;</span><a href="chap2.html#X7CD54DB37ADC782D">2.6 <span class="Heading">Access <strong class="pkg">Julia</strong> help from a <strong class="pkg">GAP</strong> session</span></a>
 </span>
 </div>
 </div>
@@ -458,9 +463,22 @@ false
 &lt;Julia: [2 4; 6 8]&gt;
 </pre></div>
 
+<p><a id="X7DFC90B87DC503A1" name="X7DFC90B87DC503A1"></a></p>
+
+<h4>2.5 <span class="Heading">Utilities</span></h4>
+
+<p><a id="X7DB0F01F81D2DEB5" name="X7DB0F01F81D2DEB5"></a></p>
+
+<h5>2.5-1 GetJuliaScratchspace</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; GetJuliaScratchspace</code>( <var class="Arg">key</var> )</td><td class="tdright">(&nbsp;function&nbsp;)</td></tr></table></div>
+<p>Returns: a string</p>
+
+<p>Returns the path of a <strong class="pkg">Julia</strong> scratchspace associated to the given key. This scratchspace gets created if it did not exist already, one can rely on the fact that the returned path describes a writable directory. Subsequent calls with the same key yield the same result, and calls with different keys yield different results. The directory may be removed by <strong class="pkg">Julia</strong> as soon as the <strong class="pkg">Julia</strong> package <code class="code">GAP.jl</code> gets uninstalled.</p>
+
 <p><a id="X7CD54DB37ADC782D" name="X7CD54DB37ADC782D"></a></p>
 
-<h4>2.5 <span class="Heading">Access <strong class="pkg">Julia</strong> help from a <strong class="pkg">GAP</strong> session</span></h4>
+<h4>2.6 <span class="Heading">Access <strong class="pkg">Julia</strong> help from a <strong class="pkg">GAP</strong> session</span></h4>
 
 <p>In a <strong class="pkg">Julia</strong> session, one can ask for help about the object with the name <code class="code">obj</code> (a function or a type) by entering <code class="code">?obj</code>, and <strong class="pkg">Julia</strong> prints all matches to the screen. One can get the same output in a <strong class="pkg">GAP</strong> session by entering <code class="code">?Julia:obj</code>, cf. Section <a href="/home/runner/.julia/artifacts/7a7471c3a274d605d85c06775fcb6f9962114ff7/share/gap/doc/ref/chap2.html#X7E2C53D2844DD8C3"><span class="RefLink">Reference: Invoking the Help</span></a> in the <strong class="pkg">GAP</strong> Reference Manual. For example, <code class="code">?Julia:sqrt</code> shows the <strong class="pkg">Julia</strong> help about the <strong class="pkg">Julia</strong> function <code class="code">sqrt</code> (which is available in <strong class="pkg">GAP</strong> as <code class="code">Julia.sqrt</code>).</p>
 
