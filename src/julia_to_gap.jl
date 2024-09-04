@@ -1,9 +1,9 @@
 ## Converters
 """
-    julia_to_gap(input, recursion_dict = IdDict(); recursive::Bool = false)
+    julia_to_gap(input, recursion_dict::GapCacheDict = nothing; recursive::Bool = false)
 
 Convert a julia object `input` to an appropriate GAP object.
-If `recursive` is set to `true`, recursive conversions on
+If `recursive` is set to `true`, recursive conversion on
 arrays, tuples, and dictionaries is performed.
 
 The input `recursion_dict` should never be set by the user, it is meant to keep egality
@@ -46,12 +46,10 @@ The following `julia_to_gap` conversions are supported by GAP.jl.
 | `UnitRange{T}`, `StepRange{T, S}`    | `IsRange`    |
 | `Function`                           | `IsFunction` |
 """
-function julia_to_gap end
-
-# default
 julia_to_gap(x, cache::GapCacheDict = nothing; recursive::Bool = false) = julia_to_gap_internal(x, cache, recursive)
 
 # The calls to `GAP.@install` install methods for `julia_to_gap_internal`
+# so we must make sure it is declared before
 function julia_to_gap_internal end
 
 GAP.@install GapObj(x::FFE) = x    # Default for actual GAP objects is to do nothing
@@ -142,11 +140,13 @@ function julia_to_gap_internal(
             continue
         end
         if recursive
-            x = get!(recursion_dict, x) do
-                julia_to_gap_internal(x, recursion_dict, recursive)
+            res = get!(recursion_dict::RecDict, x) do
+                julia_to_gap_internal(x, recursion_dict::RecDict, recursive)
             end
+        else
+            res = x
         end
-        ret_val[i] = x
+        ret_val[i] = res
     end
     return ret_val
 end
@@ -169,6 +169,8 @@ function julia_to_gap_internal(
         recursion_dict[obj] = ret_val
     end
     for i = 1:rows
+        # Note that we need not check whether the row is in `recursion_dict`
+        # because we are just now creating the object.
         ret_val[i] = julia_to_gap_internal(obj[i, :], recursion_dict, recursive)
     end
     return ret_val
@@ -208,11 +210,13 @@ function julia_to_gap_internal(
     for (x, y) in obj
         x = Wrappers.RNamObj(MakeString(string(x)))
         if recursive
-            y = get!(recursion_dict, y) do
-                julia_to_gap_internal(y, recursion_dict, recursive)
+            res = get!(recursion_dict::RecDict, y) do
+                julia_to_gap_internal(y, recursion_dict::RecDict, recursive)
             end
+        else
+            res = y
         end
-        Wrappers.ASS_REC(record, x, y)
+        Wrappers.ASS_REC(record, x, res)
     end
 
     return record
@@ -238,7 +242,10 @@ function julia_to_gap_internal(
         end
         recursion_dict[obj] = ret_val
         for i = 1:len
-             ret_val[i] = julia_to_gap_internal(obj[i], recursion_dict, recursive)
+            x = obj[i]
+            ret_val[i] = get!(recursion_dict::RecDict, x) do
+                julia_to_gap_internal(x, recursion_dict::RecDict, recursive)
+            end
         end
     elseif Wrappers.IsRecord(obj)
         ret_val = NewPrecord(0)
@@ -248,7 +255,11 @@ function julia_to_gap_internal(
         recursion_dict[obj] = ret_val
         for xx in Wrappers.RecNames(obj)::GapObj
             x = Wrappers.RNamObj(xx)
-            Wrappers.ASS_REC(ret_val, x, julia_to_gap_internal(Wrappers.ELM_REC(obj, x), recursion_dict, recursive))
+            y = Wrappers.ELM_REC(obj, x)
+            res = get!(recursion_dict::RecDict, y) do
+                julia_to_gap_internal(y, recursion_dict::RecDict, recursive)
+            end
+            Wrappers.ASS_REC(ret_val, x, res)
         end
     else
         ret_val = obj

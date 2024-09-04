@@ -416,6 +416,7 @@ end
     @test_throws GAP.ConversionError GAP.julia_to_gap(1:2^62)
 
     r = GAP.julia_to_gap(1:2:11, IdDict(), recursive = false)
+    @test r == GAP.julia_to_gap(1:2:11)
     @test GAP.gap_to_julia(GAP.Globals.TNAM_OBJ(r)) == "list (range,ssort)"
     r = GAP.Obj(1:10)
     @test GAP.gap_to_julia(GAP.Globals.TNAM_OBJ(r)) == "list (range,ssort)"
@@ -447,6 +448,27 @@ end
     conv = GAP.julia_to_gap(yy; recursive = false)
     @test isa(conv[1], Vector{Int64})
     @test conv[1] === conv[2]
+
+    # a GAP list with identical Julia subobjects
+    l = GapObj([])
+    x = BigInt(2)^100
+    l[1] = x
+    l[2] = x
+    @test l[1] === l[2]
+    res = GAP.julia_to_gap(l)
+    @test res[1] === res[2]
+    res = GAP.julia_to_gap(l, recursive=true)
+    @test res[1] === res[2]
+
+    # a GAP record with identical Julia subobjects
+    r = GapObj(Dict{String, String}())
+    setproperty!(r, :a, x)
+    setproperty!(r, :b, x)
+    @test r.a === r.b
+    res = GAP.julia_to_gap(r)
+    @test res.a === res.b
+    res = GAP.julia_to_gap(r, recursive=true)
+    @test res.a === res.b
   end
 
   @testset "converting a list with circular refs" begin
