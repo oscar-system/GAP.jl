@@ -9,7 +9,8 @@ mkdir -p coverage
 #
 cd pkg/JuliaInterface
 pwd
-FORCE_JULIAINTERFACE_COMPILATION=true ${GAP} --nointeract # re-compile JuliaInterface
+# Force recompilation of JuliaInterface with coverage instrumentation
+CFLAGS=--coverage FORCE_JULIAINTERFACE_COMPILATION=true ${GAP} --nointeract
 ${GAP} makedoc.g
 ${GAP} --cover ../../coverage/JuliaInterface.coverage tst/testall.g || AnyFailures=Yes
 gcov -o gen/src/ src/*.c*
@@ -20,7 +21,6 @@ cd pkg/JuliaExperimental
 pwd
 ${GAP} makedoc.g
 ${GAP} --cover ../../coverage/JuliaExperimental.coverage tst/testall.g || AnyFailures=Yes
-#gcov -o gen/src/ src/*.c* # there is no src/ folder anymore
 cd ../..
 
 if [ ${AnyFailures} = Yes ]
