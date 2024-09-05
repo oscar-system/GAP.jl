@@ -10,10 +10,12 @@ mkdir -p coverage
 cd pkg/JuliaInterface
 pwd
 # Force recompilation of JuliaInterface with coverage instrumentation
-CFLAGS=--coverage FORCE_JULIAINTERFACE_COMPILATION=true ${GAP} --nointeract
+FORCE_JULIAINTERFACE_COMPILATION=true JULIAINTERFACE_WITH_COVERAGE=true ${GAP} --nointeract
 ${GAP} makedoc.g
 ${GAP} --cover ../../coverage/JuliaInterface.coverage tst/testall.g || AnyFailures=Yes
 gcov -o gen/src/ src/*.c*
+# Force recompilation of JuliaInterface without coverage instrumentation
+FORCE_JULIAINTERFACE_COMPILATION=true ${GAP} --nointeract
 cd ../..
 
 #
