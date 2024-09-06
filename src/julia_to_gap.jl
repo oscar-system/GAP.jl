@@ -46,11 +46,11 @@ The following `julia_to_gap` conversions are supported by GAP.jl.
 | `UnitRange{T}`, `StepRange{T, S}`    | `IsRange`    |
 | `Function`                           | `IsFunction` |
 """
-julia_to_gap(x, cache::GapCacheDict = nothing; recursive::Bool = false) = julia_to_gap_internal(x, cache, recursive)
+julia_to_gap(x, cache::GapCacheDict = nothing; recursive::Bool = false) = GapObj_internal(x, cache, recursive)
 
-# The calls to `GAP.@install` install methods for `julia_to_gap_internal`
+# The calls to `GAP.@install` install methods for `GapObj_internal`
 # so we must make sure it is declared before
-function julia_to_gap_internal end
+function GapObj_internal end
 
 GAP.@install GapObj(x::FFE) = x    # Default for actual GAP objects is to do nothing
 GAP.@install GapObj(x::Bool) = x    # Default for actual GAP objects is to do nothing
@@ -60,11 +60,11 @@ GAP.@install GapObj(x::Bool) = x    # Default for actual GAP objects is to do no
 ## kernel API.
 ## TODO: we could provide more efficient conversion for UInt64, Int128, UInt128
 ## which avoids the conversion to BigInt, if we wanted to.
-function julia_to_gap_internal(x::Integer, cache::GapCacheDict, recursive::Bool)
+function GapObj_internal(x::Integer, cache::GapCacheDict, recursive::Bool)
     # if it fits into a GAP immediate integer, convert x to Int64
     x in -1<<60:(1<<60-1) && return Int64(x)
     # for the general case, fall back to BigInt
-    return julia_to_gap_internal(BigInt(x), cache, recursive)
+    return GapObj_internal(BigInt(x), cache, recursive)
 end
 
 ## Small integers types always fit into GAP immediate integers, and thus are
@@ -89,7 +89,7 @@ GAP.@install function GapObj(x::BigInt)
 end
 
 ## Rationals
-function julia_to_gap_internal(x::Rational{T}, cache::GapCacheDict, recursive::Bool) where {T<:Integer}
+function GapObj_internal(x::Rational{T}, cache::GapCacheDict, recursive::Bool) where {T<:Integer}
     denom_julia = denominator(x)
     numer_julia = numerator(x)
     if denom_julia == 0
@@ -99,8 +99,8 @@ function julia_to_gap_internal(x::Rational{T}, cache::GapCacheDict, recursive::B
             return -Globals.infinity
         end
     end
-    numer = julia_to_gap_internal(numer_julia, cache, recursive)
-    denom = julia_to_gap_internal(denom_julia, cache, recursive)
+    numer = GapObj_internal(numer_julia, cache, recursive)
+    denom = GapObj_internal(denom_julia, cache, recursive)
     return Wrappers.QUO(numer, denom)
 end
 
@@ -117,7 +117,7 @@ GAP.@install GapObj(x::AbstractString) = MakeString(string(x))
 GAP.@install GapObj(x::Symbol) = MakeString(string(x))
 
 ## Arrays (including BitVector)
-function julia_to_gap_internal(
+function GapObj_internal(
     obj::AbstractVector{T},
     recursion_dict::GapCacheDict,
     recursive::Bool,
@@ -141,7 +141,7 @@ function julia_to_gap_internal(
         end
         if recursive
             res = get!(recursion_dict::RecDict, x) do
-                julia_to_gap_internal(x, recursion_dict::RecDict, recursive)
+                GapObj_internal(x, recursion_dict::RecDict, recursive)
             end
         else
             res = x
@@ -152,7 +152,7 @@ function julia_to_gap_internal(
 end
 
 ## Convert two dimensional arrays
-function julia_to_gap_internal(
+function GapObj_internal(
     obj::Matrix{T},
     recursion_dict::GapCacheDict,
     recursive::Bool,
@@ -171,19 +171,19 @@ function julia_to_gap_internal(
     for i = 1:rows
         # Note that we need not check whether the row is in `recursion_dict`
         # because we are just now creating the object.
-        ret_val[i] = julia_to_gap_internal(obj[i, :], recursion_dict, recursive)
+        ret_val[i] = GapObj_internal(obj[i, :], recursion_dict, recursive)
     end
     return ret_val
 end
 
 ## Tuples
-function julia_to_gap_internal(
+function GapObj_internal(
     obj::Tuple,
     recursion_dict::GapCacheDict,
     recursive::Bool,
 )
     array = collect(Any, obj)
-    return julia_to_gap_internal(array, recursion_dict, recursive)
+    return GapObj_internal(array, recursion_dict, recursive)
 end
 
 ## Ranges
@@ -194,7 +194,7 @@ GAP.@install function GapObj(r::AbstractRange{<:Integer})
 end
 
 ## Dictionaries
-function julia_to_gap_internal(
+function GapObj_internal(
     obj::Dict{T,S},
     recursion_dict::GapCacheDict,
     recursive::Bool,
@@ -211,7 +211,7 @@ function julia_to_gap_internal(
         x = Wrappers.RNamObj(MakeString(string(x)))
         if recursive
             res = get!(recursion_dict::RecDict, y) do
-                julia_to_gap_internal(y, recursion_dict::RecDict, recursive)
+                GapObj_internal(y, recursion_dict::RecDict, recursive)
             end
         else
             res = y
@@ -227,7 +227,7 @@ end
 ## and if `obj` contains Julia subobjects;
 ## in this case, `obj` is a GAP list or record.
 ## An example of such an `obj` is `GAP.julia_to_gap([[1]])`.
-function julia_to_gap_internal(
+function GapObj_internal(
     obj::GapObj,
     recursion_dict::GapCacheDict,
     recursive::Bool,
@@ -244,7 +244,7 @@ function julia_to_gap_internal(
         for i = 1:len
             x = obj[i]
             ret_val[i] = get!(recursion_dict::RecDict, x) do
-                julia_to_gap_internal(x, recursion_dict::RecDict, recursive)
+                GapObj_internal(x, recursion_dict::RecDict, recursive)
             end
         end
     elseif Wrappers.IsRecord(obj)
@@ -257,7 +257,7 @@ function julia_to_gap_internal(
             x = Wrappers.RNamObj(xx)
             y = Wrappers.ELM_REC(obj, x)
             res = get!(recursion_dict::RecDict, y) do
-                julia_to_gap_internal(y, recursion_dict::RecDict, recursive)
+                GapObj_internal(y, recursion_dict::RecDict, recursive)
             end
             Wrappers.ASS_REC(ret_val, x, res)
         end

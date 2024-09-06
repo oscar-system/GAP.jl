@@ -427,7 +427,7 @@ end
 When applied to a unary method definition for the function `GapObj`,
 with argument of type `T`,
 this macro installs instead a three argument method for
-`GAP.julia_to_gap_internal`, with second argument of type
+`GAP.GapObj_internal`, with second argument of type
 `GAP.GapCacheDict` and third argument of type `Bool`.
 
 This way, the intended `GapObj(x::T)` method becomes available,
@@ -454,7 +454,7 @@ macro install(ex)
     push!(def_dict[:args], :(recursive::Bool))
 
     # replace the function name
-    def_dict[:name] = :(GAP.julia_to_gap_internal)
+    def_dict[:name] = :(GAP.GapObj_internal)
 
     # assemble the method definition again
     ex = MacroTools.combinedef(def_dict)
