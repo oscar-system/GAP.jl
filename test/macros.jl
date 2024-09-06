@@ -71,7 +71,10 @@ end
     GAP.@install function GapObj(x::TestType2) return x.X; end
     @test GapObj(TestType2(a)) === a
 
+  if VERSION >= v"1.7"
+    # needs the improved `@macroexpand` from Julia 1.7
     @test_throws ErrorException @macroexpand GAP.@install Obj(x::Bool)
     @test_throws ErrorException @macroexpand GAP.@install Obj(x::Bool) = x
     @test_throws ErrorException @macroexpand GAP.@install GapObj(x::Bool, y::Bool) = x
+  end
 end
