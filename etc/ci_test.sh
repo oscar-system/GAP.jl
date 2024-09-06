@@ -14,8 +14,8 @@ CFLAGS="--coverage" LDFLAGS="--coverage" FORCE_JULIAINTERFACE_COMPILATION=true $
 ${GAP} makedoc.g
 ${GAP} --cover ../../coverage/JuliaInterface.coverage tst/testall.g || AnyFailures=Yes
 gcov -o gen/src/ src/*.c*
-# Force recompilation of JuliaInterface without coverage instrumentation
-FORCE_JULIAINTERFACE_COMPILATION=true ${GAP} --nointeract
+# Remove JuliaInterface with coverage instrumentation
+make clean
 cd ../..
 
 #
