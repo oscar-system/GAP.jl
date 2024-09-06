@@ -54,7 +54,7 @@ end
     ioc = IOContext(io, :module => nothing);
     print(ioc, GapObj)
     if GAP.use_jl_reinit_foreign_type()
-        @test String(take!(io)) == "GapObj"
+        @test String(take!(io)) == "GAP.GapObj"
     else
         @test String(take!(io)) == "GAP_jll.GapObj"
     end
