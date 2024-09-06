@@ -133,9 +133,8 @@ HELP_BOOK_HANDLER.juliahelpformat:= rec(
         # Give up.
         return [ [], [] ];
       fi;
-      
-      res:= JuliaToGAP( IsString,
-                Julia.GAP.julia_help_string( module.( func ) ) );
+      func:= Julia.GAP.UnwrapJuliaFunc( module.( func ) );
+      res:= JuliaToGAP( IsString, Julia.GAP.julia_help_string( func ) );
 
       # Store the information such that `HelpData` will find it.
       HELP_BOOKS_INFO.julia.entries:= [ [ orig_topic, res ] ];

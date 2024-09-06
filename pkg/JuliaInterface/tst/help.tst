@@ -1,4 +1,4 @@
-#@local HelpTestFunction
+#@local HelpTestFunction, str
 gap> START_TEST( "help.tst" );
 
 #
@@ -49,6 +49,19 @@ true
 gap> HelpTestFunction( "unknow" );
 true
 gap> HelpTestFunction( "something for which no match is found" );
+true
+
+# help for documented Julia functions
+gap> HelpString( "Julia:wrap_rng" ) = "Help: no matching entry found";
+true
+gap> str:= HelpString( "Julia:GAP.wrap_rng" );; # is not exported from GAP
+gap> PositionSublist( str, "wrap_rng" ) <> fail;
+true
+gap> str:= HelpString( "Julia:GapObj" );; # is exported from GAP
+gap> PositionSublist( str, "GapObj" ) <> fail;
+true
+gap> str:= HelpString( "Julia:sqrt" );; # is from Julia.Base
+gap> PositionSublist( str, "sqrt" ) <> fail;
 true
 
 #

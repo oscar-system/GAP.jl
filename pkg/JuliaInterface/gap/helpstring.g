@@ -526,7 +526,7 @@ BindGlobal( "HELP_Info", function( str, onlyexact )
   elif Length(str) > 0 and str[1] = '?'  then
       str := str{[2..Length(str)]};    
       NormalizeWhitespace(str);
-      match:= HELP_DESC_MATCHES( books, str, false, onlyexact );
+      match:= HELP_DESC_MATCHES( books, str, false, onlyexact : HELP_TOPIC:= origstr );
       if match[1] = true then
           add( books, str );
       fi;
@@ -538,7 +538,7 @@ fi;
 
   # search for this topic
   else
-    match:= HELP_DESC_MATCHES( books, str, true, onlyexact );
+    match:= HELP_DESC_MATCHES( books, str, true, onlyexact : HELP_TOPIC:= origstr );
     if match[1] = true then
       add( books, str );
 if IsRecord( match[2] ) then
