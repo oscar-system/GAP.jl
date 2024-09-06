@@ -215,10 +215,6 @@ function build_JuliaInterface(sysinfo::Dict{String, String})
     JULIA_CFLAGS = filter(c -> c != '\'', cflags())
     JULIA_LDFLAGS = filter(c -> c != '\'', ldflags())
     JULIA_LIBS = filter(c -> c != '\'', ldlibs())
-    if get(ENV, "JULIAINTERFACE_WITH_COVERAGE", "false") == "true"
-        JULIA_CFLAGS *= " --coverage"
-        JULIA_LDFLAGS *= " --coverage"
-    end
 
     jipath = joinpath(@__DIR__, "..", "pkg", "JuliaInterface")
     cd(jipath) do
