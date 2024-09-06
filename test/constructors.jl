@@ -4,7 +4,7 @@
 
   @testset "Conversion to GAP.Obj and GAP.GapObj" begin
     x = GAP.evalstr("2^100")
-    @test (@inferred GAP.GapObj(x)) == x
+    @test (@inferred GapObj(x)) == x
     @test GAP.Obj(true) == true
     x = GAP.evalstr("Z(3)")
     @test GAP.Obj(x) == x
@@ -17,11 +17,11 @@
     @test c == GAP.Obj(m, false)
     c = GAP.Obj(m, true)
     @test c[1] isa GAP.Obj
-    c = GAP.GapObj(m)
+    c = GapObj(m)
     @test c[1] isa Vector
-    @test c == GAP.GapObj(m, false)
-    c = GAP.GapObj(m, true)
-    @test c[1] isa GAP.GapObj
+    @test c == GapObj(m, false)
+    c = GapObj(m, true)
+    @test c[1] isa GapObj
   end
 
   @testset "Border cases" begin
@@ -100,23 +100,23 @@
   end
 
   @testset "Vectors" begin
-    x = GAP.julia_to_gap([1, 2, 3])
+    x = GapObj([1, 2, 3])
     @test (@inferred Vector{Any}(x)) == [1, 2, 3]
     @test (@inferred Vector{Int64}(x)) == [1, 2, 3]
     @test (@inferred Vector{BigInt}(x)) == [1, 2, 3]
-    n = GAP.julia_to_gap(big(2)^100)
+    n = GapObj(big(2)^100)
     @test_throws GAP.ConversionError Vector{Int64}(n)
     @test_throws GAP.ConversionError Vector{BigInt}(n)
     x = GAP.evalstr("[ [ 1, 2 ], [ 3, 4 ] ]")
-    nonrec1 = @inferred Vector{GAP.GapObj}(x)
+    nonrec1 = @inferred Vector{GapObj}(x)
     nonrec2 = @inferred Vector{Any}(x; recursive = false)
     rec = @inferred Vector{Any}(x; recursive = true)
-    @test all(x -> isa(x, GAP.GapObj), nonrec1)
+    @test all(x -> isa(x, GapObj), nonrec1)
     @test nonrec1 == nonrec2
     @test nonrec1 != rec
     @test all(x -> isa(x, Array), rec)
     x = [1, 2]
-    y = GAP.julia_to_gap([x, x]; recursive = true)
+    y = GapObj([x, x]; recursive = true)
     z = Vector{Any}(y)
     @test z[1] === z[2]
   end
@@ -125,9 +125,9 @@
     n = GAP.evalstr("[[1,2],[3,4]]")
     @test (@inferred Matrix{Int64}(n)) == [1 2; 3 4]
     xt = [(1,) (2,); (3,) (4,)]
-    n = GAP.julia_to_gap(xt; recursive = false)
+    n = GapObj(xt; recursive = false)
     @test (@inferred Matrix{Tuple{Int64}}(n)) == xt
-    n = GAP.julia_to_gap(big(2)^100)
+    n = GapObj(big(2)^100)
     @test_throws GAP.ConversionError Matrix{Int64}(n)
     n = GAP.evalstr("[[1,2],[,4]]")
     #@test Matrix{Union{Int64,Nothing}}(n) == [1 2; nothing 4]
@@ -135,12 +135,12 @@
     m = Any[1 2; 3 4]
     m[1, 1] = x
     m[2, 2] = x
-    x = GAP.julia_to_gap(m; recursive = true)
+    x = GapObj(m; recursive = true)
     y = @inferred Matrix{Any}(x)
-    @test !isa(y[1, 1], GAP.GapObj)
+    @test !isa(y[1, 1], GapObj)
     @test y[1, 1] === y[2, 2]
     z = @inferred Matrix{Any}(x; recursive = false)
-    @test isa(z[1, 1], GAP.GapObj)
+    @test isa(z[1, 1], GapObj)
     @test z[1, 1] === z[2, 2]
   end
 
@@ -149,16 +149,16 @@
     @test (@inferred Set{Vector{Int}}(GAP.evalstr("[[1,2],[2,3,4]]"))) == Set([[1, 2], [2, 3, 4]])
     @test (@inferred Set{String}(GAP.evalstr("[\"b\", \"a\", \"b\"]"))) == Set(["b", "a", "b"])
     x = GAP.evalstr("SymmetricGroup(3)")
-    #@test (@inferred Set{GAP.GapObj}(x)) == Set{GAP.GapObj}(GAP.Globals.AsSet(x))
+    #@test (@inferred Set{GapObj}(x)) == Set{GapObj}(GAP.Globals.AsSet(x))
   end
 
   @testset "Tuples" begin
-    x = GAP.julia_to_gap([1, 2, 3])
+    x = GapObj([1, 2, 3])
     @test (@inferred Tuple{Int64,Int16,Int32}(x)) == (1, 2, 3)
     @test Tuple{Int64,Any,Int32}(x) == (1, 2, 3)
     @test_throws ArgumentError Tuple{Any,Any}(x)
     @test_throws ArgumentError Tuple{Any,Any,Any,Any}(x)
-    n = GAP.julia_to_gap(big(2)^100)
+    n = GapObj(big(2)^100)
     @test_throws GAP.ConversionError Tuple{Int64,Any,Int32}(n)
     x = GAP.evalstr("[ [ 1, 2 ], [ 3, [ 4, 5 ] ] ]")
     y = Tuple{GAP.Obj,Any}(x)
@@ -198,7 +198,7 @@
     x = GAP.evalstr("rec( foo := 1, bar := \"foo\" )")
     y = Dict{Symbol,Any}(:foo => 1, :bar => "foo")
     @test (@inferred Dict{Symbol,Any}(x)) == y
-    n = GAP.julia_to_gap(big(2)^100)
+    n = GapObj(big(2)^100)
     @test_throws GAP.ConversionError Dict{Symbol,Any}(n)
     x = GAP.evalstr("rec( a:= [ 1, 2 ], b:= [ 3, [ 4, 5 ] ] )")
     y = @inferred Dict{Symbol,Any}(x)
@@ -226,7 +226,7 @@
   end
 
   @testset "GAP lists with Julia objects" begin
-    xx = GAP.julia_to_gap([(1,)])
+    xx = GapObj([(1,)])
     yy = @inferred Vector{Tuple{Int64}}(xx)
     @test [(1,)] == yy
     @test typeof(yy) == Vector{Tuple{Int64}}

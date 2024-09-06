@@ -44,7 +44,7 @@ end
 
 @testset "GapObj" begin
     io = IOBuffer();
-    print(io, GAP.GapObj)
+    print(io, GapObj)
     @test String(take!(io)) == "GapObj"
 
     L = [ GAP.evalstr( "()" ) ]
@@ -52,9 +52,9 @@ end
     @test String(take!(io)) == "GapObj[GAP: ()]"
 
     ioc = IOContext(io, :module => nothing);
-    print(ioc, GAP.GapObj)
+    print(ioc, GapObj)
     if GAP.use_jl_reinit_foreign_type()
-        @test String(take!(io)) == "GAP.GapObj"
+        @test String(take!(io)) == "GapObj"
     else
         @test String(take!(io)) == "GAP_jll.GapObj"
     end

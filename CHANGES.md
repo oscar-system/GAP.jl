@@ -5,7 +5,7 @@
     simpler and safer and
   - restrict the necessity to create dictionaries to situations where
     recursive conversions make sense.
-  For that, the function `julia_to_gap_internal`, the macro `GAP.@install`,
+  For that, the function `GAP.GapObj_internal`, the macro `GAP.@install`,
   and the type `GapCacheDict` were introduced.
 
 ## Version 0.11.4 (released 2024-09-19)

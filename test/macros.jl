@@ -33,7 +33,7 @@
     @test ! has_cendersub(G)
     @test has_dersub(G)  # the previous call has set the value
     ggens = GAP.Globals.GeneratorsOfGroup(G)
-    set_cendersub(G, GAP.Globals.Subgroup(G, GAP.GapObj([ggens[1]])))
+    set_cendersub(G, GAP.Globals.Subgroup(G, GapObj([ggens[1]])))
     @test has_cendersub(G)
     @test GAP.Globals.HasCentre(GAP.Globals.DerivedSubgroup(G))
     @test GAP.Globals.Size(GAP.Globals.Centre(G)) == 1
@@ -53,9 +53,9 @@ end
     @test_throws ErrorException @gap (1,2)(3,4)
 
     x = GAP.g"foo"
-    @test x == GAP.julia_to_gap("foo")
+    @test x == GapObj("foo")
     x = GAP.g"1:\n, 2:\", 3:\\, 4:\b, 5:\r, 6:\c, 7:\001"
-    @test x == GAP.julia_to_gap("1:\n, 2:\", 3:\\, 4:\b, 5:\r, 6:\003, 7:\001")
+    @test x == GapObj("1:\n, 2:\", 3:\\, 4:\b, 5:\r, 6:\003, 7:\001")
     @test_throws ErrorException g"\\"
 
 end
@@ -68,7 +68,7 @@ end
     @test GapObj(TestType1(a)) === a
 
     struct TestType2 X::GapObj end
-    GAP.@install function GAP.GapObj(x::TestType2) return x.X; end
+    GAP.@install function GapObj(x::TestType2) return x.X; end
     @test GapObj(TestType2(a)) === a
 
     @test_throws ErrorException @macroexpand GAP.@install Obj(x::Bool)

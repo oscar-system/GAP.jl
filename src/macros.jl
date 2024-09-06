@@ -383,9 +383,9 @@ macro wrap(ex)
                 # type annotations -> split and decide what to do
                 var = x.args[1]
                 typeannot = x.args[2]
-                if typeannot in [:GapObj, :(GAP.GapObj)]
-                    # the lhs has no type annotation, rhs gets wrapped in `GAP.GapObj(...)::GAP.GapObj` 
-                    (var, :(GAP.GapObj($var)::GAP.GapObj))
+                if typeannot in [:GapObj, :(GapObj)]
+                    # the lhs has no type annotation, rhs gets wrapped in `GapObj(...)::GapObj`
+                    (var, :(GapObj($var)::GapObj))
                 elseif typeannot == :(GAP.Obj)
                     # the lhs has no type annotation, rhs gets wrapped in `GAP.Obj(...)::GAP.Obj`
                     (var, :(GAP.Obj($var)::GAP.Obj))
@@ -403,7 +403,7 @@ macro wrap(ex)
     ]
     lhsargs = map(first, tempargs)
     rhsargs = map(last, tempargs)
-    
+
     # the "outer" part of the body
     body = MacroTools.@qq begin
                global $newsym

@@ -1,16 +1,15 @@
-## Handle "conversion" to GAP.Obj and GAP.GapObj (may occur in recursions).
+## Handle "conversion" to GAP.Obj and GapObj (may occur in recursions).
 Obj(x::Obj) = x
 GapObj(x::GapObj) = x
 
 ## Handle conversion of Julia objects to GAP objects
 Obj(obj; recursive::Bool = false) = GapObj_internal(obj, nothing, recursive)::Obj
-GapObj(obj; recursive::Bool = false) = GapObj_internal(obj, nothing, recursive)::GapObj
 
 Obj(obj, recursive::Bool) = GapObj_internal(obj, nothing, recursive)::Obj
-GapObj(obj, recursive::Bool) = GapObj_internal(obj, nothing, recursive)::GapObj
+GapObj(obj, recursive::Bool) = GapObj_internal(obj, nothing, recursive)::Obj
 
 ## Conversion to gap integers
-GapInt(x::Integer) = julia_to_gap(x)
+GapInt(x::Integer) = GapObj(x)
 
 
 """

@@ -178,8 +178,10 @@ DeclareAttribute( "JuliaPointer", IsJuliaWrapper );
 #! <Julia module GAP>
 #! gap> IsJuliaModule( Julia.GAP );
 #! true
-#! gap> Julia.GAP.julia_to_gap;
-#! <Julia: julia_to_gap>
+#! gap> Julia.GAP.gap_to_julia;
+#! <Julia: gap_to_julia>
+#! gap> JuliaFunction( "gap_to_julia", "GAP" );  # the same function
+#! <Julia: gap_to_julia>
 #! @EndExampleSession
 DeclareCategory( "IsJuliaModule", IsJuliaWrapper and IsRecord  );
 

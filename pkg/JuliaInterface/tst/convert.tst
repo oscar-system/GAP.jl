@@ -189,11 +189,11 @@ gap> Julia.GAP.Obj( list );
 [ 1, 2, 3 ]
 
 ##  ranges
-gap> Julia.GAP.julia_to_gap( JuliaEvalString( "1:3" ) );
+gap> Julia.GapObj( JuliaEvalString( "1:3" ) );
 [ 1 .. 3 ]
-gap> Julia.GAP.julia_to_gap( JuliaEvalString( "1:2:5" ) );
+gap> Julia.GapObj( JuliaEvalString( "1:2:5" ) );
 [ 1, 3 .. 5 ]
-gap> Julia.GAP.julia_to_gap( JuliaEvalString( "3:2" ) );
+gap> Julia.GapObj( JuliaEvalString( "3:2" ) );
 [  ]
 gap> Julia.GAP.Obj( JuliaEvalString( "1:3" ) );
 [ 1 .. 3 ]

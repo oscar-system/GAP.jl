@@ -95,10 +95,10 @@ regarding the mutability of the result
 but here we have to choose one behaviour for the Julia function.
 
 ```jldoctest
-julia> l = GAP.julia_to_gap( [ 1, 3, 7, 15 ] )
+julia> l = GapObj( [ 1, 3, 7, 15 ] )
 GAP: [ 1, 3, 7, 15 ]
 
-julia> m = GAP.julia_to_gap( [ 1 2; 3 4 ] )
+julia> m = GapObj( [ 1 2; 3 4 ] )
 GAP: [ [ 1, 2 ], [ 3, 4 ] ]
 
 julia> length( l )

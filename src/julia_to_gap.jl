@@ -1,31 +1,53 @@
 ## Converters
 """
-    julia_to_gap(input, recursion_dict::GapCacheDict = nothing; recursive::Bool = false)
+    GapObj(input, recursion_dict::GapCacheDict = nothing; recursive::Bool = false)
+    GapObj(input, recursive::Bool = false)
 
-Convert a julia object `input` to an appropriate GAP object.
-If `recursive` is set to `true`, recursive conversion on
-arrays, tuples, and dictionaries is performed.
+One can use the type [`GapObj`](@ref) as a constructor,
+in order to convert the julia object `input` to an appropriate GAP object.
+
+If `recursive` is set to `true`, recursive conversion of nested Julia objects
+(arrays, tuples, and dictionaries) is performed.
+
 
 The input `recursion_dict` should never be set by the user, it is meant to keep egality
 of input data, by converting equal data to identical objects in GAP.
 
 # Examples
 ```jldoctest
-julia> GAP.julia_to_gap(1//3)
+julia> GapObj(1//3)
 GAP: 1/3
 
-julia> GAP.julia_to_gap("abc")
+julia> GapObj("abc")
 GAP: "abc"
 
-julia> GAP.julia_to_gap([ [1, 2], [3, 4]])
-GAP: [ <Julia: [1, 2]>, <Julia: [3, 4]> ]
-
-julia> GAP.julia_to_gap([ [1, 2], [3, 4]], recursive = true)
+julia> GapObj([1 2; 3 4])
 GAP: [ [ 1, 2 ], [ 3, 4 ] ]
 
+julia> GapObj([[1, 2], [3, 4]])
+GAP: [ <Julia: [1, 2]>, <Julia: [3, 4]> ]
+
+julia> GapObj([[1, 2], [3, 4]], true)
+GAP: [ [ 1, 2 ], [ 3, 4 ] ]
+
+julia> GapObj([[1, 2], [3, 4]], recursive = true)
+GAP: [ [ 1, 2 ], [ 3, 4 ] ]
 ```
 
-The following `julia_to_gap` conversions are supported by GAP.jl.
+Note that this conversion is *not* restricted to outputs that actually are
+of type `GapObj`,
+also GAP integers, finite field elements, and booleans can be created
+by the constructor `GapObj`.
+
+```jldoctest
+julia> res = GapObj(42);  res isa GapObj
+false
+
+julia> res isa GAP.Obj
+true
+```
+
+The following `GapObj` conversions are supported by GAP.jl.
 (Other Julia packages may provide conversions for more Julia objects.)
 
 | Julia type                           | GAP filter   |
@@ -46,9 +68,9 @@ The following `julia_to_gap` conversions are supported by GAP.jl.
 | `UnitRange{T}`, `StepRange{T, S}`    | `IsRange`    |
 | `Function`                           | `IsFunction` |
 """
-julia_to_gap(x, cache::GapCacheDict = nothing; recursive::Bool = false) = GapObj_internal(x, cache, recursive)
+GapObj(x, cache::GapCacheDict = nothing; recursive::Bool = false) = GapObj_internal(x, cache, recursive)
 
-# The calls to `GAP.@install` install methods for `GapObj_internal`
+# The calls to `GAP.@install` install methods for `GAP.GapObj_internal`
 # so we must make sure it is declared before
 function GapObj_internal end
 
@@ -226,7 +248,7 @@ end
 ## We have to do something only if recursive conversion is required,
 ## and if `obj` contains Julia subobjects;
 ## in this case, `obj` is a GAP list or record.
-## An example of such an `obj` is `GAP.julia_to_gap([[1]])`.
+## An example of such an `obj` is `GapObj([[1]])`.
 function GapObj_internal(
     obj::GapObj,
     recursion_dict::GapCacheDict,
