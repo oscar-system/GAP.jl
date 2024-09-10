@@ -37,6 +37,10 @@ function ldflags()
     elseif !Sys.isapple()
         fl = fl * " -Wl,--export-dynamic"
     end
+    env_var = get(ENV, "LDFLAGS", nothing)
+    if !isnothing(env_var)
+        fl = fl * " " * env_var
+    end
     return fl
 end
 
@@ -62,6 +66,10 @@ function cflags()
     print(flags, " -I", include)
     if Sys.isunix()
         print(flags, " -fPIC")
+    end
+    env_var = get(ENV, "CFLAGS", nothing)
+    if !isnothing(env_var)
+        print(flags, " ", env_var)
     end
     return String(take!(flags))
 end

@@ -212,13 +212,13 @@ function build_JuliaInterface(sysinfo::Dict{String, String})
     # paths involve spaces, but then we likely will haves problem in other
     # places; in any case, if anybody ever cares about this, we can work on
     # finding a better solution.
-    JULIA_CPPFLAGS = filter(c -> c != '\'', cflags())
+    JULIA_CFLAGS = filter(c -> c != '\'', cflags())
     JULIA_LDFLAGS = filter(c -> c != '\'', ldflags())
     JULIA_LIBS = filter(c -> c != '\'', ldlibs())
 
     jipath = joinpath(@__DIR__, "..", "pkg", "JuliaInterface")
     cd(jipath) do
-        withenv("CFLAGS" => JULIA_CPPFLAGS,
+        withenv("CFLAGS" => JULIA_CFLAGS,
                 "LDFLAGS" => JULIA_LDFLAGS * " " * JULIA_LIBS) do
             run(pipeline(`./configure $(gaproot())`, stdout="build.log"))
             run(pipeline(`make V=1 -j$(Sys.CPU_THREADS)`, stdout="build.log", append=true))
