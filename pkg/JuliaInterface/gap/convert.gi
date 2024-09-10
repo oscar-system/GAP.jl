@@ -8,7 +8,7 @@
 InstallMethod(JuliaToGAP, ["IsInt", "IsJuliaObject"],
 function(filter, obj)
     if Julia.isa(obj, Julia.Base.Integer) then
-        return Julia.GapObj(obj);
+        return Julia.GAP.GapObj(obj);
     fi;
     Error("<obj> must be a Julia integer");
 end);
@@ -22,7 +22,7 @@ end);
 InstallMethod(JuliaToGAP, ["IsRat", "IsJuliaObject"],
 function(filter, obj)
     if Julia.isa(obj, Julia.Base.Integer) or Julia.isa(obj, Julia.Base.Rational) then
-        return Julia.GapObj(obj);
+        return Julia.GAP.GapObj(obj);
     fi;
     Error("<obj> must be a Julia integer or rational");
 end);
@@ -38,7 +38,7 @@ end);
 InstallMethod(JuliaToGAP, ["IsFloat", "IsJuliaObject"],
 function(filter, obj)
     if Julia.isa(obj, Julia.Base.AbstractFloat) then
-        return Julia.GapObj(obj);
+        return Julia.GAP.GapObj(obj);
     fi;
     Error("<obj> must be a Julia float");
 end);
@@ -54,10 +54,10 @@ end);
 InstallMethod(JuliaToGAP, ["IsChar", "IsJuliaObject"],
 function(filter, obj)
     if Julia.isa(obj, Julia.Base.Char) then
-        return Julia.GapObj(obj);
+        return Julia.GAP.GapObj(obj);
     elif Julia.isa(obj, Julia.Base.Int8) or
          Julia.isa(obj, Julia.Base.UInt8) then
-        return CharInt( Julia.GapObj(obj) );
+        return CharInt( Julia.GAP.GapObj(obj) );
     fi;
 
     Error("<obj> must be a Julia Char or Int8 or UInt8");
@@ -119,7 +119,7 @@ InstallMethod(JuliaToGAP, ["IsString", "IsJuliaObject"],
 function(filter, obj)
     if Julia.isa(obj, Julia.Base.AbstractString) or
        Julia.isa(obj, Julia.Base.Symbol) then
-        return Julia.GapObj(obj);
+        return Julia.GAP.GapObj(obj);
     fi;
     Error("<obj> must be a Julia string or symbol");
 end);

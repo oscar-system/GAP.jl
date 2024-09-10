@@ -370,7 +370,7 @@
 #!
 #! <ManSection>
 #! <Func Name="Julia.GAP.Obj" Arg="juliaobj[, recursive]"/>
-#! <Func Name="Julia.GapObj" Arg="juliaobj[, recursive]"/>
+#! <Func Name="Julia.GAP.GapObj" Arg="juliaobj[, recursive]"/>
 #! <Returns>a &GAP; object</Returns>
 #! <Description>
 #! The &Julia; constructor <Ref Func="Julia.GAP.Obj"/> takes an object
@@ -403,7 +403,7 @@
 #! via suitable methods for <Ref Func="Julia.GAP.Obj"/>.
 #! <P/>
 #! If one is sure that the result of the conversion to &GAP; is not an
-#! immediate &GAP; object then one can call <Ref Func="Julia.GapObj"/>
+#! immediate &GAP; object then one can call <Ref Func="Julia.GAP.GapObj"/>
 #! instead of <Ref Func="Julia.GAP.Obj"/>.
 #! </Description>
 #! </ManSection>
