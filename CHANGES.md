@@ -1,5 +1,12 @@
 # Changes in GAP.jl
 
+## Version 0.11.2 (released 2024-09-10)
+
+- Update to GAP 4.13.1
+- Add `GetJuliaScratchspace` to `JuliaInterface`
+- Enhance `Packages.install`
+- Fix access to Julia docstrings from the GAP session
+- Restore compatibility with Julia nightly (for now)
 - Remove the GAP user preference `IncludeJuliaStartupFile`
   that was used to control whether `~/.julia/config/startup.jl`
   gets included by Julia when GAP is started together with Julia
@@ -7,6 +14,7 @@
   In this situation, one can now use the environment variable
   `JULIA_STARTUP_FILE_IN_GAP`;
   if its value is `yes` then the startup file gets included, otherwise not.
+- Various janitorial changes
 
 ## Version 0.11.1 (released 2024-06-06)
 
