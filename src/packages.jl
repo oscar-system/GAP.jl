@@ -275,7 +275,7 @@ function install(spec::String, version::String = "";
           for inforec in getproperty(info, spec)
             if version == string(getproperty(inforec, :Version))
               fun = getproperty(inforec, :AvailabilityTest)
-              fun() && return true
+              fun() == true && return true
             end
           end
         end
