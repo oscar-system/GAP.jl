@@ -22,7 +22,7 @@ end
 
 function Base.show(io::IO, obj::Union{GapObj,FFE})
     stri = show_string(io, obj)
-    print(io, "GAP: $stri")
+    print(AbstractAlgebra.pretty(io), AbstractAlgebra.LowercaseOff(), "GAP: $stri")
 end
 
 function Base.string(obj::Union{GapObj,FFE})
