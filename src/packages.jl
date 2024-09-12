@@ -274,8 +274,8 @@ function install(spec::String, version::String = "";
           # then nothing is to do.
           for inforec in getproperty(info, spec)
             if version == string(getproperty(inforec, :Version))
-              fun = getproperty(inforec, :AvailabilityTest)
-              fun() && return true
+              res = Globals.TestPackageAvailability(GapObj(spec), GapObj(version))
+              res !== Globals.fail && return true
             end
           end
         end
