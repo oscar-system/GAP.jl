@@ -434,6 +434,11 @@ This way, the intended `GapObj(x::T)` method becomes available,
 and additionally its code is applicable in recursive calls,
 for example when `GapObj` is called with a vector of objects of type `T`.
 
+Since the `GapObj` method does not support a dictionary for tracking
+identical subobjects, the type `T` is marked as "not needing recursion",
+by automatically installing a method for `_needs_tracking_julia_to_gap`
+that returns `false`.
+
 The calls of the macro have the form `GAP.@install GapObj(x::T) = f(x)`
 or `GAP.@install function GapObj(x::T) ... end`.
 """
@@ -446,6 +451,7 @@ macro install(ex)
     catch
         error(errmsg)
     end
+
     def_dict[:name] === :GapObj || def_dict[:name] == :(GAP.GapObj) || error(errmsg)
     length(def_dict[:args]) == 1 || error(errmsg)
 
@@ -458,6 +464,17 @@ macro install(ex)
 
     # assemble the method definition again
     ex = MacroTools.combinedef(def_dict)
+
+    # install the `needs_conversion_tracking` method that returns `false`
+    x = def_dict[:args][1]
+    if x isa Symbol || !(x.head == :(::) && length(x.args) == 2)
+      error("argument of GapObj needs a type annotation")
+    else
+      typeannot = x.args[2]
+    end
+    Base.eval(__module__, quote
+        GAP._needs_tracking_julia_to_gap(::Type{$typeannot}) = false
+      end)
 
     return esc(Expr(
         :block,

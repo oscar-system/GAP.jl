@@ -382,6 +382,13 @@ end
     @test GapObj([1 2; 3 4]) == x
   end
 
+  @testset "Sets" begin
+    x = GAP.evalstr("[1, 3, 4]")
+    @test GapObj(Set([4, 3, 1])) == x
+    x = GAP.evalstr("[\"a\", \"b\", \"c\"]")
+    @test GapObj(Set(["c", "b", "a"]); recursive = true) == x
+  end
+
   @testset "BitVectors" begin
     x = GAP.evalstr("BlistList([1,2],[1])")
     y = GapObj([true, false])
@@ -452,23 +459,32 @@ end
     # a GAP list with identical Julia subobjects
     l = GapObj([])
     x = BigInt(2)^100
+    y = [1]
     l[1] = x
     l[2] = x
-    @test l[1] === l[2]
+    l[3] = y
+    l[4] = y
     res = GapObj(l)
     @test res[1] === res[2]
+    @test res[3] === res[4]
     res = GapObj(l, recursive=true)
-    @test res[1] === res[2]
+    @test res[1] == res[2]
+    @test res[1] !== res[2]  # `BigInt` wants no identity tracking
+    @test res[3] === res[4]  # `Array` wants identity tracking
 
     # a GAP record with identical Julia subobjects
     r = GapObj(Dict{String, String}())
     setproperty!(r, :a, x)
     setproperty!(r, :b, x)
-    @test r.a === r.b
+    setproperty!(r, :c, y)
+    setproperty!(r, :d, y)
     res = GapObj(r)
     @test res.a === res.b
+    @test res.c === res.d
     res = GapObj(r, recursive=true)
-    @test res.a === res.b
+    @test res.a == res.b
+    @test res.a !== res.b  # `BigInt` wants no identity tracking
+    @test res.c === res.d
   end
 
   @testset "converting a list with circular refs" begin
