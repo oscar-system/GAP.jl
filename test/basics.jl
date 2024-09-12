@@ -153,3 +153,10 @@ end
     @test gs3 == [random(GRS, G) for _=1:30]
 
 end
+
+@testset "printing" begin
+    io = IOBuffer()
+    io = AbstractAlgebra.pretty(io)
+    print(io, AbstractAlgebra.Lowercase(), GapObj([1, 2, 3]))
+    @test String(take!(io)) == "GAP: [ 1, 2, 3 ]"
+end
