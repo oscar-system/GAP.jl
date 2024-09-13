@@ -69,7 +69,7 @@ The following `GapObj` conversions are supported by GAP.jl.
 | `UnitRange{T}`, `StepRange{T, S}`    | `IsRange`    |
 | `Function`                           | `IsFunction` |
 """
-GapObj(x, cache::GapCacheDict = nothing; recursive::Bool = false) = GapObj_internal(x, cache, recursive)
+GapObj(x, cache::GapCacheDict = nothing; recursive::Bool = false) = GapObj_internal(x, cache, Val(recursive))
 
 # The calls to `GAP.@install` install methods for `GAP.GapObj_internal`
 # so we must make sure it is declared before
@@ -100,11 +100,11 @@ GAP.@install GapObj(x::Bool) = x    # Default for actual GAP objects is to do no
 ## kernel API.
 ## TODO: we could provide more efficient conversion for UInt64, Int128, UInt128
 ## which avoids the conversion to BigInt, if we wanted to.
-function GapObj_internal(x::Integer, cache::GapCacheDict, recursive::Bool)
+function GapObj_internal(x::Integer, cache::GapCacheDict, ::Val{recursive}) where recursive
     # if it fits into a GAP immediate integer, convert x to Int64
     x in -1<<60:(1<<60-1) && return Int64(x)
     # for the general case, fall back to BigInt
-    return GapObj_internal(BigInt(x), cache, recursive)
+    return GapObj_internal(BigInt(x), cache, Val(recursive))
 end
 
 ## Small integers types always fit into GAP immediate integers, and thus are
@@ -129,7 +129,7 @@ GAP.@install function GapObj(x::BigInt)
 end
 
 ## Rationals
-function GapObj_internal(x::Rational{T}, cache::GapCacheDict, recursive::Bool) where {T<:Integer}
+function GapObj_internal(x::Rational{T}, cache::GapCacheDict, ::Val{recursive}) where {T<:Integer, recursive}
     denom_julia = denominator(x)
     numer_julia = numerator(x)
     if denom_julia == 0
@@ -139,8 +139,8 @@ function GapObj_internal(x::Rational{T}, cache::GapCacheDict, recursive::Bool) w
             return -Globals.infinity
         end
     end
-    numer = GapObj_internal(numer_julia, cache, recursive)
-    denom = GapObj_internal(denom_julia, cache, recursive)
+    numer = GapObj_internal(numer_julia, cache, Val(recursive))
+    denom = GapObj_internal(denom_julia, cache, Val(recursive))
     return Wrappers.QUO(numer, denom)
 end
 
@@ -160,11 +160,11 @@ GAP.@install GapObj(x::Symbol) = MakeString(string(x))
 function GapObj_internal(
     obj::AbstractVector{T},
     recursion_dict::GapCacheDict,
-    recursive::Bool,
-) where {T}
+    ::Val{recursive},
+) where {T, recursive}
 
     # If I have a dictionary then the converted value may be stored.
-    recursion_dict !== nothing && haskey(recursion_dict, obj) && return recursion_dict[obj]
+    recursive && recursion_dict !== nothing && haskey(recursion_dict, obj) && return recursion_dict[obj]
 
     # Initialize the return value.
     len = length(obj)
@@ -194,9 +194,9 @@ function GapObj_internal(
             # or adding them to the dictionary,
             # since their conversion method decides about that.
             if rec
-              res = GapObj_internal(x, recursion_dict::RecDict, recursive)
+              res = GapObj_internal(x, recursion_dict::RecDict, Val(recursive))
             else
-              res = GapObj_internal(x, nothing, recursive)
+              res = GapObj_internal(x, nothing, Val(recursive))
             end
         else
             res = x
@@ -211,10 +211,10 @@ end
 function GapObj_internal(
     obj::Set{T},
     recursion_dict::GapCacheDict,
-    recursive::Bool,
-) where {T}
+    ::Val{recursive},
+) where {T, recursive}
 
-    recursion_dict !== nothing && haskey(recursion_dict, obj) && return recursion_dict[obj]
+    recursive && recursion_dict !== nothing && haskey(recursion_dict, obj) && return recursion_dict[obj]
 
     ret_val = GAP.NewPlist(length(obj))
 
@@ -230,9 +230,9 @@ function GapObj_internal(
     for x in obj
         if recursive
           if rec
-            res = GapObj_internal(x, recursion_dict::RecDict, recursive)
+            res = GapObj_internal(x, recursion_dict::RecDict, Val(recursive))
           else
-            res = GapObj_internal(x, nothing, recursive)
+            res = GapObj_internal(x, nothing, Val(recursive))
           end
         else
           res = x
@@ -249,10 +249,10 @@ end
 function GapObj_internal(
     obj::Matrix{T},
     recursion_dict::GapCacheDict,
-    recursive::Bool,
-) where {T}
+    ::Val{recursive},
+) where {T, recursive}
 
-    recursion_dict !== nothing && haskey(recursion_dict, obj) && return recursion_dict[obj]
+    recursive && recursion_dict !== nothing && haskey(recursion_dict, obj) && return recursion_dict[obj]
 
     rows = size(obj, 1)
     ret_val = NewPlist(rows)
@@ -270,9 +270,9 @@ function GapObj_internal(
       # We need not distinguish between recursive or not
       # because we are just now creating the "row objects" in Julia.
       if rec
-        ret_val[i] = GapObj_internal(obj[i, :], recursion_dict::RecDict, recursive)
+        ret_val[i] = GapObj_internal(obj[i, :], recursion_dict::RecDict, Val(recursive))
       else
-        ret_val[i] = GapObj_internal(obj[i, :], nothing, recursive)
+        ret_val[i] = GapObj_internal(obj[i, :], nothing, Val(recursive))
       end
     end
     return ret_val
@@ -282,10 +282,10 @@ end
 function GapObj_internal(
     obj::Tuple,
     recursion_dict::GapCacheDict,
-    recursive::Bool,
-)
+    ::Val{recursive},
+) where recursive
     array = collect(Any, obj)
-    return GapObj_internal(array, recursion_dict, recursive)
+    return GapObj_internal(array, recursion_dict, Val(recursive))
 end
 
 ## Ranges
@@ -299,10 +299,10 @@ end
 function GapObj_internal(
     obj::Dict{T,S},
     recursion_dict::GapCacheDict,
-    recursive::Bool,
-) where {S} where {T<:Union{Symbol,AbstractString}}
+    ::Val{recursive},
+) where {S} where {T<:Union{Symbol,AbstractString}} where {recursive}
 
-    recursion_dict !== nothing && haskey(recursion_dict, obj) && return recursion_dict[obj]
+    recursive && recursion_dict !== nothing && haskey(recursion_dict, obj) && return recursion_dict[obj]
 
     ret_val = NewPrecord(0)
 
@@ -319,9 +319,9 @@ function GapObj_internal(
         x = Wrappers.RNamObj(MakeString(string(x)))
         if recursive
           if rec
-            res = GapObj_internal(y, recursion_dict::RecDict, recursive)
+            res = GapObj_internal(y, recursion_dict::RecDict, Val(recursive))
           else
-            res = GapObj_internal(y, nothing, recursive)
+            res = GapObj_internal(y, nothing, Val(recursive))
           end
         else
             res = y
@@ -340,8 +340,8 @@ end
 function GapObj_internal(
     obj::GapObj,
     recursion_dict::GapCacheDict,
-    recursive::Bool,
-)
+    ::Val{recursive},
+) where {recursive}
     if ! recursive
         ret_val = obj
     elseif Wrappers.IsList(obj)
@@ -354,7 +354,7 @@ function GapObj_internal(
         recursion_dict[obj] = ret_val
         for i = 1:len
             x = obj[i]
-            ret_val[i] = GapObj_internal(x, recursion_dict::RecDict, recursive)
+            ret_val[i] = GapObj_internal(x, recursion_dict::RecDict, Val(recursive))
         end
     elseif Wrappers.IsRecord(obj)
         ret_val = NewPrecord(0)
@@ -366,7 +366,7 @@ function GapObj_internal(
         for xx in Wrappers.RecNames(obj)::GapObj
             x = Wrappers.RNamObj(xx)
             y = Wrappers.ELM_REC(obj, x)
-            res = GapObj_internal(y, recursion_dict::RecDict, recursive)
+            res = GapObj_internal(y, recursion_dict::RecDict, Val(recursive))
             Wrappers.ASS_REC(ret_val, x, res)
         end
     else

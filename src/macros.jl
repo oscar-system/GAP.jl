@@ -457,7 +457,12 @@ macro install(ex)
 
     # extend the arguments list of the function
     push!(def_dict[:args], :(cache::GAP.GapCacheDict))
-    push!(def_dict[:args], :(recursive::Bool))
+    push!(def_dict[:args], :(::Val{recursive}))
+    if length(def_dict[:whereparams]) == 0
+      def_dict[:whereparams] = (:recursive,)
+    else
+      def_dict[:whereparams] = Tuple(push!(collect(def_dict[:whereparams]), :recursive))
+    end
 
     # replace the function name
     def_dict[:name] = :(GAP.GapObj_internal)
