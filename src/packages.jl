@@ -272,12 +272,8 @@ function install(spec::String, version::String = "";
           # The package is not yet loaded but may be available.
           # If an available version has the required version number
           # then nothing is to do.
-          for inforec in getproperty(info, spec)
-            if version == string(getproperty(inforec, :Version))
-              res = Globals.TestPackageAvailability(GapObj(spec), GapObj(version))
-              res !== Globals.fail && return true
-            end
-          end
+          res = Globals.TestPackageAvailability(GapObj(spec), GapObj(version))
+          res !== Globals.fail && return true
         end
         res = Globals.InstallPackage(GapObj(spec), GapObj(version), interactive; debug)
       end
