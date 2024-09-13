@@ -478,7 +478,7 @@ macro install(ex)
       typeannot = x.args[2]
     end
     Base.eval(__module__, quote
-        GAP._needs_tracking_julia_to_gap(::Type{$typeannot}) = false
+        GAP._needs_tracking_julia_to_gap(::Type{Sub}) where Sub <: $typeannot = false
       end)
 
     return esc(Expr(
