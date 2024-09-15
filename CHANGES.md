@@ -1,5 +1,12 @@
 # Changes in GAP.jl
 
+## Version 0.11.3 (released 2024-09-16)
+
+- Fix the availability check in `Packages.install` to handle transitive dependencies
+- Add dependency on AbstractAlgebra
+- Replace banner hiding code with the improved version from AbstractAlgebra
+- Adjust `show` method for GAP objects to make use of AbstractAlgebra pretty printing
+
 ## Version 0.11.2 (released 2024-09-10)
 
 - Update to GAP 4.13.1
