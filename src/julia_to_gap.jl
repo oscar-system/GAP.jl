@@ -85,27 +85,19 @@ function GapObj_internal end
 # to a GAP record.
 # Thus we have a default method returning `true`.
 #
-# Methods for those types that want `false` have to be installed;
-# the `GapObj` methods arising from `GAP.@install` calls are unary,
-# therefore the macro automatically installs such a
-# `_needs_tracking_julia_to_gap` method.
+# Methods for those types that want `false` have to be installed explicitly.
+# The `GapObj` methods arising from `GAP.@install` don't handle recursion
+# and the macro automatically installs such a `_needs_tracking_julia_to_gap`
+# method.
 _needs_tracking_julia_to_gap(::Any) = true
 
 
 GAP.@install GapObj(x::FFE) = x    # Default for actual GAP objects is to do nothing
 GAP.@install GapObj(x::Bool) = x    # Default for actual GAP objects is to do nothing
 
-## Integers: general case first deal with things that fit into immediate
-## integers, then falls back to converting to BigInt and calling into the GAP
-## kernel API.
-## TODO: we could provide more efficient conversion for UInt64, Int128, UInt128
-## which avoids the conversion to BigInt, if we wanted to.
-function GapObj_internal(x::Integer, cache::GapCacheDict, ::Val{recursive}) where recursive
-    # if it fits into a GAP immediate integer, convert x to Int64
-    x in -1<<60:(1<<60-1) && return Int64(x)
-    # for the general case, fall back to BigInt
-    return GapObj_internal(BigInt(x), cache, Val(recursive))
-end
+## Integers:
+## We do not want to track conversion for any concrete integer types.
+@install GapObj(x::Integer) = x in -1<<60:(1<<60-1) ? Int64(x) : GapObj(BigInt(x))
 
 ## Small integers types always fit into GAP immediate integers, and thus are
 ## represented by Int64 on the Julia side.
