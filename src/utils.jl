@@ -15,6 +15,9 @@ function _setglobal(M::Module, name::Symbol, val::Any)
   end
 end
 
+# avoid the deprecated `Core._apply`
+_apply(func, args) = func(args...)
+
 """
     get_symbols_in_module(m::Module) :: Vector{Symbol}
 
@@ -30,20 +33,24 @@ function get_symbols_in_module(m::Module)
 end
 
 """
-    call_with_catch(juliafunc, arguments)
+    call_with_catch(func, args::Vector)
+    call_with_catch(func, args::Vector, kwargs::Dict{Symbol,T}) where T
 
 Return a tuple `(ok, val)`
-where `ok` is either `true`, meaning that calling the function `juliafunc`
-with `arguments` returns the value `val`,
+where `ok` is either `true`, meaning that calling `func`
+with arguments `args` (and optionally with keyword arguments given by
+the keys and values of `kwargs`) returns the value `val`,
 or `false`, meaning that the function call runs into an error;
 in the latter case, `val` is set to the string of the error message.
 
+This function is used on the GAP side.
+
 # Examples
 ```jldoctest
-julia> GAP.call_with_catch(sqrt, 2)
+julia> GAP.call_with_catch(sqrt, [2])
 (true, 1.4142135623730951)
 
-julia> flag, res = GAP.call_with_catch(sqrt, -2);
+julia> flag, res = GAP.call_with_catch(sqrt, [-2]);
 
 julia> flag
 false
@@ -51,11 +58,30 @@ false
 julia> startswith(res, "DomainError")
 true
 
+julia> GAP.call_with_catch(range, [2, 10], Dict(:step => 2))
+(true, 2:2:10)
+
+julia> flag, res = GAP.call_with_catch(range, [2, 10], Dict(:step => "a"));
+
+julia> flag
+false
+
+julia> startswith(res, "MethodError")
+true
 ```
 """
-function call_with_catch(juliafunc, arguments)
+function call_with_catch(func, args)
     try
-        res = Core._apply(juliafunc, arguments)
+        res = func(args...)
+        return (true, res)
+    catch e
+        return (false, string(e))
+    end
+end
+
+function call_with_catch(func, args::Vector, kwargs::Dict{Symbol,T}) where T
+    try
+        res = func(args...; [k => kwargs[k] for k in keys(kwargs)]...)
         return (true, res)
     catch e
         return (false, string(e))
@@ -70,7 +96,6 @@ given by the keys and values of `kwargs`.
 
 This function is used on the GAP side, in calls of Julia functions that
 require keyword arguments.
-Note that `jl_call` and `Core._apply` do not support keyword arguments.
 
 # Examples
 ```jldoctest
@@ -79,7 +104,6 @@ julia> range(2, length = 5, step = 2)
 
 julia> GAP.kwarg_wrapper(range, [2], Dict(:length => 5, :step => 2))
 2:2:10
-
 ```
 """
 function kwarg_wrapper(func, args::Vector{T1}, kwargs::Dict{Symbol,T2}) where {T1,T2}

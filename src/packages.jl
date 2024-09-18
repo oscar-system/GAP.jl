@@ -9,25 +9,12 @@ const DEFAULT_PKGDIR = Ref{String}()
 const DOWNLOAD_HELPER = Ref{Downloads.Downloader}()
 
 function init_packagemanager()
-#TODO:
-# As soon as PackageManager uses utils' Download function,
-# we need not replace code from PackageManager anymore.
-# (And the function should be renamed.)
+    global DEFAULT_PKGDIR[] = sysinfo["DEFAULT_PKGDIR"]
+    # This is used by `PKGMAN_DownloadURL` in GAP's PackageManager package.
+    global DOWNLOAD_HELPER[] = Downloads.Downloader(; grace=0.1)
+    # We need functions from PackageManager.
     res = load("PackageManager")
     @assert res
-
-    global DEFAULT_PKGDIR[] = sysinfo["DEFAULT_PKGDIR"]
-    global DOWNLOAD_HELPER[] = Downloads.Downloader(; grace=0.1)
-
-    # overwrite PKGMAN_DownloadURL
-    replace_global!(:PKGMAN_DownloadURL, function(url)
-      try
-        buffer = Downloads.download(String(url), IOBuffer(), downloader=DOWNLOAD_HELPER[])
-        return GapObj(Dict{Symbol, Any}(:success => true, :result => String(take!(buffer))), recursive=true)
-      catch
-        return GapObj(Dict{Symbol, Any}(:success => false), recursive=true)
-      end
-    end)
 
     # Install a method (based on Julia's Downloads package) as the first choice
     # for the `Download` function from GAP's utils package,
@@ -59,15 +46,15 @@ function init_packagemanager()
       # put the new method in the first position
       meths = Globals.Download_Methods
       Wrappers.Add(meths, GapObj(r, recursive=true), 1)
-
-      # monkey patch PackageManager so that we can disable removal of
-      # package directories for debugging purposes
-      orig_PKGMAN_RemoveDir = Globals.PKGMAN_RemoveDir
-      replace_global!(:PKGMAN_RemoveDir, function(dir)
-        Globals.ValueOption(GapObj("debug")) == true && return
-        orig_PKGMAN_RemoveDir(dir)
-      end)
     end
+
+    # monkey patch PackageManager so that we can disable removal of
+    # package directories for debugging purposes
+    orig_PKGMAN_RemoveDir = Globals.PKGMAN_RemoveDir
+    replace_global!(:PKGMAN_RemoveDir, function(dir)
+      Globals.ValueOption(GapObj("debug")) == true && return
+      orig_PKGMAN_RemoveDir(dir)
+    end)
 end
 
 """

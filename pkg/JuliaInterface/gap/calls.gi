@@ -12,7 +12,7 @@ InstallMethod( CallFuncList,
     [ "IsJuliaObject", "IsList" ],
     function( julia_obj, args )
         args := GAPToJulia( _JL_Vector_Any, args, false );
-        return Julia.Core._apply( julia_obj, args );
+        return Julia.GAP._apply( julia_obj, args );
     end );
 
 InstallMethod( CallFuncList,
@@ -22,14 +22,21 @@ InstallMethod( CallFuncList,
     end );
 
 InstallGlobalFunction( CallJuliaFunctionWithCatch,
-    function( julia_obj, args )
+    function( julia_obj, args, arec... )
     local res;
 
     args := GAPToJulia( _JL_Vector_Any, args, false );
     if IsFunction( julia_obj ) then
       julia_obj:= Julia.GAP.UnwrapJuliaFunc( julia_obj );
     fi;
-    res:= Julia.GAP.call_with_catch( julia_obj, args );
+    if Length( arec ) = 0 then
+      res:= Julia.GAP.call_with_catch( julia_obj, args );
+    elif Length( arec ) = 1 and IsRecord( arec[1] ) then
+      arec := GAPToJulia( _JL_Dict_Any, arec[1], false );
+      res:= Julia.GAP.call_with_catch( julia_obj, args, arec );
+    else
+      Error( "usage: CallJuliaFunctionWithCatch( <julia_obj>, <args>, <arec>" );
+    fi;
     if res[1] then
       return rec( ok:= true, value:= res[2] );
     else
