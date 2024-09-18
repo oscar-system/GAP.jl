@@ -96,8 +96,6 @@
 #!  The result is <K>true</K> if and only if <A>obj</A> is a pointer to a
 #!  &Julia; object.
 #!
-#!  The results of <Ref Func="JuliaModule"/> are always in
-#!  <Ref Filt="IsJuliaObject" Label="for IsObject"/>.
 #! @BeginExampleSession
 #! gap> julia_fun:= JuliaEvalString( "sqrt" );
 #! <Julia: sqrt>
@@ -107,12 +105,22 @@
 #! <Julia: 1.4142135623730951>
 #! gap> IsJuliaObject( julia_val );
 #! true
-#! gap> julia_x:= JuliaEvalString( "x = 4" );
+#! @EndExampleSession
+#! However not every object living on the Julia side is in this filter.
+#! For example Julia booleans and small <C>Int</C> values are directly
+#! translated to GAP booleans and small integers, while for Julia functions
+#! and wrappers dedicated wrappers are used for improved efficiency
+#! respectively additional features.
+#! @BeginExampleSession
+#! gap> JuliaEvalString( "x = 4" );;
+#! gap> Julia.x;
 #! 4
-#! gap> IsJuliaObject( julia_x );
+#! gap> IsJuliaObject( Julia.x );
 #! false
-#! gap> IsJuliaObject( JuliaModule( "Main" ) );
-#! true
+#! gap> IsJuliaObject( Julia.sqrt );
+#! false
+#! gap> IsJuliaObject( Julia.Main );
+#! false
 #! @EndExampleSession
 DeclareCategory( "IsJuliaObject", IsObject );
 
@@ -136,8 +144,8 @@ BindGlobal("TheTypeJuliaObject", NewType( JuliaObjectFamily, IsJuliaObject ));
 #!  should <E>not</E> be in the filter
 #!  <Ref Filt="IsJuliaObject" Label="for IsObject"/>.
 #!
-#!  Examples of objects in <Ref Filt="IsJuliaWrapper" Label="for IsObject"/>
-#!  are the return values of <Ref Func="JuliaModule"/>.
+#!  For example, any Julia modules such as <C>Julia.Base</C> are
+#!  in the filter <Ref Filt="IsJuliaWrapper" Label="for IsObject"/>.
 DeclareCategory( "IsJuliaWrapper", IsObject );
 
 #! @Arguments obj
@@ -300,19 +308,6 @@ DeclareGlobalFunction( "JuliaFunction" );
 #! 1
 #! @EndExampleSession
 DeclareGlobalVariable( "Julia" );
-
-#! @Arguments name
-#! @Returns a &Julia; object
-#! @Description
-#!  Returns the &Julia; object that points to the &Julia; module
-#!  with name <A>name</A>.
-#! @BeginExampleSession
-#! gap> gapmodule:= JuliaModule( "GAP" );
-#! <Julia: GAP>
-#! gap> gapmodule = JuliaPointer( Julia.GAP );
-#! true
-#! @EndExampleSession
-DeclareGlobalFunction( "JuliaModule" );
 
 #! @Arguments juliaobj
 #! @Returns a string.
