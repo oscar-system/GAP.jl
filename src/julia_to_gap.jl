@@ -148,6 +148,26 @@ GAP.@install GapObj(x::Char) = CharWithValue(Cuchar(x))
 GAP.@install GapObj(x::AbstractString) = MakeString(string(x))
 GAP.@install GapObj(x::Symbol) = MakeString(string(x))
 
+# helper functions for recursion
+function recursion_info(::Type{T}, obj, recursive::Bool, recursion_dict::GapCacheDict) where {T}
+    recursive && recursion_dict !== nothing && haskey(recursion_dict, obj) && return true, false, recursion_dict
+    rec = recursive && _needs_tracking_julia_to_gap(T)
+    if rec && recursion_dict === nothing
+        rec_dict = RecDict()
+    else
+        rec_dict = recursion_dict
+    end
+
+    return false, rec, rec_dict
+end
+
+function handle_recursion(obj, ret_val, rec::Bool, rec_dict::GapCacheDict)
+    if rec_dict !== nothing
+        rec_dict[obj] = ret_val
+    end
+    return rec ? rec_dict : nothing
+end
+
 ## Arrays (including BitVector)
 function GapObj_internal(
     obj::AbstractVector{T},
@@ -155,24 +175,13 @@ function GapObj_internal(
     ::Val{recursive},
 ) where {T, recursive}
 
-    # If I have a dictionary then the converted value may be stored.
-    recursive && recursion_dict !== nothing && haskey(recursion_dict, obj) && return recursion_dict[obj]
+    ret, rec, rec_dict = recursion_info(T, obj, recursive, recursion_dict)
+    ret && return rec_dict[obj]
 
-    # Initialize the return value.
     len = length(obj)
     ret_val = NewPlist(len)
 
-    rec = recursive && _needs_tracking_julia_to_gap(T)
-    if rec && recursion_dict === nothing
-        # Tracking of identical subobjects is needed,
-        # create the dictionary.
-        recursion_dict = RecDict()
-    end
-
-    # If we track identical subobjects then add `obj` to the dictionary.
-    if recursion_dict !== nothing
-      recursion_dict[obj] = ret_val
-    end
+    recursion_dict = handle_recursion(obj, ret_val, rec, rec_dict)
 
     # Set the subobjects.
     for i = 1:len
@@ -185,11 +194,7 @@ function GapObj_internal(
             # Do not care about findíng them in the dictionary
             # or adding them to the dictionary,
             # since their conversion method decides about that.
-            if rec
-              res = GapObj_internal(x, recursion_dict::RecDict, Val(recursive))
-            else
-              res = GapObj_internal(x, nothing, Val(recursive))
-            end
+            res = GAP.GapObj_internal(x, recursion_dict, Val(true))
         else
             res = x
         end
@@ -206,28 +211,18 @@ function GapObj_internal(
     ::Val{recursive},
 ) where {T, recursive}
 
-    recursive && recursion_dict !== nothing && haskey(recursion_dict, obj) && return recursion_dict[obj]
+    ret, rec, rec_dict = recursion_info(T, obj, recursive, recursion_dict)
+    ret && return rec_dict[obj]
 
-    ret_val = GAP.NewPlist(length(obj))
+    ret_val = NewPlist(length(obj))
 
-    rec = recursive && _needs_tracking_julia_to_gap(T)
-    if rec && recursion_dict === nothing
-        recursion_dict = RecDict()
-    end
-
-    if recursion_dict !== nothing
-        recursion_dict[obj] = ret_val
-    end
+    recursion_dict = handle_recursion(obj, ret_val, rec, rec_dict)
 
     for x in obj
         if recursive
-          if rec
-            res = GapObj_internal(x, recursion_dict::RecDict, Val(recursive))
-          else
-            res = GapObj_internal(x, nothing, Val(recursive))
-          end
+            res = GapObj_internal(x, recursion_dict, Val(true))
         else
-          res = x
+            res = x
         end
         Wrappers.Add(ret_val, res)
     end
@@ -244,28 +239,18 @@ function GapObj_internal(
     ::Val{recursive},
 ) where {T, recursive}
 
-    recursive && recursion_dict !== nothing && haskey(recursion_dict, obj) && return recursion_dict[obj]
+    ret, rec, rec_dict = recursion_info(T, obj, recursive, recursion_dict)
+    ret && return rec_dict[obj]
 
     rows = size(obj, 1)
     ret_val = NewPlist(rows)
 
-    rec = recursive && _needs_tracking_julia_to_gap(T)
-    if rec && recursion_dict === nothing
-        recursion_dict = RecDict()
-    end
-
-    if recursion_dict !== nothing
-      recursion_dict[obj] = ret_val
-    end
+    recursion_dict = handle_recursion(obj, ret_val, rec, rec_dict)
 
     for i = 1:rows
-      # We need not distinguish between recursive or not
-      # because we are just now creating the "row objects" in Julia.
-      if rec
-        ret_val[i] = GapObj_internal(obj[i, :], recursion_dict::RecDict, Val(recursive))
-      else
-        ret_val[i] = GapObj_internal(obj[i, :], nothing, Val(recursive))
-      end
+        # We need not distinguish between recursive or not
+        # because we are just now creating the "row objects" in Julia.
+        ret_val[i] = GapObj_internal(obj[i, :], recursion_dict, Val(true))
     end
     return ret_val
 end
@@ -289,32 +274,22 @@ end
 
 ## Dictionaries
 function GapObj_internal(
-    obj::Dict{T,S},
+    obj::Dict{S,T},
     recursion_dict::GapCacheDict,
     ::Val{recursive},
-) where {S} where {T<:Union{Symbol,AbstractString}} where {recursive}
+) where {T, S<:Union{Symbol,AbstractString}, recursive}
 
-    recursive && recursion_dict !== nothing && haskey(recursion_dict, obj) && return recursion_dict[obj]
+    ret, rec, rec_dict = recursion_info(T, obj, recursive, recursion_dict)
+    ret && return rec_dict[obj]
 
     ret_val = NewPrecord(0)
 
-    rec = recursive && _needs_tracking_julia_to_gap(S)
-    if rec && recursion_dict === nothing
-        recursion_dict = RecDict()
-    end
-
-    if recursion_dict !== nothing
-      recursion_dict[obj] = ret_val
-    end
+    recursion_dict = handle_recursion(obj, ret_val, rec, rec_dict)
 
     for (x, y) in obj
         x = Wrappers.RNamObj(MakeString(string(x)))
         if recursive
-          if rec
-            res = GapObj_internal(y, recursion_dict::RecDict, Val(recursive))
-          else
-            res = GapObj_internal(y, nothing, Val(recursive))
-          end
+            res = GapObj_internal(y, recursion_dict, Val(true))
         else
             res = y
         end
@@ -343,8 +318,8 @@ function GapObj_internal(
         len = length(obj)
         ret_val = NewPlist(len)
         if recursion_dict === nothing
-          # We have no type information that allows us to avoid the dictionary.
-          recursion_dict = RecDict()
+            # We have no type information that allows us to avoid the dictionary.
+            recursion_dict = RecDict()
         end
         recursion_dict[obj] = ret_val
         for i = 1:len
@@ -354,8 +329,8 @@ function GapObj_internal(
     elseif Wrappers.IsRecord(obj)
         ret_val = NewPrecord(0)
         if recursion_dict === nothing
-          # We have no type information that allows us to avoid the dictionary.
-          recursion_dict = RecDict()
+            # We have no type information that allows us to avoid the dictionary.
+            recursion_dict = RecDict()
         end
         recursion_dict[obj] = ret_val
         for xx in Wrappers.RecNames(obj)::GapObj
