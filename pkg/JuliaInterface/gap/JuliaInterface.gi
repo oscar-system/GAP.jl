@@ -61,7 +61,6 @@ InstallMethod( \.,
         global_variable := _JuliaFunction( global_variable );
     elif _JULIA_ISA( global_variable, _JULIA_MODULE_TYPE ) then
         global_variable := _WrapJuliaModule( rnam, global_variable );
-        \.\:\=( module!.storage, rnum, global_variable );
     fi;
 
     return global_variable;
