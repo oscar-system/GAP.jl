@@ -103,5 +103,15 @@ gap> path:= GetJuliaScratchspace( "test_scratch" );;
 gap> IsDirectoryPath( path );
 true
 
+# Julia modules should not get cached, see #1044
+gap> JuliaEvalString("module foo  x = 1 end");
+<Julia: Main.foo>
+gap> Julia.foo.x;
+1
+gap> JuliaEvalString("module foo  x = 2 end");
+<Julia: Main.foo>
+gap> Julia.foo.x;
+2
+
 ##
 gap> STOP_TEST( "utils.tst" );
