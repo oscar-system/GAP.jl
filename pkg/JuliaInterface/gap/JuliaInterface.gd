@@ -238,9 +238,6 @@ DeclareGlobalFunction( "JuliaImportPackage" );
 
 #! @Section Access to &Julia; objects
 
-## Internal
-BindGlobal( "_JuliaFunctions", rec( ) );
-
 #! @Arguments function_name[, module_name]
 #! @Returns a function
 #! @Description
