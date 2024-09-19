@@ -73,7 +73,7 @@ gap> M:= Julia.Singular.syz( I );
 x*gen(3)-2*x*gen(2)+y*gen(3)-y*gen(2)-z*gen(2)
 y^2*gen(3)-y^2*gen(2)-y*z*gen(2)-y*gen(1)+z*gen(1)-gen(3)+2*gen(2)
 x*y*gen(2)-x*gen(1)-y*gen(1)+gen(2)>
-gap> JuliaFunction( "Matrix", "Singular" )( M );
+gap> Julia.Singular.Matrix( M );
 <Julia: [0, -y+z, -x-y
 -2*x-y-z, -y^2-y*z+2, x*y+1
 x+y, y^2-1, 0]>

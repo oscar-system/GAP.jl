@@ -129,28 +129,6 @@ Obj NewJuliaObj(jl_value_t * v)
 }
 
 
-jl_function_t * get_function_from_obj_or_string(Obj func)
-{
-    jl_function_t * f = NULL;
-    BEGIN_GAP_SYNC();
-    if (IS_JULIA_OBJ(func)) {
-        f = (jl_function_t *)GET_JULIA_OBJ(func);
-    }
-    else if (IsStringConv(func)) {
-        // jl_get_function is a thin wrapper for jl_get_global and never
-        // throws an exception
-        f = jl_get_function(jl_main_module, CONST_CSTR_STRING(func));
-        if (f == 0) {
-            ErrorMayQuit("Function is not defined in julia", 0, 0);
-        }
-    }
-    else
-        ErrorMayQuit("argument is not a julia object or string", 0, 0);
-    END_GAP_SYNC();
-    return f;
-}
-
-
 void ResetUserHasQUIT(void)
 {
     STATE(UserHasQUIT) = 0;
@@ -158,34 +136,14 @@ void ResetUserHasQUIT(void)
 
 
 /*
- * Returns the function from the Object <func>
- * or the function with name <func> from
- * the Julia main module.
+ * Wrap Julia object <func> into a GAP function.
  */
-static Obj Func_JuliaFunction(Obj self, Obj func)
+static Obj Func_WrapJuliaFunction(Obj self, Obj func)
 {
-    jl_function_t * f = get_function_from_obj_or_string(func);
-    return WrapJuliaFunc(f);
-}
+    if (!IS_JULIA_OBJ(func))
+        ErrorMayQuit("argument is not a julia object", 0, 0);
 
-/*
- * Returns the function with name <funcName> from the Julia module with
- * name <moduleName>.
- */
-static Obj Func_JuliaFunctionByModule(Obj self, Obj funcName, Obj moduleName)
-{
-    BEGIN_GAP_SYNC();
-    RequireStringRep("_JuliaFunctionByModule", funcName);
-    RequireStringRep("_JuliaFunctionByModule", moduleName);
-
-    jl_module_t * m = get_module(CONST_CSTR_STRING(moduleName));
-    // jl_get_function is a thin wrapper for jl_get_global and never throws
-    // an exception
-    jl_function_t * f = jl_get_function(m, CONST_CSTR_STRING(funcName));
-    if (f == 0)
-        ErrorMayQuit("Function %g.%g is not defined in julia",
-                     (Int)moduleName, (Int)funcName);
-    END_GAP_SYNC();
+    jl_function_t * f = (jl_function_t *)GET_JULIA_OBJ(func);
     return WrapJuliaFunc(f);
 }
 
@@ -231,22 +189,6 @@ static int gap_jl_boundp(jl_module_t * m, jl_sym_t * var)
 #else
     return jl_boundp(m, var);
 #endif
-}
-
-// Returns the julia object GAP object that holds a pointer to the value
-// currently bound to the julia identifier <name>.
-static Obj Func_JuliaGetGlobalVariable(Obj self, Obj name)
-{
-    BEGIN_GAP_SYNC();
-    RequireStringRep("_JuliaGetGlobalVariable", name);
-
-    jl_sym_t * symbol = jl_symbol(CONST_CSTR_STRING(name));
-    END_GAP_SYNC();
-    if (!gap_jl_boundp(jl_main_module, symbol)) {
-        return Fail;
-    }
-    jl_value_t * value = jl_get_global(jl_main_module, symbol);
-    return gap_julia(value);
 }
 
 // Returns the julia object GAP object that holds a pointer to the value
@@ -309,11 +251,9 @@ static void MarkJuliaObject(Bag bag)
 
 // Table of functions to export
 static StructGVarFunc GVarFuncs[] = {
-    GVAR_FUNC(_JuliaFunction, 1, "string"),
-    GVAR_FUNC(_JuliaFunctionByModule, 2, "funcName, moduleName"),
+    GVAR_FUNC(_WrapJuliaFunction, 1, "juliafunc"),
     GVAR_FUNC(IS_JULIA_FUNC, 1, "obj"),
     GVAR_FUNC(JuliaEvalString, 1, "string"),
-    GVAR_FUNC(_JuliaGetGlobalVariable, 1, "name"),
     GVAR_FUNC(_JuliaGetGlobalVariableByModule, 2, "name, module"),
     GVAR_FUNC(JuliaSymbol, 1, "name"),
     GVAR_FUNC(_JuliaGetGapModule, 0, ""),

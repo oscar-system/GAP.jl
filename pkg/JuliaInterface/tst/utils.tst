@@ -43,14 +43,6 @@ gap> JuliaSymbol(1);
 Error, JuliaSymbol: <name> must be a string (not the integer 1)
 
 ##
-gap> _JuliaGetGlobalVariable(0);
-Error, _JuliaGetGlobalVariable: <name> must be a string (not the integer 0)
-gap> _JuliaGetGlobalVariable("not-a-global-variable");
-fail
-gap> _JuliaGetGlobalVariable("sqrt");
-<Julia: sqrt>
-
-##
 gap> _JuliaGetGlobalVariableByModule(0, 0);
 Error, _JuliaGetGlobalVariableByModule: <name> must be a string (not the integ\
 er 0)
