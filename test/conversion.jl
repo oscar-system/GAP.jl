@@ -472,6 +472,28 @@ end
     @test res[1] !== res[2]  # `BigInt` wants no identity tracking
     @test res[3] === res[4]  # `Array` wants identity tracking
 
+    # a Julia array containing GAP lists containing Julia subobjects
+    v = GapObj([1, 2, 3])
+    l = [v, v]
+    ll = GapObj(l)
+    @test ll[1] === ll[2]
+    @test ll[1] === l[1]
+
+    v[1] = [1,2]
+    ll = GapObj(l)
+    @test ll[1][1] === ll[2][1]
+    ll = GapObj(l; recursive = true)
+    @test ll[1][1] === ll[2][1]
+    @test ll[1] === ll[2]
+
+    l[2] = GapObj([1, 2, 3])
+    l[2][1] = l[1][1]
+    ll = GapObj(l)
+    @test ll[1][1] === ll[2][1]  # two Julia vectors
+    ll = GapObj(l; recursive = true)
+    @test ll[1][1] === ll[2][1]  # two GAP lists
+    @test ll[1] !== ll[2]
+
     # a GAP record with identical Julia subobjects
     r = GapObj(Dict{String, String}())
     setproperty!(r, :a, x)

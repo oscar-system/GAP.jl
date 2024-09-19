@@ -334,6 +334,9 @@ function GapObj_internal(
     recursion_dict::GapCacheDict,
     ::Val{recursive},
 ) where {recursive}
+
+    recursive && recursion_dict !== nothing && haskey(recursion_dict, obj) && return recursion_dict[obj]
+
     if ! recursive
         ret_val = obj
     elseif Wrappers.IsList(obj)
