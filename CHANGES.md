@@ -1,5 +1,9 @@
 # Changes in GAP.jl
 
+## Version 0.11.4 (released 2024-09-19)
+
+- Support AbstractAlgebra 0.43
+
 ## Version 0.11.3 (released 2024-09-16)
 
 - Fix the availability check in `Packages.install` to handle transitive dependencies
