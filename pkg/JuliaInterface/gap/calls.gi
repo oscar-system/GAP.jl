@@ -22,20 +22,20 @@ InstallMethod( CallFuncList,
     end );
 
 InstallGlobalFunction( CallJuliaFunctionWithCatch,
-    function( julia_obj, args, arec... )
+    function( julia_obj, args, kwargs... )
     local res;
 
     args := GAPToJulia( _JL_Vector_Any, args, false );
     if IsFunction( julia_obj ) then
       julia_obj:= Julia.GAP.UnwrapJuliaFunc( julia_obj );
     fi;
-    if Length( arec ) = 0 then
+    if Length( kwargs ) = 0 then
       res:= Julia.GAP.call_with_catch( julia_obj, args );
-    elif Length( arec ) = 1 and IsRecord( arec[1] ) then
-      arec := GAPToJulia( _JL_Dict_Any, arec[1], false );
-      res:= Julia.GAP.call_with_catch( julia_obj, args, arec );
+    elif Length( kwargs ) = 1 and IsRecord( kwargs[1] ) then
+      kwargs := GAPToJulia( _JL_Dict_Any, kwargs[1], false );
+      res:= Julia.GAP.call_with_catch( julia_obj, args, kwargs );
     else
-      Error( "usage: CallJuliaFunctionWithCatch( <julia_obj>, <args>, <arec>" );
+      Error( "usage: CallJuliaFunctionWithCatch( <julia_obj>, <args>[, <kwargs>]" );
     fi;
     if res[1] then
       return rec( ok:= true, value:= res[2] );
@@ -45,7 +45,7 @@ InstallGlobalFunction( CallJuliaFunctionWithCatch,
 end );
 
 InstallGlobalFunction( CallJuliaFunctionWithKeywordArguments,
-    { julia_obj, args, arec } -> Julia.GAP.kwarg_wrapper( julia_obj,
+    { julia_obj, args, kwargs } -> Julia.GAP.kwarg_wrapper( julia_obj,
                                      # non-recursive conversions
                                      GAPToJulia( _JL_Vector_Any, args, false ),
-                                     GAPToJulia( _JL_Dict_Any, arec, false ) ) );
+                                     GAPToJulia( _JL_Dict_Any, kwargs, false ) ) );

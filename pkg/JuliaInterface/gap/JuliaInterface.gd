@@ -362,13 +362,13 @@ DeclareGlobalFunction( "JuliaModule" );
 #! @EndExampleSession
 DeclareGlobalFunction( "JuliaTypeInfo" );
 
-#! @Arguments juliafunc, arguments[, arec]
+#! @Arguments juliafunc, arguments[, kwargs]
 #! @Returns a record.
 #! @Description
 #!  The function calls the &Julia; function <A>juliafunc</A>
 #!  with ordinary arguments in the &GAP; list <A>arguments</A>
 #!  and optionally with keyword arguments given by the component names (keys)
-#!  and values of the &GAP; record <A>arec</A>,
+#!  and values of the &GAP; record <A>kwargs</A>,
 #!  and returns a record with the components <C>ok</C> and <C>value</C>.
 #!  If no error occurred then <C>ok</C> has the value <K>true</K>,
 #!  and <C>value</C> is the value returned by <A>juliafunc</A>.
@@ -403,17 +403,17 @@ DeclareGlobalFunction( "JuliaTypeInfo" );
 #! @EndExampleSession
 DeclareGlobalFunction( "CallJuliaFunctionWithCatch" );
 
-#! @Arguments juliafunc, arguments, arec
+#! @Arguments juliafunc, arguments, kwargs
 #! @Returns the result of the &Julia; function call.
 #! @Description
 #!  The function calls the &Julia; function <A>juliafunc</A>
 #!  with ordinary arguments in the &GAP; list <A>arguments</A>
 #!  and keyword arguments given by the component names (keys) and values
-#!  of the record <A>arec</A>,
+#!  of the record <A>kwargs</A>,
 #!  and returns the function value.
 #!
 #!  Note that the entries of <A>arguments</A> and the components of
-#!  <A>arec</A> are not implicitly converted to &Julia;.
+#!  <A>kwargs</A> are not implicitly converted to &Julia;.
 #! @BeginExampleSession
 #! gap> CallJuliaFunctionWithKeywordArguments( Julia.Base.round,
 #! >        [ GAPToJulia( Float( 1/3 ) ) ], rec( digits:= 5 ) );
