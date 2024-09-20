@@ -151,21 +151,6 @@ InstallGlobalFunction( JuliaTypeInfo,
 end );
 
 
-InstallGlobalFunction( JuliaModule,
-  function( name )
-    if not IsString( name ) then
-        Error( "JuliaModule: <name> must be a string" );
-    fi;
-    if not IsBound( Julia.(name) ) then
-        Error( "JuliaModule: Module <name> does not exist, did you import it?" );
-    fi;
-    if not IsJuliaModule( Julia.(name) ) then
-        Error( "JuliaModule: <name> is not a module" );
-    fi;
-    return JuliaPointer( Julia.(name) );
-end );
-
-
 InstallGlobalFunction( GetJuliaScratchspace,
   function( key )
     if not IsString( key ) then

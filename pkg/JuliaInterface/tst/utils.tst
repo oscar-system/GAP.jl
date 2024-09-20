@@ -43,16 +43,6 @@ gap> JuliaSymbol(1);
 Error, JuliaSymbol: <name> must be a string (not the integer 1)
 
 ##
-gap> JuliaModule("Base");
-<Julia: Base>
-gap> JuliaModule("This_Module_Does_Not_Exist");
-Error, JuliaModule: Module <name> does not exist, did you import it?
-gap> JuliaModule(1);
-Error, JuliaModule: <name> must be a string
-gap> JuliaModule( "sqrt" );
-Error, JuliaModule: <name> is not a module
-
-##
 gap> _JuliaGetGlobalVariable(0);
 Error, _JuliaGetGlobalVariable: <name> must be a string (not the integer 0)
 gap> _JuliaGetGlobalVariable("not-a-global-variable");
@@ -74,7 +64,7 @@ gap> _JuliaGetGlobalVariableByModule("Base","sqrt");
 Error, sqrt is not a module
 gap> _JuliaGetGlobalVariableByModule("sqrt","Base");
 <Julia: sqrt>
-gap> _JuliaGetGlobalVariableByModule("sqrt", JuliaModule("Base"));
+gap> _JuliaGetGlobalVariableByModule("sqrt", JuliaPointer(Julia.Base));
 <Julia: sqrt>
 
 ##
