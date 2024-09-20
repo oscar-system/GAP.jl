@@ -180,8 +180,6 @@ DeclareAttribute( "JuliaPointer", IsJuliaWrapper );
 #! true
 #! gap> Julia.GAP.julia_to_gap;
 #! <Julia: julia_to_gap>
-#! gap> JuliaFunction( "julia_to_gap", "GAP" );  # the same function
-#! <Julia: julia_to_gap>
 #! @EndExampleSession
 DeclareCategory( "IsJuliaModule", IsJuliaWrapper and IsRecord  );
 
@@ -245,47 +243,6 @@ DeclareGlobalFunction( "JuliaImportPackage" );
 
 
 #! @Section Access to &Julia; objects
-
-#! @Arguments function_name[, module_name]
-#! @Returns a function
-#! @Description
-#! Returns a &GAP; function that wraps the &Julia; function with identifier
-#! <A>function_name</A> from the module <A>module_name</A>.
-#! Both arguments must be strings.
-#! If <A>module_name</A> is not given,
-#! the function is taken from &Julia;'s <C>Main</C> module.
-#!
-#! @BeginExampleSession
-#! gap> fun:= JuliaFunction( "sqrt" );
-#! <Julia: sqrt>
-#! gap> Print( fun );
-#! function ( arg... )
-#!     <<kernel code>> from Julia:sqrt
-#! end
-#! gap> IsFunction( fun );
-#! true
-#! gap> IsJuliaObject( fun );
-#! false
-#! @EndExampleSession
-#!
-#! Alternatively, one can access &Julia; functions also via the global object
-#! <Ref Var="Julia"/>, as follows.
-#!
-#! @BeginExampleSession
-#! gap> Julia.sqrt;
-#! <Julia: sqrt>
-#! @EndExampleSession
-#!
-#! Note that each call to <Ref Func="JuliaFunction"/> and each component
-#! access to <Ref Var="Julia"/> create a <E>new</E> &GAP; object.
-#!
-#! @BeginExampleSession
-#! gap> IsIdenticalObj( JuliaFunction( "sqrt" ), JuliaFunction( "sqrt" ) );
-#! false
-#! gap> IsIdenticalObj( Julia.sqrt, Julia.sqrt );
-#! false
-#! @EndExampleSession
-DeclareGlobalFunction( "JuliaFunction" );
 
 #! @Description
 #!  This global variable represents the &Julia; module <C>Main</C>,
@@ -411,8 +368,7 @@ DeclareGlobalFunction( "CallJuliaFunctionWithKeywordArguments" );
 #! <Julia: 1.4142135623730951>
 #! @EndExampleSession
 #!  In fact, there are slightly different kinds of function calls.
-#!  A &Julia; function such as <C>Julia.sqrt</C>
-#!  (or equivalently <C>JuliaFunction( "sqrt" )</C>) is represented by
+#!  A &Julia; function such as <C>Julia.sqrt</C> is represented by
 #!  a &GAP; function object,
 #!  and calls to it are executed on the C level,
 #!  using &Julia;'s <C>jl_call</C>.

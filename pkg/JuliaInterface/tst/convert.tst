@@ -233,7 +233,7 @@ gap> Julia.GAP.Obj( emptystring );
 ""
 
 ##  'GAPToJulia' for Julia functions (inside arrays)
-gap> parse:= JuliaFunction( "parse", "Base" );
+gap> parse:= Julia.parse;
 <Julia: parse>
 gap> list:= GAPToJulia( JuliaEvalString( "Vector{Any}"), [ 1, parse, 3 ] );
 <Julia: Any[1, parse, 3]>
