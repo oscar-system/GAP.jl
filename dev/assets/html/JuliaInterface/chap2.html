@@ -42,10 +42,9 @@
 <div class="ContSSBlock">
 <span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2.html#X793B404286E5D5C6">2.3-1 JuliaFunction</a></span>
 <span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2.html#X83C764AC820CC172">2.3-2 Julia</a></span>
-<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2.html#X7FA676BA82C6FE52">2.3-3 JuliaModule</a></span>
-<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2.html#X7DDEFDC58469C33D">2.3-4 JuliaTypeInfo</a></span>
-<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2.html#X8339D8D47D079AF9">2.3-5 CallJuliaFunctionWithCatch</a></span>
-<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2.html#X7FB242EE864F21A2">2.3-6 CallJuliaFunctionWithKeywordArguments</a></span>
+<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2.html#X7DDEFDC58469C33D">2.3-3 JuliaTypeInfo</a></span>
+<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2.html#X8339D8D47D079AF9">2.3-4 CallJuliaFunctionWithCatch</a></span>
+<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2.html#X7FB242EE864F21A2">2.3-5 CallJuliaFunctionWithKeywordArguments</a></span>
 </div></div>
 <div class="ContSect"><span class="tocline"><span class="nocss">&nbsp;</span><a href="chap2.html#X861DE72C8383D6E6">2.4 <span class="Heading">Calling <strong class="pkg">Julia</strong> functions</span></a>
 </span>
@@ -78,8 +77,6 @@
 
 <p>The result is <code class="keyw">true</code> if and only if <var class="Arg">obj</var> is a pointer to a <strong class="pkg">Julia</strong> object.</p>
 
-<p>The results of <code class="func">JuliaModule</code> (<a href="chap2.html#X7FA676BA82C6FE52"><span class="RefLink">2.3-3</span></a>) are always in <code class="func">IsJuliaObject</code>.</p>
-
 
 <div class="example"><pre>
 <span class="GAPprompt">gap&gt;</span> <span class="GAPinput">julia_fun:= JuliaEvalString( "sqrt" );</span>
@@ -90,12 +87,21 @@ true
 &lt;Julia: 1.4142135623730951&gt;
 <span class="GAPprompt">gap&gt;</span> <span class="GAPinput">IsJuliaObject( julia_val );</span>
 true
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">julia_x:= JuliaEvalString( "x = 4" );</span>
+</pre></div>
+
+<p>However not every object living on the Julia side is in this filter. For example Julia booleans and small <code class="code">Int</code> values are directly translated to GAP booleans and small integers, while for Julia functions and wrappers dedicated wrappers are used for improved efficiency respectively additional features.</p>
+
+
+<div class="example"><pre>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">JuliaEvalString( "x = 4" );;</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">Julia.x;</span>
 4
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">IsJuliaObject( julia_x );</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">IsJuliaObject( Julia.x );</span>
 false
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">IsJuliaObject( JuliaModule( "Main" ) );</span>
-true
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">IsJuliaObject( Julia.sqrt );</span>
+false
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">IsJuliaObject( Julia.Main );</span>
+false
 </pre></div>
 
 <p><a id="X80FEB3607C6B60F8" name="X80FEB3607C6B60F8"></a></p>
@@ -109,7 +115,7 @@ true
 
 <p>Objects in <code class="func">IsJuliaWrapper</code> should <em>not</em> be in the filter <code class="func">IsJuliaObject</code> (<a href="chap2.html#X879710A97B8A4202"><span class="RefLink">2.1-1</span></a>).</p>
 
-<p>Examples of objects in <code class="func">IsJuliaWrapper</code> are the return values of <code class="func">JuliaModule</code> (<a href="chap2.html#X7FA676BA82C6FE52"><span class="RefLink">2.3-3</span></a>).</p>
+<p>For example, any Julia modules such as <code class="code">Julia.Base</code> are in the filter <code class="func">IsJuliaWrapper</code>.</p>
 
 <p><a id="X7B52F52D86477B4E" name="X7B52F52D86477B4E"></a></p>
 
@@ -266,26 +272,9 @@ false
 1
 </pre></div>
 
-<p><a id="X7FA676BA82C6FE52" name="X7FA676BA82C6FE52"></a></p>
-
-<h5>2.3-3 JuliaModule</h5>
-
-<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; JuliaModule</code>( <var class="Arg">name</var> )</td><td class="tdright">(&nbsp;function&nbsp;)</td></tr></table></div>
-<p>Returns: a <strong class="pkg">Julia</strong> object</p>
-
-<p>Returns the <strong class="pkg">Julia</strong> object that points to the <strong class="pkg">Julia</strong> module with name <var class="Arg">name</var>.</p>
-
-
-<div class="example"><pre>
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">gapmodule:= JuliaModule( "GAP" );</span>
-&lt;Julia: GAP&gt;
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">gapmodule = JuliaPointer( Julia.GAP );</span>
-true
-</pre></div>
-
 <p><a id="X7DDEFDC58469C33D" name="X7DDEFDC58469C33D"></a></p>
 
-<h5>2.3-4 JuliaTypeInfo</h5>
+<h5>2.3-3 JuliaTypeInfo</h5>
 
 <div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; JuliaTypeInfo</code>( <var class="Arg">juliaobj</var> )</td><td class="tdright">(&nbsp;function&nbsp;)</td></tr></table></div>
 <p>Returns: a string.</p>
@@ -306,7 +295,7 @@ true
 
 <p><a id="X8339D8D47D079AF9" name="X8339D8D47D079AF9"></a></p>
 
-<h5>2.3-5 CallJuliaFunctionWithCatch</h5>
+<h5>2.3-4 CallJuliaFunctionWithCatch</h5>
 
 <div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; CallJuliaFunctionWithCatch</code>( <var class="Arg">juliafunc</var>, <var class="Arg">arguments</var> )</td><td class="tdright">(&nbsp;function&nbsp;)</td></tr></table></div>
 <p>Returns: a record.</p>
@@ -335,7 +324,7 @@ false
 
 <p><a id="X7FB242EE864F21A2" name="X7FB242EE864F21A2"></a></p>
 
-<h5>2.3-6 CallJuliaFunctionWithKeywordArguments</h5>
+<h5>2.3-5 CallJuliaFunctionWithKeywordArguments</h5>
 
 <div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; CallJuliaFunctionWithKeywordArguments</code>( <var class="Arg">juliafunc</var>, <var class="Arg">arguments</var>, <var class="Arg">arec</var> )</td><td class="tdright">(&nbsp;function&nbsp;)</td></tr></table></div>
 <p>Returns: the result of the <strong class="pkg">Julia</strong> function call.</p>
