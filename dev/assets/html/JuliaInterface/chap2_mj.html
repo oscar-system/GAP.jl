@@ -43,11 +43,10 @@
 <div class="ContSect"><span class="tocline"><span class="nocss">&nbsp;</span><a href="chap2_mj.html#X86C0CFC88175498D">2.3 <span class="Heading">Access to <strong class="pkg">Julia</strong> objects</span></a>
 </span>
 <div class="ContSSBlock">
-<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2_mj.html#X793B404286E5D5C6">2.3-1 JuliaFunction</a></span>
-<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2_mj.html#X83C764AC820CC172">2.3-2 Julia</a></span>
-<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2_mj.html#X7DDEFDC58469C33D">2.3-3 JuliaTypeInfo</a></span>
-<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2_mj.html#X8339D8D47D079AF9">2.3-4 CallJuliaFunctionWithCatch</a></span>
-<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2_mj.html#X7FB242EE864F21A2">2.3-5 CallJuliaFunctionWithKeywordArguments</a></span>
+<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2_mj.html#X83C764AC820CC172">2.3-1 Julia</a></span>
+<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2_mj.html#X7DDEFDC58469C33D">2.3-2 JuliaTypeInfo</a></span>
+<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2_mj.html#X8339D8D47D079AF9">2.3-3 CallJuliaFunctionWithCatch</a></span>
+<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2_mj.html#X7FB242EE864F21A2">2.3-4 CallJuliaFunctionWithKeywordArguments</a></span>
 </div></div>
 <div class="ContSect"><span class="tocline"><span class="nocss">&nbsp;</span><a href="chap2_mj.html#X861DE72C8383D6E6">2.4 <span class="Heading">Calling <strong class="pkg">Julia</strong> functions</span></a>
 </span>
@@ -160,8 +159,6 @@ true
 true
 <span class="GAPprompt">gap&gt;</span> <span class="GAPinput">Julia.GAP.julia_to_gap;</span>
 &lt;Julia: julia_to_gap&gt;
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">JuliaFunction( "julia_to_gap", "GAP" );  # the same function</span>
-&lt;Julia: julia_to_gap&gt;
 </pre></div>
 
 <p><a id="X87856ABF7C0D3757" name="X87856ABF7C0D3757"></a></p>
@@ -213,50 +210,9 @@ true
 
 <h4>2.3 <span class="Heading">Access to <strong class="pkg">Julia</strong> objects</span></h4>
 
-<p><a id="X793B404286E5D5C6" name="X793B404286E5D5C6"></a></p>
-
-<h5>2.3-1 JuliaFunction</h5>
-
-<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; JuliaFunction</code>( <var class="Arg">function_name</var>[, <var class="Arg">module_name</var>] )</td><td class="tdright">(&nbsp;function&nbsp;)</td></tr></table></div>
-<p>Returns: a function</p>
-
-<p>Returns a <strong class="pkg">GAP</strong> function that wraps the <strong class="pkg">Julia</strong> function with identifier <var class="Arg">function_name</var> from the module <var class="Arg">module_name</var>. Both arguments must be strings. If <var class="Arg">module_name</var> is not given, the function is taken from <strong class="pkg">Julia</strong>'s <code class="code">Main</code> module.</p>
-
-
-<div class="example"><pre>
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">fun:= JuliaFunction( "sqrt" );</span>
-&lt;Julia: sqrt&gt;
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">Print( fun );</span>
-function ( arg... )
-    &lt;&lt;kernel code&gt;&gt; from Julia:sqrt
-end
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">IsFunction( fun );</span>
-true
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">IsJuliaObject( fun );</span>
-false
-</pre></div>
-
-<p>Alternatively, one can access <strong class="pkg">Julia</strong> functions also via the global object <code class="func">Julia</code> (<a href="chap2_mj.html#X83C764AC820CC172"><span class="RefLink">2.3-2</span></a>), as follows.</p>
-
-
-<div class="example"><pre>
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">Julia.sqrt;</span>
-&lt;Julia: sqrt&gt;
-</pre></div>
-
-<p>Note that each call to <code class="func">JuliaFunction</code> and each component access to <code class="func">Julia</code> (<a href="chap2_mj.html#X83C764AC820CC172"><span class="RefLink">2.3-2</span></a>) create a <em>new</em> <strong class="pkg">GAP</strong> object.</p>
-
-
-<div class="example"><pre>
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">IsIdenticalObj( JuliaFunction( "sqrt" ), JuliaFunction( "sqrt" ) );</span>
-false
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">IsIdenticalObj( Julia.sqrt, Julia.sqrt );</span>
-false
-</pre></div>
-
 <p><a id="X83C764AC820CC172" name="X83C764AC820CC172"></a></p>
 
-<h5>2.3-2 Julia</h5>
+<h5>2.3-1 Julia</h5>
 
 <div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; Julia</code></td><td class="tdright">(&nbsp;global variable&nbsp;)</td></tr></table></div>
 <p>This global variable represents the <strong class="pkg">Julia</strong> module <code class="code">Main</code>, see <code class="func">IsJuliaModule</code> (<a href="chap2_mj.html#X82D4023684D29F75"><span class="RefLink">2.1-4</span></a>).</p>
@@ -277,7 +233,7 @@ false
 
 <p><a id="X7DDEFDC58469C33D" name="X7DDEFDC58469C33D"></a></p>
 
-<h5>2.3-3 JuliaTypeInfo</h5>
+<h5>2.3-2 JuliaTypeInfo</h5>
 
 <div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; JuliaTypeInfo</code>( <var class="Arg">juliaobj</var> )</td><td class="tdright">(&nbsp;function&nbsp;)</td></tr></table></div>
 <p>Returns: a string.</p>
@@ -298,7 +254,7 @@ false
 
 <p><a id="X8339D8D47D079AF9" name="X8339D8D47D079AF9"></a></p>
 
-<h5>2.3-4 CallJuliaFunctionWithCatch</h5>
+<h5>2.3-3 CallJuliaFunctionWithCatch</h5>
 
 <div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; CallJuliaFunctionWithCatch</code>( <var class="Arg">juliafunc</var>, <var class="Arg">arguments</var> )</td><td class="tdright">(&nbsp;function&nbsp;)</td></tr></table></div>
 <p>Returns: a record.</p>
@@ -327,7 +283,7 @@ false
 
 <p><a id="X7FB242EE864F21A2" name="X7FB242EE864F21A2"></a></p>
 
-<h5>2.3-5 CallJuliaFunctionWithKeywordArguments</h5>
+<h5>2.3-4 CallJuliaFunctionWithKeywordArguments</h5>
 
 <div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; CallJuliaFunctionWithKeywordArguments</code>( <var class="Arg">juliafunc</var>, <var class="Arg">arguments</var>, <var class="Arg">arec</var> )</td><td class="tdright">(&nbsp;function&nbsp;)</td></tr></table></div>
 <p>Returns: the result of the <strong class="pkg">Julia</strong> function call.</p>
@@ -386,7 +342,7 @@ false
 &lt;Julia: 1.4142135623730951&gt;
 </pre></div>
 
-<p>In fact, there are slightly different kinds of function calls. A <strong class="pkg">Julia</strong> function such as <code class="code">Julia.sqrt</code> (or equivalently <code class="code">JuliaFunction( "sqrt" )</code>) is represented by a <strong class="pkg">GAP</strong> function object, and calls to it are executed on the C level, using <strong class="pkg">Julia</strong>'s <code class="code">jl_call</code>.</p>
+<p>In fact, there are slightly different kinds of function calls. A <strong class="pkg">Julia</strong> function such as <code class="code">Julia.sqrt</code> is represented by a <strong class="pkg">GAP</strong> function object, and calls to it are executed on the C level, using <strong class="pkg">Julia</strong>'s <code class="code">jl_call</code>.</p>
 
 
 <div class="example"><pre>
