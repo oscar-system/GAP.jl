@@ -7,6 +7,9 @@ on:
   push:
      branches:
        - master
+  schedule:
+      # Every day at 3:08 AM UTC (Tutorial tests initiated at 2:00AM)
+      - cron: '8 3 * * *'
   workflow_dispatch:
 
 concurrency:
