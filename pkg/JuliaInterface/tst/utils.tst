@@ -56,7 +56,7 @@ gap> _JuliaGetGlobalVariableByModule("Base","sqrt");
 Error, sqrt is not a module
 gap> _JuliaGetGlobalVariableByModule("sqrt","Base");
 <Julia: sqrt>
-gap> _JuliaGetGlobalVariableByModule("sqrt", JuliaPointer(Julia.Base));
+gap> _JuliaGetGlobalVariableByModule("sqrt", Julia.Base);
 <Julia: sqrt>
 
 ##
@@ -84,6 +84,16 @@ Error, GetJuliaScratchspace: <key> must be a string
 gap> path:= GetJuliaScratchspace( "test_scratch" );;
 gap> IsDirectoryPath( path );
 true
+
+# Julia modules should not get cached, see #1044
+gap> JuliaEvalString("module foo  x = 1 end");
+<Julia module Main.foo>
+gap> Julia.foo.x;
+1
+gap> JuliaEvalString("module foo  x = 2 end");
+<Julia module Main.foo>
+gap> Julia.foo.x;
+2
 
 ##
 gap> STOP_TEST( "utils.tst" );

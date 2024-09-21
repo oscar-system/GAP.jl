@@ -5,11 +5,6 @@
 #
 ReadPackage( "JuliaInterface", "gap/JuliaInterface.gi");
 
-## Ensure that the Julia module GAP is always accessible as Julia.GAP,
-## even while it is still being initialized, and also if it not actually
-## exported to the Julia Main module
-Julia!.storage.GAP := _WrapJuliaModule( "GAP", _JuliaGetGapModule() );
-
 ReadPackage( "JuliaInterface", "gap/adapter.gi");
 ReadPackage( "JuliaInterface", "gap/calls.gi");
 ReadPackage( "JuliaInterface", "gap/convert.gi");

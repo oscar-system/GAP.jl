@@ -21,6 +21,7 @@ static jl_datatype_t * JULIA_GAPFFE_type;
 
 static jl_datatype_t * gap_datatype_mptr;
 
+static Obj  TheTypeOfJuliaModules;
 static Obj  TheTypeJuliaObject;
 static UInt T_JULIA_OBJ;
 
@@ -114,7 +115,10 @@ jl_value_t * GET_JULIA_OBJ(Obj o)
 
 static Obj JuliaObjectTypeFunc(Obj o)
 {
-    return TheTypeJuliaObject;
+    if (jl_typeis(GET_JULIA_OBJ(o), jl_module_type))
+        return TheTypeOfJuliaModules;
+    else
+        return TheTypeJuliaObject;
 }
 
 Obj NewJuliaObj(jl_value_t * v)
@@ -282,6 +286,7 @@ static Int InitKernel(StructInitInfo * module)
     // init filters and functions
     InitHdlrFuncsFromTable(GVarFuncs);
 
+    InitCopyGVar("TheTypeOfJuliaModules", &TheTypeOfJuliaModules);
     InitCopyGVar("TheTypeJuliaObject", &TheTypeJuliaObject);
 
     T_JULIA_OBJ = RegisterPackageTNUM("JuliaObject", JuliaObjectTypeFunc);
