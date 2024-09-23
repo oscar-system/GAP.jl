@@ -87,7 +87,7 @@ gap> f7(true,2,3,4,5,6,7);
 #
 
 # variadic function
-gap> fw := JuliaFunction("f");;
+gap> fw := Julia.f;;
 
 #
 gap> fw();
@@ -122,14 +122,14 @@ gap> fw(true,2,3,4,5,6,7);
 <Julia: (true, 2, 3, 4, 5, 6, 7)>
 
 # non-variadic functions
-gap> f0w := JuliaFunction("f0");;
-gap> f1w := JuliaFunction("f1");;
-gap> f2w := JuliaFunction("f2");;
-gap> f3w := JuliaFunction("f3");;
-gap> f4w := JuliaFunction("f4");;
-gap> f5w := JuliaFunction("f5");;
-gap> f6w := JuliaFunction("f6");;
-gap> f7w := JuliaFunction("f7");;
+gap> f0w := Julia.f0;;
+gap> f1w := Julia.f1;;
+gap> f2w := Julia.f2;;
+gap> f3w := Julia.f3;;
+gap> f4w := Julia.f4;;
+gap> f5w := Julia.f5;;
+gap> f6w := Julia.f6;;
+gap> f7w := Julia.f7;;
 
 #
 gap> f0w();
@@ -201,40 +201,6 @@ gap> h3 := JuliaEvalString("function h3(a,b,c) end");;
 gap> h4 := JuliaEvalString("function h4(a,b,c,d) end");;
 gap> h5 := JuliaEvalString("function h5(a,b,c,d,e) end");;
 gap> h6 := JuliaEvalString("function h6(a,b,c,d,e,f) end");;
-
-#
-# handling invalid inputs
-#
-
-#
-gap> JuliaFunction();
-Error, arguments must be strings function_name[,module_name]
-gap> JuliaFunction(fail);
-Error, arguments must be strings function_name[,module_name]
-gap> JuliaFunction("foo_bar_quux_not_defined");
-Error, Function is not defined in julia
-
-#
-gap> _JuliaFunction(fail);
-Error, argument is not a julia object or string
-gap> _JuliaFunction("foo_bar_quux_not_defined");
-Error, Function is not defined in julia
-
-#
-gap> _JuliaFunctionByModule(fail, fail);
-Error, _JuliaFunctionByModule: <funcName> must be a string (not the value 'fai\
-l')
-gap> _JuliaFunctionByModule("foo", fail);
-Error, _JuliaFunctionByModule: <moduleName> must be a string (not the value 'f\
-ail')
-gap> _JuliaFunctionByModule("foo", "bar");
-Error, bar not defined
-gap> _JuliaFunctionByModule("foo", "Int");
-Error, Int is not a module
-gap> _JuliaFunctionByModule("foo", "Base");
-Error, Function Base.foo is not defined in julia
-gap> _JuliaFunctionByModule("parse", "Base");
-<Julia: parse>
 
 #
 gap> STOP_TEST( "calls.tst" );

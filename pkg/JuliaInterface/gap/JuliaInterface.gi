@@ -4,19 +4,9 @@
 # Implementations
 #
 
-InstallGlobalFunction( JuliaFunction,
-  function( arglist... )
-    if Length( arglist ) = 1 and IsString( arglist[ 1 ] ) then
-        return _JuliaFunction( arglist[ 1 ] );
-    elif Length( arglist ) = 2 and ForAll( arglist, IsString ) then
-        return _JuliaFunctionByModule( arglist[1], arglist[2] );
-    fi;
-    Error( "arguments must be strings function_name[,module_name]" );
-end );
-
-BindGlobal( "_JULIA_MODULE_TYPE", _JuliaGetGlobalVariable( "Module" ) );
-BindGlobal( "_JULIA_FUNCTION_TYPE", _JuliaGetGlobalVariable( "Function" ) );
-BindGlobal( "_JULIA_ISA", JuliaFunction( "isa" ) );
+BindGlobal( "_JULIA_MODULE_TYPE", _JuliaGetGlobalVariableByModule( "Module", "Core" ) );
+BindGlobal( "_JULIA_FUNCTION_TYPE", _JuliaGetGlobalVariableByModule( "Function", "Core" ) );
+BindGlobal( "_JULIA_ISA", _WrapJuliaFunction( _JuliaGetGlobalVariableByModule( "isa", "Core" ) ) );
 
 BindGlobal( "_WrapJuliaModule",
   function( name, julia_pointer )
@@ -44,7 +34,7 @@ InstallMethod( ViewString,
 InstallMethod( \.,
               [ "IsJuliaModule", "IsPosInt" ],
   function( module, rnum )
-    local rnam, global_variable;
+    local rnam, var;
 
     if IsBound\.( module!.storage, rnum ) then
         return \.(module!.storage, rnum );
@@ -52,18 +42,18 @@ InstallMethod( \.,
 
     rnam := NameRNam( rnum );
 
-    global_variable := _JuliaGetGlobalVariableByModule( rnam, JuliaPointer( module ) );
-    if global_variable = fail then
+    var := _JuliaGetGlobalVariableByModule( rnam, JuliaPointer( module ) );
+    if var = fail then
         Error( rnam, " is not bound in Julia" );
     fi;
 
-    if _JULIA_ISA( global_variable, _JULIA_FUNCTION_TYPE ) then
-        global_variable := _JuliaFunction( global_variable );
-    elif _JULIA_ISA( global_variable, _JULIA_MODULE_TYPE ) then
-        global_variable := _WrapJuliaModule( rnam, global_variable );
+    if _JULIA_ISA( var, _JULIA_FUNCTION_TYPE ) then
+        var := _WrapJuliaFunction( var );
+    elif _JULIA_ISA( var, _JULIA_MODULE_TYPE ) then
+        var := _WrapJuliaModule( rnam, var );
     fi;
 
-    return global_variable;
+    return var;
 end );
 
 InstallMethod( \.\:\=,
@@ -92,7 +82,7 @@ function( obj )
     return JuliaToGAP( IsList, Julia.GAP.get_symbols_in_module( JuliaPointer( obj ) ), true );
 end);
 
-InstallValue( Julia, _WrapJuliaModule( "Main", _JuliaGetGlobalVariable( "Main" ) ) );
+InstallValue( Julia, _WrapJuliaModule( "Main", _JuliaGetGlobalVariableByModule( "Main", "Main" ) ) );
 
 InstallGlobalFunction( "JuliaIncludeFile",
 function( filename, module_name... )
