@@ -28,7 +28,7 @@
 <span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2.html#X879710A97B8A4202">2.1-1 IsJuliaObject</a></span>
 <span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2.html#X80FEB3607C6B60F8">2.1-2 IsJuliaWrapper</a></span>
 <span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2.html#X7B52F52D86477B4E">2.1-3 JuliaPointer</a></span>
-<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2.html#X82D4023684D29F75">2.1-4 IsJuliaModule</a></span>
+<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2.html#X7FF47FC97BD01E8D">2.1-4 IsJuliaModule</a></span>
 </div></div>
 <div class="ContSect"><span class="tocline"><span class="nocss">&nbsp;</span><a href="chap2.html#X87856ABF7C0D3757">2.2 <span class="Heading">Creating <strong class="pkg">Julia</strong> objects</span></a>
 </span>
@@ -88,7 +88,7 @@ true
 true
 </pre></div>
 
-<p>However not every object living on the Julia side is in this filter. For example Julia booleans and small <code class="code">Int</code> values are directly translated to GAP booleans and small integers, while for Julia functions and wrappers dedicated wrappers are used for improved efficiency respectively additional features.</p>
+<p>However not every object living on the Julia side is in this filter. For example Julia booleans and small <code class="code">Int</code> values are directly translated to GAP booleans and small integers, while for Julia functions dedicated wrappers are used to improve efficiency and add features.</p>
 
 
 <div class="example"><pre>
@@ -98,8 +98,6 @@ true
 <span class="GAPprompt">gap&gt;</span> <span class="GAPinput">IsJuliaObject( Julia.x );</span>
 false
 <span class="GAPprompt">gap&gt;</span> <span class="GAPinput">IsJuliaObject( Julia.sqrt );</span>
-false
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">IsJuliaObject( Julia.Main );</span>
 false
 </pre></div>
 
@@ -114,8 +112,6 @@ false
 
 <p>Objects in <code class="func">IsJuliaWrapper</code> should <em>not</em> be in the filter <code class="func">IsJuliaObject</code> (<a href="chap2.html#X879710A97B8A4202"><span class="RefLink">2.1-1</span></a>).</p>
 
-<p>For example, any Julia modules such as <code class="code">Julia.Base</code> are in the filter <code class="func">IsJuliaWrapper</code>.</p>
-
 <p><a id="X7B52F52D86477B4E" name="X7B52F52D86477B4E"></a></p>
 
 <h5>2.1-3 JuliaPointer</h5>
@@ -123,21 +119,7 @@ false
 <div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; JuliaPointer</code>( <var class="Arg">obj</var> )</td><td class="tdright">(&nbsp;attribute&nbsp;)</td></tr></table></div>
 <p>is an attribute for <strong class="pkg">GAP</strong> objects in the filter <code class="func">IsJuliaWrapper</code> (<a href="chap2.html#X80FEB3607C6B60F8"><span class="RefLink">2.1-2</span></a>). The value must be a <strong class="pkg">Julia</strong> object.</p>
 
-
-<div class="example"><pre>
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">Julia;</span>
-&lt;Julia module Main&gt;
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">IsJuliaObject( Julia );</span>
-false
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">IsJuliaWrapper( Julia );</span>
-true
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">ptr:= JuliaPointer( Julia );</span>
-&lt;Julia: Main&gt;
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">IsJuliaObject( ptr );</span>
-true
-</pre></div>
-
-<p><a id="X82D4023684D29F75" name="X82D4023684D29F75"></a></p>
+<p><a id="X7FF47FC97BD01E8D" name="X7FF47FC97BD01E8D"></a></p>
 
 <h5>2.1-4 IsJuliaModule</h5>
 
@@ -212,7 +194,7 @@ true
 <h5>2.3-1 Julia</h5>
 
 <div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; Julia</code></td><td class="tdright">(&nbsp;global variable&nbsp;)</td></tr></table></div>
-<p>This global variable represents the <strong class="pkg">Julia</strong> module <code class="code">Main</code>, see <code class="func">IsJuliaModule</code> (<a href="chap2.html#X82D4023684D29F75"><span class="RefLink">2.1-4</span></a>).</p>
+<p>This global variable represents the <strong class="pkg">Julia</strong> module <code class="code">Main</code>, see <code class="func">IsJuliaModule</code> (<span class="RefLink">???</span>).</p>
 
 <p>The variables from the underlying <strong class="pkg">Julia</strong> session can be accessed via <code class="func">Julia</code>, as follows.</p>
 
@@ -241,9 +223,7 @@ true
 <div class="example"><pre>
 <span class="GAPprompt">gap&gt;</span> <span class="GAPinput">JuliaTypeInfo( Julia.GAP );</span>
 "Module"
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">JuliaTypeInfo( JuliaPointer( Julia.GAP ) );</span>
-"Module"
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">JuliaTypeInfo( JuliaEvalString( "sqrt(2)" ) );</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">JuliaTypeInfo( Julia.sqrt(2) );</span>
 "Float64"
 <span class="GAPprompt">gap&gt;</span> <span class="GAPinput">JuliaTypeInfo( 1 );</span>
 "Int64"
