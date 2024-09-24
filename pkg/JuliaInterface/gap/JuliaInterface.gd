@@ -224,6 +224,24 @@ DeclareGlobalFunction( "JuliaImportPackage" );
 
 
 #! @Section Access to &Julia; objects
+#!  Not all &Julia; syntax features are supported in &GAP;.
+#!  For important ones, the interface provides &GAP; functions or
+#!  helper functions written in &Julia; to use them in &GAP;.
+#!  For example, <Ref Func="CallJuliaFunctionWithCatch"/> allows one to use
+#!  &Julia;'s try/catch statements.
+#!
+#!  Here is a selection of other workarounds for &Julia; syntax features.
+#!  <List>
+#!  <Item>
+#!    &Julia;'s <C>RefValue</C> objects can be handled as follows.
+#!    If <C>x</C> is such an object then its value can be fetched with
+#!    <C>Julia.GAP.getindex( x )</C>,
+#!    a value <C>v</C> of the right type can be set with
+#!    <C>Julia.GAP.setindex( x, v )</C>,
+#!    and one can check with <C>Julia.GAP.isassigned( x )</C>
+#!    whether <C>x</C> has a value.
+#!  </Item>
+#!  </List>
 
 #! @Description
 #!  This global variable represents the &Julia; module <C>Main</C>,
@@ -242,6 +260,19 @@ DeclareGlobalFunction( "JuliaImportPackage" );
 #! gap> Julia.Main.x;
 #! 1
 #! @EndExampleSession
+#!
+#!  Note that not all &Julia; variables are directly visible in its
+#!  <C>Main</C> module.
+#!  For example, &Julia; variables from the interface to &GAP; are defined
+#!  in the &Julia; module <C>GAP</C> or its submodules.
+#!  It is safe to access this module as <C>Julia.GAP</C>.
+#!
+#! @BeginExampleSession
+#! gap> Julia.GAP;
+#! <Julia module GAP>
+#! gap> Julia.GAP.prompt;
+#! <Julia: prompt>
+#! @EndExampleSession
 DeclareGlobalVariable( "Julia" );
 
 #! @Arguments juliaobj
@@ -259,11 +290,13 @@ DeclareGlobalVariable( "Julia" );
 #! @EndExampleSession
 DeclareGlobalFunction( "JuliaTypeInfo" );
 
-#! @Arguments juliafunc, arguments
+#! @Arguments juliafunc, arguments[, kwargs]
 #! @Returns a record.
 #! @Description
 #!  The function calls the &Julia; function <A>juliafunc</A>
-#!  with arguments in the &GAP; list <A>arguments</A>,
+#!  with ordinary arguments in the &GAP; list <A>arguments</A>
+#!  and optionally with keyword arguments given by the component names (keys)
+#!  and values of the &GAP; record <A>kwargs</A>,
 #!  and returns a record with the components <C>ok</C> and <C>value</C>.
 #!  If no error occurred then <C>ok</C> has the value <K>true</K>,
 #!  and <C>value</C> is the value returned by <A>juliafunc</A>.
@@ -286,20 +319,29 @@ DeclareGlobalFunction( "JuliaTypeInfo" );
 #! false
 #! gap> res.value{ [ 1 .. Position( res.value, '(' )-1 ] };
 #! "LinearAlgebra.SingularException"
+#! gap> fun:= Julia.range;;
+#! gap> CallJuliaFunctionWithCatch( fun, [ 2, 10 ], rec( step:= 2 ) );
+#! rec( ok := true, value := <Julia: 2:2:10> )
+#! gap> res:= CallJuliaFunctionWithCatch( fun, [ 2, 10 ],
+#! >              rec( step:= GAPToJulia( "a" ) ) );;
+#! gap> res.ok;
+#! false
+#! gap> res.value{ [ 1 .. Position( res.value, '(' )-1 ] };
+#! "MethodError"
 #! @EndExampleSession
 DeclareGlobalFunction( "CallJuliaFunctionWithCatch" );
 
-#! @Arguments juliafunc, arguments, arec
+#! @Arguments juliafunc, arguments, kwargs
 #! @Returns the result of the &Julia; function call.
 #! @Description
 #!  The function calls the &Julia; function <A>juliafunc</A>
 #!  with ordinary arguments in the &GAP; list <A>arguments</A>
 #!  and keyword arguments given by the component names (keys) and values
-#!  of the record <A>arec</A>,
+#!  of the record <A>kwargs</A>,
 #!  and returns the function value.
 #!
 #!  Note that the entries of <A>arguments</A> and the components of
-#!  <A>arec</A> are not implicitly converted to &Julia;.
+#!  <A>kwargs</A> are not implicitly converted to &Julia;.
 #! @BeginExampleSession
 #! gap> CallJuliaFunctionWithKeywordArguments( Julia.Base.round,
 #! >        [ GAPToJulia( Float( 1/3 ) ) ], rec( digits:= 5 ) );
@@ -388,8 +430,8 @@ DeclareGlobalFunction( "CallJuliaFunctionWithKeywordArguments" );
 #!  <List>
 #!  <Item>
 #!    <Ref Oper="CallFuncList" BookName="ref"/>,
-#!    delegating to <C>Julia.Core._apply</C>
-#!    (this yields the function call syntax in &GAP;,
+#!    delegating to &Julia;'s <C>func(args...)</C> syntax;
+#!    this yields the function call syntax in &GAP;,
 #!    it is installed also for objects in
 #!    <Ref Filt="IsJuliaWrapper" Label="for IsObject"/>,
 #!  </Item>
@@ -397,10 +439,8 @@ DeclareGlobalFunction( "CallJuliaFunctionWithKeywordArguments" );
 #!    access to and assignment of entries of arrays, via
 #!    <Ref Oper="\[\]" BookName="ref"/>,
 #!    <Ref Oper="\[\]\:\=" BookName="ref"/>,
-#!    <!-- <Ref Oper="MatElm" BookName="ref"/>, and
-#!    <Ref Oper="SetMatElm" BookName="ref"/>, -->
-#!    and the (up to &GAP; 4.11 undocumented) operations <C>MatElm</C> and
-#!    <C>SetMatElm</C>,
+#!    <Ref Oper="MatElm" BookName="ref"/>, and
+#!    <Ref Oper="SetMatElm" BookName="ref"/>,
 #!    delegating to
 #!    <C>Julia.Base.getindex</C> and
 #!    <C>Julia.Base.setindex</C>,
@@ -459,7 +499,6 @@ DeclareGlobalFunction( "CallJuliaFunctionWithKeywordArguments" );
 #! gap> m + m;
 #! <Julia: [2 4; 6 8]>
 #! @EndExampleSession
-#TODO: add the cross-references to MatElm, SetMatElm when they are documented
 
 #! @InsertChunk JuliaHelpInGAP
 

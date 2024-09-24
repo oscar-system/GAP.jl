@@ -10,8 +10,8 @@ const DOWNLOAD_HELPER = Ref{Downloads.Downloader}()
 
 function init_packagemanager()
 #TODO:
-# As soon as PackageManager uses utils' Download function,
-# we need not replace code from PackageManager anymore.
+# As soon as GAP.jl can rely on a good enough version of PackageManager
+# we need not replace `PKGMAN_DownloadURL` anymore.
 # (And the function should be renamed.)
     res = load("PackageManager")
     @assert res
@@ -59,15 +59,15 @@ function init_packagemanager()
       # put the new method in the first position
       meths = Globals.Download_Methods
       Wrappers.Add(meths, GapObj(r, recursive=true), 1)
-
-      # monkey patch PackageManager so that we can disable removal of
-      # package directories for debugging purposes
-      orig_PKGMAN_RemoveDir = Globals.PKGMAN_RemoveDir
-      replace_global!(:PKGMAN_RemoveDir, function(dir)
-        Globals.ValueOption(GapObj("debug")) == true && return
-        orig_PKGMAN_RemoveDir(dir)
-      end)
     end
+
+    # monkey patch PackageManager so that we can disable removal of
+    # package directories for debugging purposes
+    orig_PKGMAN_RemoveDir = Globals.PKGMAN_RemoveDir
+    replace_global!(:PKGMAN_RemoveDir, function(dir)
+      Globals.ValueOption(GapObj("debug")) == true && return
+      orig_PKGMAN_RemoveDir(dir)
+    end)
 end
 
 """
