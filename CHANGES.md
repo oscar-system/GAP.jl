@@ -1,6 +1,6 @@
 # Changes in GAP.jl
 
-## Version 0.XX.Y (released 2024-MM-DD)
+## Version 0.12.0-DEV (released YYYY-MM-DD)
 
 - Remove GAP function `JuliaModule` (use `Julia.MODULENAME` etc. instead)
 - Remove GAP function `JuliaFunction` (use `Julia.FUNCNAME` etc. instead)
