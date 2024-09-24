@@ -1,5 +1,11 @@
 # Changes in GAP.jl
 
+## Version 0.XX.Y (released 2024-MM-DD)
+
+- Remove GAP function `JuliaModule` (use `Julia.MODULENAME` etc. instead)
+- Remove GAP function `JuliaFunction` (use `Julia.FUNCNAME` etc. instead)
+- Support keyword arguments in `CallJuliaFunctionWithCatch`
+- Stop wrapping Julia modules on the GAP side in special objects
 - Rewrite `julia_to_gap`, in order to
   - make the installation of new conversion methods from Julia to GAP
     simpler and safer and
@@ -7,6 +13,8 @@
     recursive conversions make sense.
   For that, the function `GAP.GapObj_internal`, the macro `GAP.@install`,
   and the type `GapCacheDict` were introduced.
+- Many internal changes and refactoring that should have no user facing effect
+  but will simplify future updates
 
 ## Version 0.11.4 (released 2024-09-19)
 
