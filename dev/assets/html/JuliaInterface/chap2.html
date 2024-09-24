@@ -189,6 +189,16 @@ true
 
 <h4>2.3 <span class="Heading">Access to <strong class="pkg">Julia</strong> objects</span></h4>
 
+<p>Not all <strong class="pkg">Julia</strong> syntax features are supported in <strong class="pkg">GAP</strong>. For important ones, the interface provides <strong class="pkg">GAP</strong> functions or helper functions written in <strong class="pkg">Julia</strong> to use them in <strong class="pkg">GAP</strong>. For example, <code class="func">CallJuliaFunctionWithCatch</code> (<a href="chap2.html#X8339D8D47D079AF9"><span class="RefLink">2.3-3</span></a>) allows one to use <strong class="pkg">Julia</strong>'s try/catch statements.</p>
+
+<p>Here is a selection of other workarounds for <strong class="pkg">Julia</strong> syntax features.</p>
+
+
+<ul>
+<li><p><strong class="pkg">Julia</strong>'s <code class="code">RefValue</code> objects can be handled as follows. If <code class="code">x</code> is such an object then its value can be fetched with <code class="code">Julia.GAP.getindex( x )</code>, a value <code class="code">v</code> of the right type can be set with <code class="code">Julia.GAP.setindex( x, v )</code>, and one can check with <code class="code">Julia.GAP.isassigned( x )</code> whether <code class="code">x</code> has a value.</p>
+
+</li>
+</ul>
 <p><a id="X83C764AC820CC172" name="X83C764AC820CC172"></a></p>
 
 <h5>2.3-1 Julia</h5>
@@ -208,6 +218,16 @@ true
 1
 <span class="GAPprompt">gap&gt;</span> <span class="GAPinput">Julia.Main.x;</span>
 1
+</pre></div>
+
+<p>Note that not all <strong class="pkg">Julia</strong> variables are directly visible in its <code class="code">Main</code> module. For example, <strong class="pkg">Julia</strong> variables from the interface to <strong class="pkg">GAP</strong> are defined in the <strong class="pkg">Julia</strong> module <code class="code">GAP</code> or its submodules. It is safe to access this module as <code class="code">Julia.GAP</code>.</p>
+
+
+<div class="example"><pre>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">Julia.GAP;</span>
+&lt;Julia module GAP&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">Julia.GAP.prompt;</span>
+&lt;Julia: prompt&gt;
 </pre></div>
 
 <p><a id="X7DDEFDC58469C33D" name="X7DDEFDC58469C33D"></a></p>
@@ -233,10 +253,10 @@ true
 
 <h5>2.3-3 CallJuliaFunctionWithCatch</h5>
 
-<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; CallJuliaFunctionWithCatch</code>( <var class="Arg">juliafunc</var>, <var class="Arg">arguments</var> )</td><td class="tdright">(&nbsp;function&nbsp;)</td></tr></table></div>
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; CallJuliaFunctionWithCatch</code>( <var class="Arg">juliafunc</var>, <var class="Arg">arguments</var>[, <var class="Arg">kwargs</var>] )</td><td class="tdright">(&nbsp;function&nbsp;)</td></tr></table></div>
 <p>Returns: a record.</p>
 
-<p>The function calls the <strong class="pkg">Julia</strong> function <var class="Arg">juliafunc</var> with arguments in the <strong class="pkg">GAP</strong> list <var class="Arg">arguments</var>, and returns a record with the components <code class="code">ok</code> and <code class="code">value</code>. If no error occurred then <code class="code">ok</code> has the value <code class="keyw">true</code>, and <code class="code">value</code> is the value returned by <var class="Arg">juliafunc</var>. If an error occurred then <code class="code">ok</code> has the value <code class="keyw">false</code>, and <code class="code">value</code> is the error message as a <strong class="pkg">GAP</strong> string.</p>
+<p>The function calls the <strong class="pkg">Julia</strong> function <var class="Arg">juliafunc</var> with ordinary arguments in the <strong class="pkg">GAP</strong> list <var class="Arg">arguments</var> and optionally with keyword arguments given by the component names (keys) and values of the <strong class="pkg">GAP</strong> record <var class="Arg">kwargs</var>, and returns a record with the components <code class="code">ok</code> and <code class="code">value</code>. If no error occurred then <code class="code">ok</code> has the value <code class="keyw">true</code>, and <code class="code">value</code> is the value returned by <var class="Arg">juliafunc</var>. If an error occurred then <code class="code">ok</code> has the value <code class="keyw">false</code>, and <code class="code">value</code> is the error message as a <strong class="pkg">GAP</strong> string.</p>
 
 
 <div class="example"><pre>
@@ -256,18 +276,27 @@ false
 false
 <span class="GAPprompt">gap&gt;</span> <span class="GAPinput">res.value{ [ 1 .. Position( res.value, '(' )-1 ] };</span>
 "LinearAlgebra.SingularException"
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">fun:= Julia.range;;</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">CallJuliaFunctionWithCatch( fun, [ 2, 10 ], rec( step:= 2 ) );</span>
+rec( ok := true, value := &lt;Julia: 2:2:10&gt; )
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">res:= CallJuliaFunctionWithCatch( fun, [ 2, 10 ],</span>
+<span class="GAPprompt">&gt;</span> <span class="GAPinput">             rec( step:= GAPToJulia( "a" ) ) );;</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">res.ok;</span>
+false
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">res.value{ [ 1 .. Position( res.value, '(' )-1 ] };</span>
+"MethodError"
 </pre></div>
 
 <p><a id="X7FB242EE864F21A2" name="X7FB242EE864F21A2"></a></p>
 
 <h5>2.3-4 CallJuliaFunctionWithKeywordArguments</h5>
 
-<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; CallJuliaFunctionWithKeywordArguments</code>( <var class="Arg">juliafunc</var>, <var class="Arg">arguments</var>, <var class="Arg">arec</var> )</td><td class="tdright">(&nbsp;function&nbsp;)</td></tr></table></div>
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; CallJuliaFunctionWithKeywordArguments</code>( <var class="Arg">juliafunc</var>, <var class="Arg">arguments</var>, <var class="Arg">kwargs</var> )</td><td class="tdright">(&nbsp;function&nbsp;)</td></tr></table></div>
 <p>Returns: the result of the <strong class="pkg">Julia</strong> function call.</p>
 
-<p>The function calls the <strong class="pkg">Julia</strong> function <var class="Arg">juliafunc</var> with ordinary arguments in the <strong class="pkg">GAP</strong> list <var class="Arg">arguments</var> and keyword arguments given by the component names (keys) and values of the record <var class="Arg">arec</var>, and returns the function value.</p>
+<p>The function calls the <strong class="pkg">Julia</strong> function <var class="Arg">juliafunc</var> with ordinary arguments in the <strong class="pkg">GAP</strong> list <var class="Arg">arguments</var> and keyword arguments given by the component names (keys) and values of the record <var class="Arg">kwargs</var>, and returns the function value.</p>
 
-<p>Note that the entries of <var class="Arg">arguments</var> and the components of <var class="Arg">arec</var> are not implicitly converted to <strong class="pkg">Julia</strong>.</p>
+<p>Note that the entries of <var class="Arg">arguments</var> and the components of <var class="Arg">kwargs</var> are not implicitly converted to <strong class="pkg">Julia</strong>.</p>
 
 
 <div class="example"><pre>
@@ -359,10 +388,10 @@ false
 
 
 <ul>
-<li><p><code class="func">CallFuncList</code> (<a href="/home/runner/.julia/artifacts/7a7471c3a274d605d85c06775fcb6f9962114ff7/share/gap/doc/ref/chap5.html#X7CF4DDB97D65AE52"><span class="RefLink">Reference: CallFuncList</span></a>), delegating to <code class="code">Julia.Core._apply</code> (this yields the function call syntax in <strong class="pkg">GAP</strong>, it is installed also for objects in <code class="func">IsJuliaWrapper</code> (<a href="chap2.html#X80FEB3607C6B60F8"><span class="RefLink">2.1-2</span></a>),</p>
+<li><p><code class="func">CallFuncList</code> (<a href="/home/runner/.julia/artifacts/7a7471c3a274d605d85c06775fcb6f9962114ff7/share/gap/doc/ref/chap5.html#X7CF4DDB97D65AE52"><span class="RefLink">Reference: CallFuncList</span></a>), delegating to <strong class="pkg">Julia</strong>'s <code class="code">func(args...)</code> syntax; this yields the function call syntax in <strong class="pkg">GAP</strong>, it is installed also for objects in <code class="func">IsJuliaWrapper</code> (<a href="chap2.html#X80FEB3607C6B60F8"><span class="RefLink">2.1-2</span></a>),</p>
 
 </li>
-<li><p>access to and assignment of entries of arrays, via <code class="func"><span>\</span>[<span>\</span>]</code> (<a href="/home/runner/.julia/artifacts/7a7471c3a274d605d85c06775fcb6f9962114ff7/share/gap/doc/ref/chap21.html#X8297BBCD79642BE6"><span class="RefLink">Reference: <span>\</span>[<span>\</span>]</span></a>), <code class="func"><span>\</span>[<span>\</span>]\:\=</code> (<a href="/home/runner/.julia/artifacts/7a7471c3a274d605d85c06775fcb6f9962114ff7/share/gap/doc/ref/chap21.html#X8297BBCD79642BE6"><span class="RefLink">Reference: <span>\</span>[<span>\</span>]\:\=</span></a>), and the (up to <strong class="pkg">GAP</strong> 4.11 undocumented) operations <code class="code">MatElm</code> and <code class="code">SetMatElm</code>, delegating to <code class="code">Julia.Base.getindex</code> and <code class="code">Julia.Base.setindex</code>,</p>
+<li><p>access to and assignment of entries of arrays, via <code class="func"><span>\</span>[<span>\</span>]</code> (<a href="/home/runner/.julia/artifacts/7a7471c3a274d605d85c06775fcb6f9962114ff7/share/gap/doc/ref/chap21.html#X8297BBCD79642BE6"><span class="RefLink">Reference: <span>\</span>[<span>\</span>]</span></a>), <code class="func"><span>\</span>[<span>\</span>]\:\=</code> (<a href="/home/runner/.julia/artifacts/7a7471c3a274d605d85c06775fcb6f9962114ff7/share/gap/doc/ref/chap21.html#X8297BBCD79642BE6"><span class="RefLink">Reference: <span>\</span>[<span>\</span>]\:\=</span></a>), <code class="func">MatElm</code> (<a href="/home/runner/.julia/artifacts/7a7471c3a274d605d85c06775fcb6f9962114ff7/share/gap/doc/ref/chap26.html#X870FBE817C884AB5"><span class="RefLink">Reference: MatElm</span></a>), and <code class="func">SetMatElm</code> (<a href="/home/runner/.julia/artifacts/7a7471c3a274d605d85c06775fcb6f9962114ff7/share/gap/doc/ref/chap26.html#X870FBE817C884AB5"><span class="RefLink">Reference: MatElm</span></a>), delegating to <code class="code">Julia.Base.getindex</code> and <code class="code">Julia.Base.setindex</code>,</p>
 
 </li>
 <li><p>access to and assignment of fields and properties, via <code class="func">\.</code> (<a href="/home/runner/.julia/artifacts/7a7471c3a274d605d85c06775fcb6f9962114ff7/share/gap/doc/ref/chap29.html#X7821AC097821AC09"><span class="RefLink">Reference: \.</span></a>) and <code class="func">\.\:\=</code> (<a href="/home/runner/.julia/artifacts/7a7471c3a274d605d85c06775fcb6f9962114ff7/share/gap/doc/ref/chap29.html#X7821AC097821AC09"><span class="RefLink">Reference: \.\:\=</span></a>), delegating to <code class="code">Julia.Base.getproperty</code> and <code class="code">Julia.Base.setproperty</code>,</p>
