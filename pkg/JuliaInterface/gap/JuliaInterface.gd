@@ -109,8 +109,7 @@
 #! However not every object living on the Julia side is in this filter.
 #! For example Julia booleans and small <C>Int</C> values are directly
 #! translated to GAP booleans and small integers, while for Julia functions
-#! and wrappers dedicated wrappers are used for improved efficiency
-#! respectively additional features.
+#! dedicated wrappers are used to improve efficiency and add features.
 #! @BeginExampleSession
 #! gap> JuliaEvalString( "x = 4" );;
 #! gap> Julia.x;
@@ -118,8 +117,6 @@
 #! gap> IsJuliaObject( Julia.x );
 #! false
 #! gap> IsJuliaObject( Julia.sqrt );
-#! false
-#! gap> IsJuliaObject( Julia.Main );
 #! false
 #! @EndExampleSession
 DeclareCategory( "IsJuliaObject", IsObject );
@@ -138,14 +135,10 @@ BindGlobal("TheTypeJuliaObject", NewType( JuliaObjectFamily, IsJuliaObject ));
 #!  This admits implementing high-level wrapper objects
 #!  for &Julia; objects that behave just like the &Julia; objects
 #!  when used as arguments in calls to &Julia; functions.
-#!  <!-- No other functionality is implemented for IsJuliaWrapper -->
 #!
 #!  Objects in <Ref Filt="IsJuliaWrapper" Label="for IsObject"/>
 #!  should <E>not</E> be in the filter
 #!  <Ref Filt="IsJuliaObject" Label="for IsObject"/>.
-#!
-#!  For example, any Julia modules such as <C>Julia.Base</C> are
-#!  in the filter <Ref Filt="IsJuliaWrapper" Label="for IsObject"/>.
 DeclareCategory( "IsJuliaWrapper", IsObject );
 
 #! @Arguments obj
@@ -153,18 +146,6 @@ DeclareCategory( "IsJuliaWrapper", IsObject );
 #!  is an attribute for &GAP; objects in the filter
 #!  <Ref Filt="IsJuliaWrapper" Label="for IsObject"/>.
 #!  The value must be a &Julia; object.
-#! @BeginExampleSession
-#! gap> Julia;
-#! <Julia module Main>
-#! gap> IsJuliaObject( Julia );
-#! false
-#! gap> IsJuliaWrapper( Julia );
-#! true
-#! gap> ptr:= JuliaPointer( Julia );
-#! <Julia: Main>
-#! gap> IsJuliaObject( ptr );
-#! true
-#! @EndExampleSession
 DeclareAttribute( "JuliaPointer", IsJuliaWrapper );
 
 #! @Arguments obj
@@ -181,10 +162,10 @@ DeclareAttribute( "JuliaPointer", IsJuliaWrapper );
 #! gap> Julia.GAP.gap_to_julia;
 #! <Julia: gap_to_julia>
 #! @EndExampleSession
-DeclareCategory( "IsJuliaModule", IsJuliaWrapper and IsRecord  );
+DeclareCategory( "IsJuliaModule", IsJuliaObject and IsRecord  );
 
 BindGlobal( "TheFamilyOfJuliaModules", NewFamily( "TheFamilyOfJuliaModules" ) );
-BindGlobal( "TheTypeOfJuliaModules", NewType( TheFamilyOfJuliaModules, IsJuliaModule and IsAttributeStoringRep ) );
+BindGlobal( "TheTypeOfJuliaModules", NewType( TheFamilyOfJuliaModules, IsJuliaModule and HasName ) );
 
 #! @Section Creating &Julia; objects
 
@@ -271,9 +252,7 @@ DeclareGlobalVariable( "Julia" );
 #! @BeginExampleSession
 #! gap> JuliaTypeInfo( Julia.GAP );
 #! "Module"
-#! gap> JuliaTypeInfo( JuliaPointer( Julia.GAP ) );
-#! "Module"
-#! gap> JuliaTypeInfo( JuliaEvalString( "sqrt(2)" ) );
+#! gap> JuliaTypeInfo( Julia.sqrt(2) );
 #! "Float64"
 #! gap> JuliaTypeInfo( 1 );
 #! "Int64"

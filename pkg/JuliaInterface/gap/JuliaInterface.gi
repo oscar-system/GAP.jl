@@ -4,22 +4,9 @@
 # Implementations
 #
 
-BindGlobal( "_JULIA_MODULE_TYPE", _JuliaGetGlobalVariableByModule( "Module", "Core" ) );
 BindGlobal( "_JULIA_FUNCTION_TYPE", _JuliaGetGlobalVariableByModule( "Function", "Core" ) );
 BindGlobal( "_JULIA_ISA", _WrapJuliaFunction( _JuliaGetGlobalVariableByModule( "isa", "Core" ) ) );
-
-BindGlobal( "_WrapJuliaModule",
-  function( name, julia_pointer )
-    local str;
-
-    str:= Concatenation( "<Julia module ", name, ">" );
-
-    return ObjectifyWithAttributes( rec( storage := rec( ) ),
-                             TheTypeOfJuliaModules,
-                             Name, str,
-                             String, str,
-                             JuliaPointer, julia_pointer );
-end );
+BindGlobal( "_JULIA_GAP", _JuliaGetGapModule() );
 
 InstallMethod( ViewString,
     [ "IsFunction and IsInternalRep and HasNameFunction" ],
@@ -31,59 +18,78 @@ InstallMethod( ViewString,
     TryNextMethod();
     end );
 
+InstallMethod( ViewString,
+    [ "IsJuliaModule" ],
+    function( module )
+    return Concatenation( "<Julia module ", JuliaToGAP( IsString, Julia.string( module ) ), ">" );
+    end );
+
+InstallMethod( Name,
+    [ "IsJuliaModule" ],
+    function( module )
+    return Concatenation( "<Julia module ", JuliaToGAP( IsString, Julia.string( module ) ), ">" );
+    end );
+
 InstallMethod( \.,
-              [ "IsJuliaModule", "IsPosInt" ],
+              [ "IsJuliaModule", "IsPosInt and IsSmallIntRep" ],
   function( module, rnum )
     local rnam, var;
 
-    if IsBound\.( module!.storage, rnum ) then
-        return \.(module!.storage, rnum );
-    fi;
-
     rnam := NameRNam( rnum );
 
-    var := _JuliaGetGlobalVariableByModule( rnam, JuliaPointer( module ) );
+    if IsIdenticalObj(module, Julia) and rnam = "GAP" then
+        ## Ensure that the Julia module GAP is always accessible as Julia.GAP,
+        ## even while it is still being initialized, and also if it not actually
+        ## exported to the Julia Main module
+        return _JULIA_GAP;
+    fi;
+
+    var := _JuliaGetGlobalVariableByModule( rnam, module );
     if var = fail then
         Error( rnam, " is not bound in Julia" );
     fi;
 
     if _JULIA_ISA( var, _JULIA_FUNCTION_TYPE ) then
         var := _WrapJuliaFunction( var );
-    elif _JULIA_ISA( var, _JULIA_MODULE_TYPE ) then
-        var := _WrapJuliaModule( rnam, var );
-        \.\:\=( module!.storage, rnum, var );
     fi;
 
     return var;
 end );
 
 InstallMethod( \.\:\=,
-               [ "IsJuliaModule", "IsPosInt", "IsObject" ],
+               [ "IsJuliaModule", "IsPosInt and IsSmallIntRep", "IsObject" ],
   function( module, rnum, obj )
     Julia.GAP._setglobal( module, JuliaSymbol( NameRNam( rnum ) ), obj );
 end );
 
 InstallMethod( IsBound\.,
-               [ "IsJuliaModule", "IsPosInt" ],
+               [ "IsJuliaModule", "IsPosInt and IsSmallIntRep" ],
   function( module, rnum )
-    if IsBound\.( module!.storage, rnum ) then
+    local rnam;
+
+    rnam := NameRNam( rnum );
+    if IsIdenticalObj(module, Julia) and rnam = "GAP" then
+        ## Ensure that the Julia module GAP is always accessible as Julia.GAP,
+        ## even while it is still being initialized, and also if it not actually
+        ## exported to the Julia Main module
         return true;
     fi;
-    return fail <> _JuliaGetGlobalVariableByModule( NameRNam( rnum ), JuliaPointer( module ) );
+
+    return fail <> _JuliaGetGlobalVariableByModule( rnam, module );
 end );
 
 InstallMethod( Unbind\.,
-               [ "IsJuliaModule", "IsPosInt" ],
+               [ "IsJuliaModule", "IsPosInt and IsSmallIntRep" ],
   function( module, rnum )
     Error( "cannot unbind Julia variables" );
 end );
 
 InstallMethod(RecNames, [ "IsJuliaModule" ],
 function( obj )
-    return JuliaToGAP( IsList, Julia.GAP.get_symbols_in_module( JuliaPointer( obj ) ), true );
+    return JuliaToGAP( IsList, Julia.GAP.get_symbols_in_module( obj ), true );
 end);
 
-InstallValue( Julia, _WrapJuliaModule( "Main", _JuliaGetGlobalVariableByModule( "Main", "Main" ) ) );
+InstallValue( Julia, _JuliaGetGlobalVariableByModule( "Main", "Main" ) );
 
 InstallGlobalFunction( "JuliaIncludeFile",
 function( filename, module_name... )
