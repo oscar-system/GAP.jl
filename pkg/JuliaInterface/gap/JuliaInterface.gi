@@ -131,6 +131,10 @@ InstallGlobalFunction( JuliaImportPackage, function( pkgname )
     if JuliaEvalString( callstring ) = true then
         return true;
     else
+      # HACK: avoid warning "The Julia package 'Downloads' cannot be loaded"
+      # with older versions of the GAP PackageManager
+      if pkgname = "Downloads" then return false; fi;
+
       Info( InfoWarning, 1,
             "The Julia package '", pkgname, "' cannot be loaded." );
       return false;
