@@ -39,7 +39,7 @@
 #!   On the &Julia; side, there is usually no need for a wrapper,
 #!   as (thanks to the shared garbage collector)
 #!   most &GAP; objects are valid &Julia; objects of type
-#!   <C>GAP.GapObj</C>.
+#!   <C>GapObj</C>.
 #!   The exception to that rule are immediate &GAP; objects,
 #!   more on that in the next section.
 #! </Item>
@@ -84,7 +84,7 @@
 #!  <Ref Chap="Integers" BookName="ref"/> in the &GAP; Reference Manual.
 #!  Since these are not valid pointers, &Julia; cannot treat them like other
 #!  &GAP; objects, which are simply &Julia; objects of type
-#!  <C>GAP.GapObj</C>.
+#!  <C>GapObj</C>.
 #!  Instead, a conversion is unavoidable, at least when immediate objects
 #!  are passed as stand-alone arguments to a function.
 #!  <P/>
@@ -135,7 +135,7 @@
 #!    &Julia; function wrapper to &Julia; function,
 #!  </Item>
 #!  <Item>
-#!    other &GAP; objects to <C>GAP.GapObj</C>.
+#!    other &GAP; objects to <C>GapObj</C>.
 #!  </Item>
 #!  </List>
 #!
@@ -156,7 +156,7 @@
 #!    &Julia; <C>false</C> to &GAP; <K>false</K>,
 #!  </Item>
 #!  <Item>
-#!    <C>GAP.GapObj</C> to <C>Obj</C>,
+#!    <C>GapObj</C> to <C>Obj</C>,
 #!  </Item>
 #!  <Item>
 #!    other &Julia; objects to &Julia; object wrapper.
@@ -169,7 +169,7 @@
 #!  <Ref Func="GAPToJulia"/> and
 #!  <Ref Constr="JuliaToGAP" Label="for IsObject, IsObject"/>.
 #!  In &Julia;, conversion is done via <C>gap_to_julia</C> and
-#!  <C>julia_to_gap</C>.
+#!  <C>GapObj</C>.
 #!
 #!  <E>Conversion from &GAP; to &Julia;</E>
 #!
@@ -289,7 +289,7 @@
 #!  of nested objects.
 #!  Various methods for this constructor then take care of input validation
 #!  and the actual conversion, either by delegating to the &Julia; function
-#!  <C>julia_to_gap</C>
+#!  <C>GapObj</C>
 #!  (which takes just one or two arguments and chooses the &GAP; filters of
 #!  its result depending on the &Julia; type),
 #!  or by automatic conversion.

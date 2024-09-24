@@ -99,7 +99,7 @@ julia> Vector{Vector{Int}}(cf)
 Next let us investigate the operation of the group on the 48 points.
 
 ```jldoctest rubik
-julia> orbs = GAP.Globals.Orbits(cube, GAP.GapObj(1:48))
+julia> orbs = GAP.Globals.Orbits(cube, GapObj(1:48))
 GAP: [ [ 1, 3, 17, 14, 8, 38, 9, 41, 19, 48, 22, 6, 30, 33, 43, 11, 46, 40, 24, 27, 25, 35, 16, 32 ], [ 2, 5, 12, 7, 36, 10, 47, 4, 28, 45, 34, 13, 29, 44, 20, 42, 26, 21, 37, 15, 31, 18, 23, 39 ] ]
 
 julia> length(orbs)
@@ -315,7 +315,7 @@ For this purpose we introduce a free group and a homomorphism of it
 onto the cube group.
 
 ```jldoctest rubik
-julia> f = GAP.Globals.FreeGroup(GAP.GapObj(["t", "l", "f", "r", "e", "b"], recursive =  true))
+julia> f = GAP.Globals.FreeGroup(GapObj(["t", "l", "f", "r", "e", "b"], recursive =  true))
 GAP: <free group on the generators [ t, l, f, r, e, b ]>
 
 julia> fhom = GAP.Globals.GroupHomomorphismByImages(f, cube)

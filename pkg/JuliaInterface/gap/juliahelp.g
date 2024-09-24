@@ -52,10 +52,10 @@
 #!   &Julia; functions belong to &Julia; modules.
 #!   Many &Julia; functions can be accessed only relative to their modules,
 #!   and then also the help requests work only for the qualified names.
-#!   For example, <C>?Julia:GAP.julia_to_gap</C> yields the description
-#!   of the &Julia; function <C>julia_to_gap</C> that is defined in the
+#!   For example, <C>?Julia:GAP.wrap_rng</C> yields the description
+#!   of the &Julia; function <C>wrap_rng</C> that is defined in the
 #!   &Julia; module <C>GAP</C>,
-#!   whereas no match is found for the input <C>?Julia:julia_to_gap</C>.
+#!   whereas no match is found for the input <C>?Julia:wrap_rng</C>.
 #!  </Item>
 #!  </List>
 #! @EndChunk

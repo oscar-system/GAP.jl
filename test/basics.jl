@@ -2,7 +2,7 @@
     @test GAP.CSTR_STRING(GAP.Globals.String(GAP.Globals.PROD(2^59, 2^59))) ==
           "332306998946228968225951765070086144"
 
-    l = GAP.julia_to_gap([1, 2, 3])
+    l = GapObj([1, 2, 3])
 
     @test l[1] == 1
     @test l[end] == 3
@@ -18,10 +18,10 @@
     x.a = 1
     @test x.a == 1
 
-    xx = GAP.julia_to_gap([1, 2, 3])
+    xx = GapObj([1, 2, 3])
     @test_throws ErrorException xx[4]
 
-    @test string(GAP.julia_to_gap("x")) == "x"
+    @test string(GapObj("x")) == "x"
 
     # equality and hashing
     x = GAP.evalstr("[]")
@@ -74,14 +74,14 @@ end
 @testset "gapcalls" begin
     f = GAP.evalstr("{x...} -> x")
 
-    @test GAP.julia_to_gap([]) == f()
-    @test GAP.julia_to_gap([1]) == f(1)
-    @test GAP.julia_to_gap([1, 2]) == f(1, 2)
-    @test GAP.julia_to_gap([1, 2, 3]) == f(1, 2, 3)
-    @test GAP.julia_to_gap([1, 2, 3, 4]) == f(1, 2, 3, 4)
-    @test GAP.julia_to_gap([1, 2, 3, 4, 5]) == f(1, 2, 3, 4, 5)
-    @test GAP.julia_to_gap([1, 2, 3, 4, 5, 6]) == f(1, 2, 3, 4, 5, 6)
-    @test GAP.julia_to_gap([1, 2, 3, 4, 5, 6, 7]) == f(1, 2, 3, 4, 5, 6, 7)
+    @test GapObj([]) == f()
+    @test GapObj([1]) == f(1)
+    @test GapObj([1, 2]) == f(1, 2)
+    @test GapObj([1, 2, 3]) == f(1, 2, 3)
+    @test GapObj([1, 2, 3, 4]) == f(1, 2, 3, 4)
+    @test GapObj([1, 2, 3, 4, 5]) == f(1, 2, 3, 4, 5)
+    @test GapObj([1, 2, 3, 4, 5, 6]) == f(1, 2, 3, 4, 5, 6)
+    @test GapObj([1, 2, 3, 4, 5, 6, 7]) == f(1, 2, 3, 4, 5, 6, 7)
 
     @test [] == Vector{String}(f())
     @test ["1"] == Vector{String}(f("1"))
@@ -94,14 +94,14 @@ end
 
     g = GAP.evalstr("""{x...} -> [x,ValueOption("option")]""")
 
-    @test GAP.julia_to_gap([[], 42], recursive=true) == g(; option=42)
-    @test GAP.julia_to_gap([[1], 42], recursive=true) == g(1; option=42)
-    @test GAP.julia_to_gap([[1, 2], 42], recursive=true) == g(1, 2; option=42)
-    @test GAP.julia_to_gap([[1, 2, 3], 42], recursive=true) == g(1, 2, 3; option=42)
-    @test GAP.julia_to_gap([[1, 2, 3, 4], 42], recursive=true) == g(1, 2, 3, 4; option=42)
-    @test GAP.julia_to_gap([[1, 2, 3, 4, 5], 42], recursive=true) == g(1, 2, 3, 4, 5; option=42)
-    @test GAP.julia_to_gap([[1, 2, 3, 4, 5, 6], 42], recursive=true) == g(1, 2, 3, 4, 5, 6; option=42)
-    @test GAP.julia_to_gap([[1, 2, 3, 4, 5, 6, 7], 42], recursive=true) == g(1, 2, 3, 4, 5, 6, 7; option=42)
+    @test GapObj([[], 42], recursive=true) == g(; option=42)
+    @test GapObj([[1], 42], recursive=true) == g(1; option=42)
+    @test GapObj([[1, 2], 42], recursive=true) == g(1, 2; option=42)
+    @test GapObj([[1, 2, 3], 42], recursive=true) == g(1, 2, 3; option=42)
+    @test GapObj([[1, 2, 3, 4], 42], recursive=true) == g(1, 2, 3, 4; option=42)
+    @test GapObj([[1, 2, 3, 4, 5], 42], recursive=true) == g(1, 2, 3, 4, 5; option=42)
+    @test GapObj([[1, 2, 3, 4, 5, 6], 42], recursive=true) == g(1, 2, 3, 4, 5, 6; option=42)
+    @test GapObj([[1, 2, 3, 4, 5, 6, 7], 42], recursive=true) == g(1, 2, 3, 4, 5, 6, 7; option=42)
 
     # check to see if a non-basic object (here: a tuple) can be
     # passed and then extracted again

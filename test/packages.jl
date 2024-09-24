@@ -24,7 +24,7 @@
 #TODO: How to guarantee two installed versions with different paths?
 
     # - a package that was not yet loaded (only once in a Julia session)
-    if ! GAP.Globals.IsPackageLoaded(GAP.GapObj("autodoc"))
+    if ! GAP.Globals.IsPackageLoaded(GapObj("autodoc"))
       path = string(GAP.Globals.GAPInfo.PackagesInfo.autodoc[1].InstallationPath)
       @test GAP.Packages.load(path)
     end

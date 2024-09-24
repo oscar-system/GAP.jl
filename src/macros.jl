@@ -383,9 +383,9 @@ macro wrap(ex)
                 # type annotations -> split and decide what to do
                 var = x.args[1]
                 typeannot = x.args[2]
-                if typeannot in [:GapObj, :(GAP.GapObj)]
-                    # the lhs has no type annotation, rhs gets wrapped in `GAP.GapObj(...)::GAP.GapObj` 
-                    (var, :(GAP.GapObj($var)::GAP.GapObj))
+                if typeannot in [:GapObj, :(GapObj)]
+                    # the lhs has no type annotation, rhs gets wrapped in `GapObj(...)::GapObj`
+                    (var, :(GapObj($var)::GapObj))
                 elseif typeannot == :(GAP.Obj)
                     # the lhs has no type annotation, rhs gets wrapped in `GAP.Obj(...)::GAP.Obj`
                     (var, :(GAP.Obj($var)::GAP.Obj))
@@ -403,7 +403,7 @@ macro wrap(ex)
     ]
     lhsargs = map(first, tempargs)
     rhsargs = map(last, tempargs)
-    
+
     # the "outer" part of the body
     body = MacroTools.@qq begin
                global $newsym
@@ -418,4 +418,71 @@ macro wrap(ex)
        @eval const $newsym = Ref{GapObj}()
        Base.@__doc__ $(Expr(:call, name, lhsargs...)) = $body
     end)
+end
+
+
+"""
+    @install
+
+When applied to a unary method definition for the function `GapObj`,
+with argument of type `T`,
+this macro installs instead a three argument method for
+`GAP.GapObj_internal`, with second argument of type
+`GAP.GapCacheDict` and third argument of type `Bool`.
+
+This way, the intended `GapObj(x::T)` method becomes available,
+and additionally its code is applicable in recursive calls,
+for example when `GapObj` is called with a vector of objects of type `T`.
+
+Since the `GapObj` method does not support a dictionary for tracking
+identical subobjects, the type `T` is marked as "not needing recursion",
+by automatically installing a method for `_needs_tracking_julia_to_gap`
+that returns `false`.
+
+The calls of the macro have the form `GAP.@install GapObj(x::T) = f(x)`
+or `GAP.@install function GapObj(x::T) ... end`.
+"""
+macro install(ex)
+    errmsg = "GAP.@install must be applied to a unary method definition for GapObj"
+
+    # split the method definition
+    def_dict = try
+        MacroTools.splitdef(ex)
+    catch
+        error(errmsg)
+    end
+
+    def_dict[:name] === :GapObj || def_dict[:name] == :(GAP.GapObj) || error(errmsg)
+    length(def_dict[:args]) == 1 || error(errmsg)
+
+    # extend the arguments list of the function
+    push!(def_dict[:args], :(cache::GAP.GapCacheDict))
+    push!(def_dict[:args], :(::Val{recursive}))
+    if length(def_dict[:whereparams]) == 0
+      def_dict[:whereparams] = (:recursive,)
+    else
+      def_dict[:whereparams] = Tuple(push!(collect(def_dict[:whereparams]), :recursive))
+    end
+
+    # replace the function name
+    def_dict[:name] = :(GAP.GapObj_internal)
+
+    # assemble the method definition again
+    ex = MacroTools.combinedef(def_dict)
+
+    # install the `needs_conversion_tracking` method that returns `false`
+    x = def_dict[:args][1]
+    if x isa Symbol || !(x.head == :(::) && length(x.args) == 2)
+      error("argument of GapObj needs a type annotation")
+    else
+      typeannot = x.args[2]
+    end
+    Base.eval(__module__, quote
+        GAP._needs_tracking_julia_to_gap(::Type{Sub}) where Sub <: $typeannot = false
+      end)
+
+    return esc(Expr(
+        :block,
+        :(Base.@__doc__ $ex),
+        ))
 end

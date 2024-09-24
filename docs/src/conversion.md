@@ -11,7 +11,8 @@ For a few types of objects, such conversions are unavoidable,
 see [Automatic GAP-to-Julia and Julia-to-GAP Conversions](@ref).
 In all other situations,
 the conversions between GAP objects and corresponding Julia objects
-can be performed using [`gap_to_julia`](@ref) and [`julia_to_gap`](@ref),
+can be performed using [`gap_to_julia`](@ref) and
+[`GapObj(x, cache::GapCacheDict = nothing; recursive::Bool = false)`](@ref),
 see [Explicit GAP-to-Julia and Julia-to-GAP Conversions](@ref), respectively.
 
 For convenience, also constructor methods are provided,
@@ -46,7 +47,7 @@ The exceptions are as follows.
 
 ```@docs
 gap_to_julia
-julia_to_gap
+GapObj(x, cache::GapCacheDict = nothing; recursive::Bool = false)
 ```
 
 ## Constructor Methods for GAP-to-Julia Conversions

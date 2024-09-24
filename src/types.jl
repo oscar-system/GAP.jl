@@ -84,38 +84,11 @@ Module
 ```
 
 One can use `GapObj` as a constructor,
-in order to convert Julia objects to GAP objects.
-Such calls are delegated to [`julia_to_gap`](@ref).
-
-However, this is restricted to outputs that actually are of type `GapObj`.
-To also deal with GAP integers, finite field elements and booleans, use
-[`GAP.Obj`](@ref) instead.
-
-Recursive conversion of nested Julia objects (arrays, tuples, dictionaries)
-can be forced either by a second argument `true`
-or by the keyword argument `recursive` with value `true`.
-
-# Examples
-```jldoctest
-julia> GapObj(1//3)
-GAP: 1/3
-
-julia> GapObj([1 2; 3 4])
-GAP: [ [ 1, 2 ], [ 3, 4 ] ]
-
-julia> GapObj([[1, 2], [3, 4]])
-GAP: [ <Julia: [1, 2]>, <Julia: [3, 4]> ]
-
-julia> GapObj([[1, 2], [3, 4]], true)
-GAP: [ [ 1, 2 ], [ 3, 4 ] ]
-
-julia> GapObj([[1, 2], [3, 4]], recursive=true)
-GAP: [ [ 1, 2 ], [ 3, 4 ] ]
-
-julia> GapObj(42)
-ERROR: TypeError: in typeassert, expected GapObj, got a value of type Int64
-```
+in order to convert Julia objects to GAP objects,
+see [`GapObj(x, cache::GapCacheDict = nothing; recursive::Bool = false)`](@ref)
+for that.
 """ GapObj
+
 
 """
     GAP.Obj

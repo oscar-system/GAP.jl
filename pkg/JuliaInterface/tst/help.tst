@@ -57,7 +57,7 @@ true
 gap> str:= HelpString( "Julia:GAP.wrap_rng" );; # is not exported from GAP
 gap> PositionSublist( str, "wrap_rng" ) <> fail;
 true
-gap> str:= HelpString( "Julia:GapObj" );; # is exported from GAP
+gap> str:= HelpString( "Julia:GAP.GapObj" );;
 gap> PositionSublist( str, "GapObj" ) <> fail;
 true
 gap> str:= HelpString( "Julia:sqrt" );; # is from Julia.Base

@@ -3,7 +3,8 @@ module Wrappers
 using GAP
 import GAP: @wrap
 
-@wrap Add(x::GapObj, y::GapObj, z::Int)::Nothing
+@wrap Add(x::GapObj, y::Any)::Nothing
+@wrap Add(x::GapObj, y::Any, z::Int)::Nothing
 @wrap AdditiveInverseSameMutability(x::Any)::Any
 @wrap Append(x::GapObj, y::GapObj)::Nothing
 @wrap ASS_LIST(x::Any, i::Int, v::Any)::Nothing
@@ -40,6 +41,7 @@ import GAP: @wrap
 @wrap IsRange(x::Any)::Bool
 @wrap IsRangeRep(x::Any)::Bool
 @wrap IsRecord(x::Any)::Bool
+@wrap IsSet(x::Any)::Bool
 @wrap IsSSortedList(x::Any)::Bool
 @wrap IsString(x::Any)::Bool
 @wrap IsStringRep(x::Any)::Bool
@@ -70,6 +72,7 @@ import GAP: @wrap
 @wrap SetInfoLevel(x::GapObj, y::Int)::Nothing
 @wrap SetPackagePath(x::GapObj, y::GapObj)::Nothing
 @wrap ShallowCopy(x::Any)::Any
+@wrap Sort(x::GapObj)::Nothing
 @wrap String(x::Any)::Any
 @wrap StringDisplayObj(x::Any)::GapObj
 @wrap StringViewObj(x::Any)::GapObj

@@ -449,7 +449,7 @@ Base.copy(rng::MersenneTwister) = MersenneTwister(state=MersenneTwisterState(Glo
 Random.rand(rng::AbstractGAPRNG, x::Random.SamplerTrivial{<:Obj}) = Globals.Random(rng.ptr, x[])
 
 Random.rand(rng::AbstractGAPRNG, x::Random.SamplerTrivial{<:AbstractUnitRange}) =
-    Globals.Random(rng.ptr, julia_to_gap(first(x[])), julia_to_gap(last(x[])))
+    Globals.Random(rng.ptr, GapObj(first(x[])), GapObj(last(x[])))
 
 Random.Sampler(::Type{<:AbstractGAPRNG}, x::AbstractUnitRange, ::Random.Repetition) =
     Random.SamplerTrivial(x)
@@ -464,7 +464,7 @@ for U in (Base.BitInteger64, Union{Int128,UInt128})
 end
 
 Random.Sampler(::Type{<:AbstractGAPRNG}, x::AbstractVector, ::Random.Repetition) =
-    Random.SamplerTrivial(julia_to_gap(x, recursive=false))
+    Random.SamplerTrivial(GapObj(x, recursive=false))
 
 
 # The following bypasses GAP's redirection of `x^-1` to `InverseSameMutability(x)`.

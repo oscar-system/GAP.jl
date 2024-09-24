@@ -127,11 +127,11 @@ be a useful escape hatch to access GAP functionality that is otherwise
 impossible to difficult to reach. But in most typical scenarios it
 should not be necessary to use it at all.
 
-Instead, use `GAP.GapObj` or `GAP.Obj` for constructing GAP objects
+Instead, use `GapObj` or `GAP.Obj` for constructing GAP objects
 that correspond to given Julia objects,
 and call GAP functions directly in the Julia session.
 For example, executing `GAP.evalstr( "x:= []; Add( x, 2 )" )`
-can be replaced by the Julia code `x = GAP.GapObj([]); GAP.Globals.Add(x, 2)`.
+can be replaced by the Julia code `x = GapObj([]); GAP.Globals.Add(x, 2)`.
 Note that the variable `x` in the former example lives in the GAP session,
 i.e., it can be accessed as `GAP.Globals.x` after the call of `GAP.evalstr`,
 whereas `x` in the latter example lives in the Julia session.
