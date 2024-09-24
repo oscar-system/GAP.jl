@@ -157,8 +157,8 @@ true
 &lt;Julia module GAP&gt;
 <span class="GAPprompt">gap&gt;</span> <span class="GAPinput">IsJuliaModule( Julia.GAP );</span>
 true
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">Julia.GAP.julia_to_gap;</span>
-&lt;Julia: julia_to_gap&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">Julia.GAP.gap_to_julia;</span>
+&lt;Julia: gap_to_julia&gt;
 </pre></div>
 
 <p><a id="X87856ABF7C0D3757" name="X87856ABF7C0D3757"></a></p>
@@ -449,7 +449,7 @@ false
 <li><p>No PDF or HTML version of the <strong class="pkg">Julia</strong> help is supported in <strong class="pkg">GAP</strong>, only the text format can be shown on the screen. Thus it does not make sense to change the help viewer, cf. Section <a href="/home/runner/.julia/artifacts/7a7471c3a274d605d85c06775fcb6f9962114ff7/share/gap/doc/ref/chap2_mj.html#X863FF9087EDA8DF9"><span class="RefLink">Reference: Changing the Help Viewer</span></a> in the <strong class="pkg">GAP</strong> Reference Manual.</p>
 
 </li>
-<li><p><strong class="pkg">Julia</strong> functions belong to <strong class="pkg">Julia</strong> modules. Many <strong class="pkg">Julia</strong> functions can be accessed only relative to their modules, and then also the help requests work only for the qualified names. For example, <code class="code">?Julia:GAP.julia_to_gap</code> yields the description of the <strong class="pkg">Julia</strong> function <code class="code">julia_to_gap</code> that is defined in the <strong class="pkg">Julia</strong> module <code class="code">GAP</code>, whereas no match is found for the input <code class="code">?Julia:julia_to_gap</code>.</p>
+<li><p><strong class="pkg">Julia</strong> functions belong to <strong class="pkg">Julia</strong> modules. Many <strong class="pkg">Julia</strong> functions can be accessed only relative to their modules, and then also the help requests work only for the qualified names. For example, <code class="code">?Julia:GAP.wrap_rng</code> yields the description of the <strong class="pkg">Julia</strong> function <code class="code">wrap_rng</code> that is defined in the <strong class="pkg">Julia</strong> module <code class="code">GAP</code>, whereas no match is found for the input <code class="code">?Julia:wrap_rng</code>.</p>
 
 </li>
 </ul>

@@ -67,7 +67,7 @@
 <dt><strong class="Mark">Avoid conversions, use wrapper objects instead.</strong></dt>
 <dd><p>Naively, one may think that in order to use <strong class="pkg">Julia</strong> functionality from <strong class="pkg">GAP</strong>, one has to convert all data to a format usable by <strong class="pkg">Julia</strong>, then call <strong class="pkg">Julia</strong> functions on that data, and finally convert it back; rinse and repeat. While this is certainly sometimes so, in many cases, things are a bit different: Some initial (usually very small) data may need to be converted. But afterwards, the output of one <strong class="pkg">Julia</strong> function is used as input of the next one, and so on. Converting the data to <strong class="pkg">GAP</strong> format and back then is needlessly wasteful. It is much better to not perform any conversion here. Instead, we create special <q>wrapper</q> objects on the <strong class="pkg">GAP</strong> side, which wraps a given <strong class="pkg">Julia</strong> object without converting it. This operation is thus very cheap, both in terms of performance and in memory usage. Such a wrapped object can then be transparently used as input for <strong class="pkg">Julia</strong> functions.</p>
 
-<p>On the <strong class="pkg">GAP</strong> C kernel level, the internal functions used for this are <code class="code">NewJuliaObj</code>, <code class="code">IS_JULIA_OBJ</code>, <code class="code">GET_JULIA_OBJ</code>. On the <strong class="pkg">GAP</strong> language level, this is <code class="func">IsJuliaObject</code> (<a href="chap2_mj.html#X879710A97B8A4202"><span class="RefLink">2.1-1</span></a>). On the <strong class="pkg">Julia</strong> side, there is usually no need for a wrapper, as (thanks to the shared garbage collector) most <strong class="pkg">GAP</strong> objects are valid <strong class="pkg">Julia</strong> objects of type <code class="code">GAP.GapObj</code>. The exception to that rule are immediate <strong class="pkg">GAP</strong> objects, more on that in the next section.</p>
+<p>On the <strong class="pkg">GAP</strong> C kernel level, the internal functions used for this are <code class="code">NewJuliaObj</code>, <code class="code">IS_JULIA_OBJ</code>, <code class="code">GET_JULIA_OBJ</code>. On the <strong class="pkg">GAP</strong> language level, this is <code class="func">IsJuliaObject</code> (<a href="chap2_mj.html#X879710A97B8A4202"><span class="RefLink">2.1-1</span></a>). On the <strong class="pkg">Julia</strong> side, there is usually no need for a wrapper, as (thanks to the shared garbage collector) most <strong class="pkg">GAP</strong> objects are valid <strong class="pkg">Julia</strong> objects of type <code class="code">GapObj</code>. The exception to that rule are immediate <strong class="pkg">GAP</strong> objects, more on that in the next section.</p>
 
 </dd>
 <dt><strong class="Mark">Perform automatic conversions only if absolutely necessary,
@@ -89,7 +89,7 @@
 
 <h5>3.1-2 <span class="Heading">Automatic (implicit) conversions</span></h5>
 
-<p><strong class="pkg">GAP</strong> has a notion of <q>immediate</q> objects, whose values are stored inside the <q>pointer</q> referencing them. <strong class="pkg">GAP</strong> uses this to store small integers and elements of small finite fields, see for example the beginning of Chapter <a href="/home/runner/.julia/artifacts/7a7471c3a274d605d85c06775fcb6f9962114ff7/share/gap/doc/ref/chap14_mj.html#X853DF11B80068ED5"><span class="RefLink">Reference: Integers</span></a> in the <strong class="pkg">GAP</strong> Reference Manual. Since these are not valid pointers, <strong class="pkg">Julia</strong> cannot treat them like other <strong class="pkg">GAP</strong> objects, which are simply <strong class="pkg">Julia</strong> objects of type <code class="code">GAP.GapObj</code>. Instead, a conversion is unavoidable, at least when immediate objects are passed as stand-alone arguments to a function.</p>
+<p><strong class="pkg">GAP</strong> has a notion of <q>immediate</q> objects, whose values are stored inside the <q>pointer</q> referencing them. <strong class="pkg">GAP</strong> uses this to store small integers and elements of small finite fields, see for example the beginning of Chapter <a href="/home/runner/.julia/artifacts/7a7471c3a274d605d85c06775fcb6f9962114ff7/share/gap/doc/ref/chap14_mj.html#X853DF11B80068ED5"><span class="RefLink">Reference: Integers</span></a> in the <strong class="pkg">GAP</strong> Reference Manual. Since these are not valid pointers, <strong class="pkg">Julia</strong> cannot treat them like other <strong class="pkg">GAP</strong> objects, which are simply <strong class="pkg">Julia</strong> objects of type <code class="code">GapObj</code>. Instead, a conversion is unavoidable, at least when immediate objects are passed as stand-alone arguments to a function.</p>
 
 <p>To this end, the interface converts <strong class="pkg">GAP</strong> immediate integers into <strong class="pkg">Julia</strong> <code class="code">Int64</code> objects, and vice versa. However, <strong class="pkg">GAP</strong> immediate integers on a 64 bit system can only store 61 bits, so not all <code class="code">Int64</code>objects can be converted into immediate integers; integers exceeding the 61 bits limit are therefore wrapped like any other <strong class="pkg">Julia</strong> object. Other <strong class="pkg">Julia</strong> integer types, like <code class="code">UInt64</code>, <code class="code">Int32</code>, are also wrapped by default, in order to ensure that conversion round trips do not arbitrary change object types.</p>
 
@@ -120,7 +120,7 @@
 <li><p><strong class="pkg">Julia</strong> function wrapper to <strong class="pkg">Julia</strong> function,</p>
 
 </li>
-<li><p>other <strong class="pkg">GAP</strong> objects to <code class="code">GAP.GapObj</code>.</p>
+<li><p>other <strong class="pkg">GAP</strong> objects to <code class="code">GapObj</code>.</p>
 
 </li>
 </ul>
@@ -140,7 +140,7 @@
 <li><p><strong class="pkg">Julia</strong> <code class="code">false</code> to <strong class="pkg">GAP</strong> <code class="keyw">false</code>,</p>
 
 </li>
-<li><p><code class="code">GAP.GapObj</code> to <code class="code">Obj</code>,</p>
+<li><p><code class="code">GapObj</code> to <code class="code">Obj</code>,</p>
 
 </li>
 <li><p>other <strong class="pkg">Julia</strong> objects to <strong class="pkg">Julia</strong> object wrapper.</p>
@@ -151,7 +151,7 @@
 
 <h5>3.1-3 <span class="Heading">Manual (explicit) conversions</span></h5>
 
-<p>Manual conversion in <strong class="pkg">GAP</strong> is done via the functions <code class="func">GAPToJulia</code> (<a href="chap3_mj.html#X860C2F3184F70021"><span class="RefLink">3.2-3</span></a>) and <code class="func">JuliaToGAP</code> (<a href="chap3_mj.html#X7D0471F77A0C6E1D"><span class="RefLink">3.2-2</span></a>). In <strong class="pkg">Julia</strong>, conversion is done via <code class="code">gap_to_julia</code> and <code class="code">julia_to_gap</code>.</p>
+<p>Manual conversion in <strong class="pkg">GAP</strong> is done via the functions <code class="func">GAPToJulia</code> (<a href="chap3_mj.html#X860C2F3184F70021"><span class="RefLink">3.2-3</span></a>) and <code class="func">JuliaToGAP</code> (<a href="chap3_mj.html#X7D0471F77A0C6E1D"><span class="RefLink">3.2-2</span></a>). In <strong class="pkg">Julia</strong>, conversion is done via <code class="code">gap_to_julia</code> and <code class="code">GapObj</code>.</p>
 
 <p><em>Conversion from <strong class="pkg">GAP</strong> to <strong class="pkg">Julia</strong></em></p>
 
@@ -204,7 +204,7 @@
 
 <p><code class="func">Julia.GAP.Obj</code> (<a href="chap3_mj.html#X85D65263829EF822"><span class="RefLink">3.2-1</span></a>) is a <strong class="pkg">Julia</strong> function that takes one or two arguments, the object to be converted and optionally the value <code class="keyw">true</code> indicating recursive conversion of nested objects. The chosen method depends on the <strong class="pkg">Julia</strong> type of the first argument.</p>
 
-<p>The function <code class="func">JuliaToGAP</code> (<a href="chap3_mj.html#X7D0471F77A0C6E1D"><span class="RefLink">3.2-2</span></a>). takes two or three arguments, a <strong class="pkg">GAP</strong> filter and an object to be converted, and optionally the value <code class="keyw">true</code> indicating recursive conversion of nested objects. Various methods for this constructor then take care of input validation and the actual conversion, either by delegating to the <strong class="pkg">Julia</strong> function <code class="code">julia_to_gap</code> (which takes just one or two arguments and chooses the <strong class="pkg">GAP</strong> filters of its result depending on the <strong class="pkg">Julia</strong> type), or by automatic conversion.</p>
+<p>The function <code class="func">JuliaToGAP</code> (<a href="chap3_mj.html#X7D0471F77A0C6E1D"><span class="RefLink">3.2-2</span></a>). takes two or three arguments, a <strong class="pkg">GAP</strong> filter and an object to be converted, and optionally the value <code class="keyw">true</code> indicating recursive conversion of nested objects. Various methods for this constructor then take care of input validation and the actual conversion, either by delegating to the <strong class="pkg">Julia</strong> function <code class="code">GapObj</code> (which takes just one or two arguments and chooses the <strong class="pkg">GAP</strong> filters of its result depending on the <strong class="pkg">Julia</strong> type), or by automatic conversion.</p>
 
 <p>The supported <strong class="pkg">Julia</strong> types of the second argument of <code class="func">JuliaToGAP</code> (<a href="chap3_mj.html#X7D0471F77A0C6E1D"><span class="RefLink">3.2-2</span></a>) are as follows; more <strong class="pkg">Julia</strong> types may be supported for <code class="func">Julia.GAP.Obj</code> (<a href="chap3_mj.html#X85D65263829EF822"><span class="RefLink">3.2-1</span></a>).</p>
 
