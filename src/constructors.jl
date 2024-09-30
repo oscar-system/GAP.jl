@@ -463,7 +463,7 @@ function (::Type{T})(obj::GapObj) where {T<:UnitRange}
         result = obj[1]:obj[len]
     end
 
-    return convert(T, result)
+    return convert(T, result)::T
 end
 
 

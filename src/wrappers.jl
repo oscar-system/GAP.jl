@@ -35,6 +35,7 @@ import GAP: @wrap
 @wrap IsCollection(x::Any)::Bool
 @wrap IsDoneIterator(x::Any)::Bool
 @wrap IsEmpty(x::Any)::Bool
+@wrap IsIterator(x::Any)::Bool
 @wrap IsList(x::Any)::Bool
 @wrap IsMatrixObj(x::Any)::Bool
 @wrap IsPackageLoaded(x::GapObj)::Bool
