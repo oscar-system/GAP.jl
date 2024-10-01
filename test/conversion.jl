@@ -285,11 +285,10 @@
     yy = GAP.gap_to_julia(Vector{Tuple{Int64}}, xx)
     @test [(1,)] == yy
     @test typeof(yy) == Vector{Tuple{Int64}}
-
+  end
 end
 
 @testset "conversion to GAP" begin
-  end
 
   @testset "Defaults" begin
     @test GapObj(true)
@@ -555,6 +554,22 @@ end
     @test GAP.Globals.List(list, return_first_gap) == list
   end
 
+  @testset "Test julia_to_gap (backwards compatibility)" begin
+    @test GAP.julia_to_gap(27) == 27
+    @test GAP.julia_to_gap([1, 2, 3, 4]) == GAP.evalstr("[ 1, 2, 3, 4 ]")
+    l = GAP.julia_to_gap([[1, 2], [3, 4]])
+    @test l isa GapObj
+    @test l[1] == [1, 2]
+    l = GAP.julia_to_gap([[1, 2], [3, 4]], recursive = true)
+    @test l isa GapObj
+    @test l[1] isa GapObj
+    v = [1, 2]
+    l = GAP.julia_to_gap([v, v])
+    @test l[1] === l[2]
+    l = GAP.julia_to_gap([v, v], recursive = true)
+    @test l[1] === l[2]
+    @test GAP.julia_to_gap([v, v], IdDict(), recursive = true) isa GapObj
+  end
 end
 
 @testset "(Un)WrapJuliaFunc" begin
