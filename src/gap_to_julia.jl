@@ -72,7 +72,7 @@ The following `gap_to_julia` conversions are supported by GAP.jl.
 | GAP filter    | default Julia type       | other Julia types     |
 |---------------|--------------------------|-----------------------|
 | `IsInt`       | `BigInt`                 | `T <: Integer         |
-| `IsFFE`       | `GapFFE`                 |                       |
+| `IsFFE`       | `FFE`                    |                       |
 | `IsBool`      | `Bool`                   |                       |
 | `IsRat`       | `Rational{BigInt}`       | `Rational{T}          |
 | `IsFloat`     | `Float64`                | `T <: AbstractFloat   |
