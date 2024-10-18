@@ -92,7 +92,7 @@ true
 julia> [x for x in iter] == collect(g)
 true
 
-julia> f = GAP.evalstr("function(itr) local res; res:= [];" *
+julia> f = GAP.evalstr("function(itr) local res, i; res:= [];" *
              "for i in itr do Add( res, i ); od; return res; end")
 GAP: function( itr ) ... end
 
