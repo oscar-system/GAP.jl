@@ -120,7 +120,7 @@
 #!    immediate integer to <C>Int64</C>,
 #!  </Item>
 #!  <Item>
-#!    immediate FFE to the <C>GapFFE</C> &Julia; type,
+#!    immediate FFE to the <C>FFE</C> &Julia; type,
 #!  </Item>
 #!  <Item>
 #!    &GAP; <K>true</K> to &Julia; <C>true</C>,
@@ -147,7 +147,7 @@
 #!    otherwise to a &GAP; large integer,
 #!  </Item>
 #!  <Item>
-#!    <C>GapFFE</C> to immediate FFE,
+#!    <C>FFE</C> to immediate FFE,
 #!  </Item>
 #!  <Item>
 #!    &Julia; <C>true</C> to &GAP; <K>true</K>,
@@ -190,7 +190,7 @@
 #!  </Item>
 #!  <Item>
 #!    <C>IsFFE and IsInternalRep</C> to
-#!    <C>GapFFE</C>,
+#!    <C>FFE</C>,
 #!  </Item>
 #!  <Item>
 #!    <C>IsInt and IsSmallIntRep</C> to
@@ -308,7 +308,7 @@
 #!    </Row>
 #!    <HorLine/>
 #!    <Row>
-#!      <Item><C>Int64</C>, <C>GapObj</C>, <C>GapFFE</C>, and <C>Bool</C></Item>
+#!      <Item><C>Int64</C>, <C>GapObj</C>, <C>FFE</C>, and <C>Bool</C></Item>
 #!      <Item></Item>
 #!      <Item>automatic conversion</Item>
 #!    </Row>
