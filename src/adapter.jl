@@ -474,7 +474,6 @@ Random.Sampler(::Type{<:AbstractGAPRNG}, x::AbstractVector, ::Random.Repetition)
 Base.literal_pow(::typeof(^), x::GapObj, ::Val{-1}) = Wrappers.InverseSameMutability(x)
 
 # iteration
-
 function Base.iterate(obj::GapObj)
     if Wrappers.IsList(obj)
         len = Wrappers.Length(obj)
@@ -496,7 +495,12 @@ end
 
 function Base.iterate(obj::GapObj, (i, len)::Tuple{Int,Int})
     i > len && return nothing
-    ElmList(obj, i), (i+1, len)
+    res = ElmList(obj, i)
+    while res === nothing  # dangerous if `len` is *larger* than the length
+      i = i+1
+      res = ElmList(obj, i)
+    end
+    return res, (i+1, len)
 end
 
 function Base.iterate(obj::GapObj, iter::GapObj)
