@@ -1,6 +1,7 @@
 using Test
 using Documenter
 using GAP
+using IOCapture
 
 include("Aqua.jl")
 

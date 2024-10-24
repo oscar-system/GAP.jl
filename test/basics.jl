@@ -125,6 +125,21 @@ end
     l = GAP.evalstr("[1,~,3]")
     @test l[2] === l
     @test GAP.gap_to_julia(GAP.Globals.StringViewObj(l)) == "[ 1, ~, 3 ]"
+
+    # from issue #1058:
+    c = IOCapture.capture() do
+           GAP.evalstr("function() res:= 1; return res; end")
+       end
+    #
+    expected = """
+               Syntax warning: Unbound global variable in stream:1
+               function() res:= 1; return res; end;
+                          ^^^
+               Syntax warning: Unbound global variable in stream:1
+               function() res:= 1; return res; end;
+                                          ^^^
+               """
+    @test c.output == expected
 end
 
 @testset "randseed!" begin

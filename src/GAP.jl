@@ -66,13 +66,19 @@ const last_error = Ref{String}("")
 
 const disable_error_handler = Ref{Bool}(false)
 
-function error_handler()
+function copy_gap_error_to_julia()
     global disable_error_handler
     if disable_error_handler[]
         return
     end
     last_error[] = String(Globals._JULIAINTERFACE_ERROR_BUFFER::GapObj)
     ccall((:SET_LEN_STRING, libgap), Cvoid, (GapObj, Cuint), Globals._JULIAINTERFACE_ERROR_BUFFER::GapObj, 0)
+end
+
+function get_and_clear_last_error()
+    err = last_error[]
+    last_error[] = ""
+    return err
 end
 
 function ThrowObserver(depth::Cint)
@@ -88,11 +94,9 @@ function ThrowObserver(depth::Cint)
     # at the top of GAP's exception handler chain, turn the GAP exception
     # into a Julia exception
     if depth <= 0
-        error("Error thrown by GAP: $(last_error[])")
+        error("Error thrown by GAP: $(get_and_clear_last_error())")
     end
 end
-
-const error_handlerwrap = error_handler
 
 # path to JuliaInterface.so
 const real_JuliaInterface_path = Ref{String}()
@@ -104,7 +108,7 @@ function initialize(argv::Vector{String})
     end
 
     handle_signals = isdefined(Main, :__GAP_ARGS__)  # a bit of a hack...
-    error_handler_func = handle_signals ? C_NULL : @cfunction(error_handlerwrap, Cvoid, ())
+    error_handler_func = handle_signals ? C_NULL : @cfunction(copy_gap_error_to_julia, Cvoid, ())
 
     # Tell GAP to read a file during startup (after its `lib/system.g`),
     # such that `JuliaInterface` is added to the autoloaded GAP packages,
