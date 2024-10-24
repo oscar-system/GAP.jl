@@ -138,15 +138,18 @@ whereas `x` in the latter example lives in the Julia session.
 """
 function evalstr(cmd::String)
     res = evalstr_ex(cmd * ";")
+
+    # If there is an error string on the GAP side, copy it into `last_error`.
+    # We do this even if there is no error indicated via `res`, to be able to
+    # handle syntax warnings
+    copy_gap_error_to_julia()
+
+    msg = get_and_clear_last_error()
     if any(x::GapObj->x[1] === false, res)
-      # error
-      global last_error
-      # HACK HACK HACK: if there is an error string on the GAP side, call
-      # error_handler to copy it into `last_error`
-      if !Wrappers.IsEmpty(Globals._JULIAINTERFACE_ERROR_BUFFER::GapObj)
-        error_handler()
-      end
-      error("Error thrown by GAP: $(last_error[])")
+      error("Error thrown by GAP: $msg")
+    elseif !isempty(msg)
+      # Syntax warnings may be printed here
+      print(msg)
     end
     res = res[end]::GapObj
     if Wrappers.ISB_LIST(res, 2)
