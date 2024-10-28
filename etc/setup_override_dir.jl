@@ -10,7 +10,12 @@ length(ARGS) >= 1 || error("must provide path of GAP source directory as first a
 length(ARGS) >= 2 || error("must provide path of destination directory as second argument")
 gap_prefix = popfirst!(ARGS)
 prefix = popfirst!(ARGS)
-debugmode = length(ARGS) > 0 && ARGS[1] == "--debug"
+if length(ARGS) > 0 && ARGS[1] == "--debug"
+  debugmode = true
+  popfirst!(ARGS)
+else
+  debugmode = false
+end
 
 # TODO: should the user be allowed to provide a tmp_gap_build_dir ? that might
 # be handy for incremental updates
@@ -94,6 +99,7 @@ push!(extraargs, "CPPFLAGS=-DUSE_GAP_INSIDE_JULIA=1")
     --with-gc=julia
     --with-julia=$(juliabin)
     $(extraargs)
+    $(ARGS)
     `)
 
 @info "Building GAP in $(tmp_gap_build_dir)"
