@@ -14,6 +14,7 @@ GAP.Packages.install
 GAP.Packages.update
 GAP.Packages.remove
 GAP.Packages.build
+GAP.Packages.test
 GAP.Packages.locate_package
 ```
 
