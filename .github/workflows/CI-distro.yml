@@ -1,13 +1,10 @@
 name: Test GAP package distro
 
-# TODO: reduce the number of triggers
 on:
-  push:
-    branches:
-      - 'master'
-      - 'release-*'
-    tags: '*'
   pull_request:
+  schedule:
+    # Every Monday at 3:08 AM UTC
+    - cron: '8 3 * * 1'
   workflow_dispatch:
 
 concurrency:
