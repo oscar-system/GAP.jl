@@ -36,7 +36,7 @@ jobs:
         id: set-matrix
         run: julia --project=. -e '
                   using Artifacts;
-                  output = sprint(print, "gap-packages=", readdir(artifact"gap_packages"));
+                  output = sprint(print, "gap-packages=", filter(startswith(r"d|f"), readdir(artifact"gap_packages")));
                   println(output);
                   open(ENV["GITHUB_OUTPUT"], "a") do io;
                     println(io, output);
