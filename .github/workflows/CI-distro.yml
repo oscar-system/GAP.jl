@@ -72,4 +72,4 @@ jobs:
       - name: "Build GAP package"
         run: julia --color=yes --project=. -e 'using GAP; GAP.Packages.build("${{ matrix.gap-package }}")'
       - name: "Run GAP package tests"
-        run: julia --color=yes --project=. -e 'using GAP; GAP.Packages.test("${{ matrix.gap-package }}")'
+        run: julia --color=yes --project=. -e 'using GAP, Test; GAP.Packages.test("${{ matrix.gap-package }}")'

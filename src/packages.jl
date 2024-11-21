@@ -409,6 +409,17 @@ function build(name::String; quiet::Bool = false,
   return res
 end
 
+"""
+    test(name::String)
+
+Test the GAP package with name `name`.
+
+The function uses [the function `TestPackage`](GAP_ref(ref:TestPackage)).
+
+Use-sites of this function should verify that the `Test` package is loaded
+before calling this function, as this function might be moved
+to a package extension that depends on the `Test` package in the future.
+"""
 function test(name::String)
   global disable_error_handler
   
