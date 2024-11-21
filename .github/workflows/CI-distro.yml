@@ -1,0 +1,58 @@
+name: Test GAP package distro
+
+on:
+  push:
+    branches:
+      - 'master'
+      - 'release-*'
+    tags: '*'
+  pull_request:
+  schedule:
+    # Every Monday at 3:08 AM UTC
+    - cron: '8 3 * * 1'
+  workflow_dispatch:
+
+concurrency:
+  # group by workflow and ref; the last slightly strange component ensures that for pull
+  # requests, we limit to 1 concurrent job, but for the default repository branch we don't
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.ref_name != github.event.repository.default_branch || github.run_number }}
+  # Cancel intermediate builds, but only if it is a pull request build.
+  cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
+
+jobs:
+  test:
+    name: ${{ matrix.gap-package }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    continue-on-error: ${{ matrix.julia-version == 'nightly' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        julia-version:
+          - '1'
+        julia-arch:
+          - x64
+        os:
+          - ubuntu-latest
+        gap-package:
+          - 'ferret'
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # For Codecov, we must also fetch the parent of the HEAD commit to
+          # be able to properly deal with PRs / merges
+          fetch-depth: 2
+      - name: "Set up Julia"
+        uses: julia-actions/setup-julia@v2
+        with:
+          version: ${{ matrix.julia-version }}
+          arch: ${{ matrix.julia-arch }}
+      - name: "Cache artifacts"
+        uses: julia-actions/cache@v2
+        with:
+          cache-scratchspaces: false
+      - name: "Build package"
+        uses: julia-actions/julia-buildpkg@v1
+      - name: "Run GAP package tests"
+        run: julia --color=yes --project=. -e 'using GAP; GAP.Globals.TestPackage(GAP.Obj("${{ matrix.gap-package }}"))'
