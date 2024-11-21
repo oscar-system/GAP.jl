@@ -3,7 +3,8 @@ module Packages
 
 import Downloads
 import Pidfile
-import ...GAP: Globals, GapObj, replace_global!, RNamObj, sysinfo, Wrappers
+import Test: @test
+import ...GAP: disable_error_handler, Globals, GapObj, replace_global!, RNamObj, sysinfo, Wrappers
 
 const DEFAULT_PKGDIR = Ref{String}()
 const DOWNLOAD_HELPER = Ref{Downloads.Downloader}()
@@ -406,6 +407,48 @@ function build(name::String; quiet::Bool = false,
     Wrappers.SetInfoLevel(Globals.InfoPackageManager, oldlevel)
   end
   return res
+end
+
+function test(name::String)
+  global disable_error_handler
+  
+  function with_gap_var(f, n::String, val)
+    name = GapObj(n)
+    old_value = Globals.ValueGlobal(name)
+    Globals.MakeReadWriteGlobal(name)
+    Globals.UnbindGlobal(name)
+    Globals.BindGlobal(name, val)
+    try
+        f()
+    finally
+      Globals.MakeReadWriteGlobal(name);
+      Globals.UnbindGlobal(name);
+      Globals.BindGlobal(name, old_value);
+    end
+  end
+
+  error_occurred = false
+  function fake_QuitGap(code)
+      global error_occurred
+      if code != 0
+          error_occurred = true
+      end
+  end
+
+  disable_error_handler[] = true
+  try
+      with_gap_var("ERROR_OUTPUT", Globals._JULIAINTERFACE_ORIGINAL_ERROR_OUTPUT) do
+          with_gap_var("QuitGap", fake_QuitGap) do
+              with_gap_var("FORCE_QUIT_GAP", identity) do
+                  Globals.TestPackage(GapObj(name))
+              end
+          end
+      end
+  finally
+      disable_error_handler[] = false
+  end
+
+  @test !error_occurred
 end
 
 """
