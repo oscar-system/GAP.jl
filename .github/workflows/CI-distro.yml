@@ -70,6 +70,6 @@ jobs:
       - name: "Build package"
         uses: julia-actions/julia-buildpkg@v1
       - name: "Build GAP package"
-        run: julia --color=yes --project=. -e 'using GAP; GAP.Packages.build_recursive("${{ matrix.gap-package }}")'
+        run: julia --color=yes --project=. -e 'using GAP; GAP.Packages.build_recursive("${{ matrix.gap-package }}") || exit(1)'
       - name: "Run GAP package tests"
         run: julia --color=yes --project=. -e 'using GAP, Test; GAP.Packages.test("${{ matrix.gap-package }}")'
