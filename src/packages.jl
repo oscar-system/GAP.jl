@@ -410,6 +410,45 @@ function build(name::String; quiet::Bool = false,
 end
 
 """
+    build_recursive(name::String; quiet::Bool = false,
+                        debug::Bool = false,
+                        pkgdir::AbstractString = GAP.Packages.DEFAULT_PKGDIR[])
+
+Build the GAP package with name `name` that is installed in the
+`pkgdir` directory, as well as all of its (transitive) dependencies.
+
+This is achieved by calling [`build`](@ref) for the package `name` and then
+all of its `NeededOtherPackages`, recursively.
+All keyword arguments are passed on to [`build`](@ref).
+"""
+function build_recursive(name::String; quiet::Bool = false,
+                             debug::Bool = false,
+                             pkgdir::AbstractString = DEFAULT_PKGDIR[])
+  # point PackageManager to the given pkg dir
+  Globals.PKGMAN_CustomPackageDir = GapObj(pkgdir)
+  mkpath(pkgdir)
+
+  todo = Set{String}((name,))
+  done = Set{String}()
+  while !isempty(todo)
+    dep = pop!(todo)
+    dep in done && continue
+
+    res = build(dep; quiet, debug, pkgdir)
+    res || return false
+    gdep = GapObj(dep)
+    allinfo = collect(Globals.PackageInfo(gdep))
+    userinfo = filter(info -> startswith(String(info.InstallationPath), pkgdir), allinfo)
+    info = only(userinfo)
+    push!(done, dep)
+    for (needed, _) in info.Dependencies.NeededOtherPackages
+      push!(todo, String(needed))
+    end
+  end
+  return true
+end
+
+"""
     test(name::String)
 
 Test the GAP package with name `name`.
