@@ -40,21 +40,6 @@ void handle_jl_exception(void)
     END_GAP_SYNC();
 }
 
-// note: the following helper expects to be called from inside a
-// BEGIN_GAP_SYNC / END_GAP_SYNC section
-static jl_module_t * get_module(const char * name)
-{
-    jl_value_t * module_value =
-        jl_get_global(jl_main_module, jl_symbol(name));
-    if (!module_value) {
-        ErrorQuit("%s not defined", (Int)name, 0);
-    }
-    if (!jl_is_module(module_value)) {
-        ErrorQuit("%s is not a module", (Int)name, 0);
-    }
-    return (jl_module_t *)module_value;
-}
-
 jl_value_t * gap_box_gapffe(Obj value)
 {
 #if (JULIA_VERSION_MAJOR * 100 + JULIA_VERSION_MINOR) <= 106
@@ -208,12 +193,9 @@ static Obj Func_JuliaGetGlobalVariableByModule(Obj self, Obj name, Obj module)
         if (!jl_is_module(m))
             m = 0;
     }
-    else if (IsStringConv(module)) {
-        m = get_module(CONST_CSTR_STRING(module));
-    }
     if (!m) {
         ErrorMayQuit("_JuliaGetGlobalVariableByModule: <module> must be a "
-                     "string or a Julia module",
+                     "Julia module",
                      0, 0);
     }
     jl_sym_t * symbol = jl_symbol(CONST_CSTR_STRING(name));
@@ -225,9 +207,19 @@ static Obj Func_JuliaGetGlobalVariableByModule(Obj self, Obj name, Obj module)
     return gap_julia(value);
 }
 
+static Obj Func_JuliaGetCoreModule(Obj self)
+{
+    return NewJuliaObj((jl_value_t *)jl_core_module);
+}
+
 static Obj Func_JuliaGetGapModule(Obj self)
 {
     return NewJuliaObj((jl_value_t *)gap_module);
+}
+
+static Obj Func_JuliaGetMainModule(Obj self)
+{
+    return NewJuliaObj((jl_value_t *)jl_main_module);
 }
 
 // Mark the Julia pointer inside the GAP JuliaObj
@@ -260,7 +252,9 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(JuliaEvalString, 1, "string"),
     GVAR_FUNC(_JuliaGetGlobalVariableByModule, 2, "name, module"),
     GVAR_FUNC(JuliaSymbol, 1, "name"),
+    GVAR_FUNC(_JuliaGetCoreModule, 0, ""),
     GVAR_FUNC(_JuliaGetGapModule, 0, ""),
+    GVAR_FUNC(_JuliaGetMainModule, 0, ""),
     { 0 } /* Finish with an empty entry */
 
 };

@@ -49,15 +49,7 @@ gap> _JuliaGetGlobalVariableByModule(0, 0);
 Error, _JuliaGetGlobalVariableByModule: <name> must be a string (not the integ\
 er 0)
 gap> _JuliaGetGlobalVariableByModule("sqrt", 0);
-Error, _JuliaGetGlobalVariableByModule: <module> must be a string or a Julia m\
-odule
-gap> _JuliaGetGlobalVariableByModule("sqrt", Julia.Base.sqrt);
-Error, _JuliaGetGlobalVariableByModule: <module> must be a string or a Julia m\
-odule
-gap> _JuliaGetGlobalVariableByModule("Base","sqrt");
-Error, sqrt is not a module
-gap> _JuliaGetGlobalVariableByModule("sqrt","Base");
-<Julia: sqrt>
+Error, _JuliaGetGlobalVariableByModule: <module> must be a Julia module
 gap> _JuliaGetGlobalVariableByModule("sqrt", Julia.Base);
 <Julia: sqrt>
 
