@@ -360,6 +360,55 @@ function remove(spec::String; interactive::Bool = true, quiet::Bool = false,
 end
 
 """
+    build(name::String; quiet::Bool = false,
+                        debug::Bool = false,
+                        pkgdir::AbstractString = GAP.Packages.DEFAULT_PKGDIR[])
+
+Build the GAP package with name `name` that is installed in the
+`pkgdir` directory.
+
+If no package with name `name` is installed in `pkgdir` but there is a version of
+`name` bundled with the GAP package distro, this version is copied to `pkgdir` and built.
+
+Return `true` if the build was successful, and `false` otherwise.
+
+The function uses [the function `CompilePackage` from GAP's package
+`PackageManager`](GAP_ref(PackageManager:CompilePackage)).
+The info messages shown by this function can be suppressed by passing
+`true` as the value of `quiet`.
+"""
+function build(name::String; quiet::Bool = false,
+                             debug::Bool = false,
+                             pkgdir::AbstractString = DEFAULT_PKGDIR[])
+  # point PackageManager to the given pkg dir
+  Globals.PKGMAN_CustomPackageDir = GapObj(pkgdir)
+  mkpath(pkgdir)
+
+  gname = GapObj(name)
+  allinfo = collect(Globals.PackageInfo(gname))
+  userinfo = filter(info -> startswith(String(info.InstallationPath), pkgdir), allinfo)
+  isempty(allinfo) && error("package not found")
+  length(userinfo) > 1 && error("multiple installations of package found in pkgdir")
+  if isempty(userinfo)
+    length(allinfo) > 1 && error("multiple installations of package found")
+    info = only(allinfo)
+    oldpath = String(info.InstallationPath)
+    newpath = joinpath(pkgdir, name * "-" * String(info.Version))
+    cp(oldpath, newpath)
+  end
+  if quiet || debug
+    oldlevel = Wrappers.InfoLevel(Globals.InfoPackageManager)
+    Wrappers.SetInfoLevel(Globals.InfoPackageManager, quiet ? 0 : 3)
+  end
+  Globals.PKGMAN_RefreshPackageInfo()
+  res = Globals.CompilePackage(gname)
+  if quiet || debug
+    Wrappers.SetInfoLevel(Globals.InfoPackageManager, oldlevel)
+  end
+  return res
+end
+
+"""
     locate_package(name::String)
 
 Return the path where the GAP package with name `name` is installed

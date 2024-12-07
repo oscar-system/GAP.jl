@@ -13,6 +13,7 @@ GAP.Packages.load
 GAP.Packages.install
 GAP.Packages.update
 GAP.Packages.remove
+GAP.Packages.build
 GAP.Packages.locate_package
 ```
 
