@@ -6,3 +6,4 @@ Manifest.toml
 /coverage/
 *.gcov
 /override/
+/docs/src/assets/
