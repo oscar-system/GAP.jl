@@ -77,14 +77,8 @@ For this to work, follow these instructions:
 5. This opens a Julia session with the override in effect. You can now e.g. load GAP.jl
    via `using GAP`, or install other packages (such as Oscar) and test with them.
 
-## Updating the package tarball
+## Updating the package artifacts
 
-```
-using ArtifactUtils
-add_artifact!(
-  "Artifacts.toml",
-  "gap_packages",
-  "https://github.com/gap-system/PackageDistro/releases/download/v4.13.1/packages.tar.gz";
-  force=true
-)
-```
+Run this from the root director of GAP.jl:
+
+    julia --project=etc etc/update_artifacts.jl 4.X.Y
