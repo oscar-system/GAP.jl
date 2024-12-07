@@ -1,5 +1,9 @@
 # Changes in GAP.jl
 
+## Version 0.13.0-DEV (released YYYY-MM-DD)
+
+- TODO
+
 ## Version 0.12.1 (released 2024-12-09)
 
 - Add `GAP.Packages.build(name)`
