@@ -1,16 +1,17 @@
 module Setup
 
 using Pkg: GitTools
-import Artifacts: @artifact_str
+import Artifacts: find_artifacts_toml, @artifact_str
 import GAP_jll
 import GAP_lib_jll
 import GAP_pkg_juliainterface_jll
 import Scratch: @get_scratch!
 import Pidfile
+import TOML
 
 # to separate the scratchspaces of different GAP.jl copies and Julia versions
 # put the Julia version and the hash of the path to this file into the key
-const scratch_key = "gap_$(string(hash(@__FILE__)))_$(VERSION.major).$(VERSION.minor)"
+const scratch_key = "gap_$(hash(@__FILE__))-$(VERSION.major).$(VERSION.minor)"
 
 gaproot() = @get_scratch!(scratch_key)
 
@@ -195,8 +196,12 @@ function regenerate_gaproot()
         force_symlink("../../gac",
                       joinpath(gaproot_mutable, "bin", sysinfo["GAParch"], "gac"))
 
-        # create a `pkg` symlink to the GAP packages artifact
-        force_symlink(artifact"gap_packages", "$gaproot_mutable/pkg")
+        # create a `pkg` directory with symlinks to all the GAP packages artifacts
+        mkpath(joinpath(gaproot_mutable, "pkg"))
+        pkg_artifacts = filter(startswith("GAP_pkg_"),keys(TOML.parsefile(find_artifacts_toml(@__FILE__))))
+        for name in pkg_artifacts
+            force_symlink(@artifact_str(name), joinpath(gaproot_mutable, "pkg", name))
+        end
 
     end # mkpidlock
 
