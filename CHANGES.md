@@ -2,6 +2,7 @@
 
 ## Version 0.13.0-DEV (released YYYY-MM-DD)
 
+- Update to GAP 4.14.0
 - Stop autoloading for most GAP packages (for GAP users: we now
   effectively pass `-A` to GAP when loading it)
 - Instead of downloading a single huge "artifact" containing all deposited GAP
