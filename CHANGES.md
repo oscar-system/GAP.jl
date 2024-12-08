@@ -2,7 +2,7 @@
 
 ## Version 0.13.0-DEV (released YYYY-MM-DD)
 
-- TODO
+- Update to GAP 4.14.0
 
 ## Version 0.12.1 (released 2024-12-09)
 
