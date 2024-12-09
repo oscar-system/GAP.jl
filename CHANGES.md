@@ -1,5 +1,12 @@
 # Changes in GAP.jl
 
+## Version 0.12.1 (released 2024-12-09)
+
+- Add `GAP.Packages.build(name)`
+- Add iteration over GAP iterators
+- Reintroduce `julia_to_gap` for backward compatibility
+- Improve evalstr to show syntax warnings
+
 ## Version 0.12.0 (released 2024-09-25)
 
 - Remove GAP function `JuliaModule` (use `Julia.MODULENAME` etc. instead)
