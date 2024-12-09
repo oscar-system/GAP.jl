@@ -208,7 +208,9 @@ function initialize(argv::Vector{String})
     end
 
     GAP.Globals.Read(GapObj(joinpath(@__DIR__, "..", "gap", "pkg.g")))
+    @debug "finished reading gap/pkg.g"
     GAP.Globals.Read(GapObj(joinpath(@__DIR__, "..", "gap", "exec.g")))
+    @debug "finished reading gap/exec.g"
 
     # If we are in "stand-alone mode", stop here
     if handle_signals
@@ -218,6 +220,7 @@ function initialize(argv::Vector{String})
 
     # Redirect error messages, in order not to print them to the screen.
     GAP.Globals.Read(GapObj(joinpath(@__DIR__, "..", "gap", "err.g")))
+    @debug "finished reading gap/err.g"
 
     return nothing
 end
