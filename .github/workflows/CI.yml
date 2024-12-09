@@ -69,14 +69,14 @@ jobs:
       - name: "GAP tests"
         run: |
           julia --project=. -e 'import GAP; GAP.create_gap_sh("/tmp")'
-          export GAP="/tmp/gap.sh -A --quitonbreak --norepl"
+          export GAP="/tmp/gap.sh --quitonbreak --norepl"
           etc/ci_test.sh
 
       - name: "Process Julia code coverage"
         uses: julia-actions/julia-processcoverage@v1
       - name: "Process GAP code coverage"
         run: |
-          /tmp/gap.sh -A --quitonbreak --norepl etc/gather_coverage.g
+          /tmp/gap.sh --quitonbreak --norepl etc/gather_coverage.g
           cat gap-lcov.info >> lcov.info
 
       - name: "Upload coverage data to Codecov"
@@ -109,7 +109,7 @@ jobs:
         run: |
           julia --project=. -e 'import GAP; GAP.create_gap_sh("/tmp")'
           cd pkg/JuliaInterface
-          /tmp/gap.sh -A --quitonbreak --norepl makedoc.g
+          /tmp/gap.sh --quitonbreak --norepl makedoc.g
           cd ../..
           mkdir -p docs/src/assets/html/JuliaInterface/
           cp pkg/JuliaInterface/doc/*.{html,css,js} docs/src/assets/html/JuliaInterface/
