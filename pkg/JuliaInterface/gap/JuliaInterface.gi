@@ -4,8 +4,8 @@
 # Implementations
 #
 
-BindGlobal( "_JULIA_FUNCTION_TYPE", _JuliaGetGlobalVariableByModule( "Function", "Core" ) );
-BindGlobal( "_JULIA_ISA", _WrapJuliaFunction( _JuliaGetGlobalVariableByModule( "isa", "Core" ) ) );
+BindGlobal( "_JULIA_FUNCTION_TYPE", _JuliaGetGlobalVariableByModule( "Function", _JuliaGetCoreModule() ) );
+BindGlobal( "_JULIA_ISA", _WrapJuliaFunction( _JuliaGetGlobalVariableByModule( "isa", _JuliaGetCoreModule() ) ) );
 BindGlobal( "_JULIA_GAP", _JuliaGetGapModule() );
 
 InstallMethod( ViewString,
@@ -89,7 +89,7 @@ function( obj )
     return JuliaToGAP( IsList, Julia.GAP.get_symbols_in_module( obj ), true );
 end);
 
-InstallValue( Julia, _JuliaGetGlobalVariableByModule( "Main", "Main" ) );
+InstallValue( Julia, _JuliaGetMainModule() );
 
 InstallGlobalFunction( "JuliaIncludeFile",
 function( filename, module_name... )
