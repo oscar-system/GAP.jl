@@ -121,9 +121,9 @@ end
 
 @testset "functionloc" begin
 
-    file, line = Base.functionloc(GAP.Globals.DirectoriesPackagePrograms)
-    @test Base.samefile(file, joinpath(@__DIR__, "../gap/pkg.g"))
-    @test line == 5
+    file, line = Base.functionloc(GAP.Globals.BangComponent)
+    @test Base.samefile(file, joinpath(@__DIR__, "../pkg/JuliaInterface/gap/utils.gi"))
+    @test line == 8
 
     @test_throws ArgumentError Base.functionloc(GAP.Globals.LETTERS)
     @test_throws ErrorException Base.functionloc(GAP.Globals.IsAbelian)
