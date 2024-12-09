@@ -7,6 +7,8 @@
   packages, we now use (and download) one artifact per GAP package.
 - Stop autoloading for most GAP packages (for GAP users: we now
   effectively pass `-A` to GAP when loading it)
+- Use precompiled binaries for many GAP packages, such as `io`, `ferret`
+  and many more
 
 ## Version 0.12.1 (released 2024-12-09)
 

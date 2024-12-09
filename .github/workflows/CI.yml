@@ -76,10 +76,6 @@ jobs:
         uses: julia-actions/julia-processcoverage@v1
       - name: "Process GAP code coverage"
         run: |
-          julia --color=yes --project=. -e '
-            using GAP
-            GAP.Packages.install("profiling", interactive = false) || exit(1)
-            '
           /tmp/gap.sh -A --quitonbreak --norepl etc/gather_coverage.g
           cat gap-lcov.info >> lcov.info
 
