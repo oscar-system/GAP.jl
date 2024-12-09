@@ -71,8 +71,12 @@ jobs:
       - uses: actions/checkout@v4
       - name: "Set up Julia"
         uses: julia-actions/setup-julia@v2
+        id: setup-julia
         with:
           version: ${{ matrix.julia-version }}
+      - name: "workaround libstdc++ issue for julia 1.6"
+        if: matrix.julia-version == '1.6' && runner.os == 'Linux'
+        run: rm -f ${{ steps.setup-julia.outputs.julia-bindir }}/../lib/julia/libstdc++.so.6
       - name: re-using OscarDevTools checkout
         if: github.repository == 'oscar-system/OscarDevTools.jl'
         run: |
