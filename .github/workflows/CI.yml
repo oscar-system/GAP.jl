@@ -61,6 +61,13 @@ jobs:
         uses: julia-actions/cache@v2
       - name: "Build package"
         uses: julia-actions/julia-buildpkg@v1
+      - name: Setup upterm session
+        uses: lhotari/action-upterm@v1
+        with:
+          ## limits ssh access and adds the ssh public key for the user which triggered the workflow
+          limit-access-to-actor: true
+          ## If no one connects after 5 minutes, shut down server.
+          wait-timeout-minutes: 5
       - name: "Run tests"
         uses: julia-actions/julia-runtest@v1
         with:
