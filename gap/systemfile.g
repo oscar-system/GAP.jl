@@ -9,7 +9,7 @@
     if IsBound(GAPInfo.KernelInfo.ENVIRONMENT.GAP_BARE_DEPS) then
         deps:= [];
     fi;
-    APPEND_LIST_INTR( deps, [ [ "JuliaInterface", ">=0.12.1" ] ] );
+    APPEND_LIST_INTR( deps, [ [ "JuliaInterface", ">=0.13.0-DEV" ] ] );
     GAPInfo.Dependencies:= MakeImmutable( rec( NeededOtherPackages:= deps ) );
 
     # force the --norepl option to be on

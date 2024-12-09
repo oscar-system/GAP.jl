@@ -1,7 +1,7 @@
 name = "GAP"
 uuid = "c863536a-3901-11e9-33e7-d5cd0df7b904"
 authors = ["Thomas Breuer <sam@math.rwth-aachen.de>", "Sebastian Gutsche <gutsche@mathematik.uni-siegen.de>", "Max Horn <horn@mathematik.uni-kl.de>"]
-version = "0.12.1"
+version = "0.13.0-DEV"
 
 [deps]
 AbstractAlgebra = "c3fe647b-3220-5bb0-a1ea-a7954cac585d"
@@ -27,9 +27,9 @@ AbstractAlgebra = "0.41.11, 0.42.1, 0.43"
 Artifacts = "1.6"
 Compat = "4.4.0"
 Downloads = "1.4.3"
-GAP_jll = "~400.1300.101"
-GAP_lib_jll = "~400.1300.100"
-GAP_pkg_juliainterface_jll = "=0.1200.0"
+GAP_jll = "~400.1400.000"
+GAP_lib_jll = "~400.1400.000"
+GAP_pkg_juliainterface_jll = "=0.1300.0"
 InteractiveUtils = "1.6"
 Libdl = "1.6"
 MacroTools = "0.5.13"
