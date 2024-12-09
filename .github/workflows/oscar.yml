@@ -1,5 +1,5 @@
 name: OscarCI
-
+syntax_error::::
 on:
   push:
     branches:

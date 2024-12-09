@@ -1,5 +1,5 @@
 name: CI with GAP
-
+syntax_error::::
 on:
   push:
     branches:
