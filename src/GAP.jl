@@ -118,6 +118,9 @@ function initialize(argv::Vector{String})
     # (which is created by `setup.jl`).
     append!(argv, ["--systemfile", abspath(@__DIR__, "..", "gap", "systemfile.g")])
 
+    # disable loading of all but the absolutely required packages
+    push!(argv, "-A")
+
     if ! handle_signals
         # Tell GAP to show some traceback on errors.
         append!(argv, ["--alwaystrace"])
