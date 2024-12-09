@@ -222,6 +222,9 @@ function initialize(argv::Vector{String})
     # Redirect error messages, in order not to print them to the screen.
     GAP.Globals.Read(GapObj(joinpath(@__DIR__, "..", "gap", "err.g")))
 
+    # set up a few package JLLs
+    setup_gap_pkg_overrides()
+
     return nothing
 end
 
@@ -331,5 +334,7 @@ include("packages.jl")
 include("prompt.jl")
 include("exec.jl")
 include("doctestfilters.jl")
+
+include("GAP_pkg.jl")
 
 end

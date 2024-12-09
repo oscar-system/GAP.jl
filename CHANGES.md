@@ -7,6 +7,8 @@
   effectively pass `-A` to GAP when loading it)
 - Instead of downloading a single huge "artifact" containing all deposited GAP
   packages, we now use (and download) one artifact per GAP package.
+- Use precompiled binaries for many GAP packages, such as `io`, `ferret`
+  and many more
 
 ## Version 0.12.1 (released 2024-12-09)
 
