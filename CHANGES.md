@@ -2,7 +2,8 @@
 
 ## Version 0.13.0-DEV (released YYYY-MM-DD)
 
-- TODO
+- Stop autoloading for most GAP packages (for GAP users: we now
+  effectively pass `-A` to GAP when loading it)
 
 ## Version 0.12.1 (released 2024-12-09)
 
