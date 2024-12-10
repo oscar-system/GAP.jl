@@ -23,7 +23,7 @@ jobs:
   test:
     name: Julia ${{ matrix.julia-version }} - ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 20
+    timeout-minutes: 30
     continue-on-error: ${{ matrix.julia-version == 'nightly' }}
     strategy:
       fail-fast: false
