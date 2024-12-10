@@ -59,10 +59,7 @@ import Libdl
 import Random
 
 # setup the initial sysinfo dictionary; we'll update this later in __init__
-# this also ensures that Setup.regenerate_gaproot gets precompiled, reducing
-# the startup time a little bit
-const sysinfo = Setup.regenerate_gaproot()
-
+const sysinfo = Dict{String, String}()
 
 include("types.jl")
 
@@ -369,5 +366,20 @@ include("exec.jl")
 include("doctestfilters.jl")
 
 include("GAP_pkg.jl")
+
+################################################################################
+#
+#  Precompilation
+#
+################################################################################
+
+using PrecompileTools: @setup_workload, @compile_workload
+
+@setup_workload begin
+  @compile_workload begin
+    sysinfo = Setup.regenerate_gaproot()
+    Setup.locate_JuliaInterface_so(sysinfo)
+  end
+end
 
 end
