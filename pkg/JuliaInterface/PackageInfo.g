@@ -6,6 +6,30 @@
 # manual of the "Example" package as well as the comments in its
 # PackageInfo.g file.
 #
+
+BindGlobal("DirectoriesPackageProgramsOverrides", rec());
+BindGlobal("_DirectoriesPackageProgramsOriginal", DirectoriesPackagePrograms);
+BindGlobal("_LoadPackageOriginal", LoadPackage);
+
+MakeReadWriteGlobal("DirectoriesPackagePrograms");
+DirectoriesPackagePrograms := function(name)
+    name:= LowercaseString(name);
+    if IsBound(DirectoriesPackageProgramsOverrides.(name)) then
+        return [ Directory( DirectoriesPackageProgramsOverrides.(name) ) ];
+    fi;
+    return _DirectoriesPackageProgramsOriginal(name);
+end;
+MakeReadOnlyGlobal("DirectoriesPackagePrograms");
+
+# HACK HACK HACK for debugging
+MakeReadWriteGlobal("LoadPackage");
+LoadPackage := function(arg)
+    Print("LoadPackage(",arg,")\n");
+    return CallFuncList(_LoadPackageOriginal, arg);
+end;
+MakeReadOnlyGlobal("LoadPackage");
+
+
 SetPackageInfo( rec(
 
 PackageName := "JuliaInterface",

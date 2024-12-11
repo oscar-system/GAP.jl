@@ -336,4 +336,6 @@ include("prompt.jl")
 include("exec.jl")
 include("doctestfilters.jl")
 
+include("GAP_pkg.jl")
+
 end
