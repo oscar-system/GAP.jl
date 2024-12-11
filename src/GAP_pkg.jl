@@ -44,6 +44,7 @@ for pkg in [
 end
 
 function setup_gap_pkg_overrides()
+    @debug "running setup_gap_pkg_overrides()"
     for (pkg, dir) in pkg_bindirs
         setproperty!(GAP.Globals.DirectoriesPackageProgramsOverrides, pkg, GapObj(dir))
     end

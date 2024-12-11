@@ -11,3 +11,6 @@ ReadPackage( "JuliaInterface", "gap/convert.gi");
 ReadPackage( "JuliaInterface", "gap/utils.gi");
 ReadPackage( "JuliaInterface", "gap/helpstring.g");
 ReadPackage( "JuliaInterface", "gap/juliahelp.g");
+
+# set up a few package JLLs
+Julia.GAP.setup_gap_pkg_overrides()
