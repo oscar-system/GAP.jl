@@ -3,9 +3,8 @@ module Packages
 
 import Downloads
 import Pidfile
-import ...GAP: Globals, GapObj, replace_global!, RNamObj, sysinfo, Wrappers
+import ...GAP: GAP, Globals, GapObj, replace_global!, RNamObj, Wrappers
 
-const DEFAULT_PKGDIR = Ref{String}()
 const DOWNLOAD_HELPER = Ref{Downloads.Downloader}()
 
 function init_packagemanager()
@@ -16,7 +15,6 @@ function init_packagemanager()
     res = load("PackageManager")
     @assert res
 
-    global DEFAULT_PKGDIR[] = sysinfo["DEFAULT_PKGDIR"]
     global DOWNLOAD_HELPER[] = Downloads.Downloader(; grace=0.1)
 
     # overwrite PKGMAN_DownloadURL
@@ -211,7 +209,7 @@ end
     install(spec::String, version::String = "";
                           interactive::Bool = true, quiet::Bool = false,
                           debug::Bool = false,
-                          pkgdir::AbstractString = GAP.Packages.DEFAULT_PKGDIR[])
+                          pkgdir::AbstractString = GAP.sysinfo["DEFAULT_PKGDIR"])
 
 Download and install the GAP package given by `spec` into the `pkgdir`
 directory.
@@ -239,7 +237,7 @@ For details, please refer to its documentation.
 function install(spec::String, version::String = "";
                                interactive::Bool = true, quiet::Bool = false,
                                debug::Bool = false,
-                               pkgdir::AbstractString = DEFAULT_PKGDIR[])
+                               pkgdir::AbstractString = GAP.sysinfo["DEFAULT_PKGDIR"])
     # point PackageManager to the given pkg dir
     Globals.PKGMAN_CustomPackageDir = GapObj(pkgdir)
     mkpath(pkgdir)
@@ -287,7 +285,7 @@ end
 """
     update(spec::String; interactive::Bool = true, quiet::Bool = false,
                          debug::Bool = false,
-                         pkgdir::AbstractString = GAP.Packages.DEFAULT_PKGDIR[])
+                         pkgdir::AbstractString = GAP.sysinfo["DEFAULT_PKGDIR"])
 
 Update the GAP package given by `spec` that is installed in the
 `pkgdir` directory, to the latest version.
@@ -306,7 +304,7 @@ For details, please refer to its documentation.
 """
 function update(spec::String; interactive::Bool = true, quiet::Bool = false,
                               debug::Bool = false,
-                              pkgdir::AbstractString = DEFAULT_PKGDIR[])
+                              pkgdir::AbstractString = GAP.sysinfo["DEFAULT_PKGDIR"])
     # point PackageManager to the given pkg dir
     Globals.PKGMAN_CustomPackageDir = GapObj(pkgdir)
     mkpath(pkgdir)
@@ -328,7 +326,7 @@ end
 """
     remove(spec::String; interactive::Bool = true, quiet::Bool = false,
                          debug::Bool = false,
-                         pkgdir::AbstractString = GAP.Packages.DEFAULT_PKGDIR[])
+                         pkgdir::AbstractString = GAP.sysinfo["DEFAULT_PKGDIR"])
 
 Remove the GAP package with name `spec` that is installed in the
 `pkgdir` directory.
@@ -343,7 +341,7 @@ For details, please refer to its documentation.
 """
 function remove(spec::String; interactive::Bool = true, quiet::Bool = false,
                               debug::Bool = false,
-                              pkgdir::AbstractString = DEFAULT_PKGDIR[])
+                              pkgdir::AbstractString = GAP.sysinfo["DEFAULT_PKGDIR"])
     # point PackageManager to the given pkg dir
     Globals.PKGMAN_CustomPackageDir = GapObj(pkgdir)
     mkpath(pkgdir)
@@ -362,7 +360,7 @@ end
 """
     build(name::String; quiet::Bool = false,
                         debug::Bool = false,
-                        pkgdir::AbstractString = GAP.Packages.DEFAULT_PKGDIR[])
+                        pkgdir::AbstractString = GAP.sysinfo["DEFAULT_PKGDIR"])
 
 Build the GAP package with name `name` that is installed in the
 `pkgdir` directory.
@@ -379,7 +377,7 @@ The info messages shown by this function can be suppressed by passing
 """
 function build(name::String; quiet::Bool = false,
                              debug::Bool = false,
-                             pkgdir::AbstractString = DEFAULT_PKGDIR[])
+                             pkgdir::AbstractString = GAP.sysinfo["DEFAULT_PKGDIR"])
   # point PackageManager to the given pkg dir
   Globals.PKGMAN_CustomPackageDir = GapObj(pkgdir)
   mkpath(pkgdir)
