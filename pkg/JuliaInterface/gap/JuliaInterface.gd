@@ -2,9 +2,10 @@
 ##
 ##  JuliaInterface package
 ##
-##  Copyright 2018
+##  Copyright 2018-2024
 ##    Thomas Breuer, RWTH Aachen University
 ##    Sebastian Gutsche, Siegen University
+##    Max Horn, University of Kaiserslautern-Landau
 ##
 
 #! @Chapter Introduction to <Package>JuliaInterface</Package>
