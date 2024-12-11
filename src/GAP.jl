@@ -118,9 +118,6 @@ function initialize(argv::Vector{String})
     # (which is created by `setup.jl`).
     append!(argv, ["--systemfile", abspath(@__DIR__, "..", "gap", "systemfile.g")])
 
-    # disable loading of all but the absolutely required packages
-    push!(argv, "-A")
-
     if ! handle_signals
         # Tell GAP to show some traceback on errors.
         append!(argv, ["--alwaystrace"])
@@ -278,6 +275,10 @@ function __init__()
     if !show_banner
         # Do not show the main GAP banner by default.
         push!(cmdline_options, "-b")
+    end
+
+    if haskey(ENV, "GAP_BARE_DEPS")
+        push!(cmdline_options, "-A")
     end
 
     initialize(cmdline_options)

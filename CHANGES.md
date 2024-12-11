@@ -5,8 +5,6 @@
 - Update to GAP 4.14.0
 - Instead of downloading a single huge "artifact" containing all deposited GAP
   packages, we now use (and download) one artifact per GAP package.
-- Stop autoloading for most GAP packages (for GAP users: we now
-  effectively pass `-A` to GAP when loading it)
 - Use precompiled binaries for many GAP packages, such as `io`, `ferret`
   and many more
 
