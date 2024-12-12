@@ -21,7 +21,7 @@ for pkg in [
     :float,
     :fplsa,
     :gauss,
-    :grape,
+    #:grape,            # handled via nauty_jll below
     :guava,
     :io,
     :json,
