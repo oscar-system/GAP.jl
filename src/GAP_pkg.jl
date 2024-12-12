@@ -21,7 +21,7 @@ for pkg in [
     :float,
     :fplsa,
     :gauss,
-    #:grape,
+    :grape,
     :guava,
     :io,
     :json,
@@ -52,6 +52,10 @@ for pkg in [
               end
     end
 end
+
+# Special case for GAP package "grape" which uses `dreadnaut` from nauty_jll
+using nauty_jll
+pkg_bindirs[:grape] = @generate_wrappers(nauty_jll)
 
 function setup_gap_pkg_overrides()
     @debug "running setup_gap_pkg_overrides()"
