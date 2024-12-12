@@ -232,7 +232,13 @@ julia> Symbol(str)
 
 ```
 """
-Core.Symbol(obj::GapObj) = Symbol(String(obj))
+function Core.Symbol(obj::GapObj)
+    if Wrappers.IsStringRep(obj)
+      s, len = UNSAFE_CSTR_STRING(obj)
+      return ccall(:jl_symbol_n, Ref{Symbol}, (Ptr{UInt8}, Int), s, len)
+    end
+    return Symbol(String(obj))
+end
 
 @doc """
     BitVector(obj::GapObj)
