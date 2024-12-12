@@ -35,20 +35,20 @@ gap> R:= Integers;;
 gap> c:= ContextGAPNemo( R );
 <context for Integers>
 gap> x:= GAPToNemo( c, 1 );;
-gap> JuliaTypeInfo( JuliaPointer( x ) );
-"Nemo.ZZRingElem"
+gap> Julia.typeof( JuliaPointer( x ) );
+<Julia: Nemo.ZZRingElem>
 gap> NemoToGAP( c, x ) = 1;
 true
 gap> gap_vec:= [ 1, 2 ];;
 gap> vec:= GAPToNemo( c, gap_vec );;
-gap> JuliaTypeInfo( JuliaPointer( vec ) );
-"Nemo.ZZMatrix"
+gap> Julia.typeof( JuliaPointer( vec ) );
+<Julia: Nemo.ZZMatrix>
 gap> NemoToGAP( c, vec ) = gap_vec;
 true
 gap> gap_mat:= [ [ 1, 2 ], [ 3, 4 ] ];;
 gap> mat:= GAPToNemo( c, gap_mat );;
-gap> JuliaTypeInfo( JuliaPointer( mat ) );
-"Nemo.ZZMatrix"
+gap> Julia.typeof( JuliaPointer( mat ) );
+<Julia: Nemo.ZZMatrix>
 gap> NemoToGAP( c, mat ) = gap_mat;
 true
 
@@ -60,24 +60,24 @@ gap> gap_x:= One( R );;
 gap> x:= GAPToNemo( c, gap_x );;
 gap> x = GAPToNemo( c, 1 );
 true
-gap> JuliaTypeInfo( JuliaPointer( x ) );
-"Nemo.zzModRingElem"
+gap> Julia.typeof( JuliaPointer( x ) );
+<Julia: Nemo.zzModRingElem>
 gap> NemoToGAP( c, x ) = gap_x;
 true
 gap> gap_vec:= [ 1, 2 ] * One( R );;
 gap> vec:= GAPToNemo( c, gap_vec );;
 gap> vec = GAPToNemo( c, [ 1, 2 ] );
 true
-gap> JuliaTypeInfo( JuliaPointer( vec ) );
-"Nemo.zzModMatrix"
+gap> Julia.typeof( JuliaPointer( vec ) );
+<Julia: Nemo.zzModMatrix>
 gap> NemoToGAP( c, vec ) = gap_vec;
 true
 gap> gap_mat:= [ [ 1, 2 ], [ 3, 4 ] ] * One( R );;
 gap> mat:= GAPToNemo( c, gap_mat );;
 gap> mat = GAPToNemo( c, [ [ 1, 2 ], [ 3, 4 ] ] );
 true
-gap> JuliaTypeInfo( JuliaPointer( mat ) );
-"Nemo.zzModMatrix"
+gap> Julia.typeof( JuliaPointer( mat ) );
+<Julia: Nemo.zzModMatrix>
 gap> NemoToGAP( c, mat ) = gap_mat;
 true
 
@@ -87,20 +87,20 @@ gap> c:= ContextGAPNemo( R );
 <context for Rationals>
 gap> gap_x:= 1/2;;
 gap> x:= GAPToNemo( c, gap_x );;
-gap> JuliaTypeInfo( JuliaPointer( x ) );
-"Nemo.QQFieldElem"
+gap> Julia.typeof( JuliaPointer( x ) );
+<Julia: Nemo.QQFieldElem>
 gap> NemoToGAP( c, x ) = gap_x;
 true
 gap> gap_vec:= [ 1/2, 2 ];;
 gap> vec:= GAPToNemo( c, gap_vec );;
-gap> JuliaTypeInfo( JuliaPointer( vec ) );
-"Nemo.QQMatrix"
+gap> Julia.typeof( JuliaPointer( vec ) );
+<Julia: Nemo.QQMatrix>
 gap> NemoToGAP( c, vec ) = gap_vec;
 true
 gap> gap_mat:= [ [ 1/2, 2 ], [ 3, 4/3 ] ];;
 gap> mat:= GAPToNemo( c, gap_mat );;
-gap> JuliaTypeInfo( JuliaPointer( mat ) );
-"Nemo.QQMatrix"
+gap> Julia.typeof( JuliaPointer( mat ) );
+<Julia: Nemo.QQMatrix>
 gap> NemoToGAP( c, mat ) = gap_mat;
 true
 
@@ -113,22 +113,22 @@ gap> indets:= IndeterminatesOfPolynomialRing( R );;
 gap> x:= indets[1];;
 gap> gap_pol:= x^3 + x + 1;;
 gap> pol:= GAPToNemo( c, gap_pol );;
-gap> JuliaTypeInfo( JuliaPointer( pol ) );
-"Nemo.QQPolyRingElem"
+gap> Julia.typeof( JuliaPointer( pol ) );
+<Julia: Nemo.QQPolyRingElem>
 gap> NemoToGAP( c, pol ) = gap_pol;
 true
 gap> gap_vec:= [ x+1, x-1 ];;
 gap> vec:= GAPToNemo( c, gap_vec );;
 
-#gap> JuliaTypeInfo( JuliaPointer( vec ) );
-#"AbstractAlgebra.Generic.Mat{Nemo.QQPolyRingElem}"
+#gap> Julia.typeof( JuliaPointer( vec ) );
+#<Julia: AbstractAlgebra.Generic.MatSpaceElem{QQPolyRingElem}>
 gap> NemoToGAP( c, vec ) = gap_vec;
 true
 gap> gap_mat:= [ [ x, x+1 ], [ 2*x, x^2+1 ] ];;
 gap> mat:= GAPToNemo( c, gap_mat );;
 
-#gap> JuliaTypeInfo( JuliaPointer( mat ) );
-#"AbstractAlgebra.Generic.Mat{Nemo.QQPolyRingElem}"
+#gap> Julia.typeof( JuliaPointer( mat ) );
+#<Julia: AbstractAlgebra.Generic.MatSpaceElem{QQPolyRingElem}>
 gap> NemoToGAP( c, mat ) = gap_mat;
 true
 
@@ -139,28 +139,28 @@ gap> c:= ContextGAPNemo( f );
 <context for alg. ext. field over Rationals, w.r.t. polynomial x_1^2+1>
 gap> gap_elm:= One( f );;
 gap> elm:= GAPToNemo( c, gap_elm );;
-gap> JuliaTypeInfo( JuliaPointer( elm ) );
-"Nemo.AbsSimpleNumFieldElem"
+gap> Julia.typeof( JuliaPointer( elm ) );
+<Julia: Nemo.AbsSimpleNumFieldElem>
 gap> NemoToGAP( c, elm ) = gap_elm;
 true
 gap> a:= RootOfDefiningPolynomial( f );;
 gap> elm:= GAPToNemo( c, a );;
-gap> JuliaTypeInfo( JuliaPointer( elm ) );
-"Nemo.AbsSimpleNumFieldElem"
+gap> Julia.typeof( JuliaPointer( elm ) );
+<Julia: Nemo.AbsSimpleNumFieldElem>
 gap> NemoToGAP( c, elm ) = a;
 true
 gap> gap_vec:= [ a+1, a-1 ];;
 gap> vec:= GAPToNemo( c, gap_vec );;
 
-#gap> JuliaTypeInfo( JuliaPointer( vec ) );
-#"AbstractAlgebra.Generic.Mat{Nemo.nf_elem}"
+#gap> Julia.typeof( JuliaPointer( vec ) );
+#<Julia: AbstractAlgebra.Generic.MatSpaceElem{AbsSimpleNumFieldElem}>
 gap> NemoToGAP( c, vec ) = gap_vec;
 true
 gap> gap_mat:= [ [ a, a+1 ], [ 2*a, a^2+1 ] ];;
 gap> mat:= GAPToNemo( c, gap_mat );;
 
-#gap> JuliaTypeInfo( JuliaPointer( mat ) );
-#"AbstractAlgebra.Generic.Mat{Nemo.nf_elem}"
+#gap> Julia.typeof( JuliaPointer( mat ) );
+#<Julia: AbstractAlgebra.Generic.MatSpaceElem{AbsSimpleNumFieldElem}>
 gap> NemoToGAP( c, mat ) = gap_mat;
 true
 

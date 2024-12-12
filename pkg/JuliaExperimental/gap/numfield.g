@@ -805,7 +805,7 @@ InstallMethod( Characteristic,
     local R;
 
     R:= ContextGAPNemo( FamilyObj( obj ) )!.JuliaDomain;
-    if JuliaTypeInfo( R ) = "Nemo.zzModRing" then
+    if Julia.isa(R, Julia.Nemo.zzModRing) then
       # We need this for matrix groups over residue class rings.
       # Nemo does not support it.
       return JuliaToGAP( IsInt,
@@ -866,7 +866,7 @@ InstallOtherMethod( InverseMutable,
      res:= CallJuliaFunctionWithCatch( Julia.Base.inv, [ ptr ] );
      if res.ok then
        res:= res.value;
-     elif JuliaTypeInfo( ptr ) <> "Nemo.zzModMatrix" then
+     elif Julia.isa( ptr, Julia.Nemo.zzModMatrix ) then
        Error( "matrix <x> is not invertible" );
      else
        # Perhaps the object is invertible:

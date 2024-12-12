@@ -276,21 +276,6 @@ DeclareGlobalFunction( "JuliaImportPackage" );
 #! @EndExampleSession
 DeclareGlobalVariable( "Julia" );
 
-#! @Arguments juliaobj
-#! @Returns a string.
-#! @Description
-#!  Returns the string that describes the &Julia; type of the object
-#!  <A>juliaobj</A>.
-#! @BeginExampleSession
-#! gap> JuliaTypeInfo( Julia.GAP );
-#! "Module"
-#! gap> JuliaTypeInfo( Julia.sqrt(2) );
-#! "Float64"
-#! gap> JuliaTypeInfo( 1 );
-#! "Int64"
-#! @EndExampleSession
-DeclareGlobalFunction( "JuliaTypeInfo" );
-
 #! @Arguments juliafunc, arguments[, kwargs]
 #! @Returns a record.
 #! @Description
@@ -416,10 +401,10 @@ DeclareGlobalFunction( "CallJuliaFunctionWithKeywordArguments" );
 #! false
 #! gap> val:= smalltype( 1 );
 #! <Julia: 1>
-#! gap> JuliaTypeInfo( val );
-#! "Int32"
-#! gap> JuliaTypeInfo( 1 );
-#! "Int64"
+#! gap> Julia.typeof( val );
+#! <Julia: Int32>
+#! gap> Julia.typeof( 1 );
+#! <Julia: Int64>
 #! @EndExampleSession
 
 #! @Subsection Convenience methods for &Julia; objects
