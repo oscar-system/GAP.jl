@@ -38,7 +38,7 @@ for pkg in [
     ]
     jll = Symbol("GAP_pkg_$(pkg)_jll")
     @eval begin
-        using $jll
+        import $jll
         # Crude heuristic: if the JLL has a `bin` directory then we assume it
         # contains executables the packages uses; otherwise assume it contains
         # a kernel extension `lib/gap/BLAH.so`.
@@ -54,7 +54,7 @@ for pkg in [
 end
 
 # Special case for GAP package "grape" which uses `dreadnaut` from nauty_jll
-using nauty_jll
+import nauty_jll
 pkg_bindirs[:grape] = @generate_wrappers(nauty_jll)
 
 function setup_gap_pkg_overrides()
