@@ -2,16 +2,6 @@
 gap> START_TEST( "utils.tst" );
 
 ##
-gap> JuliaTypeInfo( 1 );
-"Int64"
-gap> JuliaTypeInfo( 0 );
-"Int64"
-gap> JuliaTypeInfo( GAPToJulia( JuliaEvalString( "Tuple{Int64, Int64, Int64}" ), [ 1, 2, 3 ] ) );
-"Tuple{Int64, Int64, Int64}"
-gap> JuliaTypeInfo( Julia.Base.parse );
-"typeof(parse)"
-
-##
 gap> CallJuliaFunctionWithCatch( Julia.Base.sqrt, [ 4 ] );
 rec( ok := true, value := <Julia: 2.0> )
 gap> res:= CallJuliaFunctionWithCatch( Julia.Base.sqrt, [ -1 ] );;

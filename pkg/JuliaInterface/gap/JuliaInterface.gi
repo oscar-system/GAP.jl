@@ -142,16 +142,6 @@ InstallGlobalFunction( JuliaImportPackage, function( pkgname )
 end );
 
 
-InstallGlobalFunction( JuliaTypeInfo,
-    function( juliaobj )
-    if IsFunction( juliaobj ) then
-      juliaobj:= Julia.GAP.UnwrapJuliaFunc( juliaobj );
-    fi;
-    return JuliaToGAP( IsString,
-                       Julia.Base.string( Julia.Core.typeof( juliaobj ) ) );
-end );
-
-
 InstallGlobalFunction( GetJuliaScratchspace,
   function( key )
     if not IsString( key ) then

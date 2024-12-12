@@ -19,8 +19,8 @@ gap> mat:= [ [ o, a/2 ], [ z, o ] ];
 gap> nmat:= GAPToNemo( c, mat );
 <<Julia: [1 1//2*a; 0 1]>>
 
-#gap> JuliaTypeInfo( JuliaPointer( nmat ) );
-#"AbstractAlgebra.Generic.Mat{Nemo.nf_elem}"
+#gap> Julia.typeof( JuliaPointer( nmat ) );
+#<Julia: AbstractAlgebra.Generic.MatSpaceElem{AbsSimpleNumFieldElem}>
 gap> PrintObj( nmat );  Print( "\n" );
 [1 1//2*a; 0 1]
 gap> IsZero( nmat );
@@ -67,12 +67,12 @@ gap> Characteristic( nmat );
 0
 gap> tr:= TraceMat( nmat );
 <<Julia: 2>>
-gap> JuliaTypeInfo( JuliaPointer( tr ) );
-"Nemo.AbsSimpleNumFieldElem"
+gap> Julia.typeof( JuliaPointer( tr ) );
+<Julia: Nemo.AbsSimpleNumFieldElem>
 gap> det:= DeterminantMat( nmat );
 <<Julia: 1>>
-gap> JuliaTypeInfo( JuliaPointer( det ) );
-"Nemo.AbsSimpleNumFieldElem"
+gap> Julia.typeof( JuliaPointer( det ) );
+<Julia: Nemo.AbsSimpleNumFieldElem>
 gap> NemoToGAP( c, nmat );
 [ [ !1, 1/2*a ], [ !0, !1 ] ]
 gap> no:= GAPToNemo( c, One( f ) );

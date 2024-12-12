@@ -19,8 +19,6 @@ gap> R:= Julia.Nemo.residue_ring( Julia.Singular.ZZ, 23 );
 <Julia: Residue Ring of Integer Ring modulo 23>
 gap> R(12) + R(7);
 <Julia: 19>
-gap> JuliaTypeInfo( R(12) );
-"Singular.n_Zn"
 gap> Julia.Base.parent( R(12) );
 <Julia: Residue Ring of Integer Ring modulo 23>
 
