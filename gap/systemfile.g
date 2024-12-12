@@ -1,3 +1,20 @@
+# Helper for replacing a GAP global variable or function by a new value.
+# The original value is retained under the name `_ORIG_***`
+BIND_GLOBAL("ReplaceBinding", function(name, val)
+  local orig_name;
+  # Store a copy of the original value, but only if that copy does not yet
+  # exist. This ensures we don't overwrite it during a call to `Reread`.
+  orig_name := "_ORIG_";
+  APPEND_LIST_INTR(orig_name, name);
+  if not ISB_GVAR(orig_name) then
+    ASS_GVAR(orig_name, VAL_GVAR(name));
+    MakeReadOnlyGVar(orig_name);
+  fi;
+  MakeReadWriteGVar(name);
+  ASS_GVAR(name, val);
+  MakeReadOnlyGVar(name);
+end);
+
 (function()
     local deps;
 
