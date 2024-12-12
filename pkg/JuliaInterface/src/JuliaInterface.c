@@ -207,11 +207,6 @@ static Obj Func_JuliaGetGlobalVariableByModule(Obj self, Obj name, Obj module)
     return gap_julia(value);
 }
 
-static Obj Func_JuliaGetCoreModule(Obj self)
-{
-    return NewJuliaObj((jl_value_t *)jl_core_module);
-}
-
 static Obj Func_JuliaGetGapModule(Obj self)
 {
     return NewJuliaObj((jl_value_t *)gap_module);
@@ -252,7 +247,6 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(JuliaEvalString, 1, "string"),
     GVAR_FUNC(_JuliaGetGlobalVariableByModule, 2, "name, module"),
     GVAR_FUNC(JuliaSymbol, 1, "name"),
-    GVAR_FUNC(_JuliaGetCoreModule, 0, ""),
     GVAR_FUNC(_JuliaGetGapModule, 0, ""),
     GVAR_FUNC(_JuliaGetMainModule, 0, ""),
     { 0 } /* Finish with an empty entry */
