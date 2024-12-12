@@ -34,6 +34,7 @@ function gaproot()
     if isempty(_gaproot[])
         parent = @get_scratch!(scratch_key)
         _gaproot[] = mktempdir(parent; prefix="gap_$(Dates.today())_", cleanup=true)
+        @debug "Set gaproot to $(_gaproot[])"
     end
     return _gaproot[]
 end
