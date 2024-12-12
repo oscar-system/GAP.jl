@@ -10,6 +10,7 @@
   - anupq
   - browse
   - cddinterface
+  - cohomolo
   - crypting
   - cvec
   - datastructures
@@ -24,6 +25,7 @@
   - guava
   - io
   - json
+  - kbmag
   - normalizinterface
   - nq
   - orb
