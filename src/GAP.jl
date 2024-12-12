@@ -207,8 +207,6 @@ function initialize(argv::Vector{String})
         error("JuliaInterface could not be loaded")
     end
 
-    GAP.Globals.Read(GapObj(joinpath(@__DIR__, "..", "gap", "pkg.g")))
-    @debug "finished reading gap/pkg.g"
     GAP.Globals.Read(GapObj(joinpath(@__DIR__, "..", "gap", "exec.g")))
     @debug "finished reading gap/exec.g"
 
@@ -335,5 +333,7 @@ include("packages.jl")
 include("prompt.jl")
 include("exec.jl")
 include("doctestfilters.jl")
+
+include("GAP_pkg.jl")
 
 end
