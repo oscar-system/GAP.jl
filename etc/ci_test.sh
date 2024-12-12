@@ -15,7 +15,7 @@ ${GAP} makedoc.g
 ${GAP} --cover ../../coverage/JuliaInterface.coverage tst/testall.g || AnyFailures=Yes
 gcov -o gen/src/ src/*.c*
 # Remove JuliaInterface with coverage instrumentation
-make clean
+#make clean
 cd ../..
 
 #
