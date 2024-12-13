@@ -23,7 +23,7 @@ Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Scratch = "6c6a2e73-6563-6170-7368-637461726353"
 
 [compat]
-AbstractAlgebra = "0.41.11, 0.42.1, 0.43"
+AbstractAlgebra = "0.41.11, 0.42.1, 0.43, 0.44"
 Artifacts = "1.6"
 Compat = "4.4.0"
 Downloads = "1.4.3"
