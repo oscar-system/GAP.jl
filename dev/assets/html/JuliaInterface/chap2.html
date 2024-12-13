@@ -41,9 +41,8 @@
 </span>
 <div class="ContSSBlock">
 <span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2.html#X83C764AC820CC172">2.3-1 Julia</a></span>
-<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2.html#X7DDEFDC58469C33D">2.3-2 JuliaTypeInfo</a></span>
-<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2.html#X8339D8D47D079AF9">2.3-3 CallJuliaFunctionWithCatch</a></span>
-<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2.html#X7FB242EE864F21A2">2.3-4 CallJuliaFunctionWithKeywordArguments</a></span>
+<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2.html#X8339D8D47D079AF9">2.3-2 CallJuliaFunctionWithCatch</a></span>
+<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2.html#X7FB242EE864F21A2">2.3-3 CallJuliaFunctionWithKeywordArguments</a></span>
 </div></div>
 <div class="ContSect"><span class="tocline"><span class="nocss">&nbsp;</span><a href="chap2.html#X861DE72C8383D6E6">2.4 <span class="Heading">Calling <strong class="pkg">Julia</strong> functions</span></a>
 </span>
@@ -189,7 +188,7 @@ true
 
 <h4>2.3 <span class="Heading">Access to <strong class="pkg">Julia</strong> objects</span></h4>
 
-<p>Not all <strong class="pkg">Julia</strong> syntax features are supported in <strong class="pkg">GAP</strong>. For important ones, the interface provides <strong class="pkg">GAP</strong> functions or helper functions written in <strong class="pkg">Julia</strong> to use them in <strong class="pkg">GAP</strong>. For example, <code class="func">CallJuliaFunctionWithCatch</code> (<a href="chap2.html#X8339D8D47D079AF9"><span class="RefLink">2.3-3</span></a>) allows one to use <strong class="pkg">Julia</strong>'s try/catch statements.</p>
+<p>Not all <strong class="pkg">Julia</strong> syntax features are supported in <strong class="pkg">GAP</strong>. For important ones, the interface provides <strong class="pkg">GAP</strong> functions or helper functions written in <strong class="pkg">Julia</strong> to use them in <strong class="pkg">GAP</strong>. For example, <code class="func">CallJuliaFunctionWithCatch</code> (<a href="chap2.html#X8339D8D47D079AF9"><span class="RefLink">2.3-2</span></a>) allows one to use <strong class="pkg">Julia</strong>'s try/catch statements.</p>
 
 <p>Here is a selection of other workarounds for <strong class="pkg">Julia</strong> syntax features.</p>
 
@@ -230,28 +229,9 @@ true
 &lt;Julia: prompt&gt;
 </pre></div>
 
-<p><a id="X7DDEFDC58469C33D" name="X7DDEFDC58469C33D"></a></p>
-
-<h5>2.3-2 JuliaTypeInfo</h5>
-
-<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; JuliaTypeInfo</code>( <var class="Arg">juliaobj</var> )</td><td class="tdright">(&nbsp;function&nbsp;)</td></tr></table></div>
-<p>Returns: a string.</p>
-
-<p>Returns the string that describes the <strong class="pkg">Julia</strong> type of the object <var class="Arg">juliaobj</var>.</p>
-
-
-<div class="example"><pre>
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">JuliaTypeInfo( Julia.GAP );</span>
-"Module"
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">JuliaTypeInfo( Julia.sqrt(2) );</span>
-"Float64"
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">JuliaTypeInfo( 1 );</span>
-"Int64"
-</pre></div>
-
 <p><a id="X8339D8D47D079AF9" name="X8339D8D47D079AF9"></a></p>
 
-<h5>2.3-3 CallJuliaFunctionWithCatch</h5>
+<h5>2.3-2 CallJuliaFunctionWithCatch</h5>
 
 <div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; CallJuliaFunctionWithCatch</code>( <var class="Arg">juliafunc</var>, <var class="Arg">arguments</var>[, <var class="Arg">kwargs</var>] )</td><td class="tdright">(&nbsp;function&nbsp;)</td></tr></table></div>
 <p>Returns: a record.</p>
@@ -289,7 +269,7 @@ false
 
 <p><a id="X7FB242EE864F21A2" name="X7FB242EE864F21A2"></a></p>
 
-<h5>2.3-4 CallJuliaFunctionWithKeywordArguments</h5>
+<h5>2.3-3 CallJuliaFunctionWithKeywordArguments</h5>
 
 <div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; CallJuliaFunctionWithKeywordArguments</code>( <var class="Arg">juliafunc</var>, <var class="Arg">arguments</var>, <var class="Arg">kwargs</var> )</td><td class="tdright">(&nbsp;function&nbsp;)</td></tr></table></div>
 <p>Returns: the result of the <strong class="pkg">Julia</strong> function call.</p>
@@ -374,10 +354,10 @@ true
 false
 <span class="GAPprompt">gap&gt;</span> <span class="GAPinput">val:= smalltype( 1 );</span>
 &lt;Julia: 1&gt;
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">JuliaTypeInfo( val );</span>
-"Int32"
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">JuliaTypeInfo( 1 );</span>
-"Int64"
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">Julia.typeof( val );</span>
+&lt;Julia: Int32&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">Julia.typeof( 1 );</span>
+&lt;Julia: Int64&gt;
 </pre></div>
 
 <p><a id="X821EFEF1843BA0F1" name="X821EFEF1843BA0F1"></a></p>
