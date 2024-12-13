@@ -8,7 +8,7 @@ for pkg in [
     :browse,
     #:caratinterface,
     :cddinterface,
-    #:cohomolo,
+    :cohomolo,
     :crypting,
     #:curlinterface,
     :cvec,
@@ -26,7 +26,7 @@ for pkg in [
     :io,
     :json,
     #:jupyterkernel,    # useful?
-    #:kbmag,
+    :kbmag,
     :normalizinterface,
     :nq,
     :orb,
