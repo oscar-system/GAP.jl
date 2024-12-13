@@ -199,8 +199,9 @@ function regenerate_gaproot()
         # create a `pkg` directory with symlinks to all the GAP packages artifacts
         mkpath(joinpath(gaproot_mutable, "pkg"))
         pkg_artifacts = filter(startswith("GAP_pkg_"), keys(TOML.parsefile(find_artifacts_toml(@__FILE__))))
-        for name in pkg_artifacts
-            force_symlink(@artifact_str(name), joinpath(gaproot_mutable, "pkg", name))
+        for artifact_name in pkg_artifacts
+            pkg_name = artifact_name[9:end]
+            force_symlink(@artifact_str(artifact_name), joinpath(gaproot_mutable, "pkg", pkg_name))
         end
 
     end # mkpidlock
