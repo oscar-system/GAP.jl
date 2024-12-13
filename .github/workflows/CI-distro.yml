@@ -37,8 +37,8 @@ jobs:
       - name: Get list of GAP packages
         id: set-matrix
         run: julia --project=. -e '
-                  using Artifacts;
-                  output = sprint(print, "gap-packages=", readdir(artifact"gap_packages"));
+                  using Artifacts, TOML;
+                  output = sprint(print, "gap-packages=", map(name -> name[9:end], sort!(collect(filter(startswith("GAP_pkg_"), keys(TOML.parsefile(find_artifacts_toml(Base.active_project()))))))));
                   println(output);
                   open(ENV["GITHUB_OUTPUT"], "a") do io;
                     println(io, output);
