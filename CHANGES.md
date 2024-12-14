@@ -1,5 +1,9 @@
 # Changes in GAP.jl
 
+## Version 0.12.2 (released 2024-12-14)
+
+- Support AbstractAlgebra 0.44
+
 ## Version 0.12.1 (released 2024-12-09)
 
 - Add `GAP.Packages.build(name)`
