@@ -12,7 +12,7 @@ for pkg in [
     "ace"
     "anupq"
     "browse"
-    #"caratinterface"
+    "caratinterface"
     "cddinterface"
     "cohomolo"
     "crypting"
@@ -40,7 +40,7 @@ for pkg in [
     #"semigroups"
     "simpcomp"
     #"xgap"             # useful?
-    #"zeromqinterface"
+    "zeromqinterface"
     ]
     jll = Symbol("GAP_pkg_$(pkg)_jll")
     @eval begin
