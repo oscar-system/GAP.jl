@@ -12,21 +12,31 @@ ReadPackage( "JuliaInterface", "gap/utils.gi");
 ReadPackage( "JuliaInterface", "gap/helpstring.g");
 ReadPackage( "JuliaInterface", "gap/juliahelp.g");
 
-# HACK: we need to set up the GAP package override system as early as possible.
-# Since JuliaInterface is loaded before all other packages, putting it here
-# ensures that
-BindGlobal("DirectoriesPackageProgramsOverrides", rec());
-
-BindGlobal("_DirectoriesPackageProgramsOriginal", DirectoriesPackagePrograms);
 MakeReadWriteGlobal("DirectoriesPackagePrograms");
 DirectoriesPackagePrograms := function(name)
-    name:= LowercaseString(name);
-    if IsBound(DirectoriesPackageProgramsOverrides.(name)) then
-        return [ Directory( DirectoriesPackageProgramsOverrides.(name) ) ];
+    local info, installationpath, override;
+
+    # We are not allowed to call
+    # `InstalledPackageVersion', `TestPackageAvailability' etc.
+    name:= LowercaseString( name );
+    info:= PackageInfo( name );
+    if IsBound( GAPInfo.PackagesLoaded.( name ) ) then
+      # The package is already loaded.
+      installationpath:= GAPInfo.PackagesLoaded.( name )[1];
+    elif IsBound( GAPInfo.PackageCurrent ) and
+         LowercaseString( GAPInfo.PackageCurrent.PackageName ) = name then
+      # The package in question is currently going to be loaded.
+      installationpath:= GAPInfo.PackageCurrent.InstallationPath;
+    elif 0 < Length( info ) then
+      # Take the installed package with the highest version
+      # that has been found first in the root paths.
+      installationpath:= info[1].InstallationPath;
+    else
+      # This package is not known.
+      return [];
     fi;
-    return _DirectoriesPackageProgramsOriginal(name);
+
+    override := JuliaToGAP( IsString, Julia.GAP.find_override(GAPToJulia(installationpath)) );
+    return [ Directory( override ) ];
 end;
 MakeReadOnlyGlobal("DirectoriesPackagePrograms");
-
-# set up overrides for a few package JLLs
-Julia.GAP.setup_gap_pkg_overrides();
