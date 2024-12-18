@@ -111,4 +111,6 @@ jobs:
       - name: "Build package"
         uses: julia-actions/julia-buildpkg@v1
       - name: "Run GAP package tests"
-        run: JULIA_DEBUG=GAP julia --color=yes --project=. -e 'using GAP, Test; @test GAP.Packages.test("${{ matrix.gap-package }}")'
+        run: |
+          ls -l ~/.julia/scratchspaces/*/binarywrappers_v1.11/bin
+          JULIA_DEBUG=GAP julia --color=yes --project=. -e 'using GAP, Test; @test GAP.Packages.test("${{ matrix.gap-package }}")'
