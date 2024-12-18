@@ -106,8 +106,6 @@ jobs:
           arch: ${{ matrix.julia-arch }}
       - name: "Cache artifacts"
         uses: julia-actions/cache@v2
-        with:
-          cache-scratchspaces: false
       - name: "Build package"
         uses: julia-actions/julia-buildpkg@v1
       - name: "Run GAP package tests"
