@@ -63,6 +63,10 @@ end
 import nauty_jll
 pkg_bindirs[realpath(gap_pkg_artifact_dir("grape"))] = @generate_wrappers(nauty_jll)
 
+# Special case for GAP package "singular"
+import Singular_jll
+const singular_binpath = @generate_wrappers(Singular_jll)
+
 function find_override(installationpath::String)
     rp = realpath(installationpath)
     op = get(pkg_bindirs, rp, nothing)

@@ -40,3 +40,6 @@ DirectoriesPackagePrograms := function(name)
     return [ Directory( override ) ];
 end;
 MakeReadOnlyGlobal("DirectoriesPackagePrograms");
+
+# ensure GAP package 'singular' sees Singular executablef rom Singular_jll
+sing_exec := Concatenation(JuliaToGAP(IsString, Julia.GAP.singular_binpath), "/Singular");
