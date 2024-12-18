@@ -60,6 +60,12 @@ jobs:
         os:
           - ubuntu-latest
         gap-package: ${{fromJSON(needs.generate-matrix.outputs.gap-packages)}}
+        exclude:
+          - gap-package: 'curlinterface'      # no jll
+          - gap-package: 'example'            # no jll
+          - gap-package: 'jupyterkernel'      # no jll
+          - gap-package: 'semigroups'         # no jll
+          - gap-package: 'xgap'               # no jll
 
     steps:
       - uses: actions/checkout@v4
