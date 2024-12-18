@@ -31,6 +31,9 @@
   - orb
   - profiling
   - simpcomp
+- Add `GAP.Packages.build_recursive(name)`
+- `GAP.Packages.build(name)` no longer tries to build the package if it is
+  already installed
 
 ## Version 0.12.1 (released 2024-12-09)
 
