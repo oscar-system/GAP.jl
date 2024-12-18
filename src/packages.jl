@@ -3,7 +3,6 @@ module Packages
 
 import Downloads
 import Pidfile
-import Test: @test
 import ...GAP: disable_error_handler, Globals, GapObj, replace_global!, RNamObj, sysinfo, Wrappers
 
 const DEFAULT_PKGDIR = Ref{String}()
@@ -412,13 +411,12 @@ end
 """
     test(name::String)
 
-Test the GAP package with name `name`.
+Return a boolean indicating if the GAP package with name `name` succeeds
+in running its tests.
+
+It is inteded to be used with the `@test` macro from the `Test` package.
 
 The function uses [the function `TestPackage`](GAP_ref(ref:TestPackage)).
-
-Use-sites of this function should verify that the `Test` package is loaded
-before calling this function, as this function might be moved
-to a package extension that depends on the `Test` package in the future.
 """
 function test(name::String)
   global disable_error_handler
@@ -448,16 +446,14 @@ function test(name::String)
   end
 
   disable_error_handler[] = true
+  result = false
   try
     with_gap_var("ERROR_OUTPUT", Globals._JULIAINTERFACE_ORIGINAL_ERROR_OUTPUT) do
       with_gap_var("QuitGap", fake_QuitGap) do
         with_gap_var("QUIT_GAP", fake_QuitGap) do
           with_gap_var("ForceQuitGap", identity) do
             with_gap_var("FORCE_QUIT_GAP", identity) do
-              result = Globals.TestPackage(GapObj(name))
-              @test ended_using_QuitGap || result == true
-              # Due to the hack above, we run into an error in TestPackage that is usually unreachable.
-              # In the case of a `QuitGap` call, we thus don't check for `result == true`.
+              result = Globals.TestPackage(GapObj(name))              
             end
           end
         end
@@ -467,7 +463,9 @@ function test(name::String)
     disable_error_handler[] = false
   end
 
-  @test !error_occurred
+  # Due to the hack above, we run into an error in TestPackage that is usually unreachable.
+  # In the case of a `QuitGap` call, we thus don't check for `result == true`.
+  return !error_occurred && (ended_using_QuitGap || result == true)
 end
 
 """
