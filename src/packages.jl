@@ -370,7 +370,7 @@ Build the GAP package with name `name` that is installed in the
 If no package with name `name` is installed in `pkgdir` but there is a version of
 `name` bundled with the GAP package distro, this version is copied to `pkgdir` and built.
 
-Return `true` if the build was successful, and `false` otherwise.
+Return `true` if the build was successful or the package was already built, and `false` otherwise.
 
 The function uses [the function `CompilePackage` from GAP's package
 `PackageManager`](GAP_ref(PackageManager:CompilePackage)).
@@ -385,6 +385,7 @@ function build(name::String; quiet::Bool = false,
   mkpath(pkgdir)
 
   gname = GapObj(name)
+  Globals.TestPackageAvailability(gname) != Globals.fail && return true # already available, build not necessary
   allinfo = collect(Globals.PackageInfo(gname))
   userinfo = filter(info -> startswith(String(info.InstallationPath), pkgdir), allinfo)
   isempty(allinfo) && error("package not found")
@@ -406,6 +407,50 @@ function build(name::String; quiet::Bool = false,
     Wrappers.SetInfoLevel(Globals.InfoPackageManager, oldlevel)
   end
   return res
+end
+
+"""
+    build_recursive(name::String; quiet::Bool = false,
+                        debug::Bool = false,
+                        pkgdir::AbstractString = GAP.Packages.DEFAULT_PKGDIR[])
+
+Build the GAP package with name `name` that is installed in the
+`pkgdir` directory, as well as all of its (transitive) dependencies.
+
+This is achieved by calling [`build`](@ref) for the package `name` and then
+all of its `NeededOtherPackages`, recursively.
+All keyword arguments are passed on to [`build`](@ref).
+"""
+function build_recursive(name::String; quiet::Bool = false,
+                             debug::Bool = false,
+                             pkgdir::AbstractString = DEFAULT_PKGDIR[])
+  # point PackageManager to the given pkg dir
+  Globals.PKGMAN_CustomPackageDir = GapObj(pkgdir)
+  mkpath(pkgdir)
+
+  todo = Set{String}((name,))
+  done = Set{String}()
+  while !isempty(todo)
+    dep = pop!(todo)
+    dep in done && continue
+
+    res = build(dep; quiet, debug, pkgdir)
+    res || return false
+    push!(done, dep)
+    gdep = GapObj(dep)
+    allinfo = collect(Globals.PackageInfo(gdep))
+    installpath = Globals.TestPackageAvailability(gdep)
+    if installpath != Globals.fail
+      installpath === true && continue
+      info = only(filter(info -> info.InstallationPath == installpath, allinfo))
+    else
+      info = first(allinfo) # not sure what to do here if there are multiple versions available
+    end
+    for (needed, _) in info.Dependencies.NeededOtherPackages
+      push!(todo, String(needed))
+    end
+  end
+  return true
 end
 
 """
