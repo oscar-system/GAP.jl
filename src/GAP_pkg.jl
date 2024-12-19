@@ -42,6 +42,9 @@ for pkg in gap_pkgs_with_overrides
     @eval import $jll
 end
 
+# GAP package "4ti2interface" uses executables from lib4ti2_jll
+import lib4ti2_jll
+
 # GAP package "grape" uses `dreadnaut` executable from nauty_jll
 import nauty_jll
 
@@ -71,6 +74,12 @@ function setup_overrides()
                   joinpath(jll.find_artifact_dir(), "lib", "gap")
               end
     end
+
+    # GAP package "4ti2interface" uses executables from lib4ti2_jll
+    lib4ti2_path = @generate_wrappers(lib4ti2_jll)
+    d = GAP.Globals.Directory(GapObj(lib4ti2_path))
+    GAP.Globals.DirectoriesSystemPrograms()  # ensure GAPInfo.DirectoriesPrograms is initialized
+    GAP.Globals.Add(GAP.Globals.GAPInfo.DirectoriesPrograms, d)
 
     # GAP package "grape" uses `dreadnaut` executable from nauty_jll
     pkg_bindirs[realpath(gap_pkg_artifact_dir("grape"))] = @generate_wrappers(nauty_jll)
