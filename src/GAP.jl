@@ -155,9 +155,6 @@ function initialize(argv::Vector{String})
     # also declare a global GAP variable with the path to JuliaInterface.so
     AssignGlobalVariable("_path_JuliaInterface_so", MakeString(JuliaInterface_path()))
 
-    # setup JLL overrides
-    setup_overrides()
-
     # now load init.g
     @debug "about to read init.g"
     if ccall((:READ_GAP_ROOT, libgap), Int64, (Ptr{Cchar},), "lib/init.g") == 0
@@ -212,6 +209,9 @@ function initialize(argv::Vector{String})
 
     GAP.Globals.Read(GapObj(joinpath(@__DIR__, "..", "gap", "exec.g")))
     @debug "finished reading gap/exec.g"
+
+    # setup JLL overrides
+    setup_overrides()
 
     # If we are in "stand-alone mode", stop here
     if handle_signals
