@@ -9,6 +9,7 @@
   - ace
   - anupq
   - browse
+  - caratinterface
   - cddinterface
   - cohomolo
   - crypting
@@ -31,6 +32,7 @@
   - orb
   - profiling
   - simpcomp
+  - zeromqinterface
 
 ## Version 0.12.1 (released 2024-12-09)
 
