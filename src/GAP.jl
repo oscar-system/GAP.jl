@@ -210,6 +210,9 @@ function initialize(argv::Vector{String})
     GAP.Globals.Read(GapObj(joinpath(@__DIR__, "..", "gap", "exec.g")))
     @debug "finished reading gap/exec.g"
 
+    # setup JLL overrides
+    setup_overrides()
+
     # If we are in "stand-alone mode", stop here
     if handle_signals
         ccall((:SyInstallAnswerIntr, libgap), Cvoid, ())
