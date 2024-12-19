@@ -32,8 +32,6 @@ jobs:
           version: '1'
       - name: "Cache artifacts"
         uses: julia-actions/cache@v2
-        with:
-          include-matrix: false # don't create a cache per GAP package
       - name: "Build package"
         uses: julia-actions/julia-buildpkg@v1
       - name: Get list of GAP packages
@@ -106,6 +104,8 @@ jobs:
           arch: ${{ matrix.julia-arch }}
       - name: "Cache artifacts"
         uses: julia-actions/cache@v2
+        with:
+          include-matrix: false # don't create a cache per GAP package
       - name: "Build package"
         uses: julia-actions/julia-buildpkg@v1
       - name: "Run GAP package tests"
