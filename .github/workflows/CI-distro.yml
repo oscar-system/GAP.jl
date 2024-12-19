@@ -1,0 +1,116 @@
+name: Test GAP package distro
+
+on:
+  push:
+    branches:
+      - 'master'
+      - 'release-*'
+    tags: '*'
+  pull_request:
+  schedule:
+    # Every Monday at 3:08 AM UTC
+    - cron: '8 3 * * 1'
+  workflow_dispatch:
+
+concurrency:
+  # group by workflow and ref; the last slightly strange component ensures that for pull
+  # requests, we limit to 1 concurrent job, but for the default repository branch we don't
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.ref_name != github.event.repository.default_branch || github.run_number }}
+  # Cancel intermediate builds, but only if it is a pull request build.
+  cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
+
+jobs:
+  generate-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      gap-packages: ${{ steps.set-matrix.outputs.gap-packages }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: "Set up Julia"
+        uses: julia-actions/setup-julia@v2
+        with:
+          version: '1'
+      - name: "Cache artifacts"
+        uses: julia-actions/cache@v2
+      - name: "Build package"
+        uses: julia-actions/julia-buildpkg@v1
+      - name: Get list of GAP packages
+        id: set-matrix
+        run: julia --project=. -e '
+                  using Artifacts, TOML;
+                  output = sprint(print, "gap-packages=", map(name -> name[9:end], sort!(collect(filter(startswith("GAP_pkg_"), keys(TOML.parsefile(find_artifacts_toml(Base.active_project()))))))));
+                  println(output);
+                  open(ENV["GITHUB_OUTPUT"], "a") do io;
+                    println(io, output);
+                  end;'
+
+  test:
+    name: ${{ matrix.gap-package }}
+    needs: generate-matrix
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    continue-on-error: ${{ matrix.julia-version == 'nightly' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        julia-version:
+          - '1'
+        julia-arch:
+          - x64
+        os:
+          - ubuntu-latest
+        gap-package: ${{fromJSON(needs.generate-matrix.outputs.gap-packages)}}
+        exclude:
+          - gap-package: '4ti2interface'              # ???
+          - gap-package: 'alnuth'                     # `AL_EXECUTABLE, the executable for PARI/GP, has to be set`
+          - gap-package: 'autodoc'                    # test failure
+          - gap-package: 'caratinterface'             # `Carat program Bravais_inclusions failed with error code 1`
+          - gap-package: 'curlinterface'              # no jll
+          - gap-package: 'example'                    # no jll
+          - gap-package: 'examplesforhomalg'          # `Error, found no Singular executable in PATH while searching the following list`
+          - gap-package: 'gapdoc'                     # test failure
+          - gap-package: 'gradedmodules'              # `Error, found no Singular executable in PATH while searching the following list`
+          - gap-package: 'gradedringforhomalg'        # `Error, found no Singular executable in PATH while searching the following list` 
+          - gap-package: 'guarana'                    # `AL_EXECUTABLE, the executable for PARI/GP, has to be set`
+          #- gap-package: 'guava'                      # test failure
+          - gap-package: 'hap'                        # `polymake command not found. Please set POLYMAKE_COMMAND by hand`
+          - gap-package: 'hapcryst'                   # `polymake command not found. Please set POLYMAKE_COMMAND by hand`
+          #- gap-package: 'io'                         # test failure
+          - gap-package: 'itc'                        # dependency `xgap` has no jll
+          - gap-package: 'jupyterkernel'              # no jll
+          - gap-package: 'localizeringforhomalg'      # `Error, found no Singular executable in PATH while searching the following list`'
+          - gap-package: 'modulepresentationsforcap'  # `Error, found no Singular executable in PATH while searching the following list`'
+          - gap-package: 'normalizinterface'          # `Error, Some error in the normaliz input data detected: Cone Property in last line not allowed for lattice ideals`
+          #- gap-package: 'packagemanager'             # test failure
+          - gap-package: 'polenta'                    # `AL_EXECUTABLE, the executable for PARI/GP, has to be set`
+          - gap-package: 'polycyclic'                 # ???
+          - gap-package: 'polymaking'                 # `polymake command not found. Please set POLYMAKE_COMMAND by hand`
+          - gap-package: 'profiling'                  # segfaults during testing
+          - gap-package: 'radiroot'                   # `AL_EXECUTABLE, the executable for PARI/GP, has to be set`
+          - gap-package: 'ringsforhomalg'             # `Error, found no Singular executable in PATH while searching the following list`'
+          - gap-package: 'semigroups'                 # no jll
+          - gap-package: 'singular'                   # `Error, Singular executable file not found!`
+          - gap-package: 'toricvarieties'             # `Error, found no Singular executable in PATH while searching the following list`'
+          #- gap-package: 'typeset'                    # `ReadPackage could not read <digraphs>/gap/doc.g`
+          #- gap-package: 'wpe'                        # ???
+          - gap-package: 'xgap'                       # no jll
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: "Set up Julia"
+        uses: julia-actions/setup-julia@v2
+        with:
+          version: ${{ matrix.julia-version }}
+          arch: ${{ matrix.julia-arch }}
+      - name: "Cache artifacts"
+        uses: julia-actions/cache@v2
+        with:
+          include-matrix: false # don't create a cache per GAP package
+          cache-scratchspaces: false
+      - name: "Build package"
+        uses: julia-actions/julia-buildpkg@v1
+      - name: "Run GAP package tests"
+        run: |
+          JULIA_DEBUG=GAP julia --color=yes --project=. -e 'using GAP'  # ensure initialization
+          ls -l /home/runner/.julia/scratchspaces/*/binarywrappers_v1.11/bin
+          JULIA_DEBUG=GAP julia --color=yes --project=. -e 'using GAP, Test; @test GAP.Packages.test("${{ matrix.gap-package }}")'
