@@ -29,22 +29,13 @@ jobs:
       fail-fast: false
       matrix:
         gap-version:
-          - 'master'
-          - 'stable-4.14'
+          - 'lg/PackageDirectories'
         julia-version:
           - '1.6'
           - '1'         # latest stable release
           - 'nightly'
         os:
           - ubuntu-latest
-        include:
-          # Add a few macOS jobs (the number we can run in parallel is limited)
-          - gap-version: 'master'
-            julia-version: '1'
-            os: macOS-latest
-          - gap-version: 'stable-4.14'
-            julia-version: '1'
-            os: macOS-latest
 
     steps:
       - uses: actions/checkout@v4
@@ -59,7 +50,7 @@ jobs:
       - name: Checkout GAP
         uses: actions/checkout@v4
         with:
-          repository: 'gap-system/gap'
+          repository: 'lgoettgens/gap'
           ref: ${{ matrix.gap-version }}
           path: 'GAPROOT'
       - name: "Install dependencies (for macOS)"
