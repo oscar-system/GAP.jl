@@ -32,6 +32,7 @@
   - orb
   - profiling
   - simpcomp
+  - singular
   - zeromqinterface
 
 ## Version 0.12.1 (released 2024-12-09)
