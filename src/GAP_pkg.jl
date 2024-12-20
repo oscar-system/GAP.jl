@@ -42,8 +42,11 @@ for pkg in gap_pkgs_with_overrides
     @eval import $jll
 end
 
-# GAP package "grape" uses `dreadnaut` from nauty_jll
+# GAP package "grape" uses `dreadnaut` executable from nauty_jll
 import nauty_jll
+
+# GAP package "singular" uses `Singular` executable from Singular_jll
+import Singular_jll
 
 const pkg_bindirs = Dict{String, String}()
 
@@ -69,8 +72,12 @@ function setup_overrides()
               end
     end
 
-    # GAP package "grape" uses `dreadnaut` from nauty_jll
+    # GAP package "grape" uses `dreadnaut` executable from nauty_jll
     pkg_bindirs[realpath(gap_pkg_artifact_dir("grape"))] = @generate_wrappers(nauty_jll)
+
+    # GAP package "singular" uses `Singular` executable from Singular_jll
+    singular_binpath = @generate_wrappers(Singular_jll)
+    Globals.sing_exec = GapObj(joinpath(singular_binpath, "Singular"))
 end
 
 function find_override(installationpath::String)
