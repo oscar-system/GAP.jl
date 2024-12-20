@@ -49,6 +49,7 @@ jobs:
           # be able to properly deal with PRs / merges
           fetch-depth: 2
       - name: "Install extra dependencies"
+        if: runner.os == 'Linux'
         run: sudo apt-get install expect
       - name: "Set up Julia"
         uses: julia-actions/setup-julia@v2
