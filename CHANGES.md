@@ -3,6 +3,9 @@
 ## Version 0.13.0-DEV (released YYYY-MM-DD)
 
 - Update to GAP 4.14.0
+- Add `GAP.Packages.build_recursive(name)`
+- Change `GAP.Packages.build(name)` to no longer try to build the package if
+  it is already installed
 - Instead of downloading a single huge "artifact" containing all deposited GAP
   packages, we now use (and download) one artifact per GAP package.
 - Use precompiled binaries for the following GAP packages:
