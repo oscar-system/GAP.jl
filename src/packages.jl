@@ -451,8 +451,8 @@ function test(name::String)
     with_gap_var("ERROR_OUTPUT", Globals._JULIAINTERFACE_ORIGINAL_ERROR_OUTPUT) do
       with_gap_var("QuitGap", fake_QuitGap) do
         with_gap_var("QUIT_GAP", fake_QuitGap) do
-          with_gap_var("ForceQuitGap", identity) do
-            with_gap_var("FORCE_QUIT_GAP", identity) do
+          with_gap_var("ForceQuitGap", fake_QuitGap) do
+            with_gap_var("FORCE_QUIT_GAP", fake_QuitGap) do
               result = Globals.TestPackage(GapObj(name))
             end
           end

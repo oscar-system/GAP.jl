@@ -63,7 +63,7 @@ jobs:
         exclude:
           - gap-package: 'alnuth'                     # `AL_EXECUTABLE, the executable for PARI/GP, has to be set`
           #- gap-package: 'autodoc'                    # test failure
-          #- gap-package: 'caratinterface'             # `Carat program Bravais_inclusions failed with error code 1`
+          - gap-package: 'caratinterface'             # `Carat program Bravais_inclusions failed with error code 1`
           - gap-package: 'curlinterface'              # no jll
           - gap-package: 'example'                    # no jll
           #- gap-package: 'examplesforhomalg'          # `Error, found no GAP executable in PATH`
@@ -71,13 +71,13 @@ jobs:
           - gap-package: 'guarana'                    # `AL_EXECUTABLE, the executable for PARI/GP, has to be set`
           - gap-package: 'hap'                        # `polymake command not found. Please set POLYMAKE_COMMAND by hand`
           - gap-package: 'hapcryst'                   # `polymake command not found. Please set POLYMAKE_COMMAND by hand`
-          #- gap-package: 'io'                         # test failure
+          - gap-package: 'io'                         # segfaults, most likely due to child process handling
           - gap-package: 'itc'                        # dependency `xgap` has no jll
           #- gap-package: 'localizeringforhomalg'      # `Error, found no GAP executable in PATH`
-          #- gap-package: 'normalizinterface'          # `Error, Some error in the normaliz input data detected: Cone Property in last line not allowed for lattice ideals`
+          - gap-package: 'normalizinterface'          # Tests fail: NormalizInterface currently bundles Normaliz 3.9.3 and its test suite is tuned to that, but our JLL builds it against normaliz_jll which has 3.10.2
           #- gap-package: 'packagemanager'             # test failure
           - gap-package: 'polenta'                    # `AL_EXECUTABLE, the executable for PARI/GP, has to be set`
-          - gap-package: 'polycyclic'                 # ???
+          - gap-package: 'polycyclic'                 # test suite currently broken and also disabled by GAP package distribution
           - gap-package: 'polymaking'                 # `polymake command not found. Please set POLYMAKE_COMMAND by hand`
           #- gap-package: 'profiling'                  # segfaults during testing
           - gap-package: 'radiroot'                   # `AL_EXECUTABLE, the executable for PARI/GP, has to be set`
