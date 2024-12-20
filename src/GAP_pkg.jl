@@ -75,10 +75,12 @@ function setup_overrides()
               end
     end
 
+    # ensure GAPInfo.DirectoriesPrograms is initialized
+    GAP.Globals.DirectoriesSystemPrograms()
+
     # GAP package "4ti2interface" uses executables from lib4ti2_jll
     lib4ti2_path = @generate_wrappers(lib4ti2_jll)
     d = GAP.Globals.Directory(GapObj(lib4ti2_path))
-    GAP.Globals.DirectoriesSystemPrograms()  # ensure GAPInfo.DirectoriesPrograms is initialized
     GAP.Globals.Add(GAP.Globals.GAPInfo.DirectoriesPrograms, d)
 
     # GAP package "grape" uses `dreadnaut` executable from nauty_jll
@@ -87,6 +89,8 @@ function setup_overrides()
     # GAP package "singular" uses `Singular` executable from Singular_jll
     singular_binpath = @generate_wrappers(Singular_jll)
     Globals.sing_exec = GapObj(joinpath(singular_binpath, "Singular"))
+    d = GAP.Globals.Directory(GapObj(singular_binpath))
+    GAP.Globals.Add(GAP.Globals.GAPInfo.DirectoriesPrograms, d)
 end
 
 function find_override(installationpath::String)
