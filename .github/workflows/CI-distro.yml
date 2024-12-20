@@ -61,25 +61,19 @@ jobs:
           - ubuntu-latest
         gap-package: ${{fromJSON(needs.generate-matrix.outputs.gap-packages)}}
         exclude:
-          #- gap-package: '4ti2interface'              # ???
           - gap-package: 'alnuth'                     # `AL_EXECUTABLE, the executable for PARI/GP, has to be set`
           #- gap-package: 'autodoc'                    # test failure
           #- gap-package: 'caratinterface'             # `Carat program Bravais_inclusions failed with error code 1`
           - gap-package: 'curlinterface'              # no jll
           - gap-package: 'example'                    # no jll
-          #- gap-package: 'examplesforhomalg'          # `Error, found no Singular executable in PATH while searching the following list`
+          #- gap-package: 'examplesforhomalg'          # `Error, found no GAP executable in PATH`
           #- gap-package: 'gapdoc'                     # test failure
-          #- gap-package: 'gradedmodules'              # `Error, found no Singular executable in PATH while searching the following list`
-          #- gap-package: 'gradedringforhomalg'        # `Error, found no Singular executable in PATH while searching the following list` 
           - gap-package: 'guarana'                    # `AL_EXECUTABLE, the executable for PARI/GP, has to be set`
-          #- gap-package: 'guava'                      # test failure
           - gap-package: 'hap'                        # `polymake command not found. Please set POLYMAKE_COMMAND by hand`
           - gap-package: 'hapcryst'                   # `polymake command not found. Please set POLYMAKE_COMMAND by hand`
           #- gap-package: 'io'                         # test failure
           - gap-package: 'itc'                        # dependency `xgap` has no jll
-          #- gap-package: 'jupyterkernel'              # no jll
-          #- gap-package: 'localizeringforhomalg'      # `Error, found no Singular executable in PATH while searching the following list`'
-          #- gap-package: 'modulepresentationsforcap'  # `Error, found no Singular executable in PATH while searching the following list`'
+          #- gap-package: 'localizeringforhomalg'      # `Error, found no GAP executable in PATH`
           #- gap-package: 'normalizinterface'          # `Error, Some error in the normaliz input data detected: Cone Property in last line not allowed for lattice ideals`
           #- gap-package: 'packagemanager'             # test failure
           - gap-package: 'polenta'                    # `AL_EXECUTABLE, the executable for PARI/GP, has to be set`
@@ -87,11 +81,9 @@ jobs:
           - gap-package: 'polymaking'                 # `polymake command not found. Please set POLYMAKE_COMMAND by hand`
           #- gap-package: 'profiling'                  # segfaults during testing
           - gap-package: 'radiroot'                   # `AL_EXECUTABLE, the executable for PARI/GP, has to be set`
-          #- gap-package: 'ringsforhomalg'             # `Error, found no Singular executable in PATH while searching the following list`'
+          #- gap-package: 'ringsforhomalg'             # `Error, found no GAP executable in PATH`
           - gap-package: 'semigroups'                 # no jll
-          #- gap-package: 'singular'                   # `Error, Singular executable file not found!`
-          #- gap-package: 'toricvarieties'             # `Error, found no Singular executable in PATH while searching the following list`'
-          #- gap-package: 'typeset'                    # `ReadPackage could not read <digraphs>/gap/doc.g`
+          #- gap-package: 'typeset'                    # needs `dot2tex` executable
           #- gap-package: 'wpe'                        # ???
           - gap-package: 'xgap'                       # no jll
 
