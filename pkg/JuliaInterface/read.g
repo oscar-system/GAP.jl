@@ -40,3 +40,6 @@ DirectoriesPackagePrograms := function(name)
     return [ Directory( override ) ];
 end;
 MakeReadOnlyGlobal("DirectoriesPackagePrograms");
+
+# setup JLL overrides
+Julia.GAP.setup_overrides();

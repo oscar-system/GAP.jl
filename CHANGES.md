@@ -6,6 +6,7 @@
 - Instead of downloading a single huge "artifact" containing all deposited GAP
   packages, we now use (and download) one artifact per GAP package.
 - Use precompiled binaries for the following GAP packages:
+  - 4ti2interface
   - ace
   - anupq
   - browse
@@ -32,6 +33,7 @@
   - orb
   - profiling
   - simpcomp
+  - singular
   - zeromqinterface
 - Add `GAP.Packages.test(name)`
 
