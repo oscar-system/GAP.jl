@@ -420,7 +420,7 @@ The function uses [the function `TestPackage`](GAP_ref(ref:TestPackage)).
 """
 function test(name::String)
   global disable_error_handler
-  
+
   function with_gap_var(f, name::String, val)
     gname = GapObj(name)
     old_value = Globals.ValueGlobal(gname)
@@ -453,7 +453,7 @@ function test(name::String)
         with_gap_var("QUIT_GAP", fake_QuitGap) do
           with_gap_var("ForceQuitGap", identity) do
             with_gap_var("FORCE_QUIT_GAP", identity) do
-              result = Globals.TestPackage(GapObj(name))              
+              result = Globals.TestPackage(GapObj(name))
             end
           end
         end
