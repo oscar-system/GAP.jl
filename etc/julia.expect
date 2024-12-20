@@ -1,0 +1,47 @@
+set timeout 10
+
+# from https://serverfault.com/a/981762
+expect_before {
+    timeout { puts " TIMEOUT "; exit 2 }
+    eof     { puts " EOF ";     exit 1 }
+}
+
+expect "julia> "
+send -- "using GAP\r"
+
+# test tab completing "fai" to "fail"
+expect "julia> "
+sleep 0.1
+send -- "GAP.Globals.fai"
+send -- "\t"
+expect "l"
+send -- "\r"
+expect "GAP: fail\r"
+
+# test tab completing of a GAP record
+expect "julia> "
+sleep 0.1
+send -- "GAP.Globals.GAPInfo.MaxNrArgs"
+send -- "\t"
+expect "Method"
+send -- "\r"
+expect "6\r"
+
+# test GAP.prompt
+expect "julia> "
+sleep 0.1
+send -- "GAP.prompt()\r"
+
+# test the GAP prompt
+expect "gap> "
+sleep 0.1
+send -- "Julia.GAP;\r"
+expect "<Julia module GAP>\r"
+
+# test returning to Julia prompt
+expect "gap> "
+sleep 0.1
+send -- "quit;\r"
+expect "julia> "
+
+exit

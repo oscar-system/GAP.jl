@@ -64,6 +64,8 @@ jobs:
         uses: julia-actions/julia-runtest@v1
         with:
           depwarn: error
+      - name: "Test REPL integration"
+        run: etc/expect.sh --project=@.
       - name: "Add optional Julia dependencies for GAP tests"
         run: julia --color=yes -e 'using Pkg ; Pkg.add(["Singular", "Nemo"])'
       - name: "GAP tests"
