@@ -182,18 +182,6 @@ function regenerate_gaproot()
         write("$gaproot_mutable/gac", gac)
         chmod("$gaproot_mutable/gac", 0o755)
 
-        # 
-        mkpath(joinpath(gaproot_mutable, "bin"))
-        for d in (("include/gap", "src"), ("lib", "lib"), ("bin/gap", "gap"))
-            force_symlink(joinpath(gap_prefix, d[1]), joinpath(gaproot_mutable, d[2]))
-        end
-
-        # emulate the "compat mode" of the GAP build system, to help certain
-        # packages like Browse with an outdated build system
-        mkpath(joinpath(gaproot_mutable, "bin", sysinfo["GAParch"]))
-        force_symlink("../../gac",
-                      joinpath(gaproot_mutable, "bin", sysinfo["GAParch"], "gac"))
-
     end # mkpidlock
 
     return sysinfo
