@@ -482,12 +482,14 @@ function test(name::String)
   end
 
   error_occurred = false
-  ended_using_QuitGap = false
+  called_QuitGap = false
   function fake_QuitGap(code)
+    called_QuitGap && return # only do something on the first call
+    called_QuitGap = true
     if code != 0
       error_occurred = true
     end
-    ended_using_QuitGap = true
+    return
   end
 
   disable_error_handler[] = true
@@ -510,7 +512,8 @@ function test(name::String)
 
   # Due to the hack above, we run into an error in TestPackage that is usually unreachable.
   # In the case of a `QuitGap` call, we thus don't check for `result == true`.
-  return !error_occurred && (ended_using_QuitGap || result == true)
+  # Note: `result` may be `fail`, so it is not always booleany.
+  return !error_occurred && (called_QuitGap || result == true)
 end
 
 """
