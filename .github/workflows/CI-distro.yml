@@ -67,7 +67,6 @@ jobs:
           - gap-package: 'curlinterface'              # no jll
           - gap-package: 'example'                    # no jll
           - gap-package: 'examplesforhomalg'          # `Error, found no GAP executable in PATH`
-          #- gap-package: 'gapdoc'                     # test failure
           - gap-package: 'guarana'                    # `AL_EXECUTABLE, the executable for PARI/GP, has to be set`
           - gap-package: 'hap'                        # `polymake command not found. Please set POLYMAKE_COMMAND by hand`
           - gap-package: 'hapcryst'                   # `polymake command not found. Please set POLYMAKE_COMMAND by hand`
@@ -75,7 +74,7 @@ jobs:
           - gap-package: 'itc'                        # dependency `xgap` has no jll
           - gap-package: 'localizeringforhomalg'      # `Error, found no GAP executable in PATH`
           - gap-package: 'normalizinterface'          # Tests fail: NormalizInterface currently bundles Normaliz 3.9.3 and its test suite is tuned to that, but our JLL builds it against normaliz_jll which has 3.10.2
-          #- gap-package: 'packagemanager'             # test failure
+          - gap-package: 'packagemanager'             # tests need curlInterface to passe, reactivate once we have a working JLL for that
           - gap-package: 'polenta'                    # `AL_EXECUTABLE, the executable for PARI/GP, has to be set`
           - gap-package: 'polycyclic'                 # test suite currently broken and also disabled by GAP package distribution
           - gap-package: 'polymaking'                 # `polymake command not found. Please set POLYMAKE_COMMAND by hand`
@@ -84,13 +83,12 @@ jobs:
           - gap-package: 'ringsforhomalg'             # `Error, found no GAP executable in PATH`
           - gap-package: 'semigroups'                 # no jll
           #- gap-package: 'typeset'                    # needs `dot2tex` executable
-          #- gap-package: 'wpe'                        # ???
           - gap-package: 'xgap'                       # no jll
 
     steps:
       - uses: actions/checkout@v4
       - name: "Install extra dependencies"
-        run: sudo apt-get install --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended
+        run: sudo apt-get install --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended dot2tex
       - name: "Set up Julia"
         uses: julia-actions/setup-julia@v2
         with:
@@ -105,6 +103,4 @@ jobs:
         uses: julia-actions/julia-buildpkg@v1
       - name: "Run GAP package tests"
         run: |
-          JULIA_DEBUG=GAP julia --color=yes --project=. -e 'using GAP'  # ensure initialization
-          ls -l /home/runner/.julia/scratchspaces/*/binarywrappers_v1.11/bin
-          JULIA_DEBUG=GAP julia --color=yes --project=. -e 'using GAP, Test; @test GAP.Packages.test("${{ matrix.gap-package }}")'
+          julia --color=yes --project=. -e 'using GAP, Test; @test GAP.Packages.test("${{ matrix.gap-package }}")'
