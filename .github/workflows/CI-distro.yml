@@ -63,8 +63,6 @@ jobs:
         exclude:
           - gap-package: 'alnuth'                     # `AL_EXECUTABLE, the executable for PARI/GP, has to be set`
           - gap-package: 'autodoc'                    # tries and fails to build its own documentation, inside the (partially write protected) artifacts dir
-          # - gap-package: 'caratinterface'             # `Carat program Bravais_inclusions failed with error code 1`
-          # - gap-package: 'curlinterface'              # no jll
           - gap-package: 'example'                    # no jll
           - gap-package: 'examplesforhomalg'          # `Error, found no GAP executable in PATH`
           - gap-package: 'guarana'                    # `AL_EXECUTABLE, the executable for PARI/GP, has to be set`
