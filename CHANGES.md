@@ -39,6 +39,7 @@
   - simpcomp
   - singular
   - zeromqinterface
+- Add `GAP.Packages.test(name)`
 
 ## Version 0.12.3 (released 2025-01-01)
 
