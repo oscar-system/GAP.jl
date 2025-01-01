@@ -21,6 +21,8 @@ if Sys.iswindows()
 end
 
 import AbstractAlgebra # for should_show_banner()
+import Artifacts: find_artifacts_toml, @artifact_str
+import TOML
 
 import GAP_jll: GAP_jll, libgap
 
@@ -254,6 +256,12 @@ function __init__()
 
     gaproots = sysinfo["GAPROOTS"]
     cmdline_options = ["", "-l", gaproots]
+
+    # tell GAP about all artifacts that contain GAP packages
+    pkg_artifacts = filter(startswith("GAP_pkg_"), keys(TOML.parsefile(find_artifacts_toml(@__FILE__))))
+    pkgdirs = join((realpath(@artifact_str(name)) for name in pkg_artifacts), ';')
+    append!(cmdline_options, ["--packagedirs", pkgdirs])
+
     if isdefined(Main, :__GAP_ARGS__)
         # we were started via gap.sh, handle user command line arguments
         append!(cmdline_options, Main.__GAP_ARGS__)
