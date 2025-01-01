@@ -101,6 +101,7 @@ end
 # path to JuliaInterface.so
 const real_JuliaInterface_path = Ref{String}()
 JuliaInterface_path() = real_JuliaInterface_path[]
+const _saved_argv = Ref{Ref{Ptr{UInt8}}}()
 
 function initialize(argv::Vector{String})
     if use_jl_reinit_foreign_type()
@@ -127,12 +128,16 @@ function initialize(argv::Vector{String})
     # TODO: turn this into a proper libgap API
     unsafe_store!(cglobal((:SyLoadSystemInitFile, libgap), Int64), 0)
 
+    # the C data corresponding to argv needs to live forever
+    # as this is kept in the global SyOriginalArgv pointer in GAP
+    _saved_argv[] = Base.cconvert(Ptr{Ptr{UInt8}}, argv)
+
     ccall(
         (:GAP_Initialize, libgap),
         Cvoid,
         (Int32, Ptr{Ptr{UInt8}}, Ptr{Cvoid}, Ptr{Cvoid}, Cuint),
         length(argv),
-        argv,
+        _saved_argv[],
         C_NULL,
         error_handler_func,
         handle_signals,
