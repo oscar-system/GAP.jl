@@ -466,14 +466,14 @@ The function uses [the GAP function `TestPackage`](GAP_ref(ref:TestPackage)).
 function test(name::String)
   global disable_error_handler
 
-  function with_gap_var(f, name::String, val)
+  function with_gap_var(f, name::Symbol, val)
     gname = GapObj(name)
     old_value = Globals.ValueGlobal(gname)
-    replace_global!(gname, val)
+    replace_global!(name, val)
     try
         f()
     finally
-      replace_global!(gname, old_value)
+      replace_global!(name, old_value)
     end
   end
 
@@ -491,11 +491,11 @@ function test(name::String)
   disable_error_handler[] = true
   result = false
   try
-    with_gap_var("ERROR_OUTPUT", Globals._JULIAINTERFACE_ORIGINAL_ERROR_OUTPUT) do
-      with_gap_var("QuitGap", fake_QuitGap) do
-        with_gap_var("QUIT_GAP", fake_QuitGap) do
-          with_gap_var("ForceQuitGap", fake_QuitGap) do
-            with_gap_var("FORCE_QUIT_GAP", fake_QuitGap) do
+    with_gap_var(:ERROR_OUTPUT, Globals._JULIAINTERFACE_ORIGINAL_ERROR_OUTPUT) do
+      with_gap_var(:QuitGap, fake_QuitGap) do
+        with_gap_var(:QUIT_GAP, fake_QuitGap) do
+          with_gap_var(:ForceQuitGap, fake_QuitGap) do
+            with_gap_var(:FORCE_QUIT_GAP, fake_QuitGap) do
               result = Globals.TestPackage(GapObj(name))
             end
           end
