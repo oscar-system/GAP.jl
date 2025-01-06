@@ -143,9 +143,6 @@ function initialize(argv::Vector{String})
         handle_signals,
     )
 
-    # HACK HACK HACK workaround
-    Base.GC.gc(true)
-
     ## At this point, the GAP module has not been completely initialized, and
     ## hence is not yet available under the global binding "GAP"; but
     ## JuliaInterface needs to access it. To make that possible, we dlopen
