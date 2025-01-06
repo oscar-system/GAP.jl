@@ -68,6 +68,7 @@ jobs:
           - gap-package: 'guarana'                    # `AL_EXECUTABLE, the executable for PARI/GP, has to be set`
           - gap-package: 'hap'                        # `polymake command not found. Please set POLYMAKE_COMMAND by hand`
           - gap-package: 'hapcryst'                   # `polymake command not found. Please set POLYMAKE_COMMAND by hand`
+          - gap-package: 'help'                       # test failure in HeLP-4.0/tst/yes_4ti2.tst:39
           - gap-package: 'io'                         # segfaults, most likely due to child process handling
           - gap-package: 'itc'                        # dependency `xgap` has no jll
           - gap-package: 'localizeringforhomalg'      # `Error, found no GAP executable in PATH`
