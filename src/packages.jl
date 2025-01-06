@@ -456,12 +456,12 @@ end
 """
     test(name::String)
 
-Return a boolean indicating if the GAP package with name `name` succeeds
-in running its tests.
+Run the tests of GAP package `name` and return a boolean indicating whether
+they succeeded (`true`) or not.
 
-It is inteded to be used with the `@test` macro from the `Test` package.
+It is intended to be used with the `@test` macro from the `Test` package.
 
-The function uses [the function `TestPackage`](GAP_ref(ref:TestPackage)).
+The function uses [the GAP function `TestPackage`](GAP_ref(ref:TestPackage)).
 """
 function test(name::String)
   global disable_error_handler
@@ -469,15 +469,11 @@ function test(name::String)
   function with_gap_var(f, name::String, val)
     gname = GapObj(name)
     old_value = Globals.ValueGlobal(gname)
-    Globals.MakeReadWriteGlobal(gname)
-    Globals.UnbindGlobal(gname)
-    Globals.BindGlobal(gname, val)
+    replace_global!(gname, val)
     try
         f()
     finally
-      Globals.MakeReadWriteGlobal(gname);
-      Globals.UnbindGlobal(gname);
-      Globals.BindGlobal(gname, old_value);
+      replace_global!(gname, old_value)
     end
   end
 
