@@ -67,6 +67,7 @@ jobs:
           - gap-package: 'example'                    # no jll
           - gap-package: 'examplesforhomalg'          # `Error, found no GAP executable in PATH`
           - gap-package: 'guarana'                    # `AL_EXECUTABLE, the executable for PARI/GP, has to be set`
+          - gap-package: 'guava'                      # random test failures in `guava-3.19/tst/guava.tst:649`: Syntax error: expression expected in /tmp/gaptempfile.i8tlxS:1 GUAVA_TEMP_VAR := � &
           - gap-package: 'hap'                        # `polymake command not found. Please set POLYMAKE_COMMAND by hand`
           - gap-package: 'hapcryst'                   # `polymake command not found. Please set POLYMAKE_COMMAND by hand`
           - gap-package: 'help'                       # test failure in HeLP-4.0/tst/yes_4ti2.tst:39
