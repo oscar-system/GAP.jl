@@ -4,6 +4,7 @@
 
 - Update to GAP 4.14.0
 - Add `GAP.Packages.build_recursive(name)`
+- Add `GAP.Packages.test(name)`
 - Change `GAP.Packages.build(name)` to no longer try to build the package if
   it is already installed
 - Instead of downloading a single huge "artifact" containing all deposited GAP

@@ -3,7 +3,7 @@ module Packages
 
 import Downloads
 import Pidfile
-import ...GAP: Globals, GapObj, replace_global!, RNamObj, sysinfo, Wrappers
+import ...GAP: disable_error_handler, Globals, GapObj, replace_global!, RNamObj, sysinfo, Wrappers
 
 const DEFAULT_PKGDIR = Ref{String}()
 const DOWNLOAD_HELPER = Ref{Downloads.Downloader}()
@@ -451,6 +451,65 @@ function build_recursive(name::String; quiet::Bool = false,
     end
   end
   return true
+end
+
+"""
+    test(name::String)
+
+Run the tests of GAP package `name` and return a boolean indicating whether
+they succeeded (`true`) or not.
+
+It is intended to be used with the `@test` macro from the `Test` package.
+
+The function uses [the GAP function `TestPackage`](GAP_ref(ref:TestPackage)).
+"""
+function test(name::String)
+  global disable_error_handler
+
+  function with_gap_var(f, name::Symbol, val)
+    gname = GapObj(name)
+    old_value = Globals.ValueGlobal(gname)
+    replace_global!(name, val)
+    try
+        f()
+    finally
+      replace_global!(name, old_value)
+    end
+  end
+
+  error_occurred = false
+  called_QuitGap = false
+  function fake_QuitGap(code)
+    called_QuitGap && return # only do something on the first call
+    called_QuitGap = true
+    if code != 0
+      error_occurred = true
+    end
+    return
+  end
+
+  disable_error_handler[] = true
+  result = false
+  try
+    with_gap_var(:ERROR_OUTPUT, Globals._JULIAINTERFACE_ORIGINAL_ERROR_OUTPUT) do
+      with_gap_var(:QuitGap, fake_QuitGap) do
+        with_gap_var(:QUIT_GAP, fake_QuitGap) do
+          with_gap_var(:ForceQuitGap, fake_QuitGap) do
+            with_gap_var(:FORCE_QUIT_GAP, fake_QuitGap) do
+              result = Globals.TestPackage(GapObj(name))
+            end
+          end
+        end
+      end
+    end
+  finally
+    disable_error_handler[] = false
+  end
+
+  # Due to the hack above, we run into an error in TestPackage that is usually unreachable.
+  # In the case of a `QuitGap` call, we thus don't check for `result == true`.
+  # Note: `result` may be `fail`, so it is not always booleany.
+  return !error_occurred && (called_QuitGap || result == true)
 end
 
 """
