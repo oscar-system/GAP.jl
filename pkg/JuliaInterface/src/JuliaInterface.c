@@ -156,20 +156,6 @@ static Obj FuncJuliaEvalString(Obj self, Obj string)
     return gap_julia(result);
 }
 
-// Returns a julia object GAP object that holds the pointer to a julia symbol
-// :<name>.
-static Obj FuncJuliaSymbol(Obj self, Obj name)
-{
-    BEGIN_GAP_SYNC();
-    RequireStringRep("JuliaSymbol", name);
-
-    // jl_symbol never throws an exception and always returns a valid
-    // result, so no need for extra checks.
-    jl_sym_t * julia_symbol = jl_symbol(CONST_CSTR_STRING(name));
-    END_GAP_SYNC();
-    return NewJuliaObj((jl_value_t *)julia_symbol);
-}
-
 // internal wrapper for jl_boundp to deal with API change in Julia 1.12
 static int gap_jl_boundp(jl_module_t * m, jl_sym_t * var)
 {
@@ -246,7 +232,6 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(IS_JULIA_FUNC, 1, "obj"),
     GVAR_FUNC(JuliaEvalString, 1, "string"),
     GVAR_FUNC(_JuliaGetGlobalVariableByModule, 2, "name, module"),
-    GVAR_FUNC(JuliaSymbol, 1, "name"),
     GVAR_FUNC(_JuliaGetGapModule, 0, ""),
     GVAR_FUNC(_JuliaGetMainModule, 0, ""),
     { 0 } /* Finish with an empty entry */

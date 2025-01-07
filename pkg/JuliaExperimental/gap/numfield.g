@@ -809,7 +809,7 @@ InstallMethod( Characteristic,
       # We need this for matrix groups over residue class rings.
       # Nemo does not support it.
       return JuliaToGAP( IsInt,
-                 Julia.Base.getfield( R, JuliaSymbol( "n" ) ) );
+                 Julia.Base.getfield( R, Julia.Symbol( "n" ) ) );
     else
       return JuliaToGAP( IsInt, Julia.Nemo.characteristic( R ) );
     fi;

@@ -81,7 +81,7 @@ InstallMethod( ContextGAPNemo,
 
       ElementJuliaToGAP:= function( C, obj )
         return JuliaToGAP( IsInt, Julia.Base.getfield( obj,
-                   JuliaSymbol( "data" ) ) ) * One( C!.GAPDomain );
+                   Julia.Symbol( "data" ) ) ) * One( C!.GAPDomain );
 #T Deal with the case of ZZRingElem!
       end,
 

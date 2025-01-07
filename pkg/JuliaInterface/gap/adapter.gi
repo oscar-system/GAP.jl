@@ -65,7 +65,7 @@ BindGlobal("_JL_RNAM_TO_JULIA_SYMBOL", function(rnam)
     if ISB_REC(_JL_RNAM_TO_JULIA_SYMBOL_CACHE, rnam) then
         symbol := ELM_REC(_JL_RNAM_TO_JULIA_SYMBOL_CACHE, rnam);
     else;
-        symbol := JuliaSymbol( NameRNam( rnam ) );
+        symbol := Julia.Symbol( NameRNam( rnam ) );
         ASS_REC(_JL_RNAM_TO_JULIA_SYMBOL_CACHE, rnam, symbol);
     fi;
     return symbol;

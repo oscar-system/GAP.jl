@@ -215,8 +215,8 @@ InstallMethod( ContextGAPSingular,
                     Julia.Singular.polynomial_ring,
                     [ FContext!.JuliaDomainPointer, names ],
                     rec( cached:= true,
-                         ordering:= JuliaSymbol( ordering ),
-                         ordering2:= JuliaSymbol( ordering2 ),
+                         ordering:= Julia.Symbol( ordering ),
+                         ordering2:= Julia.Symbol( ordering2 ),
                          degree_bound:= degree_bound ) );
 
     # Create the GAP wrappers.

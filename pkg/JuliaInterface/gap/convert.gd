@@ -524,7 +524,7 @@ DeclareConstructor("JuliaToGAP", [IsObject, IsObject, IsBool]);
 #![ 1, 2 ]
 #!gap> jr:= GAPToJulia( r, false );
 #!&lt;Julia: Dict{Symbol,Any}(:a => 1,:b => GAP: [ 1, 2, 3 ])>
-#!gap> Julia.Base.get( jr, JuliaSymbol( "b" ), fail );
+#!gap> Julia.Base.get( jr, Julia.Symbol( "b" ), fail );
 #![ 1, 2, 3 ]
 #!</Example>
 DeclareGlobalFunction("GAPToJulia");
