@@ -27,12 +27,10 @@ gap> Julia.Core.Tuple(1);
 <Julia: (1,)>
 
 ##
-gap> JuliaSymbol("someSymbol");
+gap> Julia.Symbol("someSymbol");
 <Julia: :someSymbol>
-gap> JuliaSymbol("");
+gap> Julia.Symbol("");
 <Julia: Symbol("")>
-gap> JuliaSymbol(1);
-Error, JuliaSymbol: <name> must be a string (not the integer 1)
 
 ##
 gap> _JuliaGetGlobalVariableByModule(0, 0);

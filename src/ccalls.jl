@@ -197,16 +197,26 @@ end
 MakeString(val::String) = GC.@preserve val ccall((:MakeStringWithLen, libgap), GapObj, (Ptr{UInt8}, Culong), val, sizeof(val))
 #TODO: As soon as libgap provides :GAP_MakeStringWithLen, use it.
 
+function UNSAFE_CSTR_STRING(val::GapObj)
+    addr = ADDR_OBJ(val)
+    len = unsafe_load(addr, 1) >> 2
+    char_ptr = Ptr{UInt8}(addr) + sizeof(Int)
+    return (char_ptr, len)
+end
+
 function CSTR_STRING(val::GapObj)
-    len = ccall((:GAP_LenString, libgap), Int, (Any,), val)
-    char_ptr = ccall((:GAP_CSTR_STRING, libgap), Ptr{UInt8}, (Any,), val)
-    return deepcopy(unsafe_string(char_ptr, len))::String
+    GC.@preserve val begin
+        return unsafe_string(UNSAFE_CSTR_STRING(val)...)
+    end
 end
 
 function CSTR_STRING_AS_ARRAY(val::GapObj)::Vector{UInt8}
-    len = ccall((:GAP_LenString, libgap), Int, (Any,), val)
-    char_ptr = ccall((:GAP_CSTR_STRING, libgap), Ptr{UInt8}, (Any,), val)
-    return deepcopy(unsafe_wrap(Vector{UInt8}, char_ptr, len))
+    GC.@preserve val begin
+        char_ptr, len = UNSAFE_CSTR_STRING(val)
+        v = Vector{UInt8}(undef, len)
+        unsafe_copyto!(pointer(v), char_ptr, len)
+        return v
+    end
 end
 
 

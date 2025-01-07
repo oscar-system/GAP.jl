@@ -120,42 +120,42 @@ gap_to_julia(type_obj, obj; recursive::Bool = true) = gap_to_julia(type_obj, obj
 ## Default
 gap_to_julia(::Type{Any}, x::GapObj; recursive::Bool = true) =
     gap_to_julia(x; recursive)
-gap_to_julia(::Type{Any}, x::Any) = x
-gap_to_julia(::T, x::Nothing) where {T<:Type} = nothing
-gap_to_julia(::Type{Any}, x::Nothing) = nothing
+gap_to_julia(::Type{Any}, x::Any; recursive::Bool = true) = x
+gap_to_julia(::T, x::Nothing; recursive::Bool = true) where {T<:Type} = nothing
+gap_to_julia(::Type{Any}, x::Nothing; recursive::Bool = true) = nothing
 
 ## Handle "conversion" to GAP.Obj and GapObj (may occur in recursions).
-gap_to_julia(::Type{Obj}, x::Obj) = x
-gap_to_julia(::Type{GapObj}, x::GapObj) = x
+gap_to_julia(::Type{Obj}, x::Obj; recursive::Bool = true) = x
+gap_to_julia(::Type{GapObj}, x::GapObj; recursive::Bool = true) = x
 
 ## Integers
-gap_to_julia(::Type{T}, x::GapInt) where {T<:Integer} = T(x)
+gap_to_julia(::Type{T}, x::GapInt; recursive::Bool = true) where {T<:Integer} = T(x)
 
 ## Rationals
-gap_to_julia(::Type{Rational{T}}, x::GapInt) where {T<:Integer} = Rational{T}(x)
+gap_to_julia(::Type{Rational{T}}, x::GapInt; recursive::Bool = true) where {T<:Integer} = Rational{T}(x)
 
 ## Floats
-gap_to_julia(::Type{T}, obj::GapObj) where {T<:AbstractFloat} = T(obj)
+gap_to_julia(::Type{T}, obj::GapObj; recursive::Bool = true) where {T<:AbstractFloat} = T(obj)
 
 ## Chars
-gap_to_julia(::Type{Char}, obj::GapObj) = Char(obj)
-gap_to_julia(::Type{Cuchar}, obj::GapObj) = Cuchar(obj)
+gap_to_julia(::Type{Char}, obj::GapObj; recursive::Bool = true) = Char(obj)
+gap_to_julia(::Type{Cuchar}, obj::GapObj; recursive::Bool = true) = Cuchar(obj)
 
 ## Strings
-gap_to_julia(::Type{String}, obj::GapObj) = String(obj)
+gap_to_julia(::Type{String}, obj::GapObj; recursive::Bool = true) = String(obj)
 
 ## Symbols
-gap_to_julia(::Type{Symbol}, obj::GapObj) = Symbol(obj)
+gap_to_julia(::Type{Symbol}, obj::GapObj; recursive::Bool = true) = Symbol(obj)
 
 ## Convert GAP string to Vector{UInt8}
-function gap_to_julia(::Type{Vector{UInt8}}, obj::GapObj)
+function gap_to_julia(::Type{Vector{UInt8}}, obj::GapObj; recursive::Bool = true)
     Wrappers.IsStringRep(obj) && return CSTR_STRING_AS_ARRAY(obj)
     Wrappers.IsList(obj) && return UInt8[gap_to_julia(UInt8, obj[i]) for i = 1:length(obj)]
     throw(ConversionError(obj, Vector{UInt8}))
 end
 
 ## BitVectors
-gap_to_julia(::Type{BitVector}, obj::GapObj) = BitVector(obj)
+gap_to_julia(::Type{BitVector}, obj::GapObj; recursive::Bool = true) = BitVector(obj)
 
 ## Vectors
 function gap_to_julia(

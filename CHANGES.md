@@ -4,6 +4,7 @@
 
 - Update to GAP 4.14.0
 - Add `GAP.Packages.build_recursive(name)`
+- Add `GAP.Packages.test(name)`
 - Change `GAP.Packages.build(name)` to no longer try to build the package if
   it is already installed
 - Instead of downloading a single huge "artifact" containing all deposited GAP
@@ -17,6 +18,7 @@
   - cddinterface
   - cohomolo
   - crypting
+  - curlinterface
   - cvec
   - datastructures
   - deepthought
@@ -38,7 +40,15 @@
   - simpcomp
   - singular
   - zeromqinterface
-- Add `GAP.Packages.test(name)`
+- Optimize conversion of GAP strings to Julia strings, symbols or `Vector{UInt8}`
+
+## Version 0.12.3 (released 2025-01-01)
+
+- Fix a potential crash that may happen while loading GAP.jl
+
+## Version 0.12.2 (released 2024-12-14)
+
+- Support AbstractAlgebra 0.44
 
 ## Version 0.12.1 (released 2024-12-09)
 

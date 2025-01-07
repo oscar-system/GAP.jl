@@ -60,7 +60,7 @@ end );
 InstallMethod( \.\:\=,
                [ "IsJuliaModule", "IsPosInt and IsSmallIntRep", "IsObject" ],
   function( module, rnum, obj )
-    Julia.GAP._setglobal( module, JuliaSymbol( NameRNam( rnum ) ), obj );
+    Julia.GAP._setglobal( module, Julia.Symbol( NameRNam( rnum ) ), obj );
 end );
 
 InstallMethod( IsBound\.,

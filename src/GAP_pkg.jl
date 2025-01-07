@@ -9,7 +9,7 @@ const gap_pkgs_with_overrides = [
     "cddinterface"
     "cohomolo"
     "crypting"
-    #"curlinterface"
+    "curlinterface"
     "cvec"
     "datastructures"
     "deepthought"
