@@ -263,7 +263,7 @@ function BitVector(obj::GapObj)
     !Wrappers.IsBlist(obj) && throw(ConversionError(obj, BitVector))
     # TODO: a much better conversion would be possible, at least if `obj` is
     # in IsBlistRep, then we could essentially memcpy data
-    len = Wrappers.Length(obj)::Int
+    len = length(obj)
     result = BitVector(undef, len)
     for i = 1:len
         result[i] = obj[i]::Bool
@@ -457,7 +457,7 @@ julia> UnitRange{Int32}(val)
 
 function (::Type{T})(obj::GapObj) where {T<:UnitRange}
     !Wrappers.IsRange(obj) && throw(ConversionError(obj, T))
-    len = Wrappers.Length(obj)::Int
+    len = length(obj)
     if len == 0
         # construct an empty UnitRange object
         result = 1:0
@@ -498,7 +498,7 @@ StepRange{Int8, Int8}
 
 function(::Type{T})(obj::GapObj) where {T<:StepRange}
     !Wrappers.IsRange(obj) && throw(ConversionError(obj, T))
-    len = Wrappers.Length(obj)::Int
+    len = length(obj)
     if len == 0
         # construct an empty StepRange object
         start = 1
