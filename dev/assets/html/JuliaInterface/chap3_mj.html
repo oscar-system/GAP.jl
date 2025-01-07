@@ -383,7 +383,7 @@
 [ 1, 2 ]
 <span class="GAPprompt">gap&gt;</span> <span class="GAPinput">jr:= GAPToJulia( r, false );</span>
 &lt;Julia: Dict{Symbol,Any}(:a =&gt; 1,:b =&gt; GAP: [ 1, 2, 3 ])&gt;
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">Julia.Base.get( jr, JuliaSymbol( "b" ), fail );</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">Julia.Base.get( jr, Julia.Symbol( "b" ), fail );</span>
 [ 1, 2, 3 ]
 </pre></div>
 
