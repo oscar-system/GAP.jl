@@ -2,13 +2,18 @@
 
 ## Version 0.13.0-DEV (released YYYY-MM-DD)
 
-- Update to GAP 4.14.0
+- **Breaking:** Update to GAP 4.14.0
+- **Breaking:** Require `gap_to_julia` methods to handle `recursive`
+  keyword argument (e.g. by adding `; recursive::Bool = true` to the
+  argument list and otherwise ignoring it)
 - Add `GAP.Packages.build_recursive(name)`
 - Add `GAP.Packages.test(name)`
 - Change `GAP.Packages.build(name)` to no longer try to build the package if
   it is already installed
-- Instead of downloading a single huge "artifact" containing all deposited GAP
-  packages, we now use (and download) one artifact per GAP package.
+- Use individual artifacts for each GAP package distributed with GAP,
+  instead of a single huge "artifact" containing all of them and which
+  has to be downloaded for each update (now we can update GAP packages
+  individually)
 - Use precompiled binaries for the following GAP packages:
   - 4ti2interface
   - ace

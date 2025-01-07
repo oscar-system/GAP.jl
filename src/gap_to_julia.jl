@@ -85,7 +85,7 @@ The following `gap_to_julia` conversions are supported by GAP.jl.
 | `IsMatrixObj` | `Matrix{Any}`            | `Matrix{T}`           |
 | `IsRecord`    | `Dict{Symbol, Any}`      | `Dict{Symbol, T}`     |
 """
-function gap_to_julia(t::T, x::Any) where {T<:Type}
+function gap_to_julia(t::T, x::Any; recursive::Bool = true) where {T<:Type}
     ## Default for conversion:
     ## Base case for conversion (least specialized method): Allow converting any
     ## Julia object x to type T, provided that the type of x is a subtype of T;
@@ -110,12 +110,10 @@ function gap_to_julia(t::T, x::Any) where {T<:Type}
     return x
 end
 
-## Switch recursion on by default.
 ## If no method for the given arguments supports 'recursion_dict'
 ## then assume that it is not needed.
 gap_to_julia(type_obj, obj, recursion_dict::Union{Nothing,RecDict}; recursive::Bool = true) =
     gap_to_julia(type_obj, obj; recursive)
-gap_to_julia(type_obj, obj; recursive::Bool = true) = gap_to_julia(type_obj, obj)
 
 ## Default
 gap_to_julia(::Type{Any}, x::GapObj; recursive::Bool = true) =
@@ -295,8 +293,8 @@ function gap_to_julia(
 end
 
 ## Ranges
-gap_to_julia(::Type{T}, obj::GapObj) where {T<:UnitRange} = T(obj)
-gap_to_julia(::Type{T}, obj::GapObj) where {T<:StepRange} = T(obj)
+gap_to_julia(::Type{T}, obj::GapObj; recursive::Bool = true) where {T<:UnitRange} = T(obj)
+gap_to_julia(::Type{T}, obj::GapObj; recursive::Bool = true) where {T<:StepRange} = T(obj)
 
 ## Dictionaries
 function gap_to_julia(
@@ -326,7 +324,7 @@ function gap_to_julia(
 end
 
 ## Generic conversions
-gap_to_julia(x::Any) = x
+gap_to_julia(x::Any; recursive::Bool = true) = x
 
 function gap_to_julia(x::GapObj; recursive::Bool = true)
     GAP_IS_INT(x) && return gap_to_julia(BigInt, x)
