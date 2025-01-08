@@ -9,6 +9,7 @@ The following functions allow one to load/install/update/remove/locate
 GAP packages.
 
 ```@docs
+GAP.Packages.versioninfo
 GAP.Packages.load
 GAP.Packages.install
 GAP.Packages.update

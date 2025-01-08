@@ -529,7 +529,7 @@ end
 """
     versioninfo(io::IO=stdout)
 
-Print the versions of GAP, and all currently loaded GAP packages.
+Print the version and installation paths of all currently loaded GAP packages.
 """
 function versioninfo(io::IO=stdout)
   println(io, "GAP version ", String(Globals.GAPInfo.Version))
