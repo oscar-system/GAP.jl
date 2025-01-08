@@ -249,7 +249,7 @@ function gap_to_julia(::Type{Set{T}}, obj::GapObj; recursive::Bool = true) where
     else
         throw(ConversionError(obj, Set{T}))
     end
-    len_list = Wrappers.Length(obj)::Int
+    len_list = length(obj)
     new_array = Vector{T}(undef, len_list)
     if recursive
         recursion_dict = IdDict()
@@ -281,7 +281,7 @@ function gap_to_julia(
     if !haskey(recursion_dict, obj)
         parameters = T.parameters
         len = length(parameters)
-        Wrappers.Length(obj) == len ||
+        length(obj) == len ||
             throw(ArgumentError("length of $obj does not match type $T"))
         list = [
             gap_to_julia(parameters[i], obj[i], recursion_dict; recursive)

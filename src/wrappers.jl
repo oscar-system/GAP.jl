@@ -10,13 +10,13 @@ import GAP: @wrap
 @wrap ASS_LIST(x::Any, i::Int, v::Any)::Nothing
 @wrap ASS_MAT(x::Any, i::Int, j::Int, v::Any)::Nothing
 @wrap ASS_REC(x::Any, y::Int, v::Any)::Nothing
-@wrap AsSet(x::Any)::Any
+@wrap AsSet(x::GapObj)::GapObj
 @wrap ASSS_LIST(x::Any, y::Any, v::Any)::Any
 @wrap CopyToStringRep(x::Any)::Any
 @wrap DenominatorRat(x::Any)::GapInt
 @wrap DIFF(x::Any, y::Any)::Any
 @wrap Difference(x::Any, y::Any)::Any
-@wrap DuplicateFreeList(x::Any)::Any
+@wrap DuplicateFreeList(x::GapObj)::GapObj
 @wrap ELM_LIST(x::Any, i::Int)::Any
 @wrap ELM_MAT(x::Any, i::Int, j::Int)::Any
 @wrap ELM_REC(x::Any, y::Int)::Any
@@ -47,7 +47,7 @@ import GAP: @wrap
 @wrap IsString(x::Any)::Bool
 @wrap IsStringRep(x::Any)::Bool
 @wrap IsVectorObj(x::Any)::Bool
-@wrap Iterator(x::Any)::Any
+@wrap Iterator(x::Any)::GapObj
 @wrap Length(x::Any)::GapInt
 @wrap LoadPackage(x::GapObj, y::GapObj, z::Bool)::Any
 @wrap LowercaseString(x::GapObj)::GapObj
