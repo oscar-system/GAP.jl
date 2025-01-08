@@ -329,13 +329,17 @@ Note that these paths can be nonstandard because Julia's package manager
 does not control which available version of a GAP package gets loaded.
 
 If `jll` is `true` then also the underlying binary packages (jll),
-if available, are included in the output.
+if available, of all installed (not necessarily loaded) packages
+are included in the output.
 """
-function versioninfo(io::IO = stdout; jll::Bool = false, padding::String = "")
+function versioninfo(io::IO = stdout; jll::Bool = false, full::Bool = false, padding::String = "")
+  if full
+    jll = true
+  end
   # We cannot use `Pkg.dependencies()` because (depending on the project)
   # GAP is perhaps not contained.
   println(io, "GAP.jl version ", Compat.pkgversion(@__MODULE__))
-  GAP.Packages.versioninfo(io, GAP = true, jll = jll, padding = padding)
+  GAP.Packages.versioninfo(io; GAP = true, full = full, jll = jll, padding = padding)
 end
 
 include("lowlevel.jl")

@@ -527,7 +527,10 @@ function locate_package(name::String)
 end
 
 # `GAP.Packages.versioninfo` is called by `GAP.versioninfo`.
-function versioninfo(io::IO = stdout; GAP::Bool = false, jll::Bool = false, padding::String = "")
+function versioninfo(io::IO = stdout; GAP::Bool = false, jll::Bool = false, full::Bool = false, padding::String = "")
+  if full
+    GAP = jll = true
+  end
   GAP && println(io, padding, "GAP version ", String(Globals.GAPInfo.Version))
   println(io, padding, "GAP packages:")
   dict = Dict{Symbol, Any}(Globals.GAPInfo.PackagesLoaded)
@@ -559,28 +562,19 @@ function versioninfo(io::IO = stdout; GAP::Bool = false, jll::Bool = false, padd
   end
   if jll
     deps = collect(values(Pkg.dependencies()))
-    jllnames = String[]
-    jlldeps = []
+    jlldeps = filter(x -> startswith(x.name, "GAP_pkg_"), deps)
+    sort!(jlldeps, by = x -> x.name)
     if GAP
       jllname = "GAP_jll"
       jllpos = findfirst(x -> x.name == jllname, deps)
-      push!(jllnames, jllname)
-      push!(jlldeps, deps[jllpos])
+      pushfirst!(jlldeps, deps[jllpos])
     end
-    for name in names
-      jllname = "GAP_pkg_$(name)_jll"
-      jllpos = findfirst(x -> x.name == jllname, deps)
-      if jllpos != nothing
-        push!(jllnames, jllname)
-        push!(jlldeps, deps[jllpos])
-      end
-    end
-    jllnamewidth = maximum(length.(jllnames)) + 2
+    jllnamewidth = maximum([length(d.name) for d in jlldeps]) + 2
     println(io, padding, "building on:")
-    for i in 1:length(jllnames)
+    for d in jlldeps
       println(io, padding, "  ",
-                  rpad(jllnames[i], jllnamewidth, ' '),
-                  jlldeps[i].version)
+                  rpad(d.name, jllnamewidth, ' '),
+                  d.version)
     end
   end
 end

@@ -175,3 +175,10 @@ end
     print(io, GAP.AbstractAlgebra.Lowercase(), GapObj([1, 2, 3]))
     @test String(take!(io)) == "GAP: [ 1, 2, 3 ]"
 end
+
+@testset "versioninfo" begin
+    io = IOBuffer()
+    GAP.versioninfo(io, jll = true)
+    str = String(take!(io))
+    @test startswith(str, "GAP.jl version")
+end
