@@ -178,7 +178,7 @@ end
 
 @testset "versioninfo" begin
     io = IOBuffer()
-    GAP.versioninfo(io, jll = true)
+    GAP.versioninfo(io; full = true)
     str = String(take!(io))
     @test startswith(str, "GAP.jl version")
 end

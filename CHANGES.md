@@ -45,6 +45,7 @@
   - simpcomp
   - singular
   - zeromqinterface
+- Add `GAP.versioninfo()`
 - Optimize conversion of GAP strings to Julia strings, symbols or `Vector{UInt8}`
 
 ## Version 0.12.3 (released 2025-01-01)

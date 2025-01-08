@@ -321,14 +321,14 @@ function randseed!(seed::Union{Integer,Nothing}=nothing)
 end
 
 """
-    versioninfo(io::IO = stdout; jll::Bool = false)
+    versioninfo(io::IO = stdout; jll::Bool = false, full::Bool = false)
 
 Print the version numbers of GAP.jl and GAP,
 and version numbers and installation paths of all currently loaded GAP packages.
 Note that these paths can be nonstandard because Julia's package manager
 does not control which available version of a GAP package gets loaded.
 
-If `jll` is `true` then also the underlying binary packages (jll),
+If `jll` or `full` is `true` then also the underlying binary packages (jll),
 if available, of all installed (not necessarily loaded) packages
 are included in the output.
 """
