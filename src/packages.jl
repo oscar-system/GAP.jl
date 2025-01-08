@@ -3,7 +3,7 @@ module Packages
 
 import Downloads
 import Pidfile
-#import Pkg
+import Pkg
 import ...GAP: disable_error_handler, Globals, GapObj, replace_global!, RNamObj, sysinfo, Wrappers
 
 const DEFAULT_PKGDIR = Ref{String}()
@@ -526,29 +526,20 @@ function locate_package(name::String)
   return String(Wrappers.ELM_REC(loaded, lname)[1])
 end
 
-"""
-    versioninfo(io::IO=stdout)
-
-Print the version and installation paths of all currently loaded GAP packages.
-"""
-function versioninfo(io::IO=stdout)
-  println(io, "GAP version ", String(Globals.GAPInfo.Version))
-  println(io, "GAP packages:")
+# `GAP.Packages.versioninfo` is called by `GAP.versioninfo`.
+function versioninfo(io::IO = stdout; GAP::Bool = false, jll::Bool = false, padding::String = "")
+  GAP && println(io, padding, "GAP version ", String(Globals.GAPInfo.Version))
+  println(io, padding, "GAP packages:")
   dict = Dict{Symbol, Any}(Globals.GAPInfo.PackagesLoaded)
   default_artifacts_path = realpath(joinpath(DEPOT_PATH[1], "artifacts"))
- #deps = collect(values(Pkg.dependencies()))
-  marks = String[]
   names = String[]
   paths = String[]
   versions = String[]
-  jllversions = String[]
   for key in sort(collect(keys(dict)))
     name = String(key)
     push!(names, name)
     vals = dict[key]
-    origpath = realpath(vals[1])
-    path = replace(origpath, default_artifacts_path => "ARTIFACTS")
-    push!(marks, path == origpath ? "*" : "")
+    path = replace(realpath(vals[1]), default_artifacts_path => "ARTIFACTS")
     if startswith(path, "ARTIFACTS")
       pos = findall("/", path)
       if length(pos) > 1 && pos[2][1]-pos[1][1] > 10
@@ -557,19 +548,40 @@ function versioninfo(io::IO=stdout)
     end
     push!(paths, path)
     push!(versions, vals[2])
- #  jllpos = findfirst(x -> x.name == "GAP_pkg_$(name)_jll", deps)
- #  jllversion = jllpos == nothing ? "" : repr(deps[jllpos].version)
- #  push!(jllversions, replace(jllversion, "\"" => ""))
   end
   namewidth = maximum(length.(names)) + 2
   verswidth = maximum(length.(versions)) + 2
- #jllverswidth = maximum(length.(jllversions)) + 2
   for i in 1:length(names)
-    println(io, rpad(marks[i], 2, ' '),
+    println(io, padding, "  ",
                 rpad(names[i], namewidth, ' '),
                 rpad(versions[i], verswidth, ' '),
- #              rpad(jllversions[i], jllverswidth, ' '),
                 paths[i])
+  end
+  if jll
+    deps = collect(values(Pkg.dependencies()))
+    jllnames = String[]
+    jlldeps = []
+    if GAP
+      jllname = "GAP_jll"
+      jllpos = findfirst(x -> x.name == jllname, deps)
+      push!(jllnames, jllname)
+      push!(jlldeps, deps[jllpos])
+    end
+    for name in names
+      jllname = "GAP_pkg_$(name)_jll"
+      jllpos = findfirst(x -> x.name == jllname, deps)
+      if jllpos != nothing
+        push!(jllnames, jllname)
+        push!(jlldeps, deps[jllpos])
+      end
+    end
+    jllnamewidth = maximum(length.(jllnames)) + 2
+    println(io, padding, "building on:")
+    for i in 1:length(jllnames)
+      println(io, padding, "  ",
+                  rpad(jllnames[i], jllnamewidth, ' '),
+                  jlldeps[i].version)
+    end
   end
 end
 

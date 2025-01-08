@@ -1,9 +1,11 @@
 """
   GAP.jl is the Julia interface to the GAP-System.
 
-  For the package manual see https://oscar-system.github.io/GAP.jl/.
+  For the package manual see
+  [https://oscar-system.github.io/GAP.jl/](https://oscar-system.github.io/GAP.jl/).
 
-  For more information about GAP see https://www.gap-system.org/.
+  For more information about GAP see
+  [https://www.gap-system.org/](https://www.gap-system.org/).
 """
 module GAP
 
@@ -316,6 +318,25 @@ function randseed!(seed::Union{Integer,Nothing}=nothing)
     # pass an already reduced seed here
     Globals.Reset(Globals.GlobalRandomSource, seed % Int % 2^28)
     nothing
+end
+
+import Pkg
+
+"""
+    versioninfo(io::IO = stdout; jll::Bool = false)
+
+Print the version numbers of GAP.jl and GAP,
+and version numbers and installation paths of all currently loaded GAP packages.
+Note that these paths can be nonstandard because Julia's package manager
+does not control which available version of a GAP package gets loaded.
+
+If `jll` is `true` then also the underlying binary packages (jll),
+if available, are included in the output.
+"""
+function versioninfo(io::IO = stdout; jll::Bool = false, padding::String = "")
+  deps = filter(d -> d.name == "GAP", collect(values(Pkg.dependencies())))
+  println(io, "GAP.jl version ", deps[1].version)
+  GAP.Packages.versioninfo(io, GAP = true, jll = jll, padding = padding)
 end
 
 include("lowlevel.jl")
