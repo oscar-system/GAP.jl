@@ -320,8 +320,6 @@ function randseed!(seed::Union{Integer,Nothing}=nothing)
     nothing
 end
 
-import Pkg
-
 """
     versioninfo(io::IO = stdout; jll::Bool = false)
 
@@ -334,8 +332,9 @@ If `jll` is `true` then also the underlying binary packages (jll),
 if available, are included in the output.
 """
 function versioninfo(io::IO = stdout; jll::Bool = false, padding::String = "")
-  deps = filter(d -> d.name == "GAP", collect(values(Pkg.dependencies())))
-  println(io, "GAP.jl version ", deps[1].version)
+  # We cannot use `Pkg.dependencies()` because (depending on the project)
+  # GAP is perhaps not contained.
+  println(io, "GAP.jl version ", Compat.pkgversion(@__MODULE__))
   GAP.Packages.versioninfo(io, GAP = true, jll = jll, padding = padding)
 end
 
