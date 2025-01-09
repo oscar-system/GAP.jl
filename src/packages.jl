@@ -3,6 +3,7 @@ module Packages
 
 import Downloads
 import Pidfile
+import Pkg
 import ...GAP: disable_error_handler, Globals, GapObj, replace_global!, RNamObj, sysinfo, Wrappers
 
 const DEFAULT_PKGDIR = Ref{String}()
@@ -523,6 +524,59 @@ function locate_package(name::String)
   lname = RNamObj(lowercase(name))
   Wrappers.ISB_REC(loaded, lname) || return ""
   return String(Wrappers.ELM_REC(loaded, lname)[1])
+end
+
+# `GAP.Packages.versioninfo` is called by `GAP.versioninfo`.
+function versioninfo(io::IO = stdout; GAP::Bool = false, jll::Bool = false, full::Bool = false, padding::String = "")
+  if full
+    GAP = jll = true
+  end
+  GAP && println(io, padding, "GAP version ", String(Globals.GAPInfo.Version))
+  println(io, padding, "GAP packages:")
+  dict = Dict{Symbol, Any}(Globals.GAPInfo.PackagesLoaded)
+  default_artifacts_path = realpath(joinpath(DEPOT_PATH[1], "artifacts"))
+  names = String[]
+  paths = String[]
+  versions = String[]
+  for key in sort(collect(keys(dict)))
+    name = String(key)
+    push!(names, name)
+    vals = dict[key]
+    path = replace(realpath(vals[1]), default_artifacts_path => "ARTIFACTS")
+    if startswith(path, "ARTIFACTS")
+      pos = findall("/", path)
+      if length(pos) > 1 && pos[2][1]-pos[1][1] > 10
+        path = path[1:(pos[1][1]+7)] * "..." * path[pos[2][1]:end]
+      end
+    end
+    push!(paths, path)
+    push!(versions, vals[2])
+  end
+  namewidth = maximum(length.(names)) + 2
+  verswidth = maximum(length.(versions)) + 2
+  for i in 1:length(names)
+    println(io, padding, "  ",
+                rpad(names[i], namewidth, ' '),
+                rpad(versions[i], verswidth, ' '),
+                paths[i])
+  end
+  if jll
+    deps = collect(values(Pkg.dependencies()))
+    jlldeps = filter(x -> startswith(x.name, "GAP_pkg_"), deps)
+    sort!(jlldeps, by = x -> x.name)
+    if GAP
+      jllname = "GAP_jll"
+      jllpos = findfirst(x -> x.name == jllname, deps)
+      pushfirst!(jlldeps, deps[jllpos])
+    end
+    jllnamewidth = maximum([length(d.name) for d in jlldeps]) + 2
+    println(io, padding, "building on:")
+    for d in jlldeps
+      println(io, padding, "  ",
+                  rpad(d.name, jllnamewidth, ' '),
+                  d.version)
+    end
+  end
 end
 
 end

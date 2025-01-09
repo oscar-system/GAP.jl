@@ -1,9 +1,11 @@
 """
   GAP.jl is the Julia interface to the GAP-System.
 
-  For the package manual see https://oscar-system.github.io/GAP.jl/.
+  For the package manual see
+  [https://oscar-system.github.io/GAP.jl/](https://oscar-system.github.io/GAP.jl/).
 
-  For more information about GAP see https://www.gap-system.org/.
+  For more information about GAP see
+  [https://www.gap-system.org/](https://www.gap-system.org/).
 """
 module GAP
 
@@ -316,6 +318,28 @@ function randseed!(seed::Union{Integer,Nothing}=nothing)
     # pass an already reduced seed here
     Globals.Reset(Globals.GlobalRandomSource, seed % Int % 2^28)
     nothing
+end
+
+"""
+    versioninfo(io::IO = stdout; jll::Bool = false, full::Bool = false)
+
+Print the version numbers of GAP.jl and GAP,
+and version numbers and installation paths of all currently loaded GAP packages.
+Note that these paths can be nonstandard because Julia's package manager
+does not control which available version of a GAP package gets loaded.
+
+If `jll` or `full` is `true` then also the underlying binary packages (jll),
+if available, of all installed (not necessarily loaded) packages
+are included in the output.
+"""
+function versioninfo(io::IO = stdout; jll::Bool = false, full::Bool = false, padding::String = "")
+  if full
+    jll = true
+  end
+  # We cannot use `Pkg.dependencies()` because (depending on the project)
+  # GAP is perhaps not contained.
+  println(io, "GAP.jl version ", Compat.pkgversion(@__MODULE__))
+  GAP.Packages.versioninfo(io; GAP = true, full = full, jll = jll, padding = padding)
 end
 
 include("lowlevel.jl")
