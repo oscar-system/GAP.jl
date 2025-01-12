@@ -1,15 +1,17 @@
 # Changes in GAP.jl
 
-## Version 0.13.0-DEV (released YYYY-MM-DD)
+## Version 0.13.0 (released 2025-01-12)
 
 - **Breaking:** Update to GAP 4.14.0
 - **Breaking:** Require `gap_to_julia` methods to handle `recursive`
   keyword argument (e.g. by adding `; recursive::Bool = true` to the
   argument list and otherwise ignoring it)
+- Add `GAP.versioninfo()`
 - Add `GAP.Packages.build_recursive(name)`
 - Add `GAP.Packages.test(name)`
 - Change `GAP.Packages.build(name)` to no longer try to build the package if
   it is already installed
+- Optimize conversion of GAP strings to Julia strings, symbols or `Vector{UInt8}`
 - Use individual artifacts for each GAP package distributed with GAP,
   instead of a single huge "artifact" containing all of them and which
   has to be downloaded for each update (now we can update GAP packages
@@ -45,8 +47,6 @@
   - simpcomp
   - singular
   - zeromqinterface
-- Add `GAP.versioninfo()`
-- Optimize conversion of GAP strings to Julia strings, symbols or `Vector{UInt8}`
 
 ## Version 0.12.3 (released 2025-01-01)
 
