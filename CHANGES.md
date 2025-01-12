@@ -1,6 +1,6 @@
 # Changes in GAP.jl
 
-## Version 0.13.0-DEV (released YYYY-MM-DD)
+## Version 0.13.0 (released 2025-01-12)
 
 - **Breaking:** Update to GAP 4.14.0
 - **Breaking:** Require `gap_to_julia` methods to handle `recursive`
