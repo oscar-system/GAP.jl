@@ -91,6 +91,7 @@ jobs:
           version: ${{ matrix.julia-version }}
           arch: ${{ matrix.julia-arch }}
       - name: 'Install PARI/GP'  # for alnuth, and thus guarana, polenta, radiroot
+        if: matrix.gap-package == 'alnuth' || matrix.gap-package == 'guarana' || matrix.gap-package == 'polenta' || matrix.gap-package == 'radiroot'
         run: |
           sudo apt-get update
           sudo apt-get install pari-gp
