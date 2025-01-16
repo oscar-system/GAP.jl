@@ -61,12 +61,10 @@ jobs:
           - ubuntu-latest
         gap-package: ${{fromJSON(needs.generate-matrix.outputs.gap-packages)}}
         exclude:
-          - gap-package: 'alnuth'                     # `AL_EXECUTABLE, the executable for PARI/GP, has to be set`
           - gap-package: 'atlasrep'                   # random segfaults during testing
           - gap-package: 'autodoc'                    # tries and fails to build its own documentation, inside the (partially write protected) artifacts dir
           - gap-package: 'example'                    # no jll
           - gap-package: 'examplesforhomalg'          # `Error, found no GAP executable in PATH`
-          - gap-package: 'guarana'                    # `AL_EXECUTABLE, the executable for PARI/GP, has to be set`
           - gap-package: 'guava'                      # random test failures in `guava-3.19/tst/guava.tst:649`: Syntax error: expression expected in /tmp/gaptempfile.i8tlxS:1 GUAVA_TEMP_VAR := � &
           - gap-package: 'hap'                        # `polymake command not found. Please set POLYMAKE_COMMAND by hand`
           - gap-package: 'hapcryst'                   # `polymake command not found. Please set POLYMAKE_COMMAND by hand`
@@ -76,11 +74,9 @@ jobs:
           - gap-package: 'localizeringforhomalg'      # `Error, found no GAP executable in PATH`
           - gap-package: 'normalizinterface'          # Tests fail: NormalizInterface currently bundles Normaliz 3.9.3 and its test suite is tuned to that, but our JLL builds it against normaliz_jll which has 3.10.2
           - gap-package: 'packagemanager'             # tests need curlInterface to passe, reactivate once we have a working JLL for that
-          - gap-package: 'polenta'                    # `AL_EXECUTABLE, the executable for PARI/GP, has to be set`
           - gap-package: 'polycyclic'                 # test suite currently broken and also disabled by GAP package distribution
           - gap-package: 'polymaking'                 # `polymake command not found. Please set POLYMAKE_COMMAND by hand`
           - gap-package: 'profiling'                  # segfaults during testing
-          - gap-package: 'radiroot'                   # `AL_EXECUTABLE, the executable for PARI/GP, has to be set`
           - gap-package: 'ringsforhomalg'             # `Error, found no GAP executable in PATH`
           - gap-package: 'semigroups'                 # no jll
           - gap-package: 'xgap'                       # no jll
@@ -94,6 +90,11 @@ jobs:
         with:
           version: ${{ matrix.julia-version }}
           arch: ${{ matrix.julia-arch }}
+      - name: 'Install PARI/GP'  # for alnuth, and thus guarana, polenta, radiroot
+        if: matrix.gap-package == 'alnuth' || matrix.gap-package == 'guarana' || matrix.gap-package == 'polenta' || matrix.gap-package == 'radiroot'
+        run: |
+          sudo apt-get update
+          sudo apt-get install pari-gp
       - name: "Cache artifacts"
         uses: julia-actions/cache@v2
         with:
