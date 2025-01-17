@@ -1,5 +1,9 @@
 # Changes in GAP.jl
 
+## Version 0.13.1-DEV (released 2025-MM-DD)
+
+- Add precompiled binaries for the "semigroups" GAP package
+
 ## Version 0.13.0 (released 2025-01-12)
 
 - **Breaking:** Update to GAP 4.14.0
