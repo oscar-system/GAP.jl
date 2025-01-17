@@ -29,18 +29,20 @@ jobs:
       fail-fast: false
       matrix:
         julia-version:
-          - '1.6'
-          - '1.10'
-          - '~1.11.0-0'
           - 'nightly'
         os:
-          - ubuntu-latest
-        include:
-          # Add a few macOS jobs (not too many, the number we can run in parallel is limited)
-          - julia-version: '1.10'
-            os: macOS-latest
-          - julia-version: 'nightly'
-            os: macOS-latest
+          - macOS-latest
+        count:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+          - 7
+          - 8
+          - 9
+          - 10
 
     steps:
       - uses: actions/checkout@v4
@@ -52,98 +54,23 @@ jobs:
         if: runner.os == 'Linux'
         run: sudo apt-get install expect
       - name: "Set up Julia"
-        uses: julia-actions/setup-julia@v2
-        with:
-          version: ${{ matrix.julia-version }}
+        run: |
+          cd ../../
+          wget -O julia.tar.gz https://buildkite.com/organizations/julialang/pipelines/julia-master/builds/43472/jobs/019438aa-2de7-453d-891c-b92662c5b9bf/artifacts/019438b2-5921-445e-a3cb-c8cffeb0f2f3
+          tar xvf julia.tar.gz
+          mkdir -p /Users/runner/.local/bin
+          ln -s  /Users/runner/work/julia-*/bin/julia /Users/runner/.local/bin/julia
         id: setup-julia
-      - name: "Cache artifacts"
-        uses: julia-actions/cache@v2
-      - name: "workaround libstdc++ issue for julia 1.6"
-        if: matrix.julia-version == '1.6' && runner.os == 'Linux'
-        run: rm -f ${{ steps.setup-julia.outputs.julia-bindir }}/../lib/julia/libstdc++.so.6
+      # - name: "workaround libstdc++ issue for julia 1.6"
+      #   if: matrix.julia-version == '1.6' && runner.os == 'Linux'
+      #   run: rm -f ${{ steps.setup-julia.outputs.julia-bindir }}/../lib/julia/libstdc++.so.6
       - name: "Build package"
         uses: julia-actions/julia-buildpkg@v1
-      - name: "Run tests"
-        uses: julia-actions/julia-runtest@v1
-        with:
-          depwarn: error
+      - name: "Run precompilation"
+        run: julia --project=@. -e 'using GAP'
+      # - name: "Run tests"
+      #   uses: julia-actions/julia-runtest@v1
+      #   with:
+      #     depwarn: error
       - name: "Test REPL integration"
         run: etc/expect.sh --project=@.
-      - name: "Add optional Julia dependencies for GAP tests"
-        run: julia --color=yes -e 'using Pkg ; Pkg.add(["Singular", "Nemo"])'
-      - name: "GAP tests"
-        run: |
-          julia --project=. -e 'import GAP; GAP.create_gap_sh("/tmp")'
-          export GAP="/tmp/gap.sh -A --quitonbreak --norepl"
-          etc/ci_test.sh
-
-      - name: "Process Julia code coverage"
-        uses: julia-actions/julia-processcoverage@v1
-      - name: "Process GAP code coverage"
-        run: |
-          /tmp/gap.sh -A --quitonbreak --norepl etc/gather_coverage.g
-          cat gap-lcov.info >> lcov.info
-
-      - name: "Upload coverage data to Codecov"
-        continue-on-error: true
-        uses: codecov/codecov-action@v4
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-
-  docs:
-    name: "Documentation"
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - uses: actions/checkout@v4
-      - uses: julia-actions/setup-julia@v2
-        with:
-          version: '1'
-      - uses: julia-actions/cache@v2
-      - uses: julia-actions/julia-buildpkg@v1
-      - name: "Install package"
-        run: |
-          julia --project=docs --color=yes -e '
-            using Pkg
-            Pkg.develop(PackageSpec(path=pwd()))
-            Pkg.instantiate()'
-      - name: "Run doctests"
-        run: |
-          julia --project=docs --color=yes test/doctest.jl
-      - name: "Build GAP manual"
-        run: |
-          julia --project=. -e 'import GAP; GAP.create_gap_sh("/tmp")'
-          cd pkg/JuliaInterface
-          /tmp/gap.sh -A --quitonbreak --norepl makedoc.g
-          cd ../..
-          mkdir -p docs/src/assets/html/JuliaInterface/
-          cp pkg/JuliaInterface/doc/*.{html,css,js} docs/src/assets/html/JuliaInterface/
-      - name: "Deploy documentation"
-        run: julia --project=docs --color=yes docs/make.jl
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
-
-  slack-notification:
-    name: Send Slack notification on status change
-    needs:
-      - test
-      - docs
-    if: github.ref_name == github.event.repository.default_branch
-    runs-on: ubuntu-latest
-    steps:
-      - name: Determine whether CI status changed
-        uses: gap-actions/should-i-notify-action@v1
-        id: should_notify
-        with:
-          branch: master
-          needs_context: ${{ toJson(needs) }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          notify_on_changed_status: true
-      - name: Send slack notification
-        uses: act10ns/slack@e4e71685b9b239384b0f676a63c32367f59c2522
-        if: ${{ steps.should_notify.outputs.should_send_message == 'yes' }}
-        with:
-          status: ${{ steps.should_notify.outputs.current_status }}
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
