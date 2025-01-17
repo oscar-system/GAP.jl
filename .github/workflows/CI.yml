@@ -56,7 +56,8 @@ jobs:
       - name: "Set up Julia"
         run: |
           cd ../../
-          wget -O julia.tar.gz https://buildkite.com/organizations/julialang/pipelines/julia-master/builds/43472/jobs/019438aa-2de7-453d-891c-b92662c5b9bf/artifacts/019438b2-5921-445e-a3cb-c8cffeb0f2f3
+          # ff97facbc94
+          wget -O julia.tar.gz https://buildkite.com/organizations/julialang/pipelines/julia-master/builds/43177/jobs/0193e2c3-b1c5-4475-aeda-daf8a99df717/artifacts/0193e2cb-577e-4f6a-894a-c53f99b6279f
           tar xvf julia.tar.gz
           mkdir -p /Users/runner/.local/bin
           ln -s  /Users/runner/work/julia-*/bin/julia /Users/runner/.local/bin/julia
