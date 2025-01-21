@@ -78,7 +78,6 @@ jobs:
           - gap-package: 'polymaking'                 # `polymake command not found. Please set POLYMAKE_COMMAND by hand`
           - gap-package: 'profiling'                  # segfaults during testing
           - gap-package: 'ringsforhomalg'             # `Error, found no GAP executable in PATH`
-          - gap-package: 'semigroups'                 # no jll
           - gap-package: 'xgap'                       # no jll
 
     steps:

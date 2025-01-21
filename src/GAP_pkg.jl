@@ -30,7 +30,7 @@ const gap_pkgs_with_overrides = [
     "nq"
     "orb"
     "profiling"
-    #"semigroups"
+    "semigroups"
     "simpcomp"
     #"xgap"             # useful?
     "zeromqinterface"
