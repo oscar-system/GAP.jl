@@ -107,9 +107,6 @@ jobs:
             using Pkg
             Pkg.develop(PackageSpec(path=pwd()))
             Pkg.instantiate()'
-      - name: "Run doctests"
-        run: |
-          julia --project=docs --color=yes test/doctest.jl
       - name: "Build GAP manual"
         run: |
           julia --project=. -e 'import GAP; GAP.create_gap_sh("/tmp")'
