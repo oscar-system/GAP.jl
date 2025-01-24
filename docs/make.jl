@@ -1,6 +1,33 @@
 using Documenter
 using GAP
 
+function build_JuliaInterface_manual()
+  gapjl_path = abspath(@__DIR__, "..")
+  mktempdir() do tmpdir
+    GAP.create_gap_sh(tmpdir)
+    gap_sh_path = joinpath(tmpdir, "gap.sh")
+    cd(joinpath(gapjl_path, "pkg", "JuliaInterface")) do
+      run(`$gap_sh_path -A --quitonbreak --norepl makedoc.g`)
+    end
+  end
+end
+
+function copy_JuliaInterface_manual()
+  gapjl_path = normpath(@__DIR__, "..")
+  src_dir = joinpath(gapjl_path, "pkg", "JuliaInterface", "doc")
+  dst_dir = joinpath(gapjl_path, "docs", "src", "assets", "html", "JuliaInterface")
+
+  # clear the destination directory first
+  rm(dst_dir; recursive=true, force=true)
+  
+  mkpath(dst_dir)
+  for file in readdir(src_dir; sort=false)
+    if endswith(file, ".html") || endswith(file, ".css") || endswith(file, ".js")
+      cp(joinpath(src_dir, file), joinpath(dst_dir, file))
+    end
+  end
+end
+
 ## The following code inserts a step into the list of tasks
 ## that are performed by Documenter.jl's function `makedocs`.
 ## The idea is to encode external references to GAP manuals
@@ -91,6 +118,9 @@ function Documenter.Selectors.runner(::Type{ExternalReference}, doc::Document)
     @info "ExternalReference: building external references."
     compute_external_references(doc)
 end
+
+build_JuliaInterface_manual()
+copy_JuliaInterface_manual()
 
 DocMeta.setdocmeta!(GAP, :DocTestSetup, :(using GAP, GAP.Random); recursive = true)
 
