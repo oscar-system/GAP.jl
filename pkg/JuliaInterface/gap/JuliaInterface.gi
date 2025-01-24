@@ -7,7 +7,7 @@
 BindGlobal( "_JuliaCoreModule", _JuliaGetGlobalVariableByModule( "Core", _JuliaGetMainModule() ) );
 BindGlobal( "_JULIA_FUNCTION_TYPE", _JuliaGetGlobalVariableByModule( "Function", _JuliaCoreModule ) );
 BindGlobal( "_JULIA_ISA", _WrapJuliaFunction( _JuliaGetGlobalVariableByModule( "isa", _JuliaCoreModule ) ) );
-BindGlobal( "_JULIA_GAP", _JuliaGetGapModule() );
+BindGlobal( "GAP_jl", _JuliaGetGapModule() );
 
 InstallMethod( ViewString,
     [ "IsFunction and IsInternalRep and HasNameFunction" ],
@@ -38,11 +38,13 @@ InstallMethod( \.,
 
     rnam := NameRNam( rnum );
 
+    ## TODO: remove this special case in a future breaking release.
+    ## See https://github.com/oscar-system/GAP.jl/issues/1053 for details.
     if IsIdenticalObj(module, Julia) and rnam = "GAP" then
         ## Ensure that the Julia module GAP is always accessible as Julia.GAP,
         ## even while it is still being initialized, and also if it not actually
         ## exported to the Julia Main module
-        return _JULIA_GAP;
+        return GAP_jl;
     fi;
 
     var := _JuliaGetGlobalVariableByModule( rnam, module );

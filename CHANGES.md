@@ -3,6 +3,11 @@
 ## Version 0.13.1-DEV (released 2025-MM-DD)
 
 - Add precompiled binaries for the "semigroups" GAP package
+- Introduce a global variable `GAP_jl` on the GAP side,
+  which points to the `GAP` module on the Julia side.
+  `GAP_jl` is currently equivalent to `Julia.GAP`, but the
+  latter will be removed in the future.
+
 
 ## Version 0.13.0 (released 2025-01-12)
 
