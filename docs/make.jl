@@ -142,4 +142,7 @@ makedocs(
     pages = GAP.GAP_docs_pages,
 )
 
-deploydocs(repo = "github.com/oscar-system/GAP.jl.git")
+deploydocs(
+  repo = "github.com/oscar-system/GAP.jl.git",
+  push_preview = true,
+)
