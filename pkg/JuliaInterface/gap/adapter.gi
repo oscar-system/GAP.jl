@@ -142,22 +142,21 @@ InstallMethod( State,
 InstallMethod( Init,
     [ "IsRandomSourceJulia", "IsObject" ],
     function( rng, seed )
-    JuliaEvalString( "import Random" );
     if IsInt( seed ) then
       # This means a prescribed seed.
       seed:= AbsInt( seed );
       if HasJuliaPointer( rng ) then
-        Julia.Random.seed\!( JuliaPointer( rng ), GAPToJulia( seed ) );
+        Julia.GAP.Random.seed\!( JuliaPointer( rng ), GAPToJulia( seed ) );
       else
         SetFilterObj( rng, IsAttributeStoringRep );
         # We did not get a Julia rng, thus we create one by taking
         # a copy of the default one and then initializing it.
         SetJuliaPointer( rng,
-            Julia.Random.seed\!( Julia.Base.copy( Julia.Random.default_rng() ),
+            Julia.GAP.Random.seed\!( Julia.Base.copy( Julia.GAP.Random.default_rng() ),
                                  GAPToJulia( seed ) ) );
       fi;
     elif IsJuliaObject( seed ) and
-         Julia.Base.isa( seed, Julia.Random.AbstractRNG ) then
+         Julia.Base.isa( seed, Julia.GAP.Random.AbstractRNG ) then
       # This means a prescribed state.
       if HasJuliaPointer( rng ) then
         Julia.Base.copy\!( JuliaPointer( rng ), seed );
@@ -184,13 +183,12 @@ InstallMethod( Reset,
     local old;
 
     old:= State( rng );
-    JuliaEvalString( "import Random" );
     if IsInt( seed ) then
       # This means a prescribed seed.
       seed:= AbsInt( seed );
-      Julia.Random.seed\!( JuliaPointer( rng ), GAPToJulia( seed ) );
+      Julia.GAP.Random.seed\!( JuliaPointer( rng ), GAPToJulia( seed ) );
     elif IsJuliaObject( seed ) and
-         Julia.Base.isa( seed, Julia.Random.AbstractRNG ) then
+         Julia.Base.isa( seed, Julia.GAP.Random.AbstractRNG ) then
       # This means a prescribed state.
       Julia.Base.copy\!( JuliaPointer( rng ), seed );
     else
