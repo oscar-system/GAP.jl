@@ -69,8 +69,8 @@ function compute_GAP_URL(url::String)
 end
 
 
-# The code was adapted from `expand_citations`
-# in DocumenterCitations.jl/src/citations.jl.
+# The code was adapted from `expand_citation`
+# in DocumenterCitations.jl/src/expand_citations.jl.
 Document = Documenter.Document
 
 # Execute our step before the computation of cross-references (3.0)
