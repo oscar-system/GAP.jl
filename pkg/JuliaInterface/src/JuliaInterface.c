@@ -186,11 +186,26 @@ static Obj Func_JuliaGetGlobalVariableByModule(Obj self, Obj name, Obj module)
     }
     jl_sym_t * symbol = jl_symbol(CONST_CSTR_STRING(name));
     END_GAP_SYNC();
+
+#if JULIA_VERSION_MAJOR == 1 && JULIA_VERSION_MINOR >= 12
+    // WORKAROUND issue #1132
+    jl_task_t * ct = jl_get_current_task();
+    size_t      last_world = ct->world_age;
+    ct->world_age = jl_get_world_counter();
+#endif
+
+    Obj result;
     if (!gap_jl_boundp(m, symbol)) {
-        return Fail;
+        result = Fail;
     }
-    jl_value_t * value = jl_get_global(m, symbol);
-    return gap_julia(value);
+    else {
+        jl_value_t * value = jl_get_global(m, symbol);
+        result = gap_julia(value);
+    }
+#if JULIA_VERSION_MAJOR == 1 && JULIA_VERSION_MINOR >= 12
+    ct->world_age = last_world;
+#endif
+    return result;
 }
 
 static Obj Func_JuliaGetGapModule(Obj self)
