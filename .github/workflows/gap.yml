@@ -62,6 +62,15 @@ jobs:
           repository: 'gap-system/gap'
           ref: ${{ matrix.gap-version }}
           path: 'GAPROOT'
+      - name: Patch GAP
+        run: |
+          patchdir=.github/workflows/GAP_patches/${{ matrix.gap-version }}
+          if [ -d $patchdir ]; then
+            for f in $patchdir/*.patch; do
+              echo "Applying path ${f}"
+              patch -p1 -d GAPROOT < ${f}
+            done
+          fi
       - name: "Install dependencies (for macOS)"
         if: runner.os == 'macOS'
         run: |
