@@ -101,22 +101,7 @@ jobs:
           version: '1'
       - uses: julia-actions/cache@v2
       - uses: julia-actions/julia-buildpkg@v1
-      - name: "Install package"
-        run: |
-          julia --project=docs --color=yes -e '
-            using Pkg
-            Pkg.develop(PackageSpec(path=pwd()))
-            Pkg.instantiate()'
-      - name: "Build GAP manual"
-        run: |
-          julia --project=. -e 'import GAP; GAP.create_gap_sh("/tmp")'
-          cd pkg/JuliaInterface
-          /tmp/gap.sh -A --quitonbreak --norepl makedoc.g
-          cd ../..
-          mkdir -p docs/src/assets/html/JuliaInterface/
-          cp pkg/JuliaInterface/doc/*.{html,css,js} docs/src/assets/html/JuliaInterface/
-      - name: "Deploy documentation"
-        run: julia --project=docs --color=yes docs/make.jl
+      - uses: julia-actions/julia-docdeploy@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
