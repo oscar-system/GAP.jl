@@ -537,7 +537,7 @@ DeclareGlobalFunction("GAPToJulia");
 #!  Calling <Ref Oper="RandomSource" BookName="ref"/> with only argument
 #!  <Ref Filt="IsRandomSourceJulia" Label="for IsRandomSource"/> yields a
 #!  &GAP; random source that uses a copy of &Julia;'s default random number
-#!  generator <C>Julia.Random.default_rng()</C>.
+#!  generator <C>Random.default_rng()</C>.
 #!  Note that different calls with only argument
 #!  <Ref Filt="IsRandomSourceJulia" Label="for IsRandomSource"/> yield
 #!  different random sources.
@@ -545,7 +545,7 @@ DeclareGlobalFunction("GAPToJulia");
 #!  Called with <Ref Filt="IsRandomSourceJulia" Label="for IsRandomSource"/>
 #!  and a positive integer,
 #!  <Ref Oper="RandomSource" BookName="ref"/> returns a random source that is
-#!  based on a copy of <C>Julia.Random.default_rng()</C> but got initialized
+#!  based on a copy of <C>Random.default_rng()</C> but got initialized
 #!  with the given integer as a seed.
 #!  <P/>
 #!  Called with <Ref Filt="IsRandomSourceJulia" Label="for IsRandomSource"/>
@@ -563,7 +563,7 @@ DeclareGlobalFunction("GAPToJulia");
 #! gap> rs1:= RandomSource( IsRandomSourceJulia );
 #! <RandomSource in IsRandomSourceJulia>
 #! gap> rs2:= RandomSource( IsRandomSourceJulia,
-#! >                        Julia.Random.default_rng() );
+#! >                        Julia.GAP.Random.default_rng() );
 #! <RandomSource in IsRandomSourceJulia>
 #! gap> repeat
 #! >   x:= Random( rs1, [ 1 .. 100 ] );
