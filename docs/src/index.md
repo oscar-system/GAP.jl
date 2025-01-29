@@ -32,6 +32,14 @@ using Julia code from the GAP side.
 The viewpoint of an interface from GAP to Julia is described in
 [the manual of the GAP package JuliaInterface](assets/html/JuliaInterface/chap0_mj.html).
 
+## Acknowledgements
+
+The development of this Julia package has been supported
+by the German Research Foundation (DFG) within the
+[Collaborative Research Center TRR 195 *Symbolic Tools in Mathematics
+and their Applications*](https://www.computeralgebra.de/sfb/)
+(from 2017 until 2028).
+
 ## Table of contents
 
 ```@contents

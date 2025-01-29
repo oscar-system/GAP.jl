@@ -139,8 +139,9 @@ AutoDoc := rec(
     ),
     Acknowledgements := Concatenation(
       "The development of this &GAP; package has been supported ",
-      "by the <URL><Link>https://www.computeralgebra.de/sfb/</Link>",
-      "<LinkText>SFB-TRR 195 ",
+      "by the German Research Foundation (DFG) within the ",
+      "<URL><Link>https://www.computeralgebra.de/sfb/</Link>",
+      "<LinkText>Collaborative Research Center TRR 195 ",
       "<Q>Symbolic Tools in Mathematics and their Applications</Q>",
       "</LinkText></URL> (from 2017 until 2028).\n",
       "<P/>\n"
