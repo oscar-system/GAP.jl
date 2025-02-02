@@ -156,11 +156,11 @@ DeclareAttribute( "JuliaPointer", IsJuliaWrapper );
 #! @BeginExampleSession
 #! gap> IsJuliaModule( Julia );
 #! true
-#! gap> Julia.GAP;
+#! gap> GAP_jl;
 #! <Julia module GAP>
-#! gap> IsJuliaModule( Julia.GAP );
+#! gap> IsJuliaModule( GAP_jl );
 #! true
-#! gap> Julia.GAP.gap_to_julia;
+#! gap> GAP_jl.gap_to_julia;
 #! <Julia: gap_to_julia>
 #! @EndExampleSession
 DeclareCategory( "IsJuliaModule", IsJuliaObject and IsRecord  );
@@ -236,10 +236,10 @@ DeclareGlobalFunction( "JuliaImportPackage" );
 #!  <Item>
 #!    &Julia;'s <C>RefValue</C> objects can be handled as follows.
 #!    If <C>x</C> is such an object then its value can be fetched with
-#!    <C>Julia.GAP.getindex( x )</C>,
+#!    <C>GAP_jl.getindex( x )</C>,
 #!    a value <C>v</C> of the right type can be set with
-#!    <C>Julia.GAP.setindex( x, v )</C>,
-#!    and one can check with <C>Julia.GAP.isassigned( x )</C>
+#!    <C>GAP_jl.setindex( x, v )</C>,
+#!    and one can check with <C>GAP_jl.isassigned( x )</C>
 #!    whether <C>x</C> has a value.
 #!  </Item>
 #!  </List>
@@ -266,12 +266,12 @@ DeclareGlobalFunction( "JuliaImportPackage" );
 #!  <C>Main</C> module.
 #!  For example, &Julia; variables from the interface to &GAP; are defined
 #!  in the &Julia; module <C>GAP</C> or its submodules.
-#!  It is safe to access this module as <C>Julia.GAP</C>.
+#!  It is safe to access this module as <C>GAP_jl</C>.
 #!
 #! @BeginExampleSession
-#! gap> Julia.GAP;
+#! gap> GAP_jl;
 #! <Julia module GAP>
-#! gap> Julia.GAP.prompt;
+#! gap> GAP_jl.prompt;
 #! <Julia: prompt>
 #! @EndExampleSession
 DeclareGlobalVariable( "Julia" );

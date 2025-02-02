@@ -36,10 +36,10 @@ DirectoriesPackagePrograms := function(name)
       return [];
     fi;
 
-    override := JuliaToGAP( IsString, Julia.GAP.find_override(GAPToJulia(installationpath)) );
+    override := JuliaToGAP( IsString, GAP_jl.find_override(GAPToJulia(installationpath)) );
     return [ Directory( override ) ];
 end;
 MakeReadOnlyGlobal("DirectoriesPackagePrograms");
 
 # setup JLL overrides
-Julia.GAP.setup_overrides();
+GAP_jl.setup_overrides();

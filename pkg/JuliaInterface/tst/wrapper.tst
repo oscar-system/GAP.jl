@@ -16,7 +16,7 @@ gap> Julia.Base.typeof(N);
 ## wrap a Julia function
 gap> f := Objectify(type, rec());;
 gap> SetJuliaPointer(f, Julia.Base.sqrt);
-gap> Julia.Base.typeof(Julia.GAP.UnwrapJuliaFunc(f));
+gap> Julia.Base.typeof(GAP_jl.UnwrapJuliaFunc(f));
 <Julia: typeof(sqrt)>
 gap> f(4);
 <Julia: 2.0>

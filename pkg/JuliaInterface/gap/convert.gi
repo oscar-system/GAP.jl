@@ -8,7 +8,7 @@
 InstallMethod(JuliaToGAP, ["IsInt", "IsJuliaObject"],
 function(filter, obj)
     if Julia.isa(obj, Julia.Base.Integer) then
-        return Julia.GAP.GapObj(obj);
+        return GAP_jl.GapObj(obj);
     fi;
     Error("<obj> must be a Julia integer");
 end);
@@ -22,7 +22,7 @@ end);
 InstallMethod(JuliaToGAP, ["IsRat", "IsJuliaObject"],
 function(filter, obj)
     if Julia.isa(obj, Julia.Base.Integer) or Julia.isa(obj, Julia.Base.Rational) then
-        return Julia.GAP.GapObj(obj);
+        return GAP_jl.GapObj(obj);
     fi;
     Error("<obj> must be a Julia integer or rational");
 end);
@@ -38,7 +38,7 @@ end);
 InstallMethod(JuliaToGAP, ["IsFloat", "IsJuliaObject"],
 function(filter, obj)
     if Julia.isa(obj, Julia.Base.AbstractFloat) then
-        return Julia.GAP.GapObj(obj);
+        return GAP_jl.GapObj(obj);
     fi;
     Error("<obj> must be a Julia float");
 end);
@@ -54,10 +54,10 @@ end);
 InstallMethod(JuliaToGAP, ["IsChar", "IsJuliaObject"],
 function(filter, obj)
     if Julia.isa(obj, Julia.Base.Char) then
-        return Julia.GAP.GapObj(obj);
+        return GAP_jl.GapObj(obj);
     elif Julia.isa(obj, Julia.Base.Int8) or
          Julia.isa(obj, Julia.Base.UInt8) then
-        return CharInt( Julia.GAP.GapObj(obj) );
+        return CharInt( GAP_jl.GapObj(obj) );
     fi;
 
     Error("<obj> must be a Julia Char or Int8 or UInt8");
@@ -72,7 +72,7 @@ InstallMethod(JuliaToGAP, ["IsRecord", "IsJuliaObject"],
 InstallMethod(JuliaToGAP, ["IsRecord", "IsJuliaObject", "IsBool"],
 function(filter, obj, recursive)
     if Julia.isa(obj, _JL_Dict_Symbol) or Julia.isa(obj, _JL_Dict_AbstractString) then
-        return Julia.GAP.Obj(obj, recursive);
+        return GAP_jl.Obj(obj, recursive);
     fi;
     Error("<obj> must be a Julia Dict{Symbol} or Dict{AbstractString}");
 end);
@@ -84,7 +84,7 @@ InstallMethod(JuliaToGAP, ["IsList", "IsJuliaObject", "IsBool"],
 function(filter, obj, recursive)
     if Julia.isa(obj, Julia.Base.Array) or Julia.isa(obj, Julia.Base.Tuple)
        or Julia.isa(obj, Julia.Base.AbstractRange) then
-        return Julia.GAP.Obj(obj, recursive);
+        return GAP_jl.Obj(obj, recursive);
     fi;
     Error("<obj> must be a Julia array or tuple or range");
 end);
@@ -96,7 +96,7 @@ InstallMethod(JuliaToGAP, ["IsRange", "IsJuliaObject"],
 InstallMethod(JuliaToGAP, ["IsRange", "IsJuliaObject", "IsBool"],
 function(filter, obj, recursive)
     if Julia.isa(obj, Julia.Base.AbstractRange) then
-        return Julia.GAP.Obj(obj, recursive);
+        return GAP_jl.Obj(obj, recursive);
     fi;
     Error("<obj> must be a Julia range");
 end);
@@ -110,7 +110,7 @@ InstallMethod(JuliaToGAP, ["IsBlist", "IsJuliaObject"],
 InstallMethod(JuliaToGAP, ["IsBlist", "IsJuliaObject", "IsBool"],
 function(filter, obj, recursive)
     if Julia.isa(obj, _JL_Vector_Bool) or Julia.isa(obj, _JL_BitVector) then
-        return Julia.GAP.Obj(obj, recursive);
+        return GAP_jl.Obj(obj, recursive);
     fi;
     Error("<obj> must be a Julia Vector{Bool} or BitVector");
 end);
@@ -119,9 +119,9 @@ InstallMethod(JuliaToGAP, ["IsString", "IsJuliaObject"],
 function(filter, obj)
     if Julia.isa(obj, Julia.Base.AbstractString) or
        Julia.isa(obj, Julia.Base.Symbol) then
-        return Julia.GAP.GapObj(obj);
+        return GAP_jl.GapObj(obj);
     fi;
     Error("<obj> must be a Julia string or symbol");
 end);
 
-InstallGlobalFunction("GAPToJulia", Julia.GAP._gap_to_julia );
+InstallGlobalFunction("GAPToJulia", GAP_jl._gap_to_julia );

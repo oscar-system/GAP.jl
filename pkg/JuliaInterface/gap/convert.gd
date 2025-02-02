@@ -272,11 +272,11 @@
 #!  <E>Conversion from &Julia; to &GAP;</E>
 #!
 #!  There are two alternatives for this direction,
-#!  the Julia constructor <Ref Func="Julia.GAP.Obj"/>
+#!  the Julia constructor <Ref Func="GAP_jl.Obj"/>
 #!  and the &GAP; constructor
 #!  <Ref Constr="JuliaToGAP" Label="for IsObject, IsObject"/>.
 #!
-#!  <Ref Func="Julia.GAP.Obj"/> is a &Julia; function
+#!  <Ref Func="GAP_jl.Obj"/> is a &Julia; function
 #!  that takes one or two arguments,
 #!  the object to be converted and optionally the value <K>true</K>
 #!  indicating recursive conversion of nested objects.
@@ -297,7 +297,7 @@
 #!  The supported &Julia; types of the second argument of
 #!  <Ref Constr="JuliaToGAP" Label="for IsObject, IsObject"/>
 #!  are as follows;
-#!  more &Julia; types may be supported for <Ref Func="Julia.GAP.Obj"/>.
+#!  more &Julia; types may be supported for <Ref Func="GAP_jl.Obj"/>.
 #!
 #!  <Table Align="|l|l|l|">
 #!    <HorLine/>
@@ -369,11 +369,11 @@
 #! @SectionLabel Conversion_functions
 #!
 #! <ManSection>
-#! <Func Name="Julia.GAP.Obj" Arg="juliaobj[, recursive]"/>
-#! <Func Name="Julia.GAP.GapObj" Arg="juliaobj[, recursive]"/>
+#! <Func Name="GAP_jl.Obj" Arg="juliaobj[, recursive]"/>
+#! <Func Name="GAP_jl.GapObj" Arg="juliaobj[, recursive]"/>
 #! <Returns>a &GAP; object</Returns>
 #! <Description>
-#! The &Julia; constructor <Ref Func="Julia.GAP.Obj"/> takes an object
+#! The &Julia; constructor <Ref Func="GAP_jl.Obj"/> takes an object
 #! <A>juliaobj</A> and chooses a method depending on its &Julia; type
 #! for computing a &GAP; object corresponding to <A>juliaobj</A>.
 #! If <A>recursive</A> is <K>true</K> then nested objects are converted
@@ -382,29 +382,29 @@
 #! <!-- Note that the Julia output contains the "forbidden" sequence "]]>",
 #!      thus the CDATA syntax cannot be used. -->
 #!<Example>
-#!gap> Julia.GAP.Obj( 42 );
+#!gap> GAP_jl.Obj( 42 );
 #!42
 #!gap> m:= GAPToJulia( [ [ 1, 2 ], [ 3, 4 ] ] );
 #!&lt;Julia: Any[Any[1, 2], Any[3, 4]]>
-#!gap> Julia.GAP.Obj( m );
+#!gap> GAP_jl.Obj( m );
 #![ &lt;Julia: Any[1, 2]>, &lt;Julia: Any[3, 4]> ]
-#!gap> Julia.GAP.Obj( m, true );
+#!gap> GAP_jl.Obj( m, true );
 #![ [ 1, 2 ], [ 3, 4 ] ]
 #!</Example>
 #! <P/>
-#! One advantage of <Ref Func="Julia.GAP.Obj"/> compared to the &GAP;
+#! One advantage of <Ref Func="GAP_jl.Obj"/> compared to the &GAP;
 #! constructor <Ref Constr="JuliaToGAP" Label="for IsObject, IsObject"/> is
-#! that it is easy to extend the scope of <Ref Func="Julia.GAP.Obj"/>
+#! that it is easy to extend the scope of <Ref Func="GAP_jl.Obj"/>
 #! on the &Julia; side, whereas extending
 #! <Ref Constr="JuliaToGAP" Label="for IsObject, IsObject"/>
 #! would require changing its methods.
 #! For example, the <Package>Oscar</Package> system provides &Julia; types
 #! of matrices for which conversions to &GAP; matrices are installed,
-#! via suitable methods for <Ref Func="Julia.GAP.Obj"/>.
+#! via suitable methods for <Ref Func="GAP_jl.Obj"/>.
 #! <P/>
 #! If one is sure that the result of the conversion to &GAP; is not an
-#! immediate &GAP; object then one can call <Ref Func="Julia.GAP.GapObj"/>
-#! instead of <Ref Func="Julia.GAP.Obj"/>.
+#! immediate &GAP; object then one can call <Ref Func="GAP_jl.GapObj"/>
+#! instead of <Ref Func="GAP_jl.Obj"/>.
 #! </Description>
 #! </ManSection>
 
