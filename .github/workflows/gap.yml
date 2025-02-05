@@ -34,6 +34,7 @@ jobs:
         julia-version:
           - '1.6'
           - '1'         # latest stable release
+          - '1.12-nightly'
           - 'nightly'
         os:
           - ubuntu-latest
