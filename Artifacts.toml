@@ -1049,14 +1049,14 @@ git-tree-sha1 = "d2699bc535431a1a992c845ba15bb224033d477e"
     url = "https://files.gap-system.org/pkg/orb-4.9.1.tar.gz"
 
 [GAP_pkg_packagemanager]
-git-tree-sha1 = "da271603e6999365f174771fcf711ceb59948a1d"
+git-tree-sha1 = "5d1e78116730c3beba5d6f3e736aa0d298b9ebca"
 
     [[GAP_pkg_packagemanager.download]]
-    sha256 = "4913b5960b1ad55c16f7b1da9b07d032ead0fc7710f346506441194ae074d249"
-    url = "https://github.com/gap-packages/PackageManager/releases/download/v1.6/PackageManager-1.6.tar.gz"
+    sha256 = "2df07433a9cc096614ab480692c70e8bd6dd57dc73bb7a34a327713ec41f4fd7"
+    url = "https://github.com/gap-packages/PackageManager/releases/download/v1.6.1/PackageManager-1.6.1.tar.gz"
     [[GAP_pkg_packagemanager.download]]
-    sha256 = "4913b5960b1ad55c16f7b1da9b07d032ead0fc7710f346506441194ae074d249"
-    url = "https://files.gap-system.org/pkg/PackageManager-1.6.tar.gz"
+    sha256 = "2df07433a9cc096614ab480692c70e8bd6dd57dc73bb7a34a327713ec41f4fd7"
+    url = "https://files.gap-system.org/pkg/PackageManager-1.6.1.tar.gz"
 
 [GAP_pkg_patternclass]
 git-tree-sha1 = "fee90f5d2b6a3b57ab2a64a9da71bfc9b59d57ae"
