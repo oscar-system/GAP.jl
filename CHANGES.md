@@ -3,6 +3,7 @@
 ## Version 0.13.1-DEV (released 2025-MM-DD)
 
 - Add precompiled binaries for the "semigroups" GAP package
+- Update the "PackageManager" GAP package from 1.6.0 to 1.6.1
 - Fix compatibility issues with upcoming Julia 1.12
 - Add initial support for Julia 1.13
 - Several "behind the scenes" changes that should be invisible for
