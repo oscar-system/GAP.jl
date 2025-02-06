@@ -416,6 +416,7 @@ macro wrap(ex)
 
     return esc(MacroTools.@qq begin
        @eval const $newsym = Ref{GapObj}()
+       global $name;
        Base.@__doc__ $(Expr(:call, name, lhsargs...)) = $body
     end)
 end
