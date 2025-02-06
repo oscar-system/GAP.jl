@@ -363,11 +363,11 @@ include("constructors.jl")
 include("julia_to_gap.jl")
 include("utils.jl")
 include("help.jl")
-include("packages.jl")
 include("prompt.jl")
 include("exec.jl")
 include("doctestfilters.jl")
 
 include("GAP_pkg.jl")
+include("packages.jl")
 
 end

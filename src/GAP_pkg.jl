@@ -36,11 +36,18 @@ const gap_pkgs_with_overrides = [
     "zeromqinterface"
     ]
 
+const gap_pkg_jlls = []
+
 # import JLLs from above
 for pkg in gap_pkgs_with_overrides
     jll = Symbol("GAP_pkg_$(pkg)_jll")
-    @eval import $jll
+    @eval begin
+      import $jll
+      push!(gap_pkg_jlls, $jll)
+    end
 end
+
+push!(gap_pkg_jlls, Setup.GAP_pkg_juliainterface_jll)
 
 # GAP package "4ti2interface" uses executables from lib4ti2_jll
 import lib4ti2_jll
