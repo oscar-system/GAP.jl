@@ -38,7 +38,7 @@
 <div class="ContSect"><span class="tocline"><span class="nocss">&nbsp;</span><a href="chap3_mj.html#X7FF4170183C83CC1">3.2 <span class="Heading">Conversion functions</span></a>
 </span>
 <div class="ContSSBlock">
-<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap3_mj.html#X85D65263829EF822">3.2-1 Julia.GAP.Obj</a></span>
+<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap3_mj.html#X81899CCD7F31299C">3.2-1 GAP_jl.Obj</a></span>
 <span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap3_mj.html#X7D0471F77A0C6E1D">3.2-2 JuliaToGAP</a></span>
 <span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap3_mj.html#X860C2F3184F70021">3.2-3 GAPToJulia</a></span>
 </div></div>
@@ -200,13 +200,13 @@
 
 <p><em>Conversion from <strong class="pkg">Julia</strong> to <strong class="pkg">GAP</strong></em></p>
 
-<p>There are two alternatives for this direction, the Julia constructor <code class="func">Julia.GAP.Obj</code> (<a href="chap3_mj.html#X85D65263829EF822"><span class="RefLink">3.2-1</span></a>) and the <strong class="pkg">GAP</strong> constructor <code class="func">JuliaToGAP</code> (<a href="chap3_mj.html#X7D0471F77A0C6E1D"><span class="RefLink">3.2-2</span></a>).</p>
+<p>There are two alternatives for this direction, the Julia constructor <code class="func">GAP_jl.Obj</code> (<a href="chap3_mj.html#X81899CCD7F31299C"><span class="RefLink">3.2-1</span></a>) and the <strong class="pkg">GAP</strong> constructor <code class="func">JuliaToGAP</code> (<a href="chap3_mj.html#X7D0471F77A0C6E1D"><span class="RefLink">3.2-2</span></a>).</p>
 
-<p><code class="func">Julia.GAP.Obj</code> (<a href="chap3_mj.html#X85D65263829EF822"><span class="RefLink">3.2-1</span></a>) is a <strong class="pkg">Julia</strong> function that takes one or two arguments, the object to be converted and optionally the value <code class="keyw">true</code> indicating recursive conversion of nested objects. The chosen method depends on the <strong class="pkg">Julia</strong> type of the first argument.</p>
+<p><code class="func">GAP_jl.Obj</code> (<a href="chap3_mj.html#X81899CCD7F31299C"><span class="RefLink">3.2-1</span></a>) is a <strong class="pkg">Julia</strong> function that takes one or two arguments, the object to be converted and optionally the value <code class="keyw">true</code> indicating recursive conversion of nested objects. The chosen method depends on the <strong class="pkg">Julia</strong> type of the first argument.</p>
 
 <p>The function <code class="func">JuliaToGAP</code> (<a href="chap3_mj.html#X7D0471F77A0C6E1D"><span class="RefLink">3.2-2</span></a>). takes two or three arguments, a <strong class="pkg">GAP</strong> filter and an object to be converted, and optionally the value <code class="keyw">true</code> indicating recursive conversion of nested objects. Various methods for this constructor then take care of input validation and the actual conversion, either by delegating to the <strong class="pkg">Julia</strong> function <code class="code">GapObj</code> (which takes just one or two arguments and chooses the <strong class="pkg">GAP</strong> filters of its result depending on the <strong class="pkg">Julia</strong> type), or by automatic conversion.</p>
 
-<p>The supported <strong class="pkg">Julia</strong> types of the second argument of <code class="func">JuliaToGAP</code> (<a href="chap3_mj.html#X7D0471F77A0C6E1D"><span class="RefLink">3.2-2</span></a>) are as follows; more <strong class="pkg">Julia</strong> types may be supported for <code class="func">Julia.GAP.Obj</code> (<a href="chap3_mj.html#X85D65263829EF822"><span class="RefLink">3.2-1</span></a>).</p>
+<p>The supported <strong class="pkg">Julia</strong> types of the second argument of <code class="func">JuliaToGAP</code> (<a href="chap3_mj.html#X7D0471F77A0C6E1D"><span class="RefLink">3.2-2</span></a>) are as follows; more <strong class="pkg">Julia</strong> types may be supported for <code class="func">GAP_jl.Obj</code> (<a href="chap3_mj.html#X81899CCD7F31299C"><span class="RefLink">3.2-1</span></a>).</p>
 
 <div class="pcenter"><table class="GAPDocTable">
 <tr>
@@ -276,31 +276,31 @@
 
 <h4>3.2 <span class="Heading">Conversion functions</span></h4>
 
-<p><a id="X85D65263829EF822" name="X85D65263829EF822"></a></p>
+<p><a id="X81899CCD7F31299C" name="X81899CCD7F31299C"></a></p>
 
-<h5>3.2-1 Julia.GAP.Obj</h5>
+<h5>3.2-1 GAP_jl.Obj</h5>
 
-<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; Julia.GAP.Obj</code>( <var class="Arg">juliaobj</var>[, <var class="Arg">recursive</var>] )</td><td class="tdright">(&nbsp;function&nbsp;)</td></tr></table></div>
-<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; Julia.GAP.GapObj</code>( <var class="Arg">juliaobj</var>[, <var class="Arg">recursive</var>] )</td><td class="tdright">(&nbsp;function&nbsp;)</td></tr></table></div>
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; GAP_jl.Obj</code>( <var class="Arg">juliaobj</var>[, <var class="Arg">recursive</var>] )</td><td class="tdright">(&nbsp;function&nbsp;)</td></tr></table></div>
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; GAP_jl.GapObj</code>( <var class="Arg">juliaobj</var>[, <var class="Arg">recursive</var>] )</td><td class="tdright">(&nbsp;function&nbsp;)</td></tr></table></div>
 <p>Returns: a <strong class="pkg">GAP</strong> object</p>
 
-<p>The <strong class="pkg">Julia</strong> constructor <code class="func">Julia.GAP.Obj</code> takes an object <var class="Arg">juliaobj</var> and chooses a method depending on its <strong class="pkg">Julia</strong> type for computing a <strong class="pkg">GAP</strong> object corresponding to <var class="Arg">juliaobj</var>. If <var class="Arg">recursive</var> is <code class="keyw">true</code> then nested objects are converted recursively.</p>
+<p>The <strong class="pkg">Julia</strong> constructor <code class="func">GAP_jl.Obj</code> takes an object <var class="Arg">juliaobj</var> and chooses a method depending on its <strong class="pkg">Julia</strong> type for computing a <strong class="pkg">GAP</strong> object corresponding to <var class="Arg">juliaobj</var>. If <var class="Arg">recursive</var> is <code class="keyw">true</code> then nested objects are converted recursively.</p>
 
 
 <div class="example"><pre>
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">Julia.GAP.Obj( 42 );</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">GAP_jl.Obj( 42 );</span>
 42
 <span class="GAPprompt">gap&gt;</span> <span class="GAPinput">m:= GAPToJulia( [ [ 1, 2 ], [ 3, 4 ] ] );</span>
 &lt;Julia: Any[Any[1, 2], Any[3, 4]]&gt;
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">Julia.GAP.Obj( m );</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">GAP_jl.Obj( m );</span>
 [ &lt;Julia: Any[1, 2]&gt;, &lt;Julia: Any[3, 4]&gt; ]
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">Julia.GAP.Obj( m, true );</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">GAP_jl.Obj( m, true );</span>
 [ [ 1, 2 ], [ 3, 4 ] ]
 </pre></div>
 
-<p>One advantage of <code class="func">Julia.GAP.Obj</code> compared to the <strong class="pkg">GAP</strong> constructor <code class="func">JuliaToGAP</code> (<a href="chap3_mj.html#X7D0471F77A0C6E1D"><span class="RefLink">3.2-2</span></a>) is that it is easy to extend the scope of <code class="func">Julia.GAP.Obj</code> on the <strong class="pkg">Julia</strong> side, whereas extending <code class="func">JuliaToGAP</code> (<a href="chap3_mj.html#X7D0471F77A0C6E1D"><span class="RefLink">3.2-2</span></a>) would require changing its methods. For example, the <strong class="pkg">Oscar</strong> system provides <strong class="pkg">Julia</strong> types of matrices for which conversions to <strong class="pkg">GAP</strong> matrices are installed, via suitable methods for <code class="func">Julia.GAP.Obj</code>.</p>
+<p>One advantage of <code class="func">GAP_jl.Obj</code> compared to the <strong class="pkg">GAP</strong> constructor <code class="func">JuliaToGAP</code> (<a href="chap3_mj.html#X7D0471F77A0C6E1D"><span class="RefLink">3.2-2</span></a>) is that it is easy to extend the scope of <code class="func">GAP_jl.Obj</code> on the <strong class="pkg">Julia</strong> side, whereas extending <code class="func">JuliaToGAP</code> (<a href="chap3_mj.html#X7D0471F77A0C6E1D"><span class="RefLink">3.2-2</span></a>) would require changing its methods. For example, the <strong class="pkg">Oscar</strong> system provides <strong class="pkg">Julia</strong> types of matrices for which conversions to <strong class="pkg">GAP</strong> matrices are installed, via suitable methods for <code class="func">GAP_jl.Obj</code>.</p>
 
-<p>If one is sure that the result of the conversion to <strong class="pkg">GAP</strong> is not an immediate <strong class="pkg">GAP</strong> object then one can call <code class="func">Julia.GAP.GapObj</code> instead of <code class="func">Julia.GAP.Obj</code>.</p>
+<p>If one is sure that the result of the conversion to <strong class="pkg">GAP</strong> is not an immediate <strong class="pkg">GAP</strong> object then one can call <code class="func">GAP_jl.GapObj</code> instead of <code class="func">GAP_jl.Obj</code>.</p>
 
 <p><a id="X7D0471F77A0C6E1D" name="X7D0471F77A0C6E1D"></a></p>
 
