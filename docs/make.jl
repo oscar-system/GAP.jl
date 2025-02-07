@@ -132,7 +132,13 @@ makedocs(
     pages = GAP.GAP_docs_pages,
 )
 
+should_push_preview = true
+if get(ENV, "GITHUB_ACTOR", "") == "dependabot[bot]"
+  # skip preview for dependabot PRs as they fail due to lack of permissions
+  should_push_preview = false
+end
+
 deploydocs(
   repo = "github.com/oscar-system/GAP.jl.git",
-  push_preview = true,
+  push_preview = should_push_preview,
 )
