@@ -2,7 +2,6 @@ module Setup
 
 using Pkg: GitTools
 import GAP_jll
-import GAP_lib_jll
 import GAP_pkg_juliainterface_jll
 import Scratch: @get_scratch!
 import Pidfile
@@ -87,7 +86,6 @@ include("julia-config.jl")
 function regenerate_gaproot()
     gaproot_mutable = gaproot()
 
-    gaproot_gapjl = abspath(@__DIR__, "..")
     @debug "Set up gaproot at $(gaproot_mutable)"
 
     gap_prefix = GAP_jll.find_artifact_dir()
@@ -113,26 +111,12 @@ function regenerate_gaproot()
 
     # set include flags
     gap_include = joinpath(gap_prefix, "include", "gap")
-    gap_include2 = joinpath(gaproot_mutable) # for code doing `#include "src/compiled.h"`
-    sysinfo["GAP_CPPFLAGS"] = "-I$(gap_include) -I$(gap_include2) -DUSE_JULIA_GC=1"
+    sysinfo["GAP_CPPFLAGS"] = "-I$(gap_include) -DUSE_JULIA_GC=1"
 
     # set linker flags; since these are meant for use for GAP packages,
     # add the necessary flags to link against libgap
     gap_lib = joinpath(gap_prefix, "lib")
     sysinfo["GAP_LDFLAGS"] = "-L$(gap_lib) -lgap"
-
-    GAP_VERSION = VersionNumber(sysinfo["GAP_VERSION"])
-    gaproot_packages = joinpath(Base.DEPOT_PATH[1], "gaproot", "v$(GAP_VERSION.major).$(GAP_VERSION.minor)")
-    sysinfo["DEFAULT_PKGDIR"] = joinpath(gaproot_packages, "pkg")
-    mkpath(sysinfo["DEFAULT_PKGDIR"])
-    gap_lib_dir = abspath(GAP_lib_jll.find_artifact_dir(), "share", "gap")
-    roots = [
-            gaproot_gapjl,          # for JuliaInterface and JuliaExperimental
-            gaproot_packages,       # default installation dir for PackageManager
-            gaproot_mutable,
-            gap_lib_dir, # the actual GAP library, from GAP_lib_jll
-            ]
-    sysinfo["GAPROOTS"] = join(roots, ";")
 
     # path to gap & gac (used by some package build systems)
     sysinfo["GAP"] = joinpath(gaproot_mutable, "bin", "gap.sh")
