@@ -1,10 +1,10 @@
 # Replacement for the GAP kernel function ExecuteProcess
 const use_orig_ExecuteProcess = Ref{Bool}(true)
-function GAP_ExecuteProcess(dir::GapObj, prg::GapObj, in::Int, out::Int, args::GapObj)
+function GAP_ExecuteProcess(dir::GAP.Obj, prg::GAP.Obj, in::GAP.Obj, out::GAP.Obj, args::GAP.Obj)
     if use_orig_ExecuteProcess[]
         return GAP.Globals._ORIG_ExecuteProcess(dir, prg, in, out, args)
     end
-    return GAP_ExecuteProcess(String(dir), String(prg), in, out, Vector{String}(args))
+    return GAP_ExecuteProcess(String(dir), String(prg), Int(in), Int(out), Vector{String}(args))
 end
 
 function GAP_ExecuteProcess(dir::String, prg::String, fin::Int, fout::Int, args::Vector{String})

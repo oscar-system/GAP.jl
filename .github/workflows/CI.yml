@@ -31,7 +31,8 @@ jobs:
         julia-version:
           - '1.6'
           - '1.10'
-          - '~1.11.0-0'
+          - '1.11'
+          - '1.12-nightly'
           - 'nightly'
         os:
           - ubuntu-latest
@@ -86,7 +87,7 @@ jobs:
 
       - name: "Upload coverage data to Codecov"
         continue-on-error: true
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
@@ -101,25 +102,7 @@ jobs:
           version: '1'
       - uses: julia-actions/cache@v2
       - uses: julia-actions/julia-buildpkg@v1
-      - name: "Install package"
-        run: |
-          julia --project=docs --color=yes -e '
-            using Pkg
-            Pkg.develop(PackageSpec(path=pwd()))
-            Pkg.instantiate()'
-      - name: "Run doctests"
-        run: |
-          julia --project=docs --color=yes test/doctest.jl
-      - name: "Build GAP manual"
-        run: |
-          julia --project=. -e 'import GAP; GAP.create_gap_sh("/tmp")'
-          cd pkg/JuliaInterface
-          /tmp/gap.sh -A --quitonbreak --norepl makedoc.g
-          cd ../..
-          mkdir -p docs/src/assets/html/JuliaInterface/
-          cp pkg/JuliaInterface/doc/*.{html,css,js} docs/src/assets/html/JuliaInterface/
-      - name: "Deploy documentation"
-        run: julia --project=docs --color=yes docs/make.jl
+      - uses: julia-actions/julia-docdeploy@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
@@ -141,7 +124,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           notify_on_changed_status: true
       - name: Send slack notification
-        uses: act10ns/slack@e4e71685b9b239384b0f676a63c32367f59c2522
+        uses: act10ns/slack@44541246747a30eb3102d87f7a4cc5471b0ffb7d
         if: ${{ steps.should_notify.outputs.should_send_message == 'yes' }}
         with:
           status: ${{ steps.should_notify.outputs.current_status }}

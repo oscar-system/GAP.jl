@@ -1,6 +1,32 @@
 using Documenter
 using GAP
-using GAP.Markdown
+
+function build_JuliaInterface_manual()
+  gapjl_path = abspath(@__DIR__, "..")
+  mktempdir() do tmpdir
+    GAP.create_gap_sh(tmpdir)
+    gap_sh_path = joinpath(tmpdir, "gap.sh")
+    cd(joinpath(gapjl_path, "pkg", "JuliaInterface")) do
+      run(`$gap_sh_path -A --quitonbreak --norepl makedoc.g`)
+    end
+  end
+end
+
+function copy_JuliaInterface_manual()
+  gapjl_path = normpath(@__DIR__, "..")
+  src_dir = joinpath(gapjl_path, "pkg", "JuliaInterface", "doc")
+  dst_dir = joinpath(gapjl_path, "docs", "src", "assets", "html", "JuliaInterface")
+
+  # clear the destination directory first
+  rm(dst_dir; recursive=true, force=true)
+  
+  mkpath(dst_dir)
+  for file in readdir(src_dir; sort=false)
+    if endswith(file, ".html") || endswith(file, ".css") || endswith(file, ".js")
+      cp(joinpath(src_dir, file), joinpath(dst_dir, file))
+    end
+  end
+end
 
 ## The following code inserts a step into the list of tasks
 ## that are performed by Documenter.jl's function `makedocs`.
@@ -42,88 +68,49 @@ function compute_GAP_URL(url::String)
   return String(urls[1][3])
 end
 
-## Distinguish different versions of Documenter.jl.
-if isdefined(Documenter, :Document)
-  # version at least 1.0
-  # The code was adapted from `expand_citations`
-  # in DocumenterCitations.jl/src/citations.jl.
-  Document = Documenter.Document
 
-  # Execute our step before the computation of cross-references (3.0)
-  # because otherwise the syntax of external references leads to errors.
-  Documenter.Selectors.order(::Type{ExternalReference}) = 2.99
+# The code was adapted from `expand_citation`
+# in DocumenterCitations.jl/src/expand_citations.jl.
+Document = Documenter.Document
 
-  function compute_external_references(doc::Document)
-    for (src, page) in doc.blueprint.pages
-      @debug "ExternalReference: compute for entries in $(src)"
-      empty!(page.globals.meta)
-      compute_external_reference(doc, page, page.mdast)
-    end
-  end
+# Execute our step before the computation of cross-references (3.0)
+# because otherwise the syntax of external references leads to errors.
+Documenter.Selectors.order(::Type{ExternalReference}) = 2.99
 
-  function compute_external_reference(doc::Document, page, mdast::Documenter.MarkdownAST.Node)
-    for node in Documenter.AbstractTrees.PreOrderDFS(mdast)
-      if node.element isa Documenter.DocsNode
-        # The docstring AST trees are not part of the tree of the page, so
-        # we need to expand them explicitly
-        for (docstr, meta) in zip(node.element.mdasts, node.element.metas)
-          compute_external_reference(doc, page, docstr)
-        end
-      elseif node.element isa Documenter.MarkdownAST.Link
-        compute_external_reference(node, page.globals.meta, page, doc)
-      end
-    end
-  end
-
-  function compute_external_reference(node::Documenter.MarkdownAST.Node, meta, page, doc)
-    # Do something only if the current element is a `MarkdownAST.Link`.
-    link = node.element
-    isa(link, Documenter.MarkdownAST.Link) || return true
-    url = compute_GAP_URL(link.destination)
-    if url != nothing
-      # Replace the URL in the link.
-      link.destination = url
-    end
-    return true
-  end
-else
-  # old version
-  # The code was adapted from the package
-  # https://github.com/ali-ramadhan/DocumenterBibliographyTest.jl,
-  # the hint to use this approach came up in the discussion of
-  # https://github.com/JuliaDocs/Documenter.jl/issues/1343.
-  Document = Documenter.Documents.Document
-
-  # Execute our step after the computation of cross-references (3.0)
-  # and before the check of the document (4.0).
-  Documenter.Selectors.order(::Type{ExternalReference}) = 3.1
-
-  function compute_external_references(doc::Document)
-    for (src, page) in doc.blueprint.pages
-        empty!(page.globals.meta)
-        for element in page.elements
-            compute_external_reference(page.mapping[element], page, doc)
-        end
-    end
-  end
-
-  function compute_external_reference(elem, page, doc)
-    Documenter.Documents.walk(page.globals.meta, elem) do link
-        compute_external_reference(link, page.globals.meta, page, doc)
-    end
-  end
-
-  function compute_external_reference(link, meta, page, doc)
-    # Do something only if the current element has the type `Markdown.Link`.
-    isa(link, Markdown.Link) || return true
-    url = compute_GAP_URL(link.url)
-    if url != nothing
-      # Replace the URL in the link.
-      link.url = url
-    end
-    return true
+function compute_external_references(doc::Document)
+  for (src, page) in doc.blueprint.pages
+    @debug "ExternalReference: compute for entries in $(src)"
+    empty!(page.globals.meta)
+    compute_external_reference(doc, page, page.mdast)
   end
 end
+
+function compute_external_reference(doc::Document, page, mdast::Documenter.MarkdownAST.Node)
+  for node in Documenter.AbstractTrees.PreOrderDFS(mdast)
+    if node.element isa Documenter.DocsNode
+      # The docstring AST trees are not part of the tree of the page, so
+      # we need to expand them explicitly
+      for (docstr, meta) in zip(node.element.mdasts, node.element.metas)
+        compute_external_reference(doc, page, docstr)
+      end
+    elseif node.element isa Documenter.MarkdownAST.Link
+      compute_external_reference(node, page.globals.meta, page, doc)
+    end
+  end
+end
+
+function compute_external_reference(node::Documenter.MarkdownAST.Node, meta, page, doc)
+  # Do something only if the current element is a `MarkdownAST.Link`.
+  link = node.element
+  isa(link, Documenter.MarkdownAST.Link) || return true
+  url = compute_GAP_URL(link.destination)
+  if url !== nothing
+    # Replace the URL in the link.
+    link.destination = url
+  end
+  return true
+end
+
 
 ## When executing our step, print an info line
 ## and call the function that does the work.
@@ -132,14 +119,20 @@ function Documenter.Selectors.runner(::Type{ExternalReference}, doc::Document)
     compute_external_references(doc)
 end
 
+build_JuliaInterface_manual()
+copy_JuliaInterface_manual()
+
 DocMeta.setdocmeta!(GAP, :DocTestSetup, :(using GAP, GAP.Random); recursive = true)
 
 makedocs(
     sitename = "GAP.jl",
     modules = [GAP],
-    doctest = true,
+    doctest = false,
     doctestfilters = GAP.GAP_doctestfilters,
     pages = GAP.GAP_docs_pages,
 )
 
-deploydocs(repo = "github.com/oscar-system/GAP.jl.git")
+deploydocs(
+  repo = "github.com/oscar-system/GAP.jl.git",
+  push_preview = true,
+)

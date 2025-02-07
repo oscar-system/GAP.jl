@@ -5,6 +5,7 @@ import Downloads
 import Pidfile
 import Pkg
 import ...GAP: disable_error_handler, Globals, GapObj, replace_global!, RNamObj, sysinfo, Wrappers
+import ...GAP: gap_pkg_jlls, Compat, Setup
 
 const DEFAULT_PKGDIR = Ref{String}()
 const DOWNLOAD_HELPER = Ref{Downloads.Downloader}()
@@ -561,14 +562,12 @@ function versioninfo(io::IO = stdout; GAP::Bool = false, jll::Bool = false, full
                 paths[i])
   end
   if jll
-    deps = collect(values(Pkg.dependencies()))
-    jlldeps = filter(x -> startswith(x.name, "GAP_pkg_"), deps)
-    sort!(jlldeps, by = x -> x.name)
+    deps = gap_pkg_jlls
     if GAP
-      jllname = "GAP_jll"
-      jllpos = findfirst(x -> x.name == jllname, deps)
-      pushfirst!(jlldeps, deps[jllpos])
+      deps = vcat(deps, [Setup.GAP_jll, Setup.GAP_lib_jll])
     end
+    jlldeps = [(name = string(nameof(x)), version = Compat.pkgversion(x)) for x in deps]
+    sort!(jlldeps, by = x -> x.name)
     jllnamewidth = maximum([length(d.name) for d in jlldeps]) + 2
     println(io, padding, "building on:")
     for d in jlldeps
