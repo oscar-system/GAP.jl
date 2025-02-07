@@ -1,7 +1,7 @@
 name = "GAP"
 uuid = "c863536a-3901-11e9-33e7-d5cd0df7b904"
 authors = ["Thomas Breuer <sam@math.rwth-aachen.de>", "Sebastian Gutsche <gutsche@mathematik.uni-siegen.de>", "Max Horn <horn@mathematik.uni-kl.de>"]
-version = "0.13.0"
+version = "0.13.1"
 
 [deps]
 AbstractAlgebra = "c3fe647b-3220-5bb0-a1ea-a7954cac585d"
