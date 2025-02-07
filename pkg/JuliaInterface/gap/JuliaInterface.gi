@@ -7,7 +7,7 @@
 BindGlobal( "_JuliaCoreModule", _JuliaGetGlobalVariableByModule( "Core", _JuliaGetMainModule() ) );
 BindGlobal( "_JULIA_FUNCTION_TYPE", _JuliaGetGlobalVariableByModule( "Function", _JuliaCoreModule ) );
 BindGlobal( "_JULIA_ISA", _WrapJuliaFunction( _JuliaGetGlobalVariableByModule( "isa", _JuliaCoreModule ) ) );
-BindGlobal( "_JULIA_GAP", _JuliaGetGapModule() );
+BindGlobal( "GAP_jl", _JuliaGetGapModule() );
 
 InstallMethod( ViewString,
     [ "IsFunction and IsInternalRep and HasNameFunction" ],
@@ -38,11 +38,13 @@ InstallMethod( \.,
 
     rnam := NameRNam( rnum );
 
+    ## TODO: remove this special case in a future breaking release.
+    ## See https://github.com/oscar-system/GAP.jl/issues/1053 for details.
     if IsIdenticalObj(module, Julia) and rnam = "GAP" then
-        ## Ensure that the Julia module GAP is always accessible as Julia.GAP,
+        ## Ensure that the Julia module GAP is always accessible as GAP_jl,
         ## even while it is still being initialized, and also if it not actually
         ## exported to the Julia Main module
-        return _JULIA_GAP;
+        return GAP_jl;
     fi;
 
     var := _JuliaGetGlobalVariableByModule( rnam, module );
@@ -60,7 +62,7 @@ end );
 InstallMethod( \.\:\=,
                [ "IsJuliaModule", "IsPosInt and IsSmallIntRep", "IsObject" ],
   function( module, rnum, obj )
-    Julia.GAP._setglobal( module, Julia.Symbol( NameRNam( rnum ) ), obj );
+    GAP_jl._setglobal( module, Julia.Symbol( NameRNam( rnum ) ), obj );
 end );
 
 InstallMethod( IsBound\.,
@@ -70,7 +72,7 @@ InstallMethod( IsBound\.,
 
     rnam := NameRNam( rnum );
     if IsIdenticalObj(module, Julia) and rnam = "GAP" then
-        ## Ensure that the Julia module GAP is always accessible as Julia.GAP,
+        ## Ensure that the Julia module GAP is always accessible as GAP_jl,
         ## even while it is still being initialized, and also if it not actually
         ## exported to the Julia Main module
         return true;
@@ -87,7 +89,7 @@ end );
 
 InstallMethod(RecNames, [ "IsJuliaModule" ],
 function( obj )
-    return JuliaToGAP( IsList, Julia.GAP.get_symbols_in_module( obj ), true );
+    return JuliaToGAP( IsList, GAP_jl.get_symbols_in_module( obj ), true );
 end);
 
 InstallValue( Julia, _JuliaGetMainModule() );
@@ -150,5 +152,5 @@ InstallGlobalFunction( GetJuliaScratchspace,
     fi;
     key:= Julia.Base.string( key );
     return JuliaToGAP( IsString,
-             Julia.GAP.get_scratch_helper\!( key ) );
+             GAP_jl.get_scratch_helper\!( key ) );
 end );

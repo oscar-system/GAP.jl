@@ -6,8 +6,10 @@
 - Update the "PackageManager" GAP package from 1.6.0 to 1.6.1
 - Fix compatibility issues with upcoming Julia 1.12
 - Add initial support for Julia 1.13
-- Several "behind the scenes" changes that should be invisible for
-  most users
+- Introduce a global variable `GAP_jl` on the GAP side, which points to the
+  `GAP` module on the Julia side. `GAP_jl` is currently equivalent to
+  `Julia.GAP`, but the latter may be removed in a future breaking release
+- Several "behind the scenes" changes that should be invisible for most users
 
 ## Version 0.13.0 (released 2025-01-12)
 

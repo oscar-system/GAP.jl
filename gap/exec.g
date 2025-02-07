@@ -1,1 +1,1 @@
-ReplaceBinding("ExecuteProcess", Julia.GAP.GAP_ExecuteProcess);
+ReplaceBinding("ExecuteProcess", GAP_jl.GAP_ExecuteProcess);

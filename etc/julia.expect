@@ -35,7 +35,7 @@ send -- "GAP.prompt()\r"
 # test the GAP prompt
 expect "gap> "
 sleep 0.1
-send -- "Julia.GAP;\r"
+send -- "GAP_jl;\r"
 expect "<Julia module GAP>\r"
 
 # test returning to Julia prompt
