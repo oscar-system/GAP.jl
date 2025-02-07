@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Other stuff · GAP.jl</title><meta name="title" content="Other stuff · GAP.jl"/><meta property="og:title" content="Other stuff · GAP.jl"/><meta property="twitter:title" content="Other stuff · GAP.jl"/><meta name="description" content="Documentation for GAP.jl."/><meta property="og:description" content="Documentation for GAP.jl."/><meta property="twitter:description" content="Documentation for GAP.jl."/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../">GAP.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">GAP.jl</a></li><li><a class="tocitem" href="../basics/">Basics</a></li><li><a class="tocitem" href="../conversion/">Conversions</a></li><li><a class="tocitem" href="../packages/">Managing GAP packages</a></li><li class="is-active"><a class="tocitem" href>Other stuff</a><ul class="internal"><li><a class="tocitem" href="#Macros"><span>Macros</span></a></li><li><a class="tocitem" href="#Convenience-adapters"><span>Convenience adapters</span></a></li><li><a class="tocitem" href="#Access-to-the-GAP-help-system"><span>Access to the GAP help system</span></a></li></ul></li><li><a class="tocitem" href="../examples/">Examples</a></li><li><a class="tocitem" href="../internal/">Internal</a></li><li><a class="tocitem" href="../manualindex/">Index</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Other stuff</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Other stuff</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/oscar-system/GAP.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/oscar-system/GAP.jl/blob/master/docs/src/other.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Other-stuff"><a class="docs-heading-anchor" href="#Other-stuff">Other stuff</a><a id="Other-stuff-1"></a><a class="docs-heading-anchor-permalink" href="#Other-stuff" title="Permalink"></a></h1><h2 id="Macros"><a class="docs-heading-anchor" href="#Macros">Macros</a><a id="Macros-1"></a><a class="docs-heading-anchor-permalink" href="#Macros" title="Permalink"></a></h2><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="GAP.@gap" href="#GAP.@gap"><code>GAP.@gap</code></a> — <span class="docstring-category">Macro</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">@gap &lt;expr&gt;
+@gap(&lt;expr&gt;)</code></pre><p>Execute &lt;expr&gt; directly in GAP, as if <code>GAP.evalstr(&quot;&lt;expr&gt;&quot;)</code> was called. This can be used for creating GAP literals directly from Julia.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl hljs">julia&gt; @gap [1,2,3]
+GAP: [ 1, 2, 3 ]
+
+julia&gt; @gap SymmetricGroup(3)
+GAP: Sym( [ 1 .. 3 ] )
+
+julia&gt; @gap(SymmetricGroup)(3)
+GAP: Sym( [ 1 .. 3 ] )
+</code></pre><p>Note that the last two examples have a slight syntactical, and therefore also a semantical difference. The first one executes the string <code>SymmetricGroup(3)</code> directly inside GAP. The second example returns the function <code>SymmetricGroup</code> via <code>@gap(SymmetricGroup)</code>, then calls that function with the argument <code>3</code>.</p><p>Due to Julia&#39;s way of handing over arguments into the code of macros, not all expressions representing valid GAP code can be processed. For example, the GAP syntax of permutations consisting of more than one cycle cause problems, as well as the GAP syntax of non-dense lists.</p><pre><code class="nohighlight hljs">julia&gt; @gap (1,2,3)
+GAP: (1,2,3)
+
+julia&gt; @gap (1,2)(3,4)
+ERROR: LoadError: Error thrown by GAP: Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+[...]
+
+julia&gt; @gap [ 1,, 2 ]
+ERROR: syntax: unexpected &quot;,&quot;
+[...]
+</code></pre><p>Note also that a string argument gets evaluated with <code>GAP.evalstr</code>.</p><pre><code class="language-julia-repl hljs">julia&gt; @gap &quot;\&quot;abc\&quot;&quot;
+GAP: &quot;abc&quot;
+
+julia&gt; @gap &quot;[1,,2]&quot;
+GAP: [ 1,, 2 ]
+
+julia&gt; @gap &quot;(1,2)(3,4)&quot;
+GAP: (1,2)(3,4)
+</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/5f284fe7bf1d11d64f69d15595c14d19e8787120/src/macros.jl#L3-L60">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="GAP.@g_str" href="#GAP.@g_str"><code>GAP.@g_str</code></a> — <span class="docstring-category">Macro</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">@g_str</code></pre><p>Create a GAP string by typing <code>g&quot;content&quot;</code>.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl hljs">julia&gt; g&quot;foo&quot;
+GAP: &quot;foo&quot;
+
+julia&gt; g&quot;ab\ncd\&quot;ef\\gh&quot;   # special characters are handled as in GAP
+GAP: &quot;ab\ncd\&quot;ef\\gh&quot;
+</code></pre><p>Due to Julia&#39;s way of handing over arguments into the code of macros, not all strings representing valid GAP strings can be processed.</p><pre><code class="language-julia-repl hljs">julia&gt; g&quot;\\&quot;
+ERROR: Error thrown by GAP: Syntax error: String must end with &quot; before end of file in stream:1
+[...]
+</code></pre><p>Conversely, there are valid arguments for the macro that are not valid Julia strings.</p><pre><code class="language-julia-repl hljs">julia&gt; g&quot;\c&quot;
+GAP: &quot;\c&quot;
+</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/5f284fe7bf1d11d64f69d15595c14d19e8787120/src/macros.jl#L84-L117">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="GAP.@gapwrap" href="#GAP.@gapwrap"><code>GAP.@gapwrap</code></a> — <span class="docstring-category">Macro</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">@gapwrap</code></pre><p>When applied to a method definition that involves access to entries of <code>GAP.Globals</code>, this macro rewrites the code such that the relevant GAP globals are cached, and need not be fetched again and again.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl hljs">julia&gt; @gapwrap isevenint(x) = GAP.Globals.IsEvenInt(x)::Bool;
+
+julia&gt; isevenint(1)
+false
+
+julia&gt; isevenint(2)
+true
+</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/5f284fe7bf1d11d64f69d15595c14d19e8787120/src/macros.jl#L126-L144">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="GAP.@gapattribute" href="#GAP.@gapattribute"><code>GAP.@gapattribute</code></a> — <span class="docstring-category">Macro</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">@gapattribute</code></pre><p>This macro is intended to be applied to a method definition for a unary function called <code>attr</code>, say, where the argument has the type <code>T</code>, say, the code contains exactly one call of the form <code>GAP.Globals.Something(X)</code>, where <code>Something</code> is a GAP attribute such as <code>Centre</code> or <code>IsSolvableGroup</code>, and <code>attr</code> returns the corresponding attribute value for its argument.</p><p>The macro defines three functions <code>attr</code>, <code>has_attr</code>, and <code>set_attr</code>, where <code>attr</code> takes an argument of type <code>T</code> and returns what the given method definition says, <code>has_attr</code> takes an argument of type <code>T</code> and returns the result of <code>GAP.Globals.HasSomething(X)</code> (which is either <code>true</code> or <code>false</code>), <code>set_attr</code> takes an argument of type <code>T</code> and an object <code>obj</code> and calls <code>GAP.Globals.SetSomething(X, obj)</code>.</p><p>In order to avoid runtime access via <code>GAP.Globals.Something</code> etc., the same modifications are applied in the construction of the three functions that are applied by <a href="#GAP.@gapwrap"><code>@gapwrap</code></a>.</p><p>The variables that are created by the macro belong to the Julia module in whose scope the macro is called.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl hljs">julia&gt; @gapattribute isstrictlysortedlist(obj::GapObj) = GAP.Globals.IsSSortedList(obj)::Bool;
+
+julia&gt; l = GapObj([ 1, 3, 7 ]);
+
+julia&gt; has_isstrictlysortedlist( l )
+false
+
+julia&gt; isstrictlysortedlist( l )
+true
+
+julia&gt; has_isstrictlysortedlist( l )
+true
+
+julia&gt; l = GapObj([ 1, 3, 7 ]);
+
+julia&gt; has_isstrictlysortedlist( l )
+false
+
+julia&gt; set_isstrictlysortedlist( l, true )
+
+julia&gt; has_isstrictlysortedlist( l )
+true
+
+julia&gt; isstrictlysortedlist( l )
+true
+</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/5f284fe7bf1d11d64f69d15595c14d19e8787120/src/macros.jl#L192-L246">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="GAP.@wrap" href="#GAP.@wrap"><code>GAP.@wrap</code></a> — <span class="docstring-category">Macro</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">@wrap funcdecl</code></pre><p>When applied to a function declaration of the form <code>NAME(a::T)</code> or <code>NAME(a::T)::S</code>, this macro generates a function which behaves equivalently to <code>NAME(a::T) = GAP.Globals.NAME(a)</code> resp. <code>NAME(a::T) = GAP.Globals.NAME(a)::S</code>, assuming that <code>GAP.Globals.NAME</code> references a GAP function. Function declarations with more than one argument or zero arguments are also supported.</p><p>However, the generated function actually caches the GAP object <code>GAP.Globals.NAME</code>. This minimizes the call overhead. So @wrap typically is used to provide an optimized way to call certain GAP functions.</p><p>If an argument is annotated as <code>::GapObj</code> (respectively <code>::GAP.Obj</code> or <code>::GapInt</code>), the resulting function accepts arguments of any type and attempts to convert them to <code>GapObj</code> (respectively <code>GAP.Obj</code> or <code>GapInt</code>) before passing them to the GAP function.</p><p>Another use case for this macro is to improve type stability of code calling into GAP, via the type annotations for the arguments and return value contained in the function declaration.</p><p>Be advised, though, that if the value of <code>GAP.Globals.NAME</code> is changed later on, the function generated by this macro will not be updated, i.e., it will still reference the original GAP object.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl hljs">julia&gt; GAP.@wrap IsString(x::GapObj)::Bool
+IsString (generic function with 1 method)
+
+julia&gt; IsString(&quot;abc&quot;)
+true
+
+julia&gt; GAP.@wrap Jacobi(x::GapInt, y::GapInt)::Int
+Jacobi (generic function with 1 method)
+
+julia&gt; Jacobi(11,35)
+1
+
+julia&gt; Jacobi(big(35)^100+11, 35)
+1</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/5f284fe7bf1d11d64f69d15595c14d19e8787120/src/macros.jl#L318-L360">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="GAP.@install" href="#GAP.@install"><code>GAP.@install</code></a> — <span class="docstring-category">Macro</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">@install</code></pre><p>When applied to a unary method definition for the function <code>GapObj</code>, with argument of type <code>T</code>, this macro installs instead a three argument method for <code>GAP.GapObj_internal</code>, with second argument of type <code>GAP.GapCacheDict</code> and third argument of type <code>Bool</code>.</p><p>This way, the intended <code>GapObj(x::T)</code> method becomes available, and additionally its code is applicable in recursive calls, for example when <code>GapObj</code> is called with a vector of objects of type <code>T</code>.</p><p>Since the <code>GapObj</code> method does not support a dictionary for tracking identical subobjects, the type <code>T</code> is marked as &quot;not needing recursion&quot;, by automatically installing a method for <code>_needs_tracking_julia_to_gap</code> that returns <code>false</code>.</p><p>The calls of the macro have the form <code>GAP.@install GapObj(x::T) = f(x)</code> or <code>GAP.@install function GapObj(x::T) ... end</code>.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/5f284fe7bf1d11d64f69d15595c14d19e8787120/src/macros.jl#L425-L445">source</a></section></article><h2 id="Convenience-adapters"><a class="docs-heading-anchor" href="#Convenience-adapters">Convenience adapters</a><a id="Convenience-adapters-1"></a><a class="docs-heading-anchor-permalink" href="#Convenience-adapters" title="Permalink"></a></h2><p>This section describes how one can manipulate GAP objects from the Julia side, using Julia syntax features.</p><p>In particular, the following is available on the Julia side in order to support special GAP syntax beyond function calls with arguments.</p><ul><li><p>Call functions with global options via <a href="#GAP.call_gap_func"><code>call_gap_func</code></a> or using Julia&#39;s keyword argument syntax. For example, <code>Cyc(1.41421356 : bits:=20)</code> in GAP translates to <code>GAP.Globals.Cyc(GAP.Obj(1.41421356); bits=20)</code> in Julia.</p></li><li><p>Access list/matrix entries via <a href="#Base.getindex"><code>getindex</code></a> and <a href="#Base.setindex!"><code>setindex!</code></a> respectively the corresponding Julia syntax (described there).</p></li><li><p>Access record components via <a href="#Base.getproperty"><code>getproperty</code></a> and <a href="#Base.setproperty!"><code>setproperty!</code></a> respectively the corresponding Julia syntax (described there).</p></li><li><p>Check for bound record components via <a href="#Base.hasproperty"><code>hasproperty</code></a>.</p></li><li><p>Access entries of a positional object via <a href="#GAP.getbangindex"><code>getbangindex</code></a>, equivalent to GAP&#39;s <code>![]</code> operator.</p></li><li><p>Access components of a component object via <a href="#GAP.getbangproperty"><code>getbangproperty</code></a>, equivalent to GAP&#39;s <code>!.</code> operator.</p></li><li><p>Iterate over a GAP list or collection (such as a GAP domain) <code>obj</code> via <code>for x in obj</code>, or <code>map(f, obj)</code> for a unary function <code>f</code>, or <code>[f(x) for x in obj]</code>. If <code>obj</code> is not a list then a GAP iterator for <code>obj</code> gets constructed.</p></li></ul><pre><code class="language-julia-repl hljs">julia&gt; l = [1, 2, 3];  gl = GapObj(l)
+GAP: [ 1, 2, 3 ]
+
+julia&gt; ll = [];  for x in gl push!(ll, x); end;  ll == l
+true
+
+julia&gt; map(x -&gt; x, gl) == l
+true
+
+julia&gt; [x for x in gl] == l
+true</code></pre><ul><li>Iterating in Julia over a GAP list <code>obj</code> skips the unbound entries in <code>obj</code>, like iterating in GAP does.</li></ul><pre><code class="language-julia-repl hljs">julia&gt; gl = GAP.evalstr(&quot;[1,, 3]&quot;)
+GAP: [ 1,, 3 ]
+
+julia&gt; ll = [];  for x in gl push!(ll, x); end;  ll
+2-element Vector{Any}:
+ 1
+ 3</code></pre><ul><li>Note that iterating in Julia over a GAP iterator object <code>obj</code> does <em>not</em> change <code>obj</code>, whereas iterating in GAP over <code>obj</code> changes <code>obj</code>.</li></ul><pre><code class="language-julia-repl hljs">julia&gt; g = GAP.Globals.SymmetricGroup(3)
+GAP: Sym( [ 1 .. 3 ] )
+
+julia&gt; iter = GAP.Globals.Iterator(g)
+GAP: &lt;iterator&gt;
+
+julia&gt; [x for x in iter] == collect(g)
+true
+
+julia&gt; [x for x in iter] == collect(g)
+true
+
+julia&gt; f = GAP.evalstr(&quot;function(itr) local res, i; res:= [];&quot; *
+             &quot;for i in itr do Add( res, i ); od; return res; end&quot;)
+GAP: function( itr ) ... end
+
+julia&gt; f( iter )
+GAP: [ (), (2,3), (1,3), (1,3,2), (1,2,3), (1,2) ]
+
+julia&gt; f( iter )
+GAP: [  ]</code></pre><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="GAP.call_gap_func" href="#GAP.call_gap_func"><code>GAP.call_gap_func</code></a> — <span class="docstring-category">Function</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">call_gap_func(func::GapObj, args...; kwargs...)</code></pre><p>Call the GAP object <code>func</code> as a function, with arguments <code>args...</code> and global GAP options <code>kwargs...</code>, and return the result if there is one, and <code>nothing</code> otherwise.</p><p>There is no argument number checking here, all checks on the arguments are done by GAP itself.</p><p>For convenience, one can use the syntax <code>func(args...; kwargs...)</code>.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl hljs">julia&gt; GAP.Globals.Factors( 12 )
+GAP: [ 2, 2, 3 ]
+
+julia&gt; GAP.Globals.Cyc(GAP.Obj(1.41421356))
+GAP: 35355339/25000000
+
+julia&gt; GAP.Globals.Cyc(GAP.Obj(1.41421356); bits=20)
+GAP: E(8)-E(8)^3</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/5f284fe7bf1d11d64f69d15595c14d19e8787120/src/ccalls.jl#L257-L280">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="GAP.call_with_catch" href="#GAP.call_with_catch"><code>GAP.call_with_catch</code></a> — <span class="docstring-category">Function</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">call_with_catch(func, args::Vector)
+call_with_catch(func, args::Vector, kwargs::Dict{Symbol,T}) where T</code></pre><p>Return a tuple <code>(ok, val)</code> where <code>ok</code> is either <code>true</code>, meaning that calling <code>func</code> with arguments <code>args</code> (and optionally with keyword arguments given by the keys and values of <code>kwargs</code>) returns the value <code>val</code>, or <code>false</code>, meaning that the function call runs into an error; in the latter case, <code>val</code> is set to the string of the error message.</p><p>This function is used on the GAP side.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl hljs">julia&gt; GAP.call_with_catch(sqrt, [2])
+(true, 1.4142135623730951)
+
+julia&gt; flag, res = GAP.call_with_catch(sqrt, [-2]);
+
+julia&gt; flag
+false
+
+julia&gt; startswith(res, &quot;DomainError&quot;)
+true
+
+julia&gt; GAP.call_with_catch(range, [2, 10], Dict(:step =&gt; 2))
+(true, 2:2:10)
+
+julia&gt; flag, res = GAP.call_with_catch(range, [2, 10], Dict(:step =&gt; &quot;a&quot;));
+
+julia&gt; flag
+false
+
+julia&gt; startswith(res, &quot;MethodError&quot;)
+true</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/5f284fe7bf1d11d64f69d15595c14d19e8787120/src/utils.jl#L35-L72">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="Base.getindex" href="#Base.getindex"><code>Base.getindex</code></a> — <span class="docstring-category">Function</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">getindex(x::GapObj, i::Int64)
+getindex(x::GapObj, i::Int64, j::Int64)
+getindex(x::GapObj, l::Union{Vector{T},AbstractRange{T}}) where {T&lt;:Integer}</code></pre><p>Return the entry at position <code>i</code> or at position <code>(i,j)</code> in <code>x</code>, or the list of entries in <code>x</code> at the positions described by <code>l</code>, provided that <code>x</code> is a GAP object supporting this, such as a GAP list or matrix object.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl hljs">julia&gt; l = GapObj([ 1, 2, 3, 5, 8, 13 ])
+GAP: [ 1, 2, 3, 5, 8, 13 ]
+
+julia&gt; l[4]
+5
+
+julia&gt; l[end]
+13
+
+julia&gt; l[2:4]
+GAP: [ 2, 3, 5 ]
+
+julia&gt; l[[1,4,4]]
+GAP: [ 1, 5, 5 ]
+
+julia&gt; m = GapObj([ 1 2 ; 3 4 ])
+GAP: [ [ 1, 2 ], [ 3, 4 ] ]
+
+julia&gt; m[1,1]
+1
+
+julia&gt; m[1,2]
+2
+
+julia&gt; m[2,1]
+3</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/5f284fe7bf1d11d64f69d15595c14d19e8787120/src/adapter.jl#L35-L74">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="Base.setindex!" href="#Base.setindex!"><code>Base.setindex!</code></a> — <span class="docstring-category">Function</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">setindex!(x::GapObj, v::Any, i::Int64)
+setindex!(x::GapObj, v::Any, i::Int64, j::Int64)
+setindex!(x::GapObj, v::Any, l::Union{Vector{T},AbstractRange{T}}) where {T&lt;:Integer}</code></pre><p>Set the entry at position <code>i</code> or <code>(i,j)</code> in <code>x</code> to <code>v</code>, or set the entries at the positions in <code>x</code> that are described by <code>l</code> to the entries in <code>v</code>, provided that <code>x</code> is a GAP object supporting this, such as a GAP list or matrix object.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl hljs">julia&gt; l = GapObj([ 1, 2, 3, 5, 8, 13 ])
+GAP: [ 1, 2, 3, 5, 8, 13 ]
+
+julia&gt; l[1] = 0
+0
+
+julia&gt; l[8] = -1
+-1
+
+julia&gt; l[2:4] = [ 7, 7, 7 ]
+3-element Vector{Int64}:
+ 7
+ 7
+ 7
+
+julia&gt; l
+GAP: [ 0, 7, 7, 7, 8, 13,, -1 ]
+
+julia&gt; m = GapObj([ 1 2 ; 3 4 ])
+GAP: [ [ 1, 2 ], [ 3, 4 ] ]
+
+julia&gt; m[1,2] = 0
+0
+
+julia&gt; m
+GAP: [ [ 1, 0 ], [ 3, 4 ] ]</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/5f284fe7bf1d11d64f69d15595c14d19e8787120/src/adapter.jl#L84-L123">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="GAP.getbangindex" href="#GAP.getbangindex"><code>GAP.getbangindex</code></a> — <span class="docstring-category">Function</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">getbangindex(x::GapObj, i::Int64)</code></pre><p>Return the entry at position <code>i</code> in the <a href="https://docs.gap-system.org/doc/ref/chap13.html#X805F1C3B7C730062">positional object</a> <code>x</code>.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl hljs">julia&gt; x = GAP.Globals.ZmodnZObj(1, 6)
+GAP: ZmodnZObj( 1, 6 )
+
+julia&gt; GAP.Globals.IsPositionalObjectRep(x)
+true
+
+julia&gt; getbangindex(x, 1)
+1</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/5f284fe7bf1d11d64f69d15595c14d19e8787120/src/adapter.jl#L137-L154">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="GAP.hasbangindex" href="#GAP.hasbangindex"><code>GAP.hasbangindex</code></a> — <span class="docstring-category">Function</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">hasbangindex(x::GapObj, i::Int64)</code></pre><p>Return whether the entry at position <code>i</code> exists in the <a href="https://docs.gap-system.org/doc/ref/chap13.html#X805F1C3B7C730062">positional object</a> <code>x</code>.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl hljs">julia&gt; x = GAP.Globals.ZmodnZObj(1, 6)
+GAP: ZmodnZObj( 1, 6 )
+
+julia&gt; GAP.Globals.IsPositionalObjectRep(x)
+true
+
+julia&gt; hasbangindex(x, 1)
+true
+
+julia&gt; hasbangindex(x, 2)
+false</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/5f284fe7bf1d11d64f69d15595c14d19e8787120/src/adapter.jl#L157-L177">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="GAP.setbangindex!" href="#GAP.setbangindex!"><code>GAP.setbangindex!</code></a> — <span class="docstring-category">Function</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">setbangindex!(x::GapObj, v::Any, i::Int64)</code></pre><p>Set the entry at position <code>i</code> in the <a href="https://docs.gap-system.org/doc/ref/chap13.html#X805F1C3B7C730062">positional object</a> <code>x</code> to <code>v</code>, and return <code>x</code>.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl hljs">julia&gt; x = GAP.Globals.ZmodnZObj(1, 6)
+GAP: ZmodnZObj( 1, 6 )
+
+julia&gt; GAP.Globals.IsPositionalObjectRep(x)
+true
+
+julia&gt; setbangindex!(x, 0, 1)
+GAP: ZmodnZObj( 0, 6 )</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/5f284fe7bf1d11d64f69d15595c14d19e8787120/src/adapter.jl#L180-L198">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="Base.getproperty" href="#Base.getproperty"><code>Base.getproperty</code></a> — <span class="docstring-category">Function</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">getproperty(x::GapObj, f::Symbol)
+getproperty(x::GapObj, f::Union{AbstractString,Int64})</code></pre><p>Return the record component of the GAP record <code>x</code> that is described by <code>f</code>.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl hljs">julia&gt; r = GapObj(Dict(:a =&gt; 1))
+GAP: rec( a := 1 )
+
+julia&gt; r.a
+1</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/5f284fe7bf1d11d64f69d15595c14d19e8787120/src/adapter.jl#L210-L224">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="Base.setproperty!" href="#Base.setproperty!"><code>Base.setproperty!</code></a> — <span class="docstring-category">Function</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">setproperty!(x::GapObj, f::Symbol, v)
+setproperty!(x::GapObj, f::Union{AbstractString,Int64}, v)</code></pre><p>Set the record component of the GAP record <code>x</code> that is described by <code>f</code> to the value <code>v</code>.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl hljs">julia&gt; r = GapObj(Dict(:a =&gt; 1))
+GAP: rec( a := 1 )
+
+julia&gt; r.b = 0
+0
+
+julia&gt; r
+GAP: rec( a := 1, b := 0 )</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/5f284fe7bf1d11d64f69d15595c14d19e8787120/src/adapter.jl#L229-L247">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="Base.hasproperty" href="#Base.hasproperty"><code>Base.hasproperty</code></a> — <span class="docstring-category">Function</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">hasproperty(x::GapObj, f::Symbol)
+hasproperty(x::GapObj, f::Union{AbstractString,Int64})</code></pre><p>Return <code>true</code> if the GAP record <code>x</code> has a component that is described by <code>f</code>, and <code>false</code> otherwise.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl hljs">julia&gt; r = GapObj(Dict(:a =&gt; 1))
+GAP: rec( a := 1 )
+
+julia&gt; hasproperty( r, :a )
+true
+
+julia&gt; hasproperty( r, :b )
+false
+
+julia&gt; r.b = 2
+2
+
+julia&gt; hasproperty( r, :b )
+true
+
+julia&gt; r
+GAP: rec( a := 1, b := 2 )</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/5f284fe7bf1d11d64f69d15595c14d19e8787120/src/adapter.jl#L252-L279">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="GAP.getbangproperty" href="#GAP.getbangproperty"><code>GAP.getbangproperty</code></a> — <span class="docstring-category">Function</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">getbangproperty(x::GapObj, f::Union{AbstractString,Int64,Symbol})</code></pre><p>Return the value of the component <code>f</code> in the <a href="https://docs.gap-system.org/doc/ref/chap13.html#X805F1C3B7C730062">component object</a> <code>x</code>.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl hljs">julia&gt; x = GAP.Globals.Iterator(GAP.Globals.Integers)
+GAP: &lt;iterator of Integers at 0&gt;
+
+julia&gt; GAP.Globals.IsComponentObjectRep(x)
+true
+
+julia&gt; getbangproperty(x, :counter)
+0</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/5f284fe7bf1d11d64f69d15595c14d19e8787120/src/adapter.jl#L285-L302">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="GAP.hasbangproperty" href="#GAP.hasbangproperty"><code>GAP.hasbangproperty</code></a> — <span class="docstring-category">Function</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">hasbangproperty(x::GapObj, f::Union{AbstractString,Int64,Symbol})</code></pre><p>Return whether the <a href="https://docs.gap-system.org/doc/ref/chap13.html#X805F1C3B7C730062">component object</a> <code>x</code> has the component <code>f</code>.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl hljs">julia&gt; x = GAP.Globals.Iterator(GAP.Globals.Integers)
+GAP: &lt;iterator of Integers at 0&gt;
+
+julia&gt; GAP.Globals.IsComponentObjectRep(x)
+true
+
+julia&gt; hasbangproperty(x, :counter)
+true
+
+julia&gt; hasbangproperty(x, :x)
+false</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/5f284fe7bf1d11d64f69d15595c14d19e8787120/src/adapter.jl#L306-L326">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="GAP.setbangproperty!" href="#GAP.setbangproperty!"><code>GAP.setbangproperty!</code></a> — <span class="docstring-category">Function</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">setbangproperty!(x::GapObj, f::Union{AbstractString,Int64,Symbol}, v)</code></pre><p>Set the value of the component <code>f</code> in the <a href="https://docs.gap-system.org/doc/ref/chap13.html#X805F1C3B7C730062">component object</a> <code>x</code> to <code>v</code>, and return <code>x</code>.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl hljs">julia&gt; x = GAP.Globals.Iterator(GAP.Globals.Integers)
+GAP: &lt;iterator of Integers at 0&gt;
+
+julia&gt; GAP.Globals.IsComponentObjectRep(x)
+true
+
+julia&gt; setbangproperty!(x, :counter, 3)
+GAP: &lt;iterator of Integers at -1&gt;
+
+julia&gt; getbangproperty(x, :counter)
+3</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/5f284fe7bf1d11d64f69d15595c14d19e8787120/src/adapter.jl#L330-L351">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="GAP.wrap_rng" href="#GAP.wrap_rng"><code>GAP.wrap_rng</code></a> — <span class="docstring-category">Function</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">wrap_rng(rng::Random.AbstractRNG)</code></pre><p>Return a GAP object in the filter <code>IsRandomSource</code> that uses <code>rng</code> in calls to GAP&#39;s <code>Random</code> function. The idea is that GAP&#39;s <code>Random</code> methods for high level objects will just hand over the given random source to subfunctions until <code>Random</code> gets called for a list or the bounds of a range, and then <code>Base.rand</code> gets called with <code>rng</code>.</p><p><strong>Examples</strong></p><pre><code class="language-julia-repl hljs">julia&gt; rng1 = Random.default_rng();
+
+julia&gt; rng2 = copy(rng1);
+
+julia&gt; rng1 == rng2
+true
+
+julia&gt; rng1 === rng2
+false
+
+julia&gt; gap_rng1 = GAP.wrap_rng(rng1)
+GAP: &lt;RandomSource in IsRandomSourceJulia&gt;
+
+julia&gt; gap_rng2 = GAP.wrap_rng(rng2)
+GAP: &lt;RandomSource in IsRandomSourceJulia&gt;
+
+julia&gt; res1 = GAP.Globals.Random(gap_rng1, 1, 10);
+
+julia&gt; rng1 == rng2   # the two rngs have diverged
+false
+
+julia&gt; res1 == GAP.Globals.Random(gap_rng2, GapObj(1:10))
+true
+
+julia&gt; rng1 == rng2   # now the two rngs are again in sync
+true
+
+julia&gt; g = GAP.Globals.SymmetricGroup(10);
+
+julia&gt; p = GAP.Globals.Random(gap_rng1, g);
+
+julia&gt; p in g
+true
+
+julia&gt; GAP.Globals.Random(gap_rng1, GAP.Globals.GF(2)^10)
+GAP: &lt;a GF2 vector of length 10&gt;</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/5f284fe7bf1d11d64f69d15595c14d19e8787120/src/adapter.jl#L549-L598">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="GAP.randseed!" href="#GAP.randseed!"><code>GAP.randseed!</code></a> — <span class="docstring-category">Function</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">GAP.randseed!([seed::Integer])</code></pre><p>Reseed GAP&#39;s global RNG with <code>seed</code>.</p><p>The given <code>seed</code> must be a non-negative integer. When <code>seed</code> is not specified, a random seed is generated from Julia&#39;s global RNG.</p><p>For a fixed seed, the stream of generated numbers is allowed to change between different versions of GAP.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/5f284fe7bf1d11d64f69d15595c14d19e8787120/src/GAP.jl#L311-L321">source</a></section></article><p>For the following Julia functions, methods are provided that deal with the case that the arguments are GAP objects; they delegate to the corresponding GAP operations.</p><table><tr><th style="text-align: right">Julia</th><th style="text-align: right">GAP</th></tr><tr><td style="text-align: right"><code>length</code></td><td style="text-align: right"><code>Length</code></td></tr><tr><td style="text-align: right"><code>in</code></td><td style="text-align: right"><code>\in</code></td></tr><tr><td style="text-align: right"><code>zero</code></td><td style="text-align: right"><code>ZeroSameMutability</code></td></tr><tr><td style="text-align: right"><code>one</code></td><td style="text-align: right"><code>OneSameMutability</code></td></tr><tr><td style="text-align: right"><code>-</code> (unary)</td><td style="text-align: right"><code>AdditiveInverseSameMutability</code></td></tr><tr><td style="text-align: right"><code>inv</code></td><td style="text-align: right"><code>InverseSameMutability</code></td></tr><tr><td style="text-align: right"><code>+</code></td><td style="text-align: right"><code>SUM</code></td></tr><tr><td style="text-align: right"><code>-</code> (binary)</td><td style="text-align: right"><code>DIFF</code></td></tr><tr><td style="text-align: right"><code>*</code></td><td style="text-align: right"><code>PROD</code></td></tr><tr><td style="text-align: right"><code>/</code></td><td style="text-align: right"><code>QUO</code></td></tr><tr><td style="text-align: right"><code>\</code></td><td style="text-align: right"><code>LQUO</code></td></tr><tr><td style="text-align: right"><code>^</code></td><td style="text-align: right"><code>POW</code></td></tr><tr><td style="text-align: right"><code>mod</code></td><td style="text-align: right"><code>MOD</code></td></tr><tr><td style="text-align: right"><code>&lt;</code></td><td style="text-align: right"><code>LT</code></td></tr><tr><td style="text-align: right"><code>==</code></td><td style="text-align: right"><code>EQ</code></td></tr></table><p>The reason why four <code>SameMutability</code> operations are chosen in this list is as follows. In GAP, <em>binary</em> arithmetic operations return immutable results if and only if the two arguments are immutable. Thus it is consistent if <em>unary</em> arithmetic operations return a result with the same mutability as the argument. Note that GAP provides several variants of these unary operations, regarding the mutability of the result (<code>ZeroMutable</code>, <code>ZeroImmutable</code>, <code>ZeroSameMutability</code>, etc.), but here we have to choose one behaviour for the Julia function.</p><pre><code class="language-julia-repl hljs">julia&gt; l = GapObj( [ 1, 3, 7, 15 ] )
+GAP: [ 1, 3, 7, 15 ]
+
+julia&gt; m = GapObj( [ 1 2; 3 4 ] )
+GAP: [ [ 1, 2 ], [ 3, 4 ] ]
+
+julia&gt; length( l )
+4
+
+julia&gt; length( m )  # different from Julia&#39;s behaviour
+2
+
+julia&gt; 1 in l
+true
+
+julia&gt; 2 in l
+false
+
+julia&gt; zero( l )
+GAP: [ 0, 0, 0, 0 ]
+
+julia&gt; one( m )
+GAP: [ [ 1, 0 ], [ 0, 1 ] ]
+
+julia&gt; - l
+GAP: [ -1, -3, -7, -15 ]
+
+julia&gt; l + 1
+GAP: [ 2, 4, 8, 16 ]
+
+julia&gt; l + l
+GAP: [ 2, 6, 14, 30 ]
+
+julia&gt; m + m
+GAP: [ [ 2, 4 ], [ 6, 8 ] ]
+
+julia&gt; 1 - m
+GAP: [ [ 0, -1 ], [ -2, -3 ] ]
+
+julia&gt; l * l
+284
+
+julia&gt; l * m
+GAP: [ 10, 14 ]
+
+julia&gt; m * m
+GAP: [ [ 7, 10 ], [ 15, 22 ] ]
+
+julia&gt; 1 / m
+GAP: [ [ -2, 1 ], [ 3/2, -1/2 ] ]
+
+julia&gt; m / 2
+GAP: [ [ 1/2, 1 ], [ 3/2, 2 ] ]
+
+julia&gt; 2 \ m
+GAP: [ [ 1/2, 1 ], [ 3/2, 2 ] ]
+
+julia&gt; m ^ 2
+GAP: [ [ 7, 10 ], [ 15, 22 ] ]
+
+julia&gt; m ^ -1
+GAP: [ [ -2, 1 ], [ 3/2, -1/2 ] ]
+
+julia&gt; mod( l, 3 )
+GAP: [ 1, 0, 1, 0 ]
+
+julia&gt; m &lt; 2 * m
+true
+
+julia&gt; m^2 - 5 * m == 2 * one( m )
+true
+</code></pre><h2 id="Access-to-the-GAP-help-system"><a class="docs-heading-anchor" href="#Access-to-the-GAP-help-system">Access to the GAP help system</a><a id="Access-to-the-GAP-help-system-1"></a><a class="docs-heading-anchor-permalink" href="#Access-to-the-GAP-help-system" title="Permalink"></a></h2><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="GAP.show_gap_help" href="#GAP.show_gap_help"><code>GAP.show_gap_help</code></a> — <span class="docstring-category">Function</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">show_gap_help(topic::String, onlyexact::Bool = false)</code></pre><p>Print the information from the GAP help system about <code>topic</code> to the screen. If <code>onlyexact</code> is <code>true</code> then only exact matches are shown, otherwise all matches. For example, <code>GAP.show_gap_help(&quot;Size&quot;)</code> shows also documentation for <code>SizeScreen</code> and <code>SizesPerfectGroups</code>, whereas <code>GAP.show_gap_help(&quot;Size&quot;, true)</code> shows only documentation for <code>Size</code>.</p><p>For the variant showing all matches, one can also enter <code>?GAP.Globals.Size</code> at the Julia prompt instead of calling <code>show_gap_help</code>.</p><p><strong>Examples</strong></p><pre><code class="nohighlight hljs">julia&gt; GAP.show_gap_help( &quot;Size&quot; )
+[...]  # more than 50 entries from GAP manuals
+
+help?&gt; GAP.Globals.Size
+[...]  # the same
+
+julia&gt; GAP.show_gap_help( &quot;Size&quot;, true )
+[...]  # about 15 entries from GAP manuals
+</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/oscar-system/GAP.jl/blob/5f284fe7bf1d11d64f69d15595c14d19e8787120/src/help.jl#L52-L79">source</a></section></article></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../packages/">« Managing GAP packages</a><a class="docs-footer-nextpage" href="../examples/">Examples »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.8.0 on <span class="colophon-date" title="Friday 7 February 2025 20:31">Friday 7 February 2025</span>. Using Julia version 1.11.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
