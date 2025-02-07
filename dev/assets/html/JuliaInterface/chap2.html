@@ -131,11 +131,11 @@ false
 <div class="example"><pre>
 <span class="GAPprompt">gap&gt;</span> <span class="GAPinput">IsJuliaModule( Julia );</span>
 true
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">Julia.GAP;</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">GAP_jl;</span>
 &lt;Julia module GAP&gt;
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">IsJuliaModule( Julia.GAP );</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">IsJuliaModule( GAP_jl );</span>
 true
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">Julia.GAP.gap_to_julia;</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">GAP_jl.gap_to_julia;</span>
 &lt;Julia: gap_to_julia&gt;
 </pre></div>
 
@@ -194,7 +194,7 @@ true
 
 
 <ul>
-<li><p><strong class="pkg">Julia</strong>'s <code class="code">RefValue</code> objects can be handled as follows. If <code class="code">x</code> is such an object then its value can be fetched with <code class="code">Julia.GAP.getindex( x )</code>, a value <code class="code">v</code> of the right type can be set with <code class="code">Julia.GAP.setindex( x, v )</code>, and one can check with <code class="code">Julia.GAP.isassigned( x )</code> whether <code class="code">x</code> has a value.</p>
+<li><p><strong class="pkg">Julia</strong>'s <code class="code">RefValue</code> objects can be handled as follows. If <code class="code">x</code> is such an object then its value can be fetched with <code class="code">GAP_jl.getindex( x )</code>, a value <code class="code">v</code> of the right type can be set with <code class="code">GAP_jl.setindex( x, v )</code>, and one can check with <code class="code">GAP_jl.isassigned( x )</code> whether <code class="code">x</code> has a value.</p>
 
 </li>
 </ul>
@@ -219,13 +219,13 @@ true
 1
 </pre></div>
 
-<p>Note that not all <strong class="pkg">Julia</strong> variables are directly visible in its <code class="code">Main</code> module. For example, <strong class="pkg">Julia</strong> variables from the interface to <strong class="pkg">GAP</strong> are defined in the <strong class="pkg">Julia</strong> module <code class="code">GAP</code> or its submodules. It is safe to access this module as <code class="code">Julia.GAP</code>.</p>
+<p>Note that not all <strong class="pkg">Julia</strong> variables are directly visible in its <code class="code">Main</code> module. For example, <strong class="pkg">Julia</strong> variables from the interface to <strong class="pkg">GAP</strong> are defined in the <strong class="pkg">Julia</strong> module <code class="code">GAP</code> or its submodules. It is safe to access this module as <code class="code">GAP_jl</code>.</p>
 
 
 <div class="example"><pre>
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">Julia.GAP;</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">GAP_jl;</span>
 &lt;Julia module GAP&gt;
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">Julia.GAP.prompt;</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">GAP_jl.prompt;</span>
 &lt;Julia: prompt&gt;
 </pre></div>
 
