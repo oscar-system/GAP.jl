@@ -30,10 +30,6 @@ jobs:
         uses: julia-actions/setup-julia@v2
         with:
           version: '1'
-      - name: "Cache artifacts"
-        uses: julia-actions/cache@v2
-      - name: "Build package"
-        uses: julia-actions/julia-buildpkg@v1
       - name: Get list of GAP packages
         id: set-matrix
         run: julia --project=. -e '
