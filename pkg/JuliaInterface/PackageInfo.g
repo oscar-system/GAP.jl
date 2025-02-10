@@ -101,7 +101,6 @@ Dependencies := rec(
   GAP := ">= 4.11",    # need compatible code in GAP's src/julia_gc.c
   NeededOtherPackages := [ ],
   SuggestedOtherPackages := [ ],
-  OtherPackagesLoadedInAdvance := [ [ "GAPDoc", "1.6.6" ] ], # need StripEscapeSequences
   ExternalConditions := [ ],
 ),
 
