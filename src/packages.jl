@@ -3,7 +3,6 @@ module Packages
 
 import Downloads
 import Pidfile
-import Pkg
 import ...GAP: disable_error_handler, Globals, GapObj, replace_global!, RNamObj, sysinfo, Wrappers
 import ...GAP: gap_pkg_jlls, Compat, Setup
 
