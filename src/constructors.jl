@@ -210,7 +210,7 @@ julia> String(val)   # an empty GAP list is a string
 
 ```
 """
-function String(obj::GapObj)
+function Core.String(obj::GapObj)
     Wrappers.IsStringRep(obj) && return CSTR_STRING(obj)
     Wrappers.IsString(obj) && return CSTR_STRING(Wrappers.CopyToStringRep(obj)::GapObj)
     throw(ConversionError(obj, String))
@@ -259,7 +259,7 @@ julia> BitVector(val)
 
 ```
 """
-function BitVector(obj::GapObj)
+function Base.BitVector(obj::GapObj)
     !Wrappers.IsBlist(obj) && throw(ConversionError(obj, BitVector))
     # TODO: a much better conversion would be possible, at least if `obj` is
     # in IsBlistRep, then we could essentially memcpy data
