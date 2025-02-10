@@ -1,8 +1,11 @@
-#
-# JuliaInterface: Test interface to julia
-#
-# Reading the implementation part of the package.
-#
+#############################################################################
+##
+##  JuliaInterface package
+##
+##  Reading the implementation part of the package.
+##
+#############################################################################
+
 ReadPackage( "JuliaInterface", "gap/JuliaInterface.gi");
 
 ReadPackage( "JuliaInterface", "gap/adapter.gi");

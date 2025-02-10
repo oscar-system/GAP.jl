@@ -1,3 +1,9 @@
+//
+// JuliaInterface package
+//
+// Ensure not more than one Julia thread calls into the GAP kernel at a time.
+//
+//
 #ifndef JULIAINTERFACE_SYNC_H
 #define JULIAINTERFACE_SYNC_H
 

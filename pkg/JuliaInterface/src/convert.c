@@ -1,10 +1,16 @@
+//
+// JuliaInterface package
+//
+// Low-level conversion helpers
+//
 #include "convert.h"
 
 #include "calls.h"
 #include "sync.h"
 #include "JuliaInterface.h"
 
-// This function is used by GAP.jl
+// Turn a GAP object into a Julia object.
+// This function is used by GAP.jl and also by `DoCallJuliaFunc`.
 jl_value_t * julia_gap(Obj obj)
 {
     if (obj == 0) {
@@ -50,7 +56,9 @@ jl_value_t * julia_gap(Obj obj)
     return result;
 }
 
-// This function is used by GAP.jl
+// Turn a Julia object into a GAP object.
+// This function is used by GAP.jl (via `call_gap_func`) and also by
+// `DoCallJuliaFunc`.
 Obj gap_julia(jl_value_t * julia_obj)
 {
     if (jl_typeis(julia_obj, jl_int64_type)) {

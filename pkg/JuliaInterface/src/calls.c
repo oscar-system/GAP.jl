@@ -1,3 +1,9 @@
+//
+// JuliaInterface package
+//
+// Wrap Julia functions for GAP, and implement function calls between Julia
+// and GAP.
+//
 #include "calls.h"
 #include "convert.h"
 #include "sync.h"

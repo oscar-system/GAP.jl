@@ -1,3 +1,9 @@
+//
+// JuliaInterface package
+//
+// Wrap Julia functions for GAP, and implement function calls between Julia
+// and GAP.
+//
 #ifndef JULIAINTERFACE_CALLS_H
 #define JULIAINTERFACE_CALLS_H
 

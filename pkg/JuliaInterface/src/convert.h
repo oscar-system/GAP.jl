@@ -1,3 +1,8 @@
+//
+// JuliaInterface package
+//
+// Low-level conversion helpers
+//
 #ifndef JULIAINTERFACE_CONVERT_H
 #define JULIAINTERFACE_CONVERT_H
 

@@ -1,8 +1,10 @@
-#
-# JuliaInterface: Test interface to julia
-#
-# Reading the declaration part of the package.
-#
+#############################################################################
+##
+##  JuliaInterface package
+##
+##  Reading the declaration part of the package.
+##
+#############################################################################
 
 LoadDynamicModule(_path_JuliaInterface_so);
 Unbind(_path_JuliaInterface_so);
