@@ -105,7 +105,7 @@ BindGlobal( "MatchURLs", function(str, prefix...)
 
   # evaluate "url"s for all matches
   urls := List(Concatenation(matches), a->
-              [a[1].bookname, StripEscapeSequences(a[1].entries[a[2]][1]),
+              [a[1].bookname, _StripEscapeSequences(a[1].entries[a[2]][1]),
                HELP_BOOK_HANDLER.(a[1].handler).HelpData(a[1], a[2], "url")]);
 
   # substitute GAP roots by prefix
