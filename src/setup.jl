@@ -179,7 +179,6 @@ function regenerate_gaproot()
     mkpath(gaproot_mutable)
     Pidfile.mkpidlock("$gaproot_mutable.lock"; stale_age=10) do
         # create fake sysinfo.gap
-        unquoted = Set(["GAParch", "GAP_ABI", "GAP_HPCGAP", "GAP_KERNEL_MAJOR_VERSION", "GAP_KERNEL_MINOR_VERSION", "GAP_OBJEXT"])
         write_sysinfo_gap(joinpath(gaproot_mutable, "sysinfo.gap"), sysinfo)
 
         # patch gac to load correct sysinfo.gap
