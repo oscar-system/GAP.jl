@@ -27,6 +27,7 @@ import Artifacts: find_artifacts_toml, @artifact_str
 import TOML
 
 import GAP_jll: GAP_jll, libgap
+import GAP_lib_jll
 
 GAP_jll.is_available() ||
    error("""This platform or julia version is currently not supported by GAP:
@@ -63,6 +64,7 @@ import Random
 # the startup time a little bit
 const sysinfo = Setup.regenerate_gaproot()
 
+const GAP_VERSION = VersionNumber(sysinfo["GAP_VERSION"])
 
 include("types.jl")
 
@@ -253,13 +255,22 @@ function __init__()
 
     real_JuliaInterface_path[] = Setup.locate_JuliaInterface_so(sysinfo)
 
-    gaproots = sysinfo["GAPROOTS"]
-    cmdline_options = ["", "-l", gaproots]
+    roots = [
+            # GAP root with custom sysinfo.gap
+            Setup.gaproot(),
+            # GAP root for the the actual GAP library, from GAP_lib_jll
+            abspath(GAP_lib_jll.find_artifact_dir(), "share", "gap"),
+            # GAP root into which PackageManager installs packages by default
+            Packages.gap_packages_rootdir(),
+            ]
+    cmdline_options = ["", "-l", join(roots, ";")]
 
     # tell GAP about all artifacts that contain GAP packages
     pkg_artifacts = filter(startswith("GAP_pkg_"), keys(TOML.parsefile(find_artifacts_toml(@__FILE__))))
-    pkgdirs = join((realpath(@artifact_str(name)) for name in pkg_artifacts), ';')
-    append!(cmdline_options, ["--packagedirs", pkgdirs])
+    pkgdirs = [realpath(@artifact_str(name)) for name in pkg_artifacts]
+    push!(pkgdirs, abspath(@__DIR__, "..", "pkg", "JuliaInterface"))
+    push!(pkgdirs, abspath(@__DIR__, "..", "pkg", "JuliaExperimental"))
+    push!(cmdline_options, "--packagedirs", join(pkgdirs, ';'))
 
     if isdefined(Main, :__GAP_ARGS__)
         # we were started via gap.sh, handle user command line arguments

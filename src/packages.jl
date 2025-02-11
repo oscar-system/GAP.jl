@@ -3,11 +3,19 @@ module Packages
 
 import Downloads
 import Pidfile
-import ...GAP: disable_error_handler, Globals, GapObj, replace_global!, RNamObj, sysinfo, Wrappers
-import ...GAP: gap_pkg_jlls, Compat, Setup
+import ...GAP: disable_error_handler, Globals, GapObj, replace_global!, RNamObj, Wrappers
+import ...GAP: gap_pkg_jlls, Compat, GAP_VERSION, GAP_jll, GAP_lib_jll
 
-const DEFAULT_PKGDIR = Ref{String}()
+gap_packages_rootdir() = joinpath(Base.DEPOT_PATH[1], "gaproot", "v$(GAP_VERSION.major).$(GAP_VERSION.minor)")
+
+const DEFAULT_PKGDIR = Ref(joinpath(gap_packages_rootdir(), "pkg"))
 const DOWNLOAD_HELPER = Ref{Downloads.Downloader}()
+
+function __init__()
+    # ensure DEFAULT_PKGDIR exists, otherwise GAP will skip it when populating
+    # the list of package directories
+    mkpath(DEFAULT_PKGDIR[])
+end
 
 function init_packagemanager()
 #TODO:
@@ -17,7 +25,6 @@ function init_packagemanager()
     res = load("PackageManager")
     @assert res
 
-    global DEFAULT_PKGDIR[] = sysinfo["DEFAULT_PKGDIR"]
     global DOWNLOAD_HELPER[] = Downloads.Downloader(; grace=0.1)
 
     # overwrite PKGMAN_DownloadURL
@@ -563,7 +570,7 @@ function versioninfo(io::IO = stdout; GAP::Bool = false, jll::Bool = false, full
   if jll
     deps = gap_pkg_jlls
     if GAP
-      deps = vcat(deps, [Setup.GAP_jll, Setup.GAP_lib_jll])
+      deps = vcat(deps, [GAP_jll, GAP_lib_jll])
     end
     jlldeps = [(name = string(nameof(x)), version = Compat.pkgversion(x)) for x in deps]
     sort!(jlldeps, by = x -> x.name)
