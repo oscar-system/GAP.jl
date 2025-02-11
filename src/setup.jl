@@ -106,6 +106,12 @@ function regenerate_gaproot()
     gaproot_mutable = gaproot()
 
     @debug "Set up gaproot at $(gaproot_mutable)"
+    sysinfo = create_sysinfo_gap_and_gac(gaproot_mutable)
+    return sysinfo
+end
+
+function create_sysinfo_gap_and_gac(dir::String)
+    mkpath(dir)
 
     gap_prefix = GAP_jll.find_artifact_dir()
 
@@ -138,8 +144,8 @@ function regenerate_gaproot()
     sysinfo["GAP_LDFLAGS"] = "-L$(gap_lib) -lgap"
 
     # path to gap & gac (used by some package build systems)
-    sysinfo["GAP"] = joinpath(gaproot_mutable, "bin", "gap.sh")
-    sysinfo["GAC"] = joinpath(gaproot_mutable, "gac")
+    sysinfo["GAP"] = joinpath(dir, "bin", "gap.sh")
+    sysinfo["GAC"] = joinpath(dir, "gac")
 
     # the following sysinfo entries are intentional left as they are:
     # - GAParch
@@ -159,17 +165,15 @@ function regenerate_gaproot()
     # GMP_PREFIX was added in 4.13.0.
     #sysinfo["GMP_PREFIX"] = TODO
 
-    # create the mutable gaproot
-    mkpath(gaproot_mutable)
-    Pidfile.mkpidlock("$gaproot_mutable.lock"; stale_age=10) do
+    Pidfile.mkpidlock("$dir.lock"; stale_age=10) do
         # create fake sysinfo.gap
-        write_sysinfo_gap(joinpath(gaproot_mutable, "sysinfo.gap"), sysinfo)
+        write_sysinfo_gap(joinpath(dir, "sysinfo.gap"), sysinfo)
 
         # patch gac to load correct sysinfo.gap
         gac = read(joinpath(gap_prefix, "bin", "gac"), String)
-        gac = replace(gac, r"^\. \"[^\"]+\"$"m => ". \"$(gaproot_mutable)/sysinfo.gap\"")
-        write("$gaproot_mutable/gac", gac)
-        chmod("$gaproot_mutable/gac", 0o755)
+        gac = replace(gac, r"^\. \"[^\"]+\"$"m => ". \"$(dir)/sysinfo.gap\"")
+        write("$dir/gac", gac)
+        chmod("$dir/gac", 0o755)
     end # mkpidlock
 
     return sysinfo
