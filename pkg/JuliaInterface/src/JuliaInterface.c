@@ -1,7 +1,9 @@
-/*
- * JuliaInterface: Interface to julia
- */
-
+//
+// JuliaInterface package
+//
+// Contains GAP wrapper objects for Julia objects, and GAP kernel functions
+// used by the GAP code of JuliaInterface.
+//
 #include "JuliaInterface.h"
 
 #include "calls.h"

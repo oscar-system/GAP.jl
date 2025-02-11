@@ -1,3 +1,9 @@
+//
+// JuliaInterface package
+//
+// Contains GAP wrapper objects for Julia objects, and GAP kernel functions
+// used by the GAP code of JuliaInterface.
+//
 #ifndef JULIAINTERFACE_H_
 #define JULIAINTERFACE_H_
 

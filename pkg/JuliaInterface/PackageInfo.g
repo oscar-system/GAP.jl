@@ -1,11 +1,14 @@
-#
-# JuliaInterface: Interface to Julia
-#
-# This file contains package meta data. For additional information on
-# the meaning and correct usage of these fields, please consult the
-# manual of the "Example" package as well as the comments in its
-# PackageInfo.g file.
-#
+#############################################################################
+##
+##  JuliaInterface package
+##
+##  This file contains package meta data. For additional information on
+##  the meaning and correct usage of these fields, please consult the
+##  manual of the "Example" package as well as the comments in its
+##  PackageInfo.g file.
+##
+#############################################################################
+
 SetPackageInfo( rec(
 
 PackageName := "JuliaInterface",

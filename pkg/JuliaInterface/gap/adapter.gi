@@ -1,8 +1,10 @@
-
 #############################################################################
+##
+##  JuliaInterface package
 ##
 ##  Install methods for 'IsJuliaObject' objects.
 ##
+#############################################################################
 
 InstallOtherMethod( AdditiveInverseOp, [ "IsJuliaObject" ], Julia.Base.\- );
 InstallOtherMethod( InverseOp, [ "IsJuliaObject" ], Julia.Base.inv );

@@ -1,3 +1,10 @@
+//
+// JuliaInterface package
+//
+// Ensure not more than one Julia thread calls into the GAP kernel at a time.
+//
+// TODO: this is not actually fully implemented!!
+//
 #include "sync.h"
 #include <pthread.h>
 #include <stdlib.h>

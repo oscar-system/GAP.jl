@@ -1,3 +1,9 @@
+#############################################################################
+##
+##  JuliaInterface package
+##
+#############################################################################
+
 #! @BeginChunk JuliaHelpInGAP
 #! @Chapter Using &Julia; from &GAP;
 #! @Section Access &Julia; help from a &GAP; session

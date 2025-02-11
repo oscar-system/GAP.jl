@@ -1,8 +1,8 @@
-#
-# JuliaInterface: Test interface to julia
-#
-# Implementations
-#
+#############################################################################
+##
+##  JuliaInterface package
+##
+#############################################################################
 
 BindGlobal( "_JuliaCoreModule", _JuliaGetGlobalVariableByModule( "Core", _JuliaGetMainModule() ) );
 BindGlobal( "_JULIA_FUNCTION_TYPE", _JuliaGetGlobalVariableByModule( "Function", _JuliaCoreModule ) );
