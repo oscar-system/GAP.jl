@@ -12,6 +12,17 @@ const scratch_key = "gap_$(hash(@__FILE__))-nopkg-$(VERSION.major).$(VERSION.min
 
 gaproot() = @get_scratch!(scratch_key)
 
+const _gaproot_for_building = Ref{String}()
+
+function gaproot_for_building()
+    if !isassigned(_gaproot_for_building)
+        # first time we call this in a session
+        _gaproot_for_building[] = mktempdir()
+    end
+    assure_gaproot_for_building(_gaproot_for_building[])
+    return _gaproot_for_building[]
+end
+
 #############################################################################
 #
 # Set up the primary, mutable GAP root
@@ -108,6 +119,17 @@ function regenerate_gaproot()
     @debug "Set up gaproot at $(gaproot_mutable)"
     sysinfo = create_sysinfo_gap_and_gac(gaproot_mutable)
     return sysinfo
+end
+
+function assure_gaproot_for_building(gaproot::String)
+    is_already_setup = Pidfile.mkpidlock("$gaproot.lock"; stale_age=10) do
+        isdir(gaproot) && isfile(joinpath(gaproot, "sysinfo.gap")) && isfile(joinpath(gaproot, "gac"))
+    end # mkpidlock
+
+    is_already_setup && return
+
+    @debug "Set up sysinfo.gap and gac at $(gaproot)"
+    create_sysinfo_gap_and_gac(gaproot)
 end
 
 function create_sysinfo_gap_and_gac(dir::String)
