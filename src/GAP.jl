@@ -59,12 +59,7 @@ include("setup.jl")
 import Libdl
 import Random
 
-# setup the initial sysinfo dictionary; we'll update this later in __init__
-# this also ensures that Setup.regenerate_gaproot gets precompiled, reducing
-# the startup time a little bit
-const sysinfo = Setup.regenerate_gaproot()
-
-const GAP_VERSION = VersionNumber(sysinfo["GAP_VERSION"])
+const GAP_VERSION = VersionNumber(Setup.read_sysinfo_gap(joinpath(GAP_jll.find_artifact_dir(), "lib", "gap", "sysinfo.gap"))["GAP_VERSION"])
 
 include("types.jl")
 
@@ -245,16 +240,9 @@ function __init__()
         windows_error()
     end
 
-    # always regenerate our custom GAP root dir, to accommodate for changes
-    # in the system configuration (artifact paths, available compilers, ...)
-    global sysinfo
-    merge!(sysinfo, Setup.regenerate_gaproot())
-
     real_JuliaInterface_path[] = Setup.locate_JuliaInterface_so()
 
     roots = [
-            # GAP root with custom sysinfo.gap
-            Setup.gaproot(),
             # GAP root for the the actual GAP library, from GAP_lib_jll
             abspath(GAP_lib_jll.find_artifact_dir(), "share", "gap"),
             # GAP root into which PackageManager installs packages by default
