@@ -201,7 +201,7 @@ function create_sysinfo_gap_and_gac(dir::String)
     return sysinfo
 end
 
-function build_JuliaInterface(sysinfo::Dict{String, String})
+function build_JuliaInterface()
     @info "Compiling JuliaInterface ..."
 
     # run code in julia-config.jl to determine compiler and linker flags for Julia;
@@ -215,18 +215,21 @@ function build_JuliaInterface(sysinfo::Dict{String, String})
     JULIA_LIBS = filter(c -> c != '\'', ldlibs())
 
     jipath = joinpath(@__DIR__, "..", "pkg", "JuliaInterface")
+    gaproot = gaproot_for_building()
     cd(jipath) do
         withenv("CFLAGS" => JULIA_CFLAGS,
                 "LDFLAGS" => JULIA_LDFLAGS * " " * JULIA_LIBS) do
-            run(pipeline(`./configure $(gaproot())`, stdout="build.log"))
+            run(pipeline(`./configure $(gaproot)`, stdout="build.log"))
             run(pipeline(`make V=1 -j$(Sys.CPU_THREADS)`, stdout="build.log", append=true))
         end
     end
 
+    sysinfo = read_sysinfo_gap(joinpath(gaproot, "sysinfo.gap"))
+
     return normpath(joinpath(jipath, "bin", sysinfo["GAParch"]))
 end
 
-function locate_JuliaInterface_so(sysinfo::Dict{String, String})
+function locate_JuliaInterface_so()
     # compare the C sources used to build GAP_pkg_juliainterface_jll with bundled copies
     # by comparing tree hashes
     jll = GAP_pkg_juliainterface_jll.find_artifact_dir()
@@ -239,7 +242,7 @@ function locate_JuliaInterface_so(sysinfo::Dict{String, String})
         path = joinpath(jll, "lib", "gap")
     else
         # tree hashes differ: we must compile the bundled sources (or requested re-compilation via ENV)
-        path = build_JuliaInterface(sysinfo)
+        path = build_JuliaInterface()
         @debug "Use JuliaInterface.so from $(path)"
     end
     return joinpath(path, "JuliaInterface.so")
