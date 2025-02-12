@@ -23,7 +23,6 @@ const gap_pkgs_with_overrides = [
     #"grape"            # handled via nauty_jll below
     "guava"
     "io"
-    "json"
     #"jupyterkernel"    # useful?
     "kbmag"
     "normalizinterface"
