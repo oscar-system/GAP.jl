@@ -3,23 +3,38 @@ module Setup
 using Pkg: GitTools
 import GAP_jll
 import GAP_pkg_juliainterface_jll
-import Scratch: @get_scratch!
 import Pidfile
-
-# to separate the scratchspaces of different GAP.jl copies and Julia versions
-# put the Julia version and the hash of the path to this file into the key
-const scratch_key = "gap_$(hash(@__FILE__))-nopkg-$(VERSION.major).$(VERSION.minor)"
-
-gaproot() = @get_scratch!(scratch_key)
 
 #############################################################################
 #
-# Set up the primary, mutable GAP root
+# Set up a GAP root that is only used for building GAP packages
 #
 # For this we read the sysinfo.gap bundled with GAP_jll and then modify it
 # to be usable on this computer
 #
 #############################################################################
+
+const _gaproot_for_building = Ref{String}()
+
+function gaproot_for_building()
+    if !isassigned(_gaproot_for_building)
+        # first time we call this in a session
+        _gaproot_for_building[] = mktempdir()
+    end
+    assure_gaproot_for_building(_gaproot_for_building[])
+    return _gaproot_for_building[]
+end
+
+function assure_gaproot_for_building(gaproot::String)
+    is_already_setup = Pidfile.mkpidlock("$gaproot.lock"; stale_age=10) do
+        isdir(gaproot) && isfile(joinpath(gaproot, "sysinfo.gap")) && isfile(joinpath(gaproot, "gac"))
+    end # mkpidlock
+
+    is_already_setup && return
+
+    @debug "Set up sysinfo.gap and gac at $(gaproot)"
+    create_sysinfo_gap_and_gac(gaproot)
+end
 
 # ensure `link` is a symlink pointing to `target` in a way that is hopefully
 # safe against races with other Julia processes doing the exact same thing
@@ -102,14 +117,6 @@ end
 
 include("julia-config.jl")
 
-function regenerate_gaproot()
-    gaproot_mutable = gaproot()
-
-    @debug "Set up gaproot at $(gaproot_mutable)"
-    sysinfo = create_sysinfo_gap_and_gac(gaproot_mutable)
-    return sysinfo
-end
-
 function create_sysinfo_gap_and_gac(dir::String)
     mkpath(dir)
 
@@ -179,7 +186,7 @@ function create_sysinfo_gap_and_gac(dir::String)
     return sysinfo
 end
 
-function build_JuliaInterface(sysinfo::Dict{String, String})
+function build_JuliaInterface()
     @info "Compiling JuliaInterface ..."
 
     # run code in julia-config.jl to determine compiler and linker flags for Julia;
@@ -193,18 +200,21 @@ function build_JuliaInterface(sysinfo::Dict{String, String})
     JULIA_LIBS = filter(c -> c != '\'', ldlibs())
 
     jipath = joinpath(@__DIR__, "..", "pkg", "JuliaInterface")
+    gaproot = gaproot_for_building()
     cd(jipath) do
         withenv("CFLAGS" => JULIA_CFLAGS,
                 "LDFLAGS" => JULIA_LDFLAGS * " " * JULIA_LIBS) do
-            run(pipeline(`./configure $(gaproot())`, stdout="build.log"))
+            run(pipeline(`./configure $(gaproot)`, stdout="build.log"))
             run(pipeline(`make V=1 -j$(Sys.CPU_THREADS)`, stdout="build.log", append=true))
         end
     end
 
+    sysinfo = read_sysinfo_gap(joinpath(gaproot, "sysinfo.gap"))
+
     return normpath(joinpath(jipath, "bin", sysinfo["GAParch"]))
 end
 
-function locate_JuliaInterface_so(sysinfo::Dict{String, String})
+function locate_JuliaInterface_so()
     # compare the C sources used to build GAP_pkg_juliainterface_jll with bundled copies
     # by comparing tree hashes
     jll = GAP_pkg_juliainterface_jll.find_artifact_dir()
@@ -217,7 +227,7 @@ function locate_JuliaInterface_so(sysinfo::Dict{String, String})
         path = joinpath(jll, "lib", "gap")
     else
         # tree hashes differ: we must compile the bundled sources (or requested re-compilation via ENV)
-        path = build_JuliaInterface(sysinfo)
+        path = build_JuliaInterface()
         @debug "Use JuliaInterface.so from $(path)"
     end
     return joinpath(path, "JuliaInterface.so")
