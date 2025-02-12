@@ -250,7 +250,7 @@ function __init__()
     global sysinfo
     merge!(sysinfo, Setup.regenerate_gaproot())
 
-    real_JuliaInterface_path[] = Setup.locate_JuliaInterface_so(sysinfo)
+    real_JuliaInterface_path[] = Setup.locate_JuliaInterface_so()
 
     roots = [
             # GAP root with custom sysinfo.gap
