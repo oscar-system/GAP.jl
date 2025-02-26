@@ -1,6 +1,7 @@
 module Setup
 
 using Pkg: GitTools
+using ..GAP: GAP
 import GAP_jll
 import GAP_pkg_juliainterface_jll
 import Pidfile
@@ -123,7 +124,7 @@ function create_sysinfo_gap_and_gac(dir::String)
     gap_prefix = GAP_jll.find_artifact_dir()
 
     # load the existing sysinfo.gap
-    sysinfo = read_sysinfo_gap(joinpath(gap_prefix, "lib", "gap", "sysinfo.gap"))
+    sysinfo = deepcopy(GAP.sysinfo)
 
     #
     # now we modify sysinfo for our needs
@@ -209,9 +210,7 @@ function build_JuliaInterface()
         end
     end
 
-    sysinfo = read_sysinfo_gap(joinpath(gaproot, "sysinfo.gap"))
-
-    return normpath(joinpath(jipath, "bin", sysinfo["GAParch"]))
+    return normpath(joinpath(jipath, "bin", GAP.sysinfo["GAParch"]))
 end
 
 function locate_JuliaInterface_so()

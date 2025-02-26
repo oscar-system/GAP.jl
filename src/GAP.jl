@@ -59,7 +59,8 @@ include("setup.jl")
 import Libdl
 import Random
 
-const GAP_VERSION = VersionNumber(Setup.read_sysinfo_gap(joinpath(GAP_jll.find_artifact_dir(), "lib", "gap", "sysinfo.gap"))["GAP_VERSION"])
+const sysinfo = Setup.read_sysinfo_gap(joinpath(GAP_jll.find_artifact_dir(), "lib", "gap", "sysinfo.gap"))
+const GAP_VERSION = VersionNumber(sysinfo["GAP_VERSION"])
 
 include("types.jl")
 
