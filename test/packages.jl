@@ -12,10 +12,9 @@
     @test GAP.Packages.remove("fga", interactive = false)
 
     # Test the installation of a package with a kernel extension, but without a jll
-    # TODO: change json here to a different package and enable GAP_pkg_json_jll again
-    @test GAP.Packages.install("json", interactive = false)
-    @test GAP.Packages.load("json")
-    @test GAP.Packages.remove("json", interactive = false)
+    @test GAP.Packages.install("https://github.com/gap-packages/RegisterPackageTNUMDemo/releases/download/v0.4/RegisterPackageTNUMDemo-0.4.tar.gz", interactive = false)
+    @test GAP.Packages.load("RegisterPackageTNUMDemo")
+    @test GAP.Packages.remove("RegisterPackageTNUMDemo", interactive = false)
 
 #    pkgdir = mktempdir()
 #    @test GAP.Packages.install("fga", interactive = false, pkgdir = pkgdir)
