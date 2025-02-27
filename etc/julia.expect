@@ -1,4 +1,4 @@
-# exp_internal 1 # enable debug output
+exp_internal 1 # enable debug output
 
 # from https://serverfault.com/a/981762
 expect_before {
