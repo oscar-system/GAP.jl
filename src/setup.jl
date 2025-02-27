@@ -184,6 +184,9 @@ function create_sysinfo_gap_and_gac(dir::String)
         gac = replace(gac, r"^\. \"[^\"]+\"$"m => ". \"$(dir)/sysinfo.gap\"")
         write("$dir/gac", gac)
         chmod("$dir/gac", 0o755)
+
+        # create bin/gap.sh
+        create_gap_sh(joinpath(dir, "bin"); use_active_project=true)
     end # mkpidlock
 
     return sysinfo
@@ -244,22 +247,24 @@ Given a directory path, create three files in that directory:
   `gap.sh` to function (they record the precise versions of GAP.jl and other
   Julia packages involved)
 """
-function create_gap_sh(dstdir::String)
+function create_gap_sh(dstdir::String; use_active_project::Bool=false)
 
     mkpath(dstdir)
 
-    gaproot_gapjl = abspath(@__DIR__, "..")
+    if use_active_project
+        projectdir = dirname(Base.active_project())
 
-    ##
-    ## Create Project.toml & Manifest.toml for use by gap.sh
-    ##
-    @info "Generating custom Julia project ..."
-    run(`$(Base.julia_cmd()) --startup-file=no --project=$(dstdir) -e "using Pkg; Pkg.develop(PackageSpec(path=\"$(gaproot_gapjl)\"))"`)
+        @debug "Generating gap.sh for active project ..."
+    else
+        projectdir = dstdir
 
-    ##
-    ## Create custom gap.sh
-    ##
-    @info "Generating gap.sh ..."
+        @info "Generating custom Julia project ..."
+        gaproot_gapjl = abspath(@__DIR__, "..")
+        run(`$(Base.julia_cmd()) --startup-file=no --project=$(projectdir) -e "using Pkg; Pkg.develop(PackageSpec(path=\"$(gaproot_gapjl)\"))"`)
+        
+        @info "Generating gap.sh ..."
+    end
+
 
     gap_sh_path = joinpath(dstdir, "gap.sh")
     write(gap_sh_path,
@@ -276,8 +281,8 @@ function create_gap_sh(dstdir::String)
             READ_STARTUP_FILE="yes"
         else
             READ_STARTUP_FILE="no"
-        fi
-        exec $(joinpath(Sys.BINDIR, Base.julia_exename())) --startup-file=\$READ_STARTUP_FILE --project=$(dstdir) -i -- "$(gap_sh_path)" "\$@"
+        fi       
+        exec $(join(Base.julia_cmd().exec, " ")) --startup-file=\$READ_STARTUP_FILE --project=$(projectdir) -i -- "$(gap_sh_path)" "\$@"
         =#
 
         # pass command line arguments to GAP.jl via a small hack
