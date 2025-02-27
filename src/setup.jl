@@ -6,6 +6,8 @@ import GAP_jll
 import GAP_pkg_juliainterface_jll
 import Pidfile
 
+export create_gap_sh
+
 #############################################################################
 #
 # Set up a GAP root that is only used for building GAP packages
@@ -232,8 +234,6 @@ function locate_JuliaInterface_so()
     return joinpath(path, "JuliaInterface.so")
 end
 
-end # module
-
 """
     create_gap_sh(dstdir::String)
 
@@ -290,3 +290,7 @@ function create_gap_sh(dstdir::String)
     chmod(gap_sh_path, 0o755)
 
 end # function
+
+end # module
+
+using .Setup
