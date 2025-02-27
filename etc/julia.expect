@@ -1,4 +1,4 @@
-set timeout 10
+# exp_internal 1 # enable debug output
 
 # from https://serverfault.com/a/981762
 expect_before {
@@ -6,42 +6,50 @@ expect_before {
     eof     { puts " EOF ";     exit 1 }
 }
 
+set timeout 300
+
 expect "julia> "
 send -- "using GAP\r"
+expect "using GAP\r"
+expect "julia> *using GAP\r"
+expect "julia> "
+
+set timeout 10
 
 # test tab completing "fai" to "fail"
-expect "julia> "
-sleep 0.1
 send -- "GAP.Globals.fai"
+expect "GAP.Globals.fai"
 send -- "\t"
 expect "l"
 send -- "\r"
+expect "julia> *GAP.Globals.fail\r"
 expect "GAP: fail\r"
+expect "julia> "
 
 # test tab completing of a GAP record
-expect "julia> "
-sleep 0.1
 send -- "GAP.Globals.GAPInfo.MaxNrArgs"
+expect "GAP.Globals.GAPInfo.MaxNrArgs"
 send -- "\t"
 expect "Method"
 send -- "\r"
+expect "julia> *GAP.Globals.GAPInfo.MaxNrArgsMethod\r"
 expect "6\r"
+expect "julia> "
 
 # test GAP.prompt
-expect "julia> "
-sleep 0.1
 send -- "GAP.prompt()\r"
+expect "julia> *GAP.prompt()\r"
+expect "gap> "
 
 # test the GAP prompt
-expect "gap> "
-sleep 0.1
 send -- "GAP_jl;\r"
+expect "GAP_jl;\r"
 expect "<Julia module GAP>\r"
+expect "gap> "
 
 # test returning to Julia prompt
-expect "gap> "
-sleep 0.1
 send -- "quit;\r"
+expect "quit;\r"
 expect "julia> "
 
 exit
