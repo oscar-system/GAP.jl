@@ -281,7 +281,7 @@ function create_gap_sh(dstdir::String; use_active_project::Bool=false)
             READ_STARTUP_FILE="yes"
         else
             READ_STARTUP_FILE="no"
-        fi       
+        fi
         exec $(join(Base.julia_cmd().exec, " ")) --startup-file=\$READ_STARTUP_FILE --project=$(projectdir) -i -- "$(gap_sh_path)" "\$@"
         =#
 
