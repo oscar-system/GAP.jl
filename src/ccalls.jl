@@ -333,107 +333,81 @@ end
 # 0 arguments
 function _call_gap_func(func::GapObj)
     fptr = GET_FUNC_PTR(func, 0)
-    ret = ccall(fptr, Ptr{Cvoid}, (GapObj,), func)
+    ret = @ccall $fptr(func::GapObj)::Ptr{Cvoid}
     return ret
 end
 
 # 1 argument
 function _call_gap_func(func::GapObj, a1)
     fptr = GET_FUNC_PTR(func, 1)
-    ret = ccall(
-        fptr,
-        Ptr{Cvoid},
-        (GapObj, Ptr{Cvoid}),
-        func,
-        _JULIA_TO_GAP(a1),
-    )
+    ret = @ccall $fptr(
+        func::GapObj, 
+        _JULIA_TO_GAP(a1)::Ptr{Cvoid},
+    )::Ptr{Cvoid}
     return ret
 end
 
 # 2 arguments
 function _call_gap_func(func::GapObj, a1, a2)
     fptr = GET_FUNC_PTR(func, 2)
-    ret = ccall(
-        fptr,
-        Ptr{Cvoid},
-        (GapObj, Ptr{Cvoid}, Ptr{Cvoid}),
-        func,
-        _JULIA_TO_GAP(a1),
-        _JULIA_TO_GAP(a2),
-    )
+    ret = @ccall $fptr(
+        func::GapObj,
+        _JULIA_TO_GAP(a1)::Ptr{Cvoid},
+        _JULIA_TO_GAP(a2)::Ptr{Cvoid},
+    )::Ptr{Cvoid}
     return ret
 end
 
 # 3 arguments
 function _call_gap_func(func::GapObj, a1, a2, a3)
     fptr = GET_FUNC_PTR(func, 3)
-    ret = ccall(
-        fptr,
-        Ptr{Cvoid},
-        (GapObj, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}),
-        func,
-        _JULIA_TO_GAP(a1),
-        _JULIA_TO_GAP(a2),
-        _JULIA_TO_GAP(a3),
-    )
+    ret = @ccall $fptr(
+        func::GapObj,
+        _JULIA_TO_GAP(a1)::Ptr{Cvoid},
+        _JULIA_TO_GAP(a2)::Ptr{Cvoid},
+        _JULIA_TO_GAP(a3)::Ptr{Cvoid},
+    )::Ptr{Cvoid}
     return ret
 end
 
 # 4 arguments
 function _call_gap_func(func::GapObj, a1, a2, a3, a4)
     fptr = GET_FUNC_PTR(func, 4)
-    ret = ccall(
-        fptr,
-        Ptr{Cvoid},
-        (GapObj, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}),
-        func,
-        _JULIA_TO_GAP(a1),
-        _JULIA_TO_GAP(a2),
-        _JULIA_TO_GAP(a3),
-        _JULIA_TO_GAP(a4),
-    )
+    ret = @ccall $fptr(
+        func::GapObj,
+        _JULIA_TO_GAP(a1)::Ptr{Cvoid},
+        _JULIA_TO_GAP(a2)::Ptr{Cvoid},
+        _JULIA_TO_GAP(a3)::Ptr{Cvoid},
+        _JULIA_TO_GAP(a4)::Ptr{Cvoid},
+    )::Ptr{Cvoid}
     return ret
 end
 
 # 5 arguments
 function _call_gap_func(func::GapObj, a1, a2, a3, a4, a5)
     fptr = GET_FUNC_PTR(func, 5)
-    ret = ccall(
-        fptr,
-        Ptr{Cvoid},
-        (GapObj, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}),
-        func,
-        _JULIA_TO_GAP(a1),
-        _JULIA_TO_GAP(a2),
-        _JULIA_TO_GAP(a3),
-        _JULIA_TO_GAP(a4),
-        _JULIA_TO_GAP(a5),
-    )
+    ret = @ccall $fptr(
+        func::GapObj,
+        _JULIA_TO_GAP(a1)::Ptr{Cvoid},
+        _JULIA_TO_GAP(a2)::Ptr{Cvoid},
+        _JULIA_TO_GAP(a3)::Ptr{Cvoid},
+        _JULIA_TO_GAP(a4)::Ptr{Cvoid},
+        _JULIA_TO_GAP(a5)::Ptr{Cvoid},
+    )::Ptr{Cvoid}
     return ret
 end
 
 # 6 arguments
 function _call_gap_func(func::GapObj, a1, a2, a3, a4, a5, a6)
     fptr = GET_FUNC_PTR(func, 6)
-    ret = ccall(
-        fptr,
-        Ptr{Cvoid},
-        (
-            GapObj,
-            Ptr{Cvoid},
-            Ptr{Cvoid},
-            Ptr{Cvoid},
-            Ptr{Cvoid},
-            Ptr{Cvoid},
-            Ptr{Cvoid},
-        ),
-        func,
-        _JULIA_TO_GAP(a1),
-        _JULIA_TO_GAP(a2),
-        _JULIA_TO_GAP(a3),
-        _JULIA_TO_GAP(a4),
-        _JULIA_TO_GAP(a5),
-        _JULIA_TO_GAP(a6),
-    )
+    ret = @ccall $fptr(
+        func::GapObj,
+        _JULIA_TO_GAP(a1)::Ptr{Cvoid},
+        _JULIA_TO_GAP(a2)::Ptr{Cvoid},
+        _JULIA_TO_GAP(a3)::Ptr{Cvoid},
+        _JULIA_TO_GAP(a4)::Ptr{Cvoid},
+        _JULIA_TO_GAP(a5)::Ptr{Cvoid},
+        _JULIA_TO_GAP(a6)::Ptr{Cvoid},
+    )::Ptr{Cvoid}
     return ret
 end

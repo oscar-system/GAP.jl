@@ -235,7 +235,7 @@ julia> Symbol(str)
 function Core.Symbol(obj::GapObj)
     if Wrappers.IsStringRep(obj)
       s, len = UNSAFE_CSTR_STRING(obj)
-      return ccall(:jl_symbol_n, Ref{Symbol}, (Ptr{UInt8}, Int), s, len)
+      return @ccall jl_symbol_n(s::Ptr{UInt8}, len::Int)::Ref{Symbol}
     end
     return Symbol(String(obj))
 end
