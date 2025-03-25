@@ -43,13 +43,13 @@ function Base.BigInt(obj::GapObj)
     GAP_IS_INT(obj) || throw(ConversionError(obj, BigInt))
     ## get size of GAP BigInt (in limbs), multiply
     ## by 64 to get bits
-    size_limbs = ccall((:GAP_SizeInt, libgap), Cint, (Any,), obj)
+    size_limbs = @ccall libgap.GAP_SizeInt(obj::Any)::Cint
     size = abs(size_limbs * sizeof(UInt) * 8)
     ## allocate new GMP
     new_bigint = Base.GMP.MPZ.realloc2(size)
     new_bigint.size = size_limbs
     ## Get limb address ptr
-    addr = ccall((:GAP_AddrInt, libgap), Ptr{UInt}, (Any,), obj)
+    addr = @ccall libgap.GAP_AddrInt(obj::Any)::Ptr{UInt}
     ## Copy limbs
     unsafe_copyto!(new_bigint.d, addr, abs(size_limbs))
     return new_bigint

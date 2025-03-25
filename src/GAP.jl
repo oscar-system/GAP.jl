@@ -111,7 +111,7 @@ const _saved_argv = Ref{Ref{Ptr{UInt8}}}()
 
 function initialize(argv::Vector{String})
     if use_jl_reinit_foreign_type()
-        ccall((:GAP_InitJuliaMemoryInterface, libgap), Nothing, (Any, Ptr{Nothing}), @__MODULE__, C_NULL)
+        @ccall libgap.GAP_InitJuliaMemoryInterface(@__MODULE__::Any, C_NULL::Ptr{Nothing})::Nothing
     end
 
     handle_signals = isdefined(Main, :__GAP_ARGS__)  # a bit of a hack...
@@ -172,7 +172,7 @@ function initialize(argv::Vector{String})
 
     # register our ThrowObserver callback
     f = @cfunction(ThrowObserver, Cvoid, (Cint, ))
-    ccall((:RegisterThrowObserver, libgap), Cvoid, (Ptr{Cvoid},), f)
+    @ccall libgap.RegisterThrowObserver(f::Ptr{Cvoid})::Cvoid
 
     # detect if GAP quit early (e.g due `-h` or `-c` command line arguments)
     # TODO: restrict this to "standalone" mode?

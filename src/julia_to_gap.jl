@@ -111,13 +111,13 @@ GAP.@install GapObj(x::UInt8) = Int64(x)
 
 GAP.@install function GapObj(x::UInt)
     x < (1<<60) && return Int64(x)
-    return ccall((:ObjInt_UInt, libgap), GapObj, (UInt64, ), x)
+    return @ccall libgap.ObjInt_UInt(x::UInt64)::GapObj
 end
 
 ## BigInts are converted via a ccall
 GAP.@install function GapObj(x::BigInt)
     x in -1<<60:(1<<60-1) && return Int64(x)
-    return GC.@preserve x ccall((:MakeObjInt, libgap), GapObj, (Ptr{UInt64}, Cint), x.d, x.size)
+    return GC.@preserve x @ccall libgap.MakeObjInt(x.d::Ptr{UInt64}, x.size::Cint)::GapObj
 end
 
 ## Rationals

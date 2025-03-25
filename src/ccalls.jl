@@ -33,7 +33,7 @@ _JULIA_TO_GAP(val::Any) = ccall((:gap_julia, JuliaInterface_path()), Ptr{Cvoid},
 _JULIA_TO_GAP(x::FFE) = reinterpret(Ptr{Cvoid}, x)
 _JULIA_TO_GAP(x::GapObj) = pointer_from_objref(x)
 
-ObjInt_Int(x::Int) = ccall((:ObjInt_Int, libgap), Ptr{Cvoid}, (Int,), x)
+ObjInt_Int(x::Int) = @ccall libgap.ObjInt_Int(x::Int)::Ptr{Cvoid}
 function _JULIA_TO_GAP(x::Int)
     # convert x into a GAP immediate integer if it fits
     if x in -1<<60:(1<<60-1)
@@ -90,7 +90,7 @@ GAP: [  ]
 ```
 """
 function evalstr_ex(cmd::String)
-    res = ccall((:GAP_EvalString, libgap), GapObj, (Cstring,), cmd)
+    res = @ccall libgap.GAP_EvalString(cmd::Cstring)::GapObj
     return res
 end
 
@@ -166,7 +166,7 @@ end
 # The 'assume_effects' is needed for tab completion of "nested" constructs,
 # e.g. when entering `GAP.Globals.MTX.S` on the REPL then pressing TAB.
 Compat.@assume_effects :foldable !:consistent function _ValueGlobalVariable(name::Union{AbstractString,Symbol})
-    return ccall((:GAP_ValueGlobalVariable, libgap), Ptr{Cvoid}, (Cstring,), name)
+    return @ccall libgap.GAP_ValueGlobalVariable(name::Cstring)::Ptr{Cvoid}
 end
 
 function ValueGlobalVariable(name::Union{AbstractString,Symbol})
@@ -176,13 +176,13 @@ end
 
 # Test whether the global GAP variable with the given name can be assigned to.
 function CanAssignGlobalVariable(name::Union{AbstractString,Symbol})
-    ccall((:GAP_CanAssignGlobalVariable, libgap), Bool, (Cstring,), name)
+    @ccall libgap.GAP_CanAssignGlobalVariable(name::Cstring)::Bool
 end
 
 # Assign a value to the global GAP variable with the given name. This function
 # assigns a raw Ptr value, and should only be called by plumbing code.
 function _AssignGlobalVariable(name::Union{AbstractString,Symbol}, value::Ptr{Cvoid})
-    ccall((:GAP_AssignGlobalVariable, libgap), Cvoid, (Cstring, Ptr{Cvoid}), name, value)
+    @ccall libgap.GAP_AssignGlobalVariable(name::Cstring, value::Ptr{Cvoid})::Cvoid
 end
 
 # Assign a value to the global GAP variable with the given name.
@@ -194,7 +194,7 @@ function AssignGlobalVariable(name::Union{AbstractString,Symbol}, value::Any)
     _AssignGlobalVariable(name, tmp)
 end
 
-MakeString(val::String) = GC.@preserve val ccall((:MakeStringWithLen, libgap), GapObj, (Ptr{UInt8}, Culong), val, sizeof(val))
+MakeString(val::String) = GC.@preserve val @ccall libgap.MakeStringWithLen(val::Ptr{UInt8}, sizeof(val)::Culong)::GapObj
 #TODO: As soon as libgap provides :GAP_MakeStringWithLen, use it.
 
 function UNSAFE_CSTR_STRING(val::GapObj)
@@ -220,12 +220,12 @@ function CSTR_STRING_AS_ARRAY(val::GapObj)::Vector{UInt8}
 end
 
 
-NewPlist(capacity::Int64) = ccall((:GAP_NewPlist, libgap), GapObj, (Int64,), capacity)
-NewPrecord(capacity::Int64) = ccall((:GAP_NewPrecord, libgap), GapObj, (Int64,), capacity)
-NewRange(len::Int64, low::Int64, inc::Int64) = ccall((:GAP_NewRange, libgap), GapObj, (Int64, Int64, Int64), len, low, inc)
-NEW_MACFLOAT(x::Float64) = ccall((:NEW_MACFLOAT, libgap), GapObj, (Cdouble,), x)
-ValueMacFloat(x::GapObj) = ccall((:GAP_ValueMacFloat, libgap), Cdouble, (Any,), x)
-CharWithValue(x::Cuchar) = ccall((:GAP_CharWithValue, libgap), GapObj, (Cuchar,), x)
+NewPlist(capacity::Int64) = @ccall libgap.GAP_NewPlist(capacity::Int64)::GapObj
+NewPrecord(capacity::Int64) = @ccall libgap.GAP_NewPrecord(capacity::Int64)::GapObj
+NewRange(len::Int64, low::Int64, inc::Int64) = @ccall libgap.GAP_NewRange(len::Int64, low::Int64, inc::Int64)::GapObj
+NEW_MACFLOAT(x::Float64) = @ccall libgap.NEW_MACFLOAT(x::Cdouble)::GapObj
+ValueMacFloat(x::GapObj) = @ccall libgap.GAP_ValueMacFloat(x::Any)::Cdouble
+CharWithValue(x::Cuchar) = @ccall libgap.GAP_CharWithValue(x::Cuchar)::GapObj
 
 # `WrapJuliaFunc` and `UnwrapJuliaFunc` are intended to create a GAP function
 # object that wraps a given Julia function, and to unwrap such a GAP function,
@@ -249,7 +249,7 @@ UnwrapJuliaFunc(x::Any) = x
 UnwrapJuliaFunc(x::GapObj) = ccall((:UnwrapJuliaFunc, JuliaInterface_path()), Any, (GapObj,), x)
 
 function ElmList(x::GapObj, position)
-    o = ccall((:GAP_ElmList, libgap), Ptr{Cvoid}, (Any, Culong), x, Culong(position))
+    o = @ccall libgap.GAP_ElmList(x::Any, Culong(position)::Culong)::Ptr{Cvoid}
     return _GAP_TO_JULIA(o)
 end
 
