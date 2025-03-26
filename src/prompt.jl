@@ -64,7 +64,7 @@ function run_session()
     # ends up doing nothing as a side effect of `UserHasQUIT` being non-zero
     # (it aborts after its first call to a function, which happens to be
     # `GetBottomLVars()`).
-    ccall((:ResetUserHasQUIT, JuliaInterface_path()), Cvoid, ())
+    @ccall JuliaInterface_path().ResetUserHasQUIT()::Cvoid
 
     # Finally exit
     return exit_code()
