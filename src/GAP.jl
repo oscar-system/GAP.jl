@@ -78,7 +78,7 @@ function copy_gap_error_to_julia()
         return
     end
     last_error[] = String(Globals._JULIAINTERFACE_ERROR_BUFFER::GapObj)
-    ccall((:SET_LEN_STRING, libgap), Cvoid, (GapObj, Cuint), Globals._JULIAINTERFACE_ERROR_BUFFER::GapObj, 0)
+    @ccall libgap.SET_LEN_STRING(Globals._JULIAINTERFACE_ERROR_BUFFER::GapObj, 0::Cuint)::Cvoid
 end
 
 function get_and_clear_last_error()
@@ -94,9 +94,9 @@ function ThrowObserver(depth::Cint)
     end
 
     # signal to the GAP interpreter that errors are handled
-    ccall((:ClearError, libgap), Cvoid, ())
+    @ccall libgap.ClearError()::Cvoid
     # reset global execution context
-    ccall((:SWITCH_TO_BOTTOM_LVARS, libgap), Cvoid, ())
+    @ccall libgap.SWITCH_TO_BOTTOM_LVARS()::Cvoid
     # at the top of GAP's exception handler chain, turn the GAP exception
     # into a Julia exception
     if depth <= 0
@@ -111,7 +111,7 @@ const _saved_argv = Ref{Ref{Ptr{UInt8}}}()
 
 function initialize(argv::Vector{String})
     if use_jl_reinit_foreign_type()
-        ccall((:GAP_InitJuliaMemoryInterface, libgap), Nothing, (Any, Ptr{Nothing}), @__MODULE__, C_NULL)
+        @ccall libgap.GAP_InitJuliaMemoryInterface((@__MODULE__)::Any, C_NULL::Ptr{Nothing})::Nothing
     end
 
     handle_signals = isdefined(Main, :__GAP_ARGS__)  # a bit of a hack...
@@ -138,16 +138,13 @@ function initialize(argv::Vector{String})
     # as this is kept in the global SyOriginalArgv pointer in GAP
     _saved_argv[] = Base.cconvert(Ptr{Ptr{UInt8}}, argv)
 
-    ccall(
-        (:GAP_Initialize, libgap),
-        Cvoid,
-        (Int32, Ptr{Ptr{UInt8}}, Ptr{Cvoid}, Ptr{Cvoid}, Cuint),
-        length(argv),
-        _saved_argv[],
-        C_NULL,
-        error_handler_func,
-        handle_signals,
-    )
+    @ccall libgap.GAP_Initialize(
+        length(argv)::Int32,
+        _saved_argv[]::Ptr{Ptr{UInt8}},
+        C_NULL::Ptr{Cvoid},
+        error_handler_func::Ptr{Cvoid},
+        handle_signals::Cuint,
+    )::Cvoid
 
     ## At this point, the GAP module has not been completely initialized, and
     ## hence is not yet available under the global binding "GAP"; but
@@ -165,14 +162,14 @@ function initialize(argv::Vector{String})
 
     # now load init.g
     @debug "about to read init.g"
-    if ccall((:READ_GAP_ROOT, libgap), Int64, (Ptr{Cchar},), "lib/init.g") == 0
+    if (@ccall libgap.READ_GAP_ROOT("lib/init.g"::Ptr{Cchar})::Int64) == 0
         error("failed to read lib/init.g")
     end
     @debug "finished reading init.g"
 
     # register our ThrowObserver callback
     f = @cfunction(ThrowObserver, Cvoid, (Cint, ))
-    ccall((:RegisterThrowObserver, libgap), Cvoid, (Ptr{Cvoid},), f)
+    @ccall libgap.RegisterThrowObserver(f::Ptr{Cvoid})::Cvoid
 
     # detect if GAP quit early (e.g due `-h` or `-c` command line arguments)
     # TODO: restrict this to "standalone" mode?
@@ -217,7 +214,7 @@ function initialize(argv::Vector{String})
 
     # If we are in "stand-alone mode", stop here
     if handle_signals
-        ccall((:SyInstallAnswerIntr, libgap), Cvoid, ())
+        @ccall libgap.SyInstallAnswerIntr()::Cvoid
         return
     end
 
@@ -229,14 +226,7 @@ function initialize(argv::Vector{String})
 end
 
 function exit_code()
-    return ccall(
-            (:GAP_CallFuncArray, libgap),
-            Int,
-            (Ptr{Cvoid}, Culonglong, Ptr{Cvoid}),
-            _ValueGlobalVariable("GapExitCode"),
-            0,
-            C_NULL,
-        ) >> 2
+    return (@ccall libgap.GAP_CallFuncArray(_ValueGlobalVariable("GapExitCode")::Ptr{Cvoid}, 0::Culonglong, C_NULL::Ptr{Cvoid})::Int) >> 2
 end
 
 function __init__()

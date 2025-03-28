@@ -10,7 +10,7 @@ function _setglobal(M::Module, name::Symbol, val::Any)
     return invokelatest(Core.setglobal!, M, name, val)
   else
     # `jl_set_global` is available up to Julia 1.8.
-    ccall(:jl_set_global, Cvoid, (Any, Any, Any), M, name, val)
+    @ccall jl_set_global(M::Any, name::Any, val::Any)::Cvoid
     return val
   end
 end

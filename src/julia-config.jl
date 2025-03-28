@@ -9,7 +9,7 @@ function shell_escape(str)
 end
 
 function libDir()
-    return if ccall(:jl_is_debugbuild, Cint, ()) != 0
+    return if (@ccall jl_is_debugbuild()::Cint) != 0
         if Base.DARWIN_FRAMEWORK
             joinpath(dirname(abspath(Libdl.dlpath(Base.DARWIN_FRAMEWORK_NAME * "_debug"))),"lib")
         else
@@ -45,7 +45,7 @@ function ldflags()
 end
 
 function ldlibs()
-    libname = if ccall(:jl_is_debugbuild, Cint, ()) != 0
+    libname = if (@ccall jl_is_debugbuild()::Cint) != 0
         "julia-debug"
     else
         "julia"

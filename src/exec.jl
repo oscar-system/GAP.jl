@@ -13,7 +13,7 @@ function GAP_ExecuteProcess(dir::String, prg::String, fin::Int, fout::Int, args:
     if fin < 0
         fin = Base.devnull
     else
-        fin = ccall((:SyBufFileno, libgap), Int, (Culong, ), fin)
+        fin = @ccall libgap.SyBufFileno(fin::Culong)::Int
         if fin == -1
             error("fin invalid")
         end
@@ -23,7 +23,7 @@ function GAP_ExecuteProcess(dir::String, prg::String, fin::Int, fout::Int, args:
     if fout < 0
         fout = Base.devnull
     else
-        fout = ccall((:SyBufFileno, libgap), Int, (Culong, ), fout)
+        fout = @ccall libgap.SyBufFileno(fout::Culong)::Int
         if fout == -1
             error("fout invalid")
         end
