@@ -1,5 +1,10 @@
 # Changes in GAP.jl
 
+## Version 0.13.2 (released 2025-04-29)
+
+- Ensure compatibility with upcoming Julia 1.12
+- Several "behind the scenes" changes that should be invisible for most users
+
 ## Version 0.13.1 (released 2025-02-07)
 
 - Add precompiled binaries for the "semigroups" GAP package
