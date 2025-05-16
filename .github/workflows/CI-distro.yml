@@ -68,12 +68,14 @@ jobs:
           - gap-package: 'io'                         # segfaults, most likely due to child process handling
           - gap-package: 'itc'                        # dependency `xgap` has no jll
           - gap-package: 'localizeringforhomalg'      # `Error, found no GAP executable in PATH`
+          - gap-package: 'nconvex'                    # random segfaults during testing
           - gap-package: 'normalizinterface'          # Tests fail: NormalizInterface currently bundles Normaliz 3.9.3 and its test suite is tuned to that, but our JLL builds it against normaliz_jll which has 3.10.2
           - gap-package: 'packagemanager'             # tests need curlInterface to passe, reactivate once we have a working JLL for that
           - gap-package: 'polycyclic'                 # test suite currently broken and also disabled by GAP package distribution
           - gap-package: 'polymaking'                 # `polymake command not found. Please set POLYMAKE_COMMAND by hand`
           - gap-package: 'profiling'                  # segfaults during testing
           - gap-package: 'ringsforhomalg'             # `Error, found no GAP executable in PATH`
+          - gap-package: 'toricvarieties'             # random segfaults during testing
           - gap-package: 'xgap'                       # no jll
 
     steps:
