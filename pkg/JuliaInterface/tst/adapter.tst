@@ -60,14 +60,14 @@ true
 #
 gap> N / N;
 <Julia: 1.0>
-gap> N / 2^50;
-<Julia: 1.125899906842624e+15>
+gap> N / GAPToJulia(2.0)^90;
+<Julia: 1024.0>
 
 #
 gap> LQUO(N, N);
 <Julia: 1.0>
-gap> LQUO(2^50, N);
-<Julia: 1.125899906842624e+15>
+gap> LQUO(GAPToJulia(2.0)^90, N);
+<Julia: 1024.0>
 
 #
 gap> data := [ -N_p1, -N, -N_m1, -1, 0, 1, N_m1, N, N_p1 ];;
