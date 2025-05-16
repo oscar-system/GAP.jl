@@ -22,7 +22,7 @@ end);
     # early enough for being required by other GAP packages,
     # and such that it is available when user files get read
     # via the GAP command line.
-    deps := [ [ "JuliaInterface", ">=0.13.2" ] ];
+    deps := [ [ "JuliaInterface", ">=0.13.3" ] ];
     if not IsBound(GAPInfo.KernelInfo.ENVIRONMENT.GAP_BARE_DEPS) then
         APPEND_LIST_INTR( deps, GAPInfo.Dependencies.NeededOtherPackages );
     fi;

@@ -1,5 +1,10 @@
 # Changes in GAP.jl
 
+## Version 0.13.3 (released 2025-05-16)
+
+- Support AbstractAlgebra 0.45
+- Support a timeout parameter for GAP's `Download`
+
 ## Version 0.13.2 (released 2025-04-29)
 
 - Ensure compatibility with upcoming Julia 1.12
