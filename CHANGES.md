@@ -1,5 +1,7 @@
 # Changes in GAP.jl
 
+## Version 0.13.4 (released 2025-06-02)
+
 ## Version 0.13.3 (released 2025-05-16)
 
 - Support AbstractAlgebra 0.45
