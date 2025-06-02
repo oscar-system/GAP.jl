@@ -69,6 +69,7 @@ jobs:
         with:
           depwarn: error
       - name: "Test REPL integration"
+        if: matrix.os == 'Linux' # see https://github.com/oscar-system/GAP.jl/issues/1178
         run: etc/expect.sh --project=@.
       - name: "Add optional Julia dependencies for GAP tests"
         run: julia --color=yes -e 'using Pkg ; Pkg.add(["Singular", "Nemo"])'
