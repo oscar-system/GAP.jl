@@ -119,6 +119,13 @@ end
     @test sym5.:1 === sym5."1"
 end
 
+@testset "create_type" begin
+    @test GAP.create_type(Int) === Int
+    @test GAP.create_type(Vector, [Int]) === Vector{Int}
+    @test GAP.create_type(Tuple, [Int, Int]) === Tuple{Int, Int}
+    @test GAP.create_type(Tuple, [[Vector, [Int]], [Matrix, [Int]]]) === Tuple{Vector{Int64}, Matrix{Int64}}
+end
+
 @testset "functionloc" begin
 
     file, line = Base.functionloc(GAP.Globals.BangComponent)

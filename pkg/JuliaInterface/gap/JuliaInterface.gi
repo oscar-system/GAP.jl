@@ -145,6 +145,10 @@ InstallGlobalFunction( JuliaImportPackage, function( pkgname )
 end );
 
 
+InstallGlobalFunction( JuliaType,
+  { T, paras } -> Julia.GAP.create_type( T, GAPToJulia( paras, true ) ) );
+
+
 InstallGlobalFunction( GetJuliaScratchspace,
   function( key )
     if not IsString( key ) then
