@@ -1,3 +1,14 @@
+#############################################################################
+##
+##  This file is part of GAP.jl, a bidirectional interface between Julia and
+##  the GAP computer algebra system.
+##
+##  Copyright of GAP.jl and its parts belongs to its developers.
+##  Please refer to its README.md file for details.
+##
+##  SPDX-License-Identifier: GPL-3.0-or-later
+##
+
 #
 # hardcoded TNUM values: these are unlikely to change, but to be
 # safe, we check them in __init__ via some assertions

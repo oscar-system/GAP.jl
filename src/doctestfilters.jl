@@ -1,3 +1,14 @@
+#############################################################################
+##
+##  This file is part of GAP.jl, a bidirectional interface between Julia and
+##  the GAP computer algebra system.
+##
+##  Copyright of GAP.jl and its parts belongs to its developers.
+##  Please refer to its README.md file for details.
+##
+##  SPDX-License-Identifier: GPL-3.0-or-later
+##
+
 # Define some replacements which are applied in `docs/make.jl` and `test/testmanual.jl`.
 # The idea is that the `jldoctest`ed examples in the source files
 # have the format that fits to the "current" Julia,

@@ -1,11 +1,16 @@
 #############################################################################
 ##
-##  JuliaInterface package
+##  This file is part of GAP.jl, a bidirectional interface between Julia and
+##  the GAP computer algebra system.
 ##
-##  This file contains package meta data. For additional information on
-##  the meaning and correct usage of these fields, please consult the
-##  manual of the "Example" package as well as the comments in its
-##  PackageInfo.g file.
+##  Copyright of GAP.jl and its parts belongs to its developers.
+##  Please refer to its README.md file for details.
+##
+##  SPDX-License-Identifier: GPL-3.0-or-later
+##
+##  This file contains package meta data. For additional information on the
+##  meaning and correct usage of these fields, please consult the manual of
+##  the "Example" package as well as the comments in its PackageInfo.g file.
 ##
 #############################################################################
 
