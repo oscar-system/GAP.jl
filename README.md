@@ -25,6 +25,7 @@ To install this package in Julia:
 using Pkg; Pkg.add("GAP")
 ```
 
+
 ## Basic usage
 
 After entering the following in Julia,
@@ -83,19 +84,38 @@ consult the [GAP.jl manual](https://oscar-system.github.io/GAP.jl/stable).
 
 ## Contact
 
-Issues should be reported via our [issue tracker](https://github.com/oscar-system/GAP.jl/issues).
+Please use our [issue tracker](https://github.com/oscar-system/GAP.jl/issues)
+to report any issues you may encounter when using it. You can also submit
+feature requests and general help requests via that tracker.
 
-Responsible for GAP.jl within the OSCAR project are Thomas Breuer and Max Horn.
+GAP.jl is being maintained by Thomas Breuer <sam@math.rwth-aachen.de>>
+and Max Horn <mhorn@rptu.de>.
 
-## General Disclaimer
 
-All code in this repository is preliminary work.
+## License
 
-It comes with absolutely no warranty and will most likely have errors. If you use it for computations, please check the correctness of the result very carefully.
+GAP.jl is free software; you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 2 of the License, or (at your
+option) any later version.
 
-Also, everything in this repository might change in the future, so currently any update can break the code you wrote upon functionality from packages in this repository.
+GAP.jl is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+License for more details.
 
-This software is licensed under the LGPL, version 3, or any later version.
+You should have received a copy of the GNU General Public License
+along with GAP; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+
+Copyright (C) 2017-2025 by its authors, which include:
+- Max Horn
+- Sebastian Gutsche
+- Thomas Breuer
+- Lars Göttgens
+and many others -- please refer to the git history of the project for a
+complete list.
+
 
 ## Funding
 
