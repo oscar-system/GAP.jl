@@ -88,8 +88,10 @@ Please use our [issue tracker](https://github.com/oscar-system/GAP.jl/issues)
 to report any issues you may encounter when using it. You can also submit
 feature requests and general help requests via that tracker.
 
-GAP.jl is being maintained by Thomas Breuer <sam@math.rwth-aachen.de>>
-and Max Horn <mhorn@rptu.de>.
+GAP.jl is being maintained by
+- Thomas Breuer <sam@math.rwth-aachen.de>>
+- Lars Göttgens <goettgens@art.rwth-aachen.de>
+- Max Horn <mhorn@rptu.de>
 
 
 ## License
@@ -109,10 +111,10 @@ along with GAP; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 Copyright (C) 2017-2025 by its authors, which include:
-- Max Horn
-- Sebastian Gutsche
 - Thomas Breuer
+- Sebastian Gutsche
 - Lars Göttgens
+- Max Horn
 and many others -- please refer to the git history of the project for a
 complete list.
 
