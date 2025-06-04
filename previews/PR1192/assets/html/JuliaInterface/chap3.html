@@ -1,0 +1,461 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>GAP (JuliaInterface) - Chapter 3: Conversions between GAP and Julia</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<meta name="generator" content="GAPDoc2HTML" />
+<link rel="stylesheet" type="text/css" href="manual.css" />
+<script src="manual.js" type="text/javascript"></script>
+<script type="text/javascript">overwriteStyle();</script>
+</head>
+<body class="chap3"  onload="jscontent()">
+
+
+<div class="chlinktop"><span class="chlink1">Goto Chapter: </span><a href="chap0.html">Top</a>  <a href="chap1.html">1</a>  <a href="chap2.html">2</a>  <a href="chap3.html">3</a>  <a href="chapInd.html">Ind</a>  </div>
+
+<div class="chlinkprevnexttop">&nbsp;<a href="chap0.html">[Top of Book]</a>&nbsp;  <a href="chap0.html#contents">[Contents]</a>&nbsp;  &nbsp;<a href="chap2.html">[Previous Chapter]</a>&nbsp;  &nbsp;<a href="chapInd.html">[Next Chapter]</a>&nbsp;  </div>
+
+<p id="mathjaxlink" class="pcenter"><a href="chap3_mj.html">[MathJax on]</a></p>
+<p><a id="X875F1D6E829ED5D1" name="X875F1D6E829ED5D1"></a></p>
+<div class="ChapSects"><a href="chap3.html#X875F1D6E829ED5D1">3 <span class="Heading">Conversions between <strong class="pkg">GAP</strong> and <strong class="pkg">Julia</strong></span></a>
+<div class="ContSect"><span class="tocline"><span class="nocss">&nbsp;</span><a href="chap3.html#X85C0815A7DD15788">3.1 <span class="Heading">Conversion rules</span></a>
+</span>
+<div class="ContSSBlock">
+<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap3.html#X7919F1E27DC7DE58">3.1-1 <span class="Heading">Guiding principles</span></a>
+</span>
+<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap3.html#X8765929D7B37EC86">3.1-2 <span class="Heading">Automatic (implicit) conversions</span></a>
+</span>
+<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap3.html#X81A60E3778D3C54A">3.1-3 <span class="Heading">Manual (explicit) conversions</span></a>
+</span>
+</div></div>
+<div class="ContSect"><span class="tocline"><span class="nocss">&nbsp;</span><a href="chap3.html#X7FF4170183C83CC1">3.2 <span class="Heading">Conversion functions</span></a>
+</span>
+<div class="ContSSBlock">
+<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap3.html#X81899CCD7F31299C">3.2-1 GAP_jl.Obj</a></span>
+<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap3.html#X7D0471F77A0C6E1D">3.2-2 JuliaToGAP</a></span>
+<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap3.html#X860C2F3184F70021">3.2-3 GAPToJulia</a></span>
+</div></div>
+<div class="ContSect"><span class="tocline"><span class="nocss">&nbsp;</span><a href="chap3.html#X842BE7C17FF20B09">3.3 <span class="Heading">Using <strong class="pkg">Julia</strong> random number generators in <strong class="pkg">GAP</strong></span></a>
+</span>
+<div class="ContSSBlock">
+<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap3.html#X7FAA33807F10EF2B">3.3-1 IsRandomSourceJulia</a></span>
+</div></div>
+<div class="ContSect"><span class="tocline"><span class="nocss">&nbsp;</span><a href="chap3.html#X7A64D33D7AC83D22">3.4 <span class="Heading">Open items</span></a>
+</span>
+</div>
+</div>
+
+<h3>3 <span class="Heading">Conversions between <strong class="pkg">GAP</strong> and <strong class="pkg">Julia</strong></span></h3>
+
+<p><a id="X85C0815A7DD15788" name="X85C0815A7DD15788"></a></p>
+
+<h4>3.1 <span class="Heading">Conversion rules</span></h4>
+
+<p><a id="X7919F1E27DC7DE58" name="X7919F1E27DC7DE58"></a></p>
+
+<h5>3.1-1 <span class="Heading">Guiding principles</span></h5>
+
+
+<dl>
+<dt><strong class="Mark">Avoid conversions, use wrapper objects instead.</strong></dt>
+<dd><p>Naively, one may think that in order to use <strong class="pkg">Julia</strong> functionality from <strong class="pkg">GAP</strong>, one has to convert all data to a format usable by <strong class="pkg">Julia</strong>, then call <strong class="pkg">Julia</strong> functions on that data, and finally convert it back; rinse and repeat. While this is certainly sometimes so, in many cases, things are a bit different: Some initial (usually very small) data may need to be converted. But afterwards, the output of one <strong class="pkg">Julia</strong> function is used as input of the next one, and so on. Converting the data to <strong class="pkg">GAP</strong> format and back then is needlessly wasteful. It is much better to not perform any conversion here. Instead, we create special <q>wrapper</q> objects on the <strong class="pkg">GAP</strong> side, which wraps a given <strong class="pkg">Julia</strong> object without converting it. This operation is thus very cheap, both in terms of performance and in memory usage. Such a wrapped object can then be transparently used as input for <strong class="pkg">Julia</strong> functions.</p>
+
+<p>On the <strong class="pkg">GAP</strong> C kernel level, the internal functions used for this are <code class="code">NewJuliaObj</code>, <code class="code">IS_JULIA_OBJ</code>, <code class="code">GET_JULIA_OBJ</code>. On the <strong class="pkg">GAP</strong> language level, this is <code class="func">IsJuliaObject</code> (<a href="chap2.html#X879710A97B8A4202"><span class="RefLink">2.1-1</span></a>). On the <strong class="pkg">Julia</strong> side, there is usually no need for a wrapper, as (thanks to the shared garbage collector) most <strong class="pkg">GAP</strong> objects are valid <strong class="pkg">Julia</strong> objects of type <code class="code">GapObj</code>. The exception to that rule are immediate <strong class="pkg">GAP</strong> objects, more on that in the next section.</p>
+
+</dd>
+<dt><strong class="Mark">Perform automatic conversions only if absolutely necessary,
+       or if unambiguous and free.</strong></dt>
+<dd><p>Any conversion which the user cannot prevent, and which has some cost or choice involved, may cause several problems. The added overhead may turn an otherwise reasonable computation into an infeasible one (think about a conversion triggered several million times). And the conversion can add extra complications if one wants to detect and undo it.</p>
+
+</dd>
+<dt><strong class="Mark">Provide explicit conversion functions for as many data types
+       as possible.</strong></dt>
+<dd><p>While users should not be forced into conversions, it nevertheless should be possible to perform sensible conversions. The simpler it is to do so, the easier it is to use the interface.</p>
+
+</dd>
+<dt><strong class="Mark">Conversion round trip fidelity.</strong></dt>
+<dd><p>If an object is converted from <strong class="pkg">Julia</strong> to <strong class="pkg">GAP</strong> and back to <strong class="pkg">Julia</strong> (or conversely, from <strong class="pkg">GAP</strong> to <strong class="pkg">Julia</strong> and back to <strong class="pkg">GAP</strong>), then ideally the result should be equal and of equal type to the original value. At the very least, the automatic conversions should follow this principle. This is not always possible, due to mismatches in existing types, but we strive to get as close as possible.</p>
+
+</dd>
+</dl>
+<p><a id="X8765929D7B37EC86" name="X8765929D7B37EC86"></a></p>
+
+<h5>3.1-2 <span class="Heading">Automatic (implicit) conversions</span></h5>
+
+<p><strong class="pkg">GAP</strong> has a notion of <q>immediate</q> objects, whose values are stored inside the <q>pointer</q> referencing them. <strong class="pkg">GAP</strong> uses this to store small integers and elements of small finite fields, see for example the beginning of Chapter <a href="/home/runner/.julia/artifacts/8db0b2a1c30ae8f18d09d8f93b7cb5b1b359722d/share/gap/doc/ref/chap14.html#X853DF11B80068ED5"><span class="RefLink">Reference: Integers</span></a> in the <strong class="pkg">GAP</strong> Reference Manual. Since these are not valid pointers, <strong class="pkg">Julia</strong> cannot treat them like other <strong class="pkg">GAP</strong> objects, which are simply <strong class="pkg">Julia</strong> objects of type <code class="code">GapObj</code>. Instead, a conversion is unavoidable, at least when immediate objects are passed as stand-alone arguments to a function.</p>
+
+<p>To this end, the interface converts <strong class="pkg">GAP</strong> immediate integers into <strong class="pkg">Julia</strong> <code class="code">Int64</code> objects, and vice versa. However, <strong class="pkg">GAP</strong> immediate integers on a 64 bit system can only store 61 bits, so not all <code class="code">Int64</code>objects can be converted into immediate integers; integers exceeding the 61 bits limit are therefore wrapped like any other <strong class="pkg">Julia</strong> object. Other <strong class="pkg">Julia</strong> integer types, like <code class="code">UInt64</code>, <code class="code">Int32</code>, are also wrapped by default, in order to ensure that conversion round trips do not arbitrary change object types.</p>
+
+<p>All automatic conversions and wrappings are handled on the C functions <code class="code">julia_gap</code> and <code class="code">gap_julia</code> in <strong class="pkg">JuliaInterface</strong>.</p>
+
+<p>The following conversions are performed by <code class="code">julia_gap</code> (from <strong class="pkg">GAP</strong>'s <code class="code">Obj</code> to <strong class="pkg">Julia</strong>'s <code class="code">jl_value_t*</code>).</p>
+
+
+<ul>
+<li><p><code class="code">NULL</code> to <code class="code">jl_nothing</code>,</p>
+
+</li>
+<li><p>immediate integer to <code class="code">Int64</code>,</p>
+
+</li>
+<li><p>immediate FFE to the <code class="code">FFE</code> <strong class="pkg">Julia</strong> type,</p>
+
+</li>
+<li><p><strong class="pkg">GAP</strong> <code class="keyw">true</code> to <strong class="pkg">Julia</strong> <code class="code">true</code>,</p>
+
+</li>
+<li><p><strong class="pkg">GAP</strong> <code class="keyw">false</code> to <strong class="pkg">Julia</strong> <code class="code">false</code>,</p>
+
+</li>
+<li><p><strong class="pkg">Julia</strong> object wrapper to <strong class="pkg">Julia</strong> object,</p>
+
+</li>
+<li><p><strong class="pkg">Julia</strong> function wrapper to <strong class="pkg">Julia</strong> function,</p>
+
+</li>
+<li><p>other <strong class="pkg">GAP</strong> objects to <code class="code">GapObj</code>.</p>
+
+</li>
+</ul>
+<p>The following conversions are performed by <code class="code">gap_julia</code> (from <strong class="pkg">Julia</strong>'s <code class="code">jl_value_t*</code> to <strong class="pkg">GAP</strong>'s <code class="code">Obj</code>).</p>
+
+
+<ul>
+<li><p><code class="code">Int64</code> to immediate integer when it fits, otherwise to a <strong class="pkg">GAP</strong> large integer,</p>
+
+</li>
+<li><p><code class="code">FFE</code> to immediate FFE,</p>
+
+</li>
+<li><p><strong class="pkg">Julia</strong> <code class="code">true</code> to <strong class="pkg">GAP</strong> <code class="keyw">true</code>,</p>
+
+</li>
+<li><p><strong class="pkg">Julia</strong> <code class="code">false</code> to <strong class="pkg">GAP</strong> <code class="keyw">false</code>,</p>
+
+</li>
+<li><p><code class="code">GapObj</code> to <code class="code">Obj</code>,</p>
+
+</li>
+<li><p>other <strong class="pkg">Julia</strong> objects to <strong class="pkg">Julia</strong> object wrapper.</p>
+
+</li>
+</ul>
+<p><a id="X81A60E3778D3C54A" name="X81A60E3778D3C54A"></a></p>
+
+<h5>3.1-3 <span class="Heading">Manual (explicit) conversions</span></h5>
+
+<p>Manual conversion in <strong class="pkg">GAP</strong> is done via the functions <code class="func">GAPToJulia</code> (<a href="chap3.html#X860C2F3184F70021"><span class="RefLink">3.2-3</span></a>) and <code class="func">JuliaToGAP</code> (<a href="chap3.html#X7D0471F77A0C6E1D"><span class="RefLink">3.2-2</span></a>).</p>
+
+<p><em>Conversion from <strong class="pkg">GAP</strong> to <strong class="pkg">Julia</strong></em></p>
+
+<p>In <strong class="pkg">GAP</strong>, the function <code class="func">GAPToJulia</code> (<a href="chap3.html#X860C2F3184F70021"><span class="RefLink">3.2-3</span></a>) calls (after automatic conversion of the <strong class="pkg">GAP</strong> object if applicable) the <strong class="pkg">Julia</strong> function <code class="code">gap_to_julia</code>; If a <strong class="pkg">Julia</strong> type has been entered as the first argument of <code class="func">GAPToJulia</code> (<a href="chap3.html#X860C2F3184F70021"><span class="RefLink">3.2-3</span></a>) then this is the type to which the <strong class="pkg">GAP</strong> object shall be converted, and if such a conversion is implemented then a <strong class="pkg">Julia</strong> object of this type is returned, otherwise an <code class="code">ArgumentError</code> is thrown.</p>
+
+
+<ul>
+<li><p><code class="code">IsBool</code> to <code class="code">Bool</code>,</p>
+
+</li>
+<li><p><code class="code">IsFFE and IsInternalRep</code> to <code class="code">FFE</code>,</p>
+
+</li>
+<li><p><code class="code">IsInt and IsSmallIntRep</code> to <code class="code">Int8</code>, <code class="code">Int16</code>, <code class="code">Int32</code>, <code class="code">Int64</code> (default), <code class="code">Int128</code>, <code class="code">UInt8</code>, <code class="code">UInt16</code>, <code class="code">UInt32</code>, <code class="code">UInt64</code>, <code class="code">UInt128</code>, <code class="code">BigInt</code>, or <code class="code">Rational{T} where T &lt;: Integer</code>,</p>
+
+</li>
+<li><p><code class="code">GapObj and IsInt</code> to <code class="code">BigInt</code> (default), or <code class="code">Rational{T} where T &lt;: Integer</code>,</p>
+
+</li>
+<li><p><code class="code">GapObj and IsRat</code> to <code class="code">Rational{BigInt}</code> (default), or <code class="code">Rational{T} where T &lt;: Integer</code>,</p>
+
+</li>
+<li><p><code class="code">IsFloat</code> to <code class="code">Float16</code>, <code class="code">Float32</code>, <code class="code">Float64</code> (default), or <code class="code">BigFloat</code>,</p>
+
+</li>
+<li><p><code class="code">IsChar</code> to <code class="code">Cuchar</code>,</p>
+
+</li>
+<li><p><code class="code">IsString</code> to <code class="code">AbstractString</code> (default), <code class="code">String</code>, <code class="code">Symbol</code>, <code class="code">Vector{UInt8}</code>, or types available for <code class="code">IsList</code>,</p>
+
+</li>
+<li><p><code class="code">IsRange</code> to <code class="code">StepRange{Int64,Int64}</code> (default), <code class="code">StepRange{T1,T2}</code>, <code class="code">UnitRange{T}</code>, or types available for <code class="code">IsList</code>,</p>
+
+</li>
+<li><p><code class="code">IsBlist</code> to <code class="code">BitVector</code> (default), or types available for <code class="code">IsList</code>,</p>
+
+</li>
+<li><p><code class="code">IsList</code> to <code class="code">Vector{Union{Any,Nothing}}</code> (default), <code class="code">Vector{T}</code>, <code class="code">Matrix{T}</code>, or <code class="code">T &lt;: Tuple</code>,</p>
+
+</li>
+<li><p><code class="code">IsRecord</code> to <code class="code">Dict{Symbol,Any}</code> (default) or <code class="code">Dict{Symbol,T}</code>.</p>
+
+</li>
+</ul>
+<p>If no <strong class="pkg">Julia</strong> type is specified then a <strong class="pkg">Julia</strong> type is chosen, based on the filters of the <strong class="pkg">GAP</strong> object, see the <q>(default)</q> markers in the above list. Note that this might include checking various filters and will be, in almost all cases, slower than the typed version.</p>
+
+<p><em>Conversion from <strong class="pkg">Julia</strong> to <strong class="pkg">GAP</strong></em></p>
+
+<p>There are two alternatives for this direction, the Julia constructor <code class="func">GAP_jl.Obj</code> (<a href="chap3.html#X81899CCD7F31299C"><span class="RefLink">3.2-1</span></a>) and the <strong class="pkg">GAP</strong> constructor <code class="func">JuliaToGAP</code> (<a href="chap3.html#X7D0471F77A0C6E1D"><span class="RefLink">3.2-2</span></a>).</p>
+
+<p><code class="func">GAP_jl.Obj</code> (<a href="chap3.html#X81899CCD7F31299C"><span class="RefLink">3.2-1</span></a>) is a <strong class="pkg">Julia</strong> function that takes one or two arguments, the object to be converted and optionally the value <code class="keyw">true</code> indicating recursive conversion of nested objects. The chosen method depends on the <strong class="pkg">Julia</strong> type of the first argument.</p>
+
+<p>The function <code class="func">JuliaToGAP</code> (<a href="chap3.html#X7D0471F77A0C6E1D"><span class="RefLink">3.2-2</span></a>). takes two or three arguments, a <strong class="pkg">GAP</strong> filter and an object to be converted, and optionally the value <code class="keyw">true</code> indicating recursive conversion of nested objects. Various methods for this constructor then take care of input validation and the actual conversion, either by delegating to the <strong class="pkg">Julia</strong> function <code class="code">GapObj</code> (which takes just one or two arguments and chooses the <strong class="pkg">GAP</strong> filters of its result depending on the <strong class="pkg">Julia</strong> type), or by automatic conversion.</p>
+
+<p>The supported <strong class="pkg">Julia</strong> types of the second argument of <code class="func">JuliaToGAP</code> (<a href="chap3.html#X7D0471F77A0C6E1D"><span class="RefLink">3.2-2</span></a>) are as follows; more <strong class="pkg">Julia</strong> types may be supported for <code class="func">GAP_jl.Obj</code> (<a href="chap3.html#X81899CCD7F31299C"><span class="RefLink">3.2-1</span></a>).</p>
+
+<div class="pcenter"><table class="GAPDocTable">
+<tr>
+<td class="tdleft"><strong class="pkg">Julia</strong> type</td>
+<td class="tdleft"><strong class="pkg">GAP</strong> filter</td>
+<td class="tdleft">comment</td>
+</tr>
+<tr>
+<td class="tdleft"><code class="code">Int64</code>, <code class="code">GapObj</code>, <code class="code">FFE</code>, and <code class="code">Bool</code></td>
+<td class="tdleft"></td>
+<td class="tdleft">automatic conversion</td>
+</tr>
+<tr>
+<td class="tdleft">other integers, including <code class="code">BigInt</code></td>
+<td class="tdleft"><code class="code">IsInt</code></td>
+<td class="tdleft">integers</td>
+</tr>
+<tr>
+<td class="tdleft"><code class="code">Rational{T}</code></td>
+<td class="tdleft"><code class="code">IsRat</code></td>
+<td class="tdleft">rationals</td>
+</tr>
+<tr>
+<td class="tdleft"><code class="code">Float16</code>, <code class="code">Float32</code>, <code class="code">Float64</code></td>
+<td class="tdleft"><code class="code">IsFloat</code></td>
+<td class="tdleft">machine floats</td>
+</tr>
+<tr>
+<td class="tdleft"><code class="code">AbstractString</code></td>
+<td class="tdleft"><code class="code">IsString</code></td>
+<td class="tdleft">strings</td>
+</tr>
+<tr>
+<td class="tdleft"><code class="code">Symbol</code></td>
+<td class="tdleft"><code class="code">IsString</code></td>
+<td class="tdleft">strings</td>
+</tr>
+<tr>
+<td class="tdleft"><code class="code">Vector{T}</code></td>
+<td class="tdleft"><code class="code">IsList</code></td>
+<td class="tdleft">plain lists</td>
+</tr>
+<tr>
+<td class="tdleft"><code class="code">Vector{Bool}</code>, <code class="code">BitVector</code></td>
+<td class="tdleft"><code class="code">IsBList</code></td>
+<td class="tdleft">bit lists</td>
+</tr>
+<tr>
+<td class="tdleft"><code class="code">Tuple{T}</code></td>
+<td class="tdleft"><code class="code">IsList</code></td>
+<td class="tdleft">plain lists</td>
+</tr>
+<tr>
+<td class="tdleft"><code class="code">Dict{String,T}</code>, <code class="code">Dict{Symbol,T}</code></td>
+<td class="tdleft"><code class="code">IsRecord</code></td>
+<td class="tdleft">records</td>
+</tr>
+<tr>
+<td class="tdleft"><code class="code">UnitRange{T}</code>, <code class="code">StepRange{T}</code></td>
+<td class="tdleft"><code class="code">IsRange</code></td>
+<td class="tdleft">ranges</td>
+</tr>
+</table><br />
+</div>
+
+<p><a id="X7FF4170183C83CC1" name="X7FF4170183C83CC1"></a></p>
+
+<h4>3.2 <span class="Heading">Conversion functions</span></h4>
+
+<p><a id="X81899CCD7F31299C" name="X81899CCD7F31299C"></a></p>
+
+<h5>3.2-1 GAP_jl.Obj</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; GAP_jl.Obj</code>( <var class="Arg">juliaobj</var>[, <var class="Arg">recursive</var>] )</td><td class="tdright">(&nbsp;function&nbsp;)</td></tr></table></div>
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; GAP_jl.GapObj</code>( <var class="Arg">juliaobj</var>[, <var class="Arg">recursive</var>] )</td><td class="tdright">(&nbsp;function&nbsp;)</td></tr></table></div>
+<p>Returns: a <strong class="pkg">GAP</strong> object</p>
+
+<p>The <strong class="pkg">Julia</strong> constructor <code class="func">GAP_jl.Obj</code> takes an object <var class="Arg">juliaobj</var> and chooses a method depending on its <strong class="pkg">Julia</strong> type for computing a <strong class="pkg">GAP</strong> object corresponding to <var class="Arg">juliaobj</var>. If <var class="Arg">recursive</var> is <code class="keyw">true</code> then nested objects are converted recursively.</p>
+
+
+<div class="example"><pre>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">GAP_jl.Obj( 42 );</span>
+42
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">m:= GAPToJulia( [ [ 1, 2 ], [ 3, 4 ] ] );</span>
+&lt;Julia: Any[Any[1, 2], Any[3, 4]]&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">GAP_jl.Obj( m );</span>
+[ &lt;Julia: Any[1, 2]&gt;, &lt;Julia: Any[3, 4]&gt; ]
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">GAP_jl.Obj( m, true );</span>
+[ [ 1, 2 ], [ 3, 4 ] ]
+</pre></div>
+
+<p>One advantage of <code class="func">GAP_jl.Obj</code> compared to the <strong class="pkg">GAP</strong> constructor <code class="func">JuliaToGAP</code> (<a href="chap3.html#X7D0471F77A0C6E1D"><span class="RefLink">3.2-2</span></a>) is that it is easy to extend the scope of <code class="func">GAP_jl.Obj</code> on the <strong class="pkg">Julia</strong> side, whereas extending <code class="func">JuliaToGAP</code> (<a href="chap3.html#X7D0471F77A0C6E1D"><span class="RefLink">3.2-2</span></a>) would require changing its methods. For example, the <strong class="pkg">Oscar</strong> system provides <strong class="pkg">Julia</strong> types of matrices for which conversions to <strong class="pkg">GAP</strong> matrices are installed, via suitable methods for <code class="func">GAP_jl.Obj</code>.</p>
+
+<p>If one is sure that the result of the conversion to <strong class="pkg">GAP</strong> is not an immediate <strong class="pkg">GAP</strong> object then one can call <code class="func">GAP_jl.GapObj</code> instead of <code class="func">GAP_jl.Obj</code>.</p>
+
+<p><a id="X7D0471F77A0C6E1D" name="X7D0471F77A0C6E1D"></a></p>
+
+<h5>3.2-2 JuliaToGAP</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; JuliaToGAP</code>( <var class="Arg">filt</var>, <var class="Arg">juliaobj</var>[, <var class="Arg">recursive</var>] )</td><td class="tdright">(&nbsp;constructor&nbsp;)</td></tr></table></div>
+<p>Returns: a <strong class="pkg">GAP</strong> object in the filter <var class="Arg">filt</var></p>
+
+<p>Let <var class="Arg">juliaobj</var> be a Julia object in for which a conversion to <strong class="pkg">GAP</strong> is provided, in the sense of Section <a href="chap3.html#X85C0815A7DD15788"><span class="RefLink">3.1</span></a>, such that the corresponding <strong class="pkg">GAP</strong> object is in the filter <var class="Arg">filt</var>. Then <code class="func">JuliaToGAP</code> returns this <strong class="pkg">GAP</strong> object.</p>
+
+
+<div class="example"><pre>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">s:= GAPToJulia( "abc" );</span>
+&lt;Julia: "abc"&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">JuliaToGAP( IsString, s );</span>
+"abc"
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">l:= GAPToJulia( [ 1, 2, 4 ] );</span>
+&lt;Julia: Any[1, 2, 4]&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">JuliaToGAP( IsList, l );</span>
+[ 1, 2, 4 ]
+</pre></div>
+
+<p>For recursive structures (<strong class="pkg">GAP</strong> lists and records), only the outermost level is converted except if the optional argument <var class="Arg">recursive</var> is given and has the value <code class="keyw">true</code>, in this case all layers are converted recursively.</p>
+
+<p>Note that this default is different from the default in the other direction (see <code class="func">GAPToJulia</code> (<a href="chap3.html#X860C2F3184F70021"><span class="RefLink">3.2-3</span></a>)). The idea behind this choice is that from the viewpoint of a <strong class="pkg">GAP</strong> session, it is more likely to use plain <strong class="pkg">Julia</strong> objects for computations on the <strong class="pkg">Julia</strong> side than <strong class="pkg">Julia</strong> objects that contain <strong class="pkg">GAP</strong> subobjects, whereas <q>shallow conversion</q> of <strong class="pkg">Julia</strong> objects to <strong class="pkg">GAP</strong> yields something useful on the <strong class="pkg">GAP</strong> side.</p>
+
+
+<div class="example"><pre>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">m:= GAPToJulia( [ [ 1, 2 ], [ 3, 4 ] ] );</span>
+&lt;Julia: Any[Any[1, 2], Any[3, 4]]&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">JuliaToGAP( IsList, m );</span>
+[ &lt;Julia: Any[1, 2]&gt;, &lt;Julia: Any[3, 4]&gt; ]
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">JuliaToGAP( IsList, m, true );</span>
+[ [ 1, 2 ], [ 3, 4 ] ]
+</pre></div>
+
+<p>The following values for <var class="Arg">filt</var> are supported. <code class="func">IsInt</code> (<a href="/home/runner/.julia/artifacts/8db0b2a1c30ae8f18d09d8f93b7cb5b1b359722d/share/gap/doc/ref/chap14.html#X87AEADF07DC8303B"><span class="RefLink">Reference: IsInt</span></a>), <code class="func">IsRat</code> (<a href="/home/runner/.julia/artifacts/8db0b2a1c30ae8f18d09d8f93b7cb5b1b359722d/share/gap/doc/ref/chap17.html#X7ED018F5794935F7"><span class="RefLink">Reference: IsRat</span></a>), <code class="func">IsFFE</code> (<a href="/home/runner/.julia/artifacts/8db0b2a1c30ae8f18d09d8f93b7cb5b1b359722d/share/gap/doc/ref/chap59.html#X7D3DF32C84FEBD25"><span class="RefLink">Reference: IsFFE</span></a>), <code class="code">IsFloat</code> (see <a href="/home/runner/.julia/artifacts/8db0b2a1c30ae8f18d09d8f93b7cb5b1b359722d/share/gap/doc/ref/chap19.html#X81AA901181CA568F"><span class="RefLink">Reference: Floats</span></a>), <code class="func">IsBool</code> (<a href="/home/runner/.julia/artifacts/8db0b2a1c30ae8f18d09d8f93b7cb5b1b359722d/share/gap/doc/ref/chap20.html#X7D58580284CF7894"><span class="RefLink">Reference: IsBool</span></a>), <code class="func">IsChar</code> (<a href="/home/runner/.julia/artifacts/8db0b2a1c30ae8f18d09d8f93b7cb5b1b359722d/share/gap/doc/ref/chap27.html#X80CFAE128560E064"><span class="RefLink">Reference: IsChar</span></a>), <code class="func">IsRecord</code> (<a href="/home/runner/.julia/artifacts/8db0b2a1c30ae8f18d09d8f93b7cb5b1b359722d/share/gap/doc/ref/chap29.html#X782A998E7D9EC406"><span class="RefLink">Reference: IsRecord</span></a>), <code class="func">IsString</code> (<a href="/home/runner/.julia/artifacts/8db0b2a1c30ae8f18d09d8f93b7cb5b1b359722d/share/gap/doc/ref/chap27.html#X78723B5D795A3B6D"><span class="RefLink">Reference: IsString</span></a>), <code class="func">IsRange</code> (<a href="/home/runner/.julia/artifacts/8db0b2a1c30ae8f18d09d8f93b7cb5b1b359722d/share/gap/doc/ref/chap21.html#X86DDC2FF7A50FBEE"><span class="RefLink">Reference: IsRange</span></a>), <code class="func">IsBlist</code> (<a href="/home/runner/.julia/artifacts/8db0b2a1c30ae8f18d09d8f93b7cb5b1b359722d/share/gap/doc/ref/chap22.html#X7BE078187A08DCEA"><span class="RefLink">Reference: IsBlist</span></a>), <code class="func">IsList</code> (<a href="/home/runner/.julia/artifacts/8db0b2a1c30ae8f18d09d8f93b7cb5b1b359722d/share/gap/doc/ref/chap21.html#X7C4CC4EA8299701E"><span class="RefLink">Reference: IsList</span></a>). See Section <a href="chap3.html#X85C0815A7DD15788"><span class="RefLink">3.1</span></a> for the admissible types of <var class="Arg">juliaobj</var> in these cases.</p>
+
+<p><a id="X860C2F3184F70021" name="X860C2F3184F70021"></a></p>
+
+<h5>3.2-3 GAPToJulia</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; GAPToJulia</code>( [<var class="Arg">juliatype</var>, ]<var class="Arg">gapobj</var>[, <var class="Arg">recursive</var>] )</td><td class="tdright">(&nbsp;function&nbsp;)</td></tr></table></div>
+<p>Returns: a <strong class="pkg">Julia</strong> object</p>
+
+<p>Let <var class="Arg">gapobj</var> be an object for which a conversion to <strong class="pkg">Julia</strong> is provided, in the sense of Section <a href="chap3.html#X85C0815A7DD15788"><span class="RefLink">3.1</span></a>, such that a corresponding <strong class="pkg">Julia</strong> object with type <var class="Arg">juliatype</var> can be constructed. Then <code class="func">GAPToJulia</code> returns this <strong class="pkg">Julia</strong> object.</p>
+
+<p>If <var class="Arg">juliatype</var> is not given then a default type is chosen. The function is implemented via the <strong class="pkg">Julia</strong> function <code class="code">GAP.gap_to_julia</code>.</p>
+
+
+<div class="example"><pre>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">GAPToJulia( 1 );</span>
+1
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">GAPToJulia( JuliaEvalString( "Rational{Int64}" ), 1 );</span>
+&lt;Julia: 1//1&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">l:= [ 1, 3, 4 ];;</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">GAPToJulia( l );</span>
+&lt;Julia: Any[1, 3, 4]&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">GAPToJulia( JuliaEvalString( "Vector{Int}" ), l );</span>
+&lt;Julia: [1, 3, 4]&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">m:= [ [ 1, 2 ], [ 3, 4 ] ];;</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">GAPToJulia( m );</span>
+&lt;Julia: Any[Any[1, 2], Any[3, 4]]&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">GAPToJulia( JuliaEvalString( "Matrix{Int}" ), m );</span>
+&lt;Julia: [1 2; 3 4]&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">r:= rec( a:= 1, b:= [ 1, 2, 3 ] );;</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">GAPToJulia( r );</span>
+&lt;Julia: Dict{Symbol,Any}(:a =&gt; 1,:b =&gt; Any[1, 2, 3])&gt;
+</pre></div>
+
+<p>If <var class="Arg">gapobj</var> is a list or a record, one may want that its subobjects are also converted to <strong class="pkg">Julia</strong> or that they are kept as they are, which can be decided by entering <code class="keyw">true</code> or <code class="keyw">false</code> as the value of the optional argument <var class="Arg">recursive</var>; the default is <code class="keyw">true</code>, that is, the subobjects of <var class="Arg">gapobj</var> are converted recursively.</p>
+
+<p>Note that this default is different from the default in the other direction, see the description of <code class="func">JuliaToGAP</code> (<a href="chap3.html#X7D0471F77A0C6E1D"><span class="RefLink">3.2-2</span></a>).</p>
+
+
+<div class="example"><pre>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">jl:= GAPToJulia( m, false );</span>
+&lt;Julia: Any[GAP: [ 1, 2 ], GAP: [ 3, 4 ]]&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">jl[1];</span>
+[ 1, 2 ]
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">jr:= GAPToJulia( r, false );</span>
+&lt;Julia: Dict{Symbol,Any}(:a =&gt; 1,:b =&gt; GAP: [ 1, 2, 3 ])&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">Julia.Base.get( jr, Julia.Symbol( "b" ), fail );</span>
+[ 1, 2, 3 ]
+</pre></div>
+
+<p><a id="X842BE7C17FF20B09" name="X842BE7C17FF20B09"></a></p>
+
+<h4>3.3 <span class="Heading">Using <strong class="pkg">Julia</strong> random number generators in <strong class="pkg">GAP</strong></span></h4>
+
+<p><a id="X7FAA33807F10EF2B" name="X7FAA33807F10EF2B"></a></p>
+
+<h5>3.3-1 IsRandomSourceJulia</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; IsRandomSourceJulia</code>( <var class="Arg">obj</var> )</td><td class="tdright">(&nbsp;filter&nbsp;)</td></tr></table></div>
+<p>Returns: <code class="keyw">true</code> or <code class="keyw">false</code></p>
+
+<p>This filter allows one to use <strong class="pkg">Julia</strong>'s random number generators in <strong class="pkg">GAP</strong>, see <a href="/home/runner/.julia/artifacts/8db0b2a1c30ae8f18d09d8f93b7cb5b1b359722d/share/gap/doc/ref/chap14.html#X85361FAE8088C006"><span class="RefLink">Reference: Random Sources</span></a> for the background. Calling <code class="func">RandomSource</code> (<a href="/home/runner/.julia/artifacts/8db0b2a1c30ae8f18d09d8f93b7cb5b1b359722d/share/gap/doc/ref/chap14.html#X7CB0B5BC82F8FD8F"><span class="RefLink">Reference: RandomSource</span></a>) with only argument <code class="func">IsRandomSourceJulia</code> yields a <strong class="pkg">GAP</strong> random source that uses a copy of <strong class="pkg">Julia</strong>'s default random number generator <code class="code">Random.default_rng()</code>. Note that different calls with only argument <code class="func">IsRandomSourceJulia</code> yield different random sources.</p>
+
+<p>Called with <code class="func">IsRandomSourceJulia</code> and a positive integer, <code class="func">RandomSource</code> (<a href="/home/runner/.julia/artifacts/8db0b2a1c30ae8f18d09d8f93b7cb5b1b359722d/share/gap/doc/ref/chap14.html#X7CB0B5BC82F8FD8F"><span class="RefLink">Reference: RandomSource</span></a>) returns a random source that is based on a copy of <code class="code">Random.default_rng()</code> but got initialized with the given integer as a seed.</p>
+
+<p>Called with <code class="func">IsRandomSourceJulia</code> and a <strong class="pkg">Julia</strong> random number generator, <code class="func">RandomSource</code> (<a href="/home/runner/.julia/artifacts/8db0b2a1c30ae8f18d09d8f93b7cb5b1b359722d/share/gap/doc/ref/chap14.html#X7CB0B5BC82F8FD8F"><span class="RefLink">Reference: RandomSource</span></a>) returns a random source that uses this random number generator. Note that we do <em>not</em> make a copy of the second argument, in order to be able to use the given random number generator both on the <strong class="pkg">GAP</strong> side and the <strong class="pkg">Julia</strong> side.</p>
+
+<p><code class="func">State</code> (<a href="/home/runner/.julia/artifacts/8db0b2a1c30ae8f18d09d8f93b7cb5b1b359722d/share/gap/doc/ref/chap14.html#X86FFFBC9790F9742"><span class="RefLink">Reference: State</span></a>) for random sources in <code class="func">IsRandomSourceJulia</code> returns a copy of the underlying <strong class="pkg">Julia</strong> random number generator.</p>
+
+
+<div class="example"><pre>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">rs1:= RandomSource( IsRandomSourceJulia );</span>
+&lt;RandomSource in IsRandomSourceJulia&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">rs2:= RandomSource( IsRandomSourceJulia,</span>
+<span class="GAPprompt">&gt;</span> <span class="GAPinput">                       Julia.GAP.Random.default_rng() );</span>
+&lt;RandomSource in IsRandomSourceJulia&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">repeat</span>
+<span class="GAPprompt">&gt;</span> <span class="GAPinput">  x:= Random( rs1, [ 1 .. 100 ] );</span>
+<span class="GAPprompt">&gt;</span> <span class="GAPinput">  y:= Random( rs2, [ 1 .. 100 ] );</span>
+<span class="GAPprompt">&gt;</span> <span class="GAPinput">until x &lt;&gt; y;</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">Random( rs1, 1, 100 ) in [ 1 .. 100 ];</span>
+true
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">from:= 2^70;;  to:= from + 100;;</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">x:= Random( rs1, from, to );;</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">from &lt;= x and x &lt;= to;</span>
+true
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">g:= SymmetricGroup( 10 );;</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">Random( rs1, g ) in g;</span>
+true
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">State( rs1 ) = JuliaPointer( rs1 );</span>
+true
+</pre></div>
+
+<p><a id="X7A64D33D7AC83D22" name="X7A64D33D7AC83D22"></a></p>
+
+<h4>3.4 <span class="Heading">Open items</span></h4>
+
+
+<ul>
+<li><p>Discuss/add more dedicated conversion functions and/or special wrapper kinds, e.g.:</p>
+
+
+<ul>
+<li><p>There could be a <strong class="pkg">Julia</strong> type hierarchy of wrappers, e.g., <code class="code">GAPInt &lt;: GAPRat &lt;: GAPCyc</code>; those types would wrap the corresponding <strong class="pkg">GAP</strong> objects, i.e., they would simply wrap a <code class="code">Union{GapObj,Int64}</code>, but perhaps provided nicer integration with the rest of <strong class="pkg">Julia</strong>, like methods for <code class="code">gcd</code>, say, which are properly type restricted; or nicer printing (w/o the <code class="code">GAP:</code> prefix even?). Not really sure whether this is useful, though.</p>
+
+</li>
+</ul>
+</li>
+<li><p>Should we allow the three argument case of <code class="func">JuliaToGAP</code> (<a href="chap3.html#X7D0471F77A0C6E1D"><span class="RefLink">3.2-2</span></a>) in all cases, e.g., <code class="code">JuliaToGAP( IsInt, 1, true )</code>?</p>
+
+</li>
+<li><p>Many tests of conversions are missing.</p>
+
+</li>
+</ul>
+
+<div class="chlinkprevnextbot">&nbsp;<a href="chap0.html">[Top of Book]</a>&nbsp;  <a href="chap0.html#contents">[Contents]</a>&nbsp;  &nbsp;<a href="chap2.html">[Previous Chapter]</a>&nbsp;  &nbsp;<a href="chapInd.html">[Next Chapter]</a>&nbsp;  </div>
+
+
+<div class="chlinkbot"><span class="chlink1">Goto Chapter: </span><a href="chap0.html">Top</a>  <a href="chap1.html">1</a>  <a href="chap2.html">2</a>  <a href="chap3.html">3</a>  <a href="chapInd.html">Ind</a>  </div>
+
+<hr />
+<p class="foot">generated by <a href="https://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc">GAPDoc2HTML</a></p>
+</body>
+</html>
