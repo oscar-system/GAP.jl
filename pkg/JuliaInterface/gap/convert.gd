@@ -168,8 +168,6 @@
 #!  Manual conversion in &GAP; is done via the functions
 #!  <Ref Func="GAPToJulia"/> and
 #!  <Ref Constr="JuliaToGAP" Label="for IsObject, IsObject"/>.
-#!  In &Julia;, conversion is done via <C>gap_to_julia</C> and
-#!  <C>GapObj</C>.
 #!
 #!  <E>Conversion from &GAP; to &Julia;</E>
 #!

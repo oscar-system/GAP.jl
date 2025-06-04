@@ -392,12 +392,12 @@ end
     x = GAP.evalstr("BlistList([1,2],[1])")
     y = GapObj([true, false])
     @test y == x
-    @test GAP.gap_to_julia(GAP.Globals.TNAM_OBJ(y)) == "list (boolean)"
+    @test String(GAP.Globals.TNAM_OBJ(y)) == "list (boolean)"
 
     v = BitVector([true, false])
     gap_v = GapObj(v)
     @test gap_v == x
-    @test GAP.gap_to_julia(GAP.Globals.TNAM_OBJ(gap_v)) == "list (boolean)"
+    @test String(GAP.Globals.TNAM_OBJ(gap_v)) == "list (boolean)"
   end
 
   @testset "Tuples" begin
@@ -423,9 +423,9 @@ end
 
     r = GapObj(1:2:11, IdDict(), recursive = false)
     @test r == GapObj(1:2:11)
-    @test GAP.gap_to_julia(GAP.Globals.TNAM_OBJ(r)) == "list (range,ssort)"
+    @test String(GAP.Globals.TNAM_OBJ(r)) == "list (range,ssort)"
     r = GAP.Obj(1:10)
-    @test GAP.gap_to_julia(GAP.Globals.TNAM_OBJ(r)) == "list (range,ssort)"
+    @test String(GAP.Globals.TNAM_OBJ(r)) == "list (range,ssort)"
   end
 
   @testset "Dictionaries" begin

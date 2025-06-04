@@ -276,8 +276,7 @@ end
 
 Return the 1-dimensional array converted from the
 [GAP list](GAP_ref(ref:Lists)) `obj`.
-The entries of the list are converted to the type `T`,
-using [`gap_to_julia`](@ref).
+The entries of the list are converted to the type `T`.
 If `recursive` is `true` then the entries of the list are
 converted recursively, otherwise non-recursively.
 
@@ -333,8 +332,7 @@ Base.Vector{T}(obj::GapObj; recursive::Bool = true) where {T} =
 Return the 2-dimensional array converted from the GAP matrix `obj`,
 which can be a [GAP list of lists](GAP_ref(ref:Matrices)) or
 a [GAP matrix object](GAP_ref(ref:Vector and Matrix Objects)).
-The entries of the matrix are converted to the type `T`,
-using [`gap_to_julia`](@ref).
+The entries of the matrix are converted to the type `T`.
 If `recursive` is `true` then the entries are
 converted recursively, otherwise non-recursively.
 
@@ -367,8 +365,7 @@ Base.Matrix{T}(obj::GapObj; recursive::Bool = true) where {T} =
 Return the set converted from the
 [GAP list](GAP_ref(ref:Lists)) or [GAP collection](GAP_ref(ref:Collections))
 `obj`.
-The elements of `obj` are converted to the required type `T`,
-using [`gap_to_julia`](@ref).
+The elements of `obj` are converted to the required type `T`.
 If `recursive` is `true` then the elements are
 converted recursively, otherwise non-recursively.
 
@@ -407,8 +404,7 @@ Base.Set{T}(obj::GapObj; recursive::Bool = true) where {T} =
 
 Return the tuple converted from the
 [GAP list](GAP_ref(ref:Lists)) `obj`.
-The entries of the list are converted to the required types `Types...`,
-using [`gap_to_julia`](@ref).
+The entries of the list are converted to the required types `Types...`.
 If `recursive` is `true` then the entries of the list are
 converted recursively, otherwise non-recursively.
 
@@ -526,8 +522,7 @@ end
 Return the dictionary converted from the
 [GAP record](GAP_ref(ref:Records)) `obj`.
 If `recursive` is `true` then the values of the record components are
-recursively converted to objects of the type `T`,
-using [`gap_to_julia`](@ref), otherwise they are kept as they are.
+recursively converted to objects of the type `T`.
 
 # Examples
 ```jldoctest
