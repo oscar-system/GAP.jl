@@ -2,6 +2,8 @@
 
 ## Version 0.13.4 (released 2025-06-02)
 
+- Update JLLs for compatibility with latest Julia nightly builds
+
 ## Version 0.13.3 (released 2025-05-16)
 
 - Support AbstractAlgebra 0.45
