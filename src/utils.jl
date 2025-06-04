@@ -114,11 +114,7 @@ end
 
 ## helper for creating parametrized Julia types in GAP
 
-create_type(T::Type) = T
-
-function create_type(T::Type, paras::Vector)
-  return T{[((x isa Type) ? x : create_type(x...)) for x in paras]...}
-end
+create_type(T::Type, paras::Vector) = T{paras...}
 
 
 ## convenience function

@@ -120,10 +120,9 @@ end
 end
 
 @testset "create_type" begin
-    @test GAP.create_type(Int) === Int
     @test GAP.create_type(Vector, [Int]) === Vector{Int}
     @test GAP.create_type(Tuple, [Int, Int]) === Tuple{Int, Int}
-    @test GAP.create_type(Tuple, [[Vector, [Int]], [Matrix, [Int]]]) === Tuple{Vector{Int64}, Matrix{Int64}}
+    @test GAP.create_type(Tuple, [GAP.create_type(Vector, [Int]), GAP.create_type(Matrix, [Int])]) === Tuple{Vector{Int64}, Matrix{Int64}}
 end
 
 @testset "functionloc" begin
