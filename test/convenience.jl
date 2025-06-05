@@ -133,7 +133,7 @@ end
 
     file, line = Base.functionloc(GAP.Globals.BangComponent)
     @test Base.samefile(file, joinpath(@__DIR__, "../pkg/JuliaInterface/gap/utils.gi"))
-    @test line == 8
+    @test line == 13
 
     @test_throws ArgumentError Base.functionloc(GAP.Globals.LETTERS)
     @test_throws ErrorException Base.functionloc(GAP.Globals.IsAbelian)
