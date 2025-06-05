@@ -16,7 +16,9 @@ Also, everything in this repository might change in the future, so currently
 any update can break the code you wrote upon functionality from packages in
 this repository.
 
-This software is licensed under the GPL, version 3, or any later version.
+For details about e.g. reporting issues, copyright & licensing, and so on,
+please refer to the `README.md` file of `GAP.jl` (which normally should be two
+levels above the directory this file you are reading right now resides in).
 
 ## Installation
 
