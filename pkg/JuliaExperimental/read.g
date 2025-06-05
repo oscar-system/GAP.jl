@@ -64,5 +64,3 @@ if JuliaImportPackage( "Singular" ) then
     ReadPackage( "JuliaExperimental", "gap/finvar.gi" );
   fi;
 fi;
-
-

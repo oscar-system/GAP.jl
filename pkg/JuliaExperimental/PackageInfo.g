@@ -97,5 +97,3 @@ AvailabilityTest := ReturnTrue,
 TestFile := "tst/testall.g",
 
 ));
-
-
