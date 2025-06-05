@@ -6,7 +6,7 @@
 ##  Copyright of GAP.jl and its parts belongs to its developers.
 ##  Please refer to its README.md file for details.
 ##
-##  SPDX-License-Identifier: GPL-3.0-or-later
+##  SPDX-License-Identifier: LGPL-3.0-or-later
 ##
 ##  This is an experimental implementation of permutations in Julia.
 ##  The code was translated more or less literally from GAP's 'src/permutat.c'.

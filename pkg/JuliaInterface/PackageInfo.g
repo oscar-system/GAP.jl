@@ -6,7 +6,7 @@
 ##  Copyright of GAP.jl and its parts belongs to its developers.
 ##  Please refer to its README.md file for details.
 ##
-##  SPDX-License-Identifier: GPL-3.0-or-later
+##  SPDX-License-Identifier: LGPL-3.0-or-later
 ##
 ##  This file contains package meta data. For additional information on the
 ##  meaning and correct usage of these fields, please consult the manual of
@@ -20,7 +20,7 @@ PackageName := "JuliaInterface",
 Subtitle := "Interface to Julia",
 Version := "0.13.4",
 Date := "02/06/2025", # dd/mm/yyyy format
-License := "GPL-3.0-or-later",
+License := "LGPL-3.0-or-later",
 
 Persons := [
   rec(
@@ -158,19 +158,19 @@ AutoDoc := rec(
 
       <Package>JuliaInterface</Package> and <Package>GAP.jl</Package> are free
       software: you can redistribute them and/or modify them under the terms
-      of the GNU General Public License as published by the Free Software
-      Foundation, either version 3 of the License, or (at your option) any
-      later version. <P/>
+      of the GNU Lesser General Public License as published by the Free
+      Software Foundation, either version 3 of the License, or (at your
+      option) any later version. <P/>
 
       <Package>JuliaInterface</Package> and <Package>GAP.jl</Package> are
       distributed in the hope that they will be useful, but WITHOUT ANY
       WARRANTY; without even the implied warranty of MERCHANTABILITY or
-      FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
-      more details. <P/>
+      FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
+      License for more details. <P/>
 
-      For a copy of the GNU General Public License, see the file
+      For a copy of the GNU Lesser General Public License, see the file
       <F>LICENSE</F> included with this software, or see
-      <URL>https://www.gnu.org/licenses/gpl.html</URL>.
+      <URL>https://www.gnu.org/licenses/lgpl.html</URL>.
       """,
   ),
 ),

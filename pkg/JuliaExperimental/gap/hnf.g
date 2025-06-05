@@ -6,7 +6,7 @@
 ##  Copyright of GAP.jl and its parts belongs to its developers.
 ##  Please refer to its README.md file for details.
 ##
-##  SPDX-License-Identifier: GPL-3.0-or-later
+##  SPDX-License-Identifier: LGPL-3.0-or-later
 ##
 ##  an example for calling a Nemo function for computing a result in GAP,
 ##  compute the Hermite normal form of a GAP integer matrix

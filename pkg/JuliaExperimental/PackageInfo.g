@@ -6,7 +6,7 @@
 ##  Copyright of GAP.jl and its parts belongs to its developers.
 ##  Please refer to its README.md file for details.
 ##
-##  SPDX-License-Identifier: GPL-3.0-or-later
+##  SPDX-License-Identifier: LGPL-3.0-or-later
 ##
 ##  This file contains package meta data. For additional information on
 ##  the meaning and correct usage of these fields, please consult the
@@ -19,7 +19,7 @@ PackageName := "JuliaExperimental",
 Subtitle := "Experimental code for the GAP Julia integration",
 Version := "0.13.4",
 Date := "02/06/2025", # dd/mm/yyyy format
-License := "GPL-3.0-or-later",
+License := "LGPL-3.0-or-later",
 
 Persons := [
   rec(

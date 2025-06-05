@@ -5,7 +5,7 @@
 //  Copyright of GAP.jl and its parts belongs to its developers.
 //  Please refer to its README.md file for details.
 //
-//  SPDX-License-Identifier: GPL-3.0-or-later
+//  SPDX-License-Identifier: LGPL-3.0-or-later
 //
 // Wrap Julia functions for GAP, and implement function calls between Julia
 // and GAP.

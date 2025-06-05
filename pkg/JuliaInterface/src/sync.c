@@ -5,7 +5,7 @@
 //  Copyright of GAP.jl and its parts belongs to its developers.
 //  Please refer to its README.md file for details.
 //
-//  SPDX-License-Identifier: GPL-3.0-or-later
+//  SPDX-License-Identifier: LGPL-3.0-or-later
 //
 // Ensure not more than one Julia thread calls into the GAP kernel at a time.
 //
