@@ -1,4 +1,4 @@
-# The GAP 4 package `JuliaExperimental'
+# The GAP package `JuliaExperimental'
 
 JuliaExperimental provides experimental code to test and explore the
 capabilities of the JuliaInterface package, and the general combination of
@@ -16,7 +16,9 @@ Also, everything in this repository might change in the future, so currently
 any update can break the code you wrote upon functionality from packages in
 this repository.
 
-This software is licensed under the LGPL, version 3, or any later version.
+For details about e.g. reporting issues, copyright & licensing, and so on,
+please refer to the `README.md` file of `GAP.jl` (which normally should be two
+levels above the directory this file you are reading right now resides in).
 
 ## Installation
 

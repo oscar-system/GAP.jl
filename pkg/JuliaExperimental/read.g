@@ -1,8 +1,15 @@
-#
-# JuliaExperimental: Experimental code for the GAP Julia integration
-#
-# Read the implementation part of the package.
-#
+#############################################################################
+##
+##  This file is part of GAP.jl, a bidirectional interface between Julia and
+##  the GAP computer algebra system.
+##
+##  Copyright of GAP.jl and its parts belongs to its developers.
+##  Please refer to its README.md file for details.
+##
+##  SPDX-License-Identifier: LGPL-3.0-or-later
+##
+##  Read the implementation part of the package.
+##
 
 # ...
 ReadPackage( "JuliaExperimental", "gap/utils.gi" );
@@ -57,5 +64,3 @@ if JuliaImportPackage( "Singular" ) then
     ReadPackage( "JuliaExperimental", "gap/finvar.gi" );
   fi;
 fi;
-
-

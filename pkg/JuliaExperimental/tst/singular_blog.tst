@@ -1,6 +1,12 @@
 #############################################################################
 ##
-#W  singular_blog.tst  GAP 4 package JuliaExperimental          Thomas Breuer
+##  This file is part of GAP.jl, a bidirectional interface between Julia and
+##  the GAP computer algebra system.
+##
+##  Copyright of GAP.jl and its parts belongs to its developers.
+##  Please refer to its README.md file for details.
+##
+##  SPDX-License-Identifier: LGPL-3.0-or-later
 ##
 ##  Run the examples from a blog post by Bill Hart, see
 ##  'https://wbhart.blogspot.de/2017/01/singular-and-julia.html'.
