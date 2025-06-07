@@ -43,15 +43,6 @@ InstallMethod( \.,
 
     rnam := NameRNam( rnum );
 
-    ## TODO: remove this special case in a future breaking release.
-    ## See https://github.com/oscar-system/GAP.jl/issues/1053 for details.
-    if IsIdenticalObj(module, Julia) and rnam = "GAP" then
-        ## Ensure that the Julia module GAP is always accessible as GAP_jl,
-        ## even while it is still being initialized, and also if it not actually
-        ## exported to the Julia Main module
-        return GAP_jl;
-    fi;
-
     var := _JuliaGetGlobalVariableByModule( rnam, module );
     if var = fail then
         Error( rnam, " is not bound in Julia" );
