@@ -1,5 +1,8 @@
 # Changes in GAP.jl
 
+- Add the GAP function `JuliaType`,
+  for constructing parametrized Julia types in GAP
+
 ## Version 0.13.4 (released 2025-06-02)
 
 - Update JLLs for compatibility with latest Julia nightly builds

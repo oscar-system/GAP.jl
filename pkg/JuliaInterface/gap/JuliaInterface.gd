@@ -184,6 +184,24 @@ BindGlobal( "TheTypeOfJuliaModules", NewType( TheFamilyOfJuliaModules, IsJuliaMo
 #! @EndExampleSession
 #DeclareGlobalFunction( "JuliaEvalString" );
 
+#! @Arguments T, parameters
+#! @Description
+#!  creates the parametrized &Julia; type
+#!  <A>T</A><C>{para1, para2, ...}</C>,
+#!  where <A>T</A> is a &Julia; type and <A>parameters</A> is a list of
+#!  &Julia; types which are its intended type parameters.
+#! @BeginExampleSession
+#! gap> JuliaType( Julia.Vector, [ Julia.Int ] );
+#! <Julia: Vector{Int64}>
+#! gap> JuliaType( Julia.Tuple, [ Julia.Int, Julia.Int ] );
+#! <Julia: Tuple{Int64, Int64}>
+#! gap> JuliaType( Julia.Tuple,
+#! >      [ JuliaType( Julia.Vector, [ Julia.Int ] ),
+#! >        JuliaType( Julia.Matrix, [ Julia.Int ] ) ] );
+#! <Julia: Tuple{Vector{Int64}, Matrix{Int64}}>
+#! @EndExampleSession
+DeclareGlobalFunction( "JuliaType" );
+
 #! @Arguments filename[, module_name]
 #! @Returns nothing.
 #! @Description
