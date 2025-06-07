@@ -56,7 +56,7 @@ end
 
     @test_throws ErrorException GAP.Globals.FOOBARQUX
 
-    str = GAP.gap_to_julia(String, GAP.ValueGlobalVariable("IdentifierLetters"))
+    str = String(GAP.ValueGlobalVariable("IdentifierLetters"))
     @test str == "0123456789@ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz"
 
     @test GAP.CanAssignGlobalVariable("Read") == false
@@ -135,7 +135,7 @@ end
     # from issue #324:
     l = GAP.evalstr("[1,~,3]")
     @test l[2] === l
-    @test GAP.gap_to_julia(GAP.Globals.StringViewObj(l)) == "[ 1, ~, 3 ]"
+    @test String(GAP.Globals.StringViewObj(l)) == "[ 1, ~, 3 ]"
 
     # from issue #1058:
     c = IOCapture.capture() do

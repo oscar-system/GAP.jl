@@ -161,8 +161,8 @@ DeclareAttribute( "JuliaPointer", IsJuliaWrapper );
 #! <Julia module GAP>
 #! gap> IsJuliaModule( GAP_jl );
 #! true
-#! gap> GAP_jl.gap_to_julia;
-#! <Julia: gap_to_julia>
+#! gap> GAP_jl.prompt;
+#! <Julia: prompt>
 #! @EndExampleSession
 DeclareCategory( "IsJuliaModule", IsJuliaObject and IsRecord  );
 

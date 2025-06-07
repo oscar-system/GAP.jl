@@ -5,24 +5,27 @@ DocTestSetup = :(using GAP)
 
 # Conversions
 
-One of the main ideas of GAP.jl is that automatic conversions of Julia objects
+One of the main ideas of GAP.jl is that *automatic* conversions of Julia objects
 to GAP objects and vice versa shall be avoided whenever this is possible.
 For a few types of objects, such conversions are unavoidable,
 see [Automatic GAP-to-Julia and Julia-to-GAP Conversions](@ref).
-In all other situations,
-the conversions between GAP objects and corresponding Julia objects
-can be performed using [`gap_to_julia`](@ref) and
-[`GapObj(x, cache::GapCacheDict = nothing; recursive::Bool = false)`](@ref),
-see [Explicit GAP-to-Julia and Julia-to-GAP Conversions](@ref), respectively.
 
-For convenience, also constructor methods are provided,
-for example `Vector{Int64}(obj)` can be used instead of
-`GAP.gap_to_julia(Vector{Int64}, obj)`, where `obj` is a GAP list of
-integers;
-see [Constructor Methods for GAP-to-Julia Conversions](@ref)
-for a description of these methods.
-For Julia-to-GAP conversions, one can use for example `GapObj(obj)`,
-where `obj` is a Julia object, see [`GapObj`](@ref).
+In all other situations, the user must explicitly convert between GAP objects
+and corresponding Julia objects. This is typically done by "type coercion",
+also just called "coercion": to convert a Julia object `x` into a GAP object,
+you may write `GapObj(x)`, see [`GapObj`](@ref). Conversely, if `y` is a GAP
+object, then e.g. `Vector{Int}(y)` will attempt to convert it into a
+`Vector{Int}`. This will success if e.g. `y` is a GAP range or a plain list of
+integers. See also [Constructor Methods for GAP-to-Julia Conversions](@ref).
+
+For interactive use it may also be convenient to use the function
+[`gap_to_julia`](@ref) with a single argument, which will attempt to "guess" a
+suitable Julia type for the conversion (e.g. GAP strings will be converted to
+Julia strings). However, we generally recommend against using it, as usually
+it is better to coerce to a specific type, as that makes it easier to reason
+about the code, and helps code to become "type stable" (an important concept
+for writing performant Julia code, see TODO).
+
 
 ## Automatic GAP-to-Julia and Julia-to-GAP Conversions
 
