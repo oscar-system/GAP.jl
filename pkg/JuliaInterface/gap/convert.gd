@@ -563,7 +563,7 @@ DeclareGlobalFunction("GAPToJulia");
 #! gap> rs1:= RandomSource( IsRandomSourceJulia );
 #! <RandomSource in IsRandomSourceJulia>
 #! gap> rs2:= RandomSource( IsRandomSourceJulia,
-#! >                        Julia.GAP.Random.default_rng() );
+#! >                        GAP_jl.Random.default_rng() );
 #! <RandomSource in IsRandomSourceJulia>
 #! gap> repeat
 #! >   x:= Random( rs1, [ 1 .. 100 ] );

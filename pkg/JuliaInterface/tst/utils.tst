@@ -21,7 +21,7 @@ gap> Julia.Core.Tuple( GAPToJulia( JuliaType( Julia.Vector, [ Julia.Any ] ), [] 
 <Julia: ()>
 gap> Julia.Core.Tuple( GAPToJulia( JuliaType( Julia.Vector, [ Julia.Any ] ), [1] ) );
 <Julia: (1,)>
-gap> Julia.Core.Tuple( GAPToJulia( JuliaType( Julia.Vector, [ Julia.GAP.Obj ] ), [1,true,fail] ));
+gap> Julia.Core.Tuple( GAPToJulia( JuliaType( Julia.Vector, [ GAP_jl.Obj ] ), [1,true,fail] ));
 <Julia: (1, true, GAP: fail)>
 gap> Julia.Core.Tuple(1);
 <Julia: (1,)>
