@@ -26,11 +26,11 @@ gap> JuliaEvalString(fail);
 Error, JuliaEvalString: <string> must be a string (not the value 'fail')
 
 ##
-gap> Julia.Core.Tuple( GAPToJulia( JuliaEvalString( "Vector{Any}" ), [] ) );
+gap> Julia.Core.Tuple( GAPToJulia( JuliaType( Julia.Vector, [ Julia.Any ] ), [] ) );
 <Julia: ()>
-gap> Julia.Core.Tuple( GAPToJulia( JuliaEvalString( "Vector{Any}" ), [1] ) );
+gap> Julia.Core.Tuple( GAPToJulia( JuliaType( Julia.Vector, [ Julia.Any ] ), [1] ) );
 <Julia: (1,)>
-gap> Julia.Core.Tuple( GAPToJulia( JuliaEvalString( "Vector{GAP.Obj}" ), [1,true,fail] ));
+gap> Julia.Core.Tuple( GAPToJulia( JuliaType( Julia.Vector, [ GAP_jl.Obj ] ), [1,true,fail] ));
 <Julia: (1, true, GAP: fail)>
 gap> Julia.Core.Tuple(1);
 <Julia: (1,)>

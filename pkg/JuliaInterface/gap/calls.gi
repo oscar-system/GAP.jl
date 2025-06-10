@@ -9,9 +9,9 @@
 ##  SPDX-License-Identifier: LGPL-3.0-or-later
 ##
 
-BindGlobal("_JL_Vector_Any", JuliaEvalString("Vector{Any}"));
+BindGlobal("_JL_Vector_Any", JuliaType( Julia.Vector, [ Julia.Any ] ));
 
-BindGlobal("_JL_Dict_Any", JuliaEvalString("Dict{Symbol,Any}"));
+BindGlobal("_JL_Dict_Any", JuliaType( Julia.Dict, [ Julia.Symbol, Julia.Any ] ));
 
 ##
 ##  We want to use &GAP's function call syntax also for certain Julia objects

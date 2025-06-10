@@ -122,6 +122,12 @@ function kwarg_wrapper(func, args::Vector{T1}, kwargs::Dict{Symbol,T2}) where {T
     return func(args...; [k => kwargs[k] for k in keys(kwargs)]...)
 end
 
+
+## helper for creating parametrized Julia types in GAP
+
+create_type(T::Type, paras::Vector) = T{paras...}
+
+
 ## convenience function
 
 function Display(x::GapObj)

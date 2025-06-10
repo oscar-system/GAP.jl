@@ -193,7 +193,7 @@ gap> ForAny( [ 1 .. 10000 ], i -> Random( rs, G ) <> Random( rs2, G ) );
 true
 
 # create a random source by an explicit Julia rng
-gap> rs3:= RandomSource( IsRandomSourceJulia, Julia.GAP.Random.default_rng() );
+gap> rs3:= RandomSource( IsRandomSourceJulia, GAP_jl.Random.default_rng() );
 <RandomSource in IsRandomSourceJulia>
 gap> state3:= State( rs3 );;
 gap> res1:= List( [ 1 .. 10 ], i -> Random( rs3, l ) );;
