@@ -146,7 +146,7 @@ end );
 
 
 InstallGlobalFunction( JuliaType,
-  { T, paras } -> Julia.GAP.create_type( T, GAPToJulia( paras, true ) ) );
+  { T, paras } -> Julia.GAP.create_type( T, GAP_jl._gap_to_julia( paras, true ) ) );
 
 
 InstallGlobalFunction( GetJuliaScratchspace,

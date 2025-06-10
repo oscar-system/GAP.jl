@@ -23,7 +23,7 @@ gap> Julia.Base.parent( R(12) );
 <Julia: Residue Ring of Integer Ring modulo 23>
 
 ##  polynomial rings, polynomials
-gap> vecstr := JuliaEvalString( "Vector{String}" );
+gap> vecstr := JuliaType( Julia.Vector, [ Julia.String ] );
 gap> indetnames:= vecstr( [ "x", "y", "z", "t" ] );
 <Julia: ["x", "y", "z", "t"]>
 gap> Rinfo:= Julia.Singular.polynomial_ring( Julia.Singular.QQ, indetnames );
