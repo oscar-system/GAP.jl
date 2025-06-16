@@ -1,8 +1,13 @@
 #############################################################################
 ##
-##  JuliaInterface package
+##  This file is part of GAP.jl, a bidirectional interface between Julia and
+##  the GAP computer algebra system.
 ##
-#############################################################################
+##  Copyright of GAP.jl and its parts belongs to its developers.
+##  Please refer to its README.md file for details.
+##
+##  SPDX-License-Identifier: LGPL-3.0-or-later
+##
 
 # convert Julia Integer subtypes like Int8, Int16, ... UInt128, BigInt
 InstallMethod(JuliaToGAP, ["IsInt", "IsJuliaObject"],
@@ -63,8 +68,8 @@ function(filter, obj)
     Error("<obj> must be a Julia Char or Int8 or UInt8");
 end);
 
-BindGlobal("_JL_Dict_Symbol", JuliaEvalString("Dict{Symbol}"));
-BindGlobal("_JL_Dict_AbstractString", JuliaEvalString("Dict{AbstractString}"));
+BindGlobal("_JL_Dict_Symbol", JuliaType( Julia.Dict, [ Julia.Symbol ] ));
+BindGlobal("_JL_Dict_AbstractString", JuliaType( Julia.Dict, [ Julia.AbstractString ] ));
 
 InstallMethod(JuliaToGAP, ["IsRecord", "IsJuliaObject"],
     {filter,obj} -> JuliaToGAP(filter,obj,false) );
@@ -101,8 +106,8 @@ function(filter, obj, recursive)
     Error("<obj> must be a Julia range");
 end);
 
-BindGlobal("_JL_Vector_Bool", JuliaEvalString("Vector{Bool}"));
-BindGlobal("_JL_BitVector", JuliaEvalString("BitVector"));
+BindGlobal("_JL_Vector_Bool", JuliaType( Julia.Vector, [ Julia.Bool ] ));
+BindGlobal("_JL_BitVector", Julia.BitVector);
 
 InstallMethod(JuliaToGAP, ["IsBlist", "IsJuliaObject"],
     {filter,obj} -> JuliaToGAP(filter,obj,false) );

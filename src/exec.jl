@@ -1,3 +1,14 @@
+#############################################################################
+##
+##  This file is part of GAP.jl, a bidirectional interface between Julia and
+##  the GAP computer algebra system.
+##
+##  Copyright of GAP.jl and its parts belongs to its developers.
+##  Please refer to its README.md file for details.
+##
+##  SPDX-License-Identifier: LGPL-3.0-or-later
+##
+
 # Replacement for the GAP kernel function ExecuteProcess
 const use_orig_ExecuteProcess = Ref{Bool}(true)
 function GAP_ExecuteProcess(dir::GAP.Obj, prg::GAP.Obj, in::GAP.Obj, out::GAP.Obj, args::GAP.Obj)
@@ -13,7 +24,7 @@ function GAP_ExecuteProcess(dir::String, prg::String, fin::Int, fout::Int, args:
     if fin < 0
         fin = Base.devnull
     else
-        fin = ccall((:SyBufFileno, libgap), Int, (Culong, ), fin)
+        fin = @ccall libgap.SyBufFileno(fin::Culong)::Int
         if fin == -1
             error("fin invalid")
         end
@@ -23,7 +34,7 @@ function GAP_ExecuteProcess(dir::String, prg::String, fin::Int, fout::Int, args:
     if fout < 0
         fout = Base.devnull
     else
-        fout = ccall((:SyBufFileno, libgap), Int, (Culong, ), fout)
+        fout = @ccall libgap.SyBufFileno(fout::Culong)::Int
         if fout == -1
             error("fout invalid")
         end

@@ -1,3 +1,14 @@
+#############################################################################
+##
+##  This file is part of GAP.jl, a bidirectional interface between Julia and
+##  the GAP computer algebra system.
+##
+##  Copyright of GAP.jl and its parts belongs to its developers.
+##  Please refer to its README.md file for details.
+##
+##  SPDX-License-Identifier: LGPL-3.0-or-later
+##
+
 @testset "basics" begin
     @test GAP.CSTR_STRING(GAP.Globals.String(GAP.Globals.PROD(2^59, 2^59))) ==
           "332306998946228968225951765070086144"
@@ -45,7 +56,7 @@ end
 
     @test_throws ErrorException GAP.Globals.FOOBARQUX
 
-    str = GAP.gap_to_julia(String, GAP.ValueGlobalVariable("IdentifierLetters"))
+    str = String(GAP.ValueGlobalVariable("IdentifierLetters"))
     @test str == "0123456789@ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz"
 
     @test GAP.CanAssignGlobalVariable("Read") == false
@@ -124,7 +135,7 @@ end
     # from issue #324:
     l = GAP.evalstr("[1,~,3]")
     @test l[2] === l
-    @test GAP.gap_to_julia(GAP.Globals.StringViewObj(l)) == "[ 1, ~, 3 ]"
+    @test String(GAP.Globals.StringViewObj(l)) == "[ 1, ~, 3 ]"
 
     # from issue #1058:
     c = IOCapture.capture() do

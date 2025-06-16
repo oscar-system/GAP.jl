@@ -1,3 +1,14 @@
+#############################################################################
+##
+##  This file is part of GAP.jl, a bidirectional interface between Julia and
+##  the GAP computer algebra system.
+##
+##  Copyright of GAP.jl and its parts belongs to its developers.
+##  Please refer to its README.md file for details.
+##
+##  SPDX-License-Identifier: LGPL-3.0-or-later
+##
+
 ## Handle "conversion" to GAP.Obj and GapObj (may occur in recursions).
 Obj(x::Obj) = x
 GapObj(x::GapObj) = x
@@ -43,13 +54,13 @@ function Base.BigInt(obj::GapObj)
     GAP_IS_INT(obj) || throw(ConversionError(obj, BigInt))
     ## get size of GAP BigInt (in limbs), multiply
     ## by 64 to get bits
-    size_limbs = ccall((:GAP_SizeInt, libgap), Cint, (Any,), obj)
+    size_limbs = @ccall libgap.GAP_SizeInt(obj::Any)::Cint
     size = abs(size_limbs * sizeof(UInt) * 8)
     ## allocate new GMP
     new_bigint = Base.GMP.MPZ.realloc2(size)
     new_bigint.size = size_limbs
     ## Get limb address ptr
-    addr = ccall((:GAP_AddrInt, libgap), Ptr{UInt}, (Any,), obj)
+    addr = @ccall libgap.GAP_AddrInt(obj::Any)::Ptr{UInt}
     ## Copy limbs
     unsafe_copyto!(new_bigint.d, addr, abs(size_limbs))
     return new_bigint
@@ -235,7 +246,7 @@ julia> Symbol(str)
 function Core.Symbol(obj::GapObj)
     if Wrappers.IsStringRep(obj)
       s, len = UNSAFE_CSTR_STRING(obj)
-      return ccall(:jl_symbol_n, Ref{Symbol}, (Ptr{UInt8}, Int), s, len)
+      return @ccall jl_symbol_n(s::Ptr{UInt8}, len::Int)::Ref{Symbol}
     end
     return Symbol(String(obj))
 end
@@ -276,8 +287,7 @@ end
 
 Return the 1-dimensional array converted from the
 [GAP list](GAP_ref(ref:Lists)) `obj`.
-The entries of the list are converted to the type `T`,
-using [`gap_to_julia`](@ref).
+The entries of the list are converted to the type `T`.
 If `recursive` is `true` then the entries of the list are
 converted recursively, otherwise non-recursively.
 
@@ -333,8 +343,7 @@ Base.Vector{T}(obj::GapObj; recursive::Bool = true) where {T} =
 Return the 2-dimensional array converted from the GAP matrix `obj`,
 which can be a [GAP list of lists](GAP_ref(ref:Matrices)) or
 a [GAP matrix object](GAP_ref(ref:Vector and Matrix Objects)).
-The entries of the matrix are converted to the type `T`,
-using [`gap_to_julia`](@ref).
+The entries of the matrix are converted to the type `T`.
 If `recursive` is `true` then the entries are
 converted recursively, otherwise non-recursively.
 
@@ -367,8 +376,7 @@ Base.Matrix{T}(obj::GapObj; recursive::Bool = true) where {T} =
 Return the set converted from the
 [GAP list](GAP_ref(ref:Lists)) or [GAP collection](GAP_ref(ref:Collections))
 `obj`.
-The elements of `obj` are converted to the required type `T`,
-using [`gap_to_julia`](@ref).
+The elements of `obj` are converted to the required type `T`.
 If `recursive` is `true` then the elements are
 converted recursively, otherwise non-recursively.
 
@@ -407,8 +415,7 @@ Base.Set{T}(obj::GapObj; recursive::Bool = true) where {T} =
 
 Return the tuple converted from the
 [GAP list](GAP_ref(ref:Lists)) `obj`.
-The entries of the list are converted to the required types `Types...`,
-using [`gap_to_julia`](@ref).
+The entries of the list are converted to the required types `Types...`.
 If `recursive` is `true` then the entries of the list are
 converted recursively, otherwise non-recursively.
 
@@ -526,8 +533,7 @@ end
 Return the dictionary converted from the
 [GAP record](GAP_ref(ref:Records)) `obj`.
 If `recursive` is `true` then the values of the record components are
-recursively converted to objects of the type `T`,
-using [`gap_to_julia`](@ref), otherwise they are kept as they are.
+recursively converted to objects of the type `T`.
 
 # Examples
 ```jldoctest

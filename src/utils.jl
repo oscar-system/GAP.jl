@@ -1,3 +1,14 @@
+#############################################################################
+##
+##  This file is part of GAP.jl, a bidirectional interface between Julia and
+##  the GAP computer algebra system.
+##
+##  Copyright of GAP.jl and its parts belongs to its developers.
+##  Please refer to its README.md file for details.
+##
+##  SPDX-License-Identifier: LGPL-3.0-or-later
+##
+
 import REPL.REPLCompletions: completions
 
 ## These functions are used on the GAP side.
@@ -10,7 +21,7 @@ function _setglobal(M::Module, name::Symbol, val::Any)
     return invokelatest(Core.setglobal!, M, name, val)
   else
     # `jl_set_global` is available up to Julia 1.8.
-    ccall(:jl_set_global, Cvoid, (Any, Any, Any), M, name, val)
+    @ccall jl_set_global(M::Any, name::Any, val::Any)::Cvoid
     return val
   end
 end
@@ -110,6 +121,12 @@ function kwarg_wrapper(func, args::Vector{T1}, kwargs::Dict{Symbol,T2}) where {T
     func = UnwrapJuliaFunc(func)
     return func(args...; [k => kwargs[k] for k in keys(kwargs)]...)
 end
+
+
+## helper for creating parametrized Julia types in GAP
+
+create_type(T::Type, paras::Vector) = T{paras...}
+
 
 ## convenience function
 

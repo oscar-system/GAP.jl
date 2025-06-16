@@ -1,13 +1,32 @@
 # Changes in GAP.jl
 
-## Version 0.14.0 (released 2025-XX-XX)
+## Version 0.14.0-DEV (released 2025-MM-DD)
 
 - **Breaking:** GAP.jl no longer creates a GAP root on startup that its dependents
   can use. Instead, dependent packages should add their own GAP root using
   `GAP.Globals.ExtendRootDirectories`. 
 - **Breaking:** `GAP.sysinfo` now contains the data from the `sysinfo.gap` file
   that was bundled with the GAP installation, without any modifications by GAP.jl.
+- **Breaking:** Remove hack that made sure that in GAP accessing `Julia.GAP`
+  always returns the `GAP` package module, even when `GAP` was not loaded
+  directly by the user (e.g. if it was loaded indirectly from `Oscar`). To
+  access the `GAP` module reliably, use the GAP variable `GAP_jl` instead.
+- Add the GAP function `JuliaType`,
+  for constructing parametrized Julia types in GAP
 
+## Version 0.13.4 (released 2025-06-02)
+
+- Update JLLs for compatibility with latest Julia nightly builds
+
+## Version 0.13.3 (released 2025-05-16)
+
+- Support AbstractAlgebra 0.45
+- Support a timeout parameter for GAP's `Download`
+
+## Version 0.13.2 (released 2025-04-29)
+
+- Ensure compatibility with upcoming Julia 1.12
+- Several "behind the scenes" changes that should be invisible for most users
 
 ## Version 0.13.1 (released 2025-02-07)
 

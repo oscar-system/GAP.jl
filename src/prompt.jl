@@ -1,3 +1,14 @@
+#############################################################################
+##
+##  This file is part of GAP.jl, a bidirectional interface between Julia and
+##  the GAP computer algebra system.
+##
+##  Copyright of GAP.jl and its parts belongs to its developers.
+##  Please refer to its README.md file for details.
+##
+##  SPDX-License-Identifier: LGPL-3.0-or-later
+##
+
 """
     prompt()
 
@@ -15,10 +26,10 @@ function prompt()
     # (we pass NULL as signal handler; strictly speaking, we should be passing `SIG_DFL`
     # but it's not clearly how to access this from here, and anyway on the list
     # of platforms we support, it is NULL)
-    old_sigint = ccall(:signal, Ptr{Cvoid}, (Cint, Ptr{Cvoid}), Base.SIGINT, C_NULL)
+    old_sigint = @ccall signal(Base.SIGINT::Cint, C_NULL::Ptr{Cvoid})::Ptr{Cvoid} 
 
     # install GAP's SIGINT handler
-    ccall((:SyInstallAnswerIntr, libgap), Cvoid, ())
+    @ccall libgap.SyInstallAnswerIntr()::Cvoid
 
     # restore GAP's error output
     disable_error_handler[] = true
@@ -34,7 +45,7 @@ function prompt()
     Globals.BreakOnError = false
 
     # restore signal handler
-    ccall(:signal, Ptr{Cvoid}, (Cint, Ptr{Cvoid}), Base.SIGINT, old_sigint)
+    @ccall signal(Base.SIGINT::Cint, old_sigint::Ptr{Cvoid})::Ptr{Cvoid}
 
     # restore GAP.jl error handler
     disable_error_handler[] = false
@@ -45,14 +56,14 @@ end
 function run_session()
 
     # Read the files from the GAP command line.
-    ccall((:Call0ArgsInNewReader, GAP_jll.libgap), Cvoid, (Any,), Globals.GAPInfo.LoadInitFiles_GAP_JL)
+    @ccall libgap.Call0ArgsInNewReader(Globals.GAPInfo.LoadInitFiles_GAP_JL::Any)::Cvoid
 
     # GAP.jl forces the norepl option, which means that init.g never
     # starts a GAP session; we now run one "manually". Note that this
     # may throw a "GAP exception", which we need to catch; thus we
     # use Call0ArgsInNewReader to perform the actual call.
     if !Globals.GAPInfo.CommandLineOptions_original.norepl
-        ccall((:Call0ArgsInNewReader, GAP_jll.libgap), Cvoid, (Any,), Globals.SESSION)
+        @ccall libgap.Call0ArgsInNewReader(Globals.SESSION::Any)::Cvoid
     end
 
     # Reset the GAP kernel variable `UserHasQUIT` so that GAP's exit handlers
@@ -64,7 +75,7 @@ function run_session()
     # ends up doing nothing as a side effect of `UserHasQUIT` being non-zero
     # (it aborts after its first call to a function, which happens to be
     # `GetBottomLVars()`).
-    ccall((:ResetUserHasQUIT, JuliaInterface_path()), Cvoid, ())
+    @ccall JuliaInterface_path().ResetUserHasQUIT()::Cvoid
 
     # Finally exit
     return exit_code()

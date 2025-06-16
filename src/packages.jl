@@ -1,3 +1,14 @@
+#############################################################################
+##
+##  This file is part of GAP.jl, a bidirectional interface between Julia and
+##  the GAP computer algebra system.
+##
+##  Copyright of GAP.jl and its parts belongs to its developers.
+##  Please refer to its README.md file for details.
+##
+##  SPDX-License-Identifier: LGPL-3.0-or-later
+##
+
 ## dealing with GAP packages
 module Packages
 
@@ -19,56 +30,47 @@ function __init__()
 end
 
 function init_packagemanager()
-#TODO:
-# As soon as GAP.jl can rely on a good enough version of PackageManager
-# we need not replace `PKGMAN_DownloadURL` anymore.
-# (And the function should be renamed.)
     res = load("PackageManager")
     @assert res
 
     global DOWNLOAD_HELPER[] = Downloads.Downloader(; grace=0.1)
 
+    res = load("utils", "0.77")  # a version that contains `Download`
+    @assert res
+    @assert hasproperty(Globals, :Download_Methods)
+
     # overwrite PKGMAN_DownloadURL
-    replace_global!(:PKGMAN_DownloadURL, function(url)
-      try
-        buffer = Downloads.download(String(url), IOBuffer(), downloader=DOWNLOAD_HELPER[])
-        return GapObj(Dict{Symbol, Any}(:success => true, :result => String(take!(buffer))), recursive=true)
-      catch
-        return GapObj(Dict{Symbol, Any}(:success => false), recursive=true)
-      end
-    end)
+    replace_global!(:PKGMAN_DownloadURL, Globals.Download)
 
     # Install a method (based on Julia's Downloads package) as the first choice
     # for the `Download` function from GAP's utils package,
     # in order to make this function independent of the availability of some
     # external program that is not guaranteed by an explicit dependency.
-    res = load("utils")
-    @assert res
-    if hasproperty(Globals, :Download_Methods)
-      # provide a Julia function as a `Download` method
-      r = Dict{Symbol, Any}(
-           :name => "via Julia's Downloads.download",
-           :isAvailable => Globals.ReturnTrue,
-           :download => function(url, opt)
-             try
-               if hasproperty(opt, :target)
-                 Downloads.download(String(url), String(opt.target), downloader=DOWNLOAD_HELPER[])
-                 return GapObj(Dict{Symbol, Any}(:success => true), recursive=true)
-               else
-                 buffer = Downloads.download(String(url), IOBuffer(), downloader=DOWNLOAD_HELPER[])
-                 return GapObj(Dict{Symbol, Any}(:success => true, :result => String(take!(buffer))), recursive=true)
-               end
-             catch e
-               return GapObj(Dict{Symbol, Any}(:success => false,
-                                               :error => GapObj(string(e))),
-                             recursive=true)
-             end
-           end)
+    r = Dict{Symbol, Any}(
+         :name => "via Julia's Downloads.download",
+         :isAvailable => Globals.ReturnTrue,
+         :download => function(url, opt)
+            try
+              timeout = hasproperty(opt, :maxTime) ? Real(opt.maxTime) : Inf
+              if hasproperty(opt, :target)
+                Downloads.download(String(url), String(opt.target);
+                  downloader=DOWNLOAD_HELPER[], timeout=timeout)
+                return GapObj(Dict{Symbol, Any}(:success => true), recursive=true)
+              else
+                buffer = Downloads.download(String(url), IOBuffer();
+                  downloader=DOWNLOAD_HELPER[], timeout=timeout)
+                return GapObj(Dict{Symbol, Any}(:success => true, :result => String(take!(buffer))), recursive=true)
+              end
+            catch e
+              return GapObj(Dict{Symbol, Any}(:success => false,
+                                              :error => GapObj(string(e))),
+                            recursive=true)
+            end
+          end)
 
-      # put the new method in the first position
-      meths = Globals.Download_Methods
-      Wrappers.Add(meths, GapObj(r, recursive=true), 1)
-    end
+    # Put the new method in the first position.
+    meths = Globals.Download_Methods
+    Wrappers.Add(meths, GapObj(r, recursive=true), 1)
 
     # monkey patch PackageManager so that we can disable removal of
     # package directories for debugging purposes

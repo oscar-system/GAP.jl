@@ -1,18 +1,20 @@
+#############################################################################
+##
+##  This file is part of GAP.jl, a bidirectional interface between Julia and
+##  the GAP computer algebra system.
+##
+##  Copyright of GAP.jl and its parts belongs to its developers.
+##  Please refer to its README.md file for details.
+##
+##  SPDX-License-Identifier: LGPL-3.0-or-later
+##
+
 if use_jl_reinit_foreign_type()
-    const GapObj = ccall((:GAP_DeclareGapObj, libgap),
-                            Any,
-                            (Symbol, Module, Any),
-                            :GapObj, GAP, Any)
+    const GapObj = @ccall libgap.GAP_DeclareGapObj(:GapObj::Symbol, GAP::Module, Any::Any)::Any
 
-    const SmallBag = ccall((:GAP_DeclareBag, libgap),
-                            Any,
-                            (Symbol, Module, Any, Cint),
-                            :SmallBag, GAP, Any, 0)
+    const SmallBag = @ccall libgap.GAP_DeclareBag(:SmallBag::Symbol, GAP::Module, Any::Any, 0::Cint)::Any
 
-    const LargeBag = ccall((:GAP_DeclareBag, libgap),
-                            Any,
-                            (Symbol, Module, Any, Cint),
-                            :LargeBag, GAP, Any, 1)
+    const LargeBag = @ccall libgap.GAP_DeclareBag(:LargeBag::Symbol, GAP::Module, Any::Any, 1::Cint)::Any
 
 else
 

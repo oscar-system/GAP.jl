@@ -1,3 +1,14 @@
+#############################################################################
+##
+##  This file is part of GAP.jl, a bidirectional interface between Julia and
+##  the GAP computer algebra system.
+##
+##  Copyright of GAP.jl and its parts belongs to its developers.
+##  Please refer to its README.md file for details.
+##
+##  SPDX-License-Identifier: LGPL-3.0-or-later
+##
+
 # This file is based on the file `contrib/julia-config.jl` which is a
 # part of Julia. License is MIT: https://julialang.org/license
 
@@ -9,7 +20,7 @@ function shell_escape(str)
 end
 
 function libDir()
-    return if ccall(:jl_is_debugbuild, Cint, ()) != 0
+    return if (@ccall jl_is_debugbuild()::Cint) != 0
         if Base.DARWIN_FRAMEWORK
             joinpath(dirname(abspath(Libdl.dlpath(Base.DARWIN_FRAMEWORK_NAME * "_debug"))),"lib")
         else
@@ -45,7 +56,7 @@ function ldflags()
 end
 
 function ldlibs()
-    libname = if ccall(:jl_is_debugbuild, Cint, ()) != 0
+    libname = if (@ccall jl_is_debugbuild()::Cint) != 0
         "julia-debug"
     else
         "julia"

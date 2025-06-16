@@ -1,3 +1,14 @@
+#############################################################################
+##
+##  This file is part of GAP.jl, a bidirectional interface between Julia and
+##  the GAP computer algebra system.
+##
+##  Copyright of GAP.jl and its parts belongs to its developers.
+##  Please refer to its README.md file for details.
+##
+##  SPDX-License-Identifier: LGPL-3.0-or-later
+##
+
 # Helper for replacing a GAP global variable or function by a new value.
 # The original value is retained under the name `_ORIG_***`
 BIND_GLOBAL("ReplaceBinding", function(name, val)
@@ -22,7 +33,7 @@ end);
     # early enough for being required by other GAP packages,
     # and such that it is available when user files get read
     # via the GAP command line.
-    deps := [ [ "JuliaInterface", ">=0.13.1" ] ];
+    deps := [ [ "JuliaInterface", ">=0.13.4" ] ];
     if not IsBound(GAPInfo.KernelInfo.ENVIRONMENT.GAP_BARE_DEPS) then
         APPEND_LIST_INTR( deps, GAPInfo.Dependencies.NeededOtherPackages );
     fi;

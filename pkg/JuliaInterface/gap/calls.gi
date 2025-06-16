@@ -1,12 +1,17 @@
 #############################################################################
 ##
-##  JuliaInterface package
+##  This file is part of GAP.jl, a bidirectional interface between Julia and
+##  the GAP computer algebra system.
 ##
-#############################################################################
+##  Copyright of GAP.jl and its parts belongs to its developers.
+##  Please refer to its README.md file for details.
+##
+##  SPDX-License-Identifier: LGPL-3.0-or-later
+##
 
-BindGlobal("_JL_Vector_Any", JuliaEvalString("Vector{Any}"));
+BindGlobal("_JL_Vector_Any", JuliaType( Julia.Vector, [ Julia.Any ] ));
 
-BindGlobal("_JL_Dict_Any", JuliaEvalString("Dict{Symbol,Any}"));
+BindGlobal("_JL_Dict_Any", JuliaType( Julia.Dict, [ Julia.Symbol, Julia.Any ] ));
 
 ##
 ##  We want to use &GAP's function call syntax also for certain Julia objects
