@@ -14,6 +14,7 @@
 ##  The examples use (mainly) the Singular objects and the Julia functions,
 ##  not GAP wrappers.
 ##
+#@local R,vecstr,indetnames,Rinfo,x,f,g,I1,I2,I,gbasis,M,J,r,J1,indets,p
 gap> START_TEST( "singular_blog.tst" );
 
 ##  Load the package.

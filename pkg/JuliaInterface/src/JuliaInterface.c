@@ -33,9 +33,6 @@ static Obj  TheTypeOfJuliaModules;
 static Obj  TheTypeJuliaObject;
 static UInt T_JULIA_OBJ;
 
-Obj JULIAINTERFACE_IsJuliaWrapper;
-Obj JULIAINTERFACE_JuliaPointer;
-
 void handle_jl_exception(void)
 {
     jl_call2(JULIA_FUNC_showerror, JULIA_ERROR_IOBuffer,
@@ -320,9 +317,6 @@ static Int InitKernel(StructInitInfo * module)
     // import mptr type from GAP, by getting the Julia type of any GAP object
     gap_datatype_mptr = (jl_datatype_t *)jl_typeof(True);
     GAP_ASSERT(gap_datatype_mptr);
-
-    ImportFuncFromLibrary("IsJuliaWrapper", &JULIAINTERFACE_IsJuliaWrapper);
-    ImportFuncFromLibrary("JuliaPointer", &JULIAINTERFACE_JuliaPointer);
 
     // return success
     return 0;

@@ -28,7 +28,7 @@ JuliaImportPackage( "Singular" );
 ##
 ##  Declare filters for the wrapped Julia objects.
 ##
-DeclareCategory( "IsSingularObject", IsJuliaWrapper );
+DeclareCategory( "IsSingularObject", IsObject );
 
 DeclareCategoryCollections( "IsSingularObject" );
 DeclareCategoryCollections( "IsSingularObjectCollection" );

@@ -8,6 +8,7 @@
 ##
 ##  SPDX-License-Identifier: LGPL-3.0-or-later
 ##
+#@local r,c,R,indets,x,y,f,g
 gap> START_TEST( "singular.tst" );
 
 ##
@@ -26,9 +27,7 @@ gap> Print( indets, "\n" );
 [ x, y ]
 gap> List( indets, String );
 [ "x", "y" ]
-gap> Unbind( x );  Unbind( y ); 
-gap> AssignGeneratorVariables( R ); 
-#I  Assigned the global variables [ x, y ]
+gap> x:= indets[1];;  y:= indets[2];;
 gap> IsSingularPolynomial( x );
 true
 gap> x;  y;

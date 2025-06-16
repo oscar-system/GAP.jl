@@ -8,6 +8,7 @@
 ##
 ##  SPDX-License-Identifier: LGPL-3.0-or-later
 ##
+#@local x,f,c,z,o,a,v,nv,mat,nmat,sum,tr,det,no,R,pol,npol,indets,y
 gap> START_TEST( "numfield.tst" );
 
 # matrix over ext. field

@@ -8,6 +8,8 @@
 ##
 ##  SPDX-License-Identifier: LGPL-3.0-or-later
 ##
+#@local N,N_p1,N_m1,N_squared,N_t2,zero,one,data,TestBinOp,l,m,i,foo,G,rs
+#@local state,res1,res2,res3,res4,rs2,state2,rs3,state3
 gap> START_TEST( "adapter.tst" );
 
 #

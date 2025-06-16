@@ -32,7 +32,7 @@
 
     @test test_gap_help("?determinant")
     @test test_gap_help("?PermList")
-    @test test_gap_help("?IsJuliaWrapper")
+    @test test_gap_help("?IsJuliaObject")
 
     @test test_gap_help("books")
     @test test_gap_help("tut:chapters")

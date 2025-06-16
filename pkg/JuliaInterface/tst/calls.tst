@@ -8,6 +8,8 @@
 ##
 ##  SPDX-License-Identifier: LGPL-3.0-or-later
 ##
+#@local f,f0,f1,f2,f3,f4,f5,f6,f7,fw,f0w,f1w,f2w,f3w,f4w,f5w,f6w,f7w
+#@local g0,g1,g2,g3,g4,g5,g6,g7,h0,h1,h2,h3,h4,h5,h6
 gap> START_TEST( "calls.tst" );
 
 #

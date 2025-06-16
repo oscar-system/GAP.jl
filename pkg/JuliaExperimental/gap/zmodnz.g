@@ -86,6 +86,9 @@ InstallMethod( ContextGAPNemo,
       end,
 
       ElementJuliaToGAP:= function( C, obj )
+        if HasJuliaPointer( obj ) then
+          obj:= JuliaPointer( obj );
+        fi;
         return JuliaToGAP( IsInt, Julia.Base.getfield( obj,
                    Julia.Symbol( "data" ) ) ) * One( C!.GAPDomain );
 #T Deal with the case of ZZRingElem!
@@ -111,6 +114,9 @@ InstallMethod( ContextGAPNemo,
       end,
 
       VectorJuliaToGAP:= function( C, mat )
+        if HasJuliaPointer( mat ) then
+          mat:= JuliaPointer( mat );
+        fi;
         return GAPMatrix_fmpz_mat( Julia.Nemo.lift( mat ) )[1]
                * One( C!.GAPDomain );
       end,
@@ -136,6 +142,9 @@ InstallMethod( ContextGAPNemo,
       end,
 
       MatrixJuliaToGAP:= function( C, mat )
+        if HasJuliaPointer( mat ) then
+          mat:= JuliaPointer( mat );
+        fi;
         return GAPMatrix_fmpz_mat( Julia.Nemo.lift( mat ) )
                * One( C!.GAPDomain );
       end,

@@ -158,6 +158,9 @@ BindGlobal( "GAPDescriptionOfNemoPolynomial", function( C, pol )
     local R, info, FC, n, RC, coeffs, monoms;
 
     R:= C!.GAPDomain;
+    if HasJuliaPointer( pol ) then
+      pol:= JuliaPointer( pol );
+    fi;
 
     if IsUnivariatePolynomialRing( R ) then
       info:= Julia.GAPNemoExperimental.CoefficientsOfUnivarateNemoPolynomial(
