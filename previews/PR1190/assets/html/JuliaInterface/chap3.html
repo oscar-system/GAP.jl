@@ -351,17 +351,17 @@
 <div class="example"><pre>
 <span class="GAPprompt">gap&gt;</span> <span class="GAPinput">GAPToJulia( 1 );</span>
 1
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">GAPToJulia( JuliaEvalString( "Rational{Int64}" ), 1 );</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">GAPToJulia( JuliaType( Julia.Rational, [ Julia.Int64 ] ), 1 );</span>
 &lt;Julia: 1//1&gt;
 <span class="GAPprompt">gap&gt;</span> <span class="GAPinput">l:= [ 1, 3, 4 ];;</span>
 <span class="GAPprompt">gap&gt;</span> <span class="GAPinput">GAPToJulia( l );</span>
 &lt;Julia: Any[1, 3, 4]&gt;
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">GAPToJulia( JuliaEvalString( "Vector{Int}" ), l );</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">GAPToJulia( JuliaType( Julia.Vector, [ Julia.Int ] ), l );</span>
 &lt;Julia: [1, 3, 4]&gt;
 <span class="GAPprompt">gap&gt;</span> <span class="GAPinput">m:= [ [ 1, 2 ], [ 3, 4 ] ];;</span>
 <span class="GAPprompt">gap&gt;</span> <span class="GAPinput">GAPToJulia( m );</span>
 &lt;Julia: Any[Any[1, 2], Any[3, 4]]&gt;
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">GAPToJulia( JuliaEvalString( "Matrix{Int}" ), m );</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">GAPToJulia( JuliaType( Julia.Matrix, [ Julia.Int ] ), m );</span>
 &lt;Julia: [1 2; 3 4]&gt;
 <span class="GAPprompt">gap&gt;</span> <span class="GAPinput">r:= rec( a:= 1, b:= [ 1, 2, 3 ] );;</span>
 <span class="GAPprompt">gap&gt;</span> <span class="GAPinput">GAPToJulia( r );</span>
