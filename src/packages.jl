@@ -7,7 +7,7 @@ import Scratch: @get_scratch!
 import ...GAP: disable_error_handler, Globals, GapObj, replace_global!, RNamObj, Wrappers
 import ...GAP: gap_pkg_jlls, Compat, GAP_VERSION, GAP_jll, GAP_lib_jll
 
-gap_packages_rootdir() = @get_scratch!("v$(GAP_VERSION.major).$(GAP_VERSION.minor)")
+gap_packages_rootdir() = @get_scratch!("gap_packagedir_v$(GAP_VERSION.major).$(GAP_VERSION.minor)")
 
 const DEFAULT_PKGDIR = Ref(joinpath(gap_packages_rootdir(), "pkg"))
 const DOWNLOAD_HELPER = Ref{Downloads.Downloader}()
