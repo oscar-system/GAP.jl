@@ -34,8 +34,9 @@
 </span>
 <div class="ContSSBlock">
 <span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2.html#X801B61B17901D5A1">2.2-1 JuliaEvalString</a></span>
-<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2.html#X7D5864EE7A23AD0A">2.2-2 JuliaIncludeFile</a></span>
-<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2.html#X870606747AC280A1">2.2-3 JuliaImportPackage</a></span>
+<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2.html#X78DD88357C579E7C">2.2-2 JuliaType</a></span>
+<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2.html#X7D5864EE7A23AD0A">2.2-3 JuliaIncludeFile</a></span>
+<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2.html#X870606747AC280A1">2.2-4 JuliaImportPackage</a></span>
 </div></div>
 <div class="ContSect"><span class="tocline"><span class="nocss">&nbsp;</span><a href="chap2.html#X86C0CFC88175498D">2.3 <span class="Heading">Access to <strong class="pkg">Julia</strong> objects</span></a>
 </span>
@@ -135,8 +136,8 @@ true
 &lt;Julia module GAP&gt;
 <span class="GAPprompt">gap&gt;</span> <span class="GAPinput">IsJuliaModule( GAP_jl );</span>
 true
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">GAP_jl.gap_to_julia;</span>
-&lt;Julia: gap_to_julia&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">GAP_jl.prompt;</span>
+&lt;Julia: prompt&gt;
 </pre></div>
 
 <p><a id="X87856ABF7C0D3757" name="X87856ABF7C0D3757"></a></p>
@@ -158,9 +159,28 @@ true
 4
 </pre></div>
 
+<p><a id="X78DD88357C579E7C" name="X78DD88357C579E7C"></a></p>
+
+<h5>2.2-2 JuliaType</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; JuliaType</code>( <var class="Arg">T</var>, <var class="Arg">parameters</var> )</td><td class="tdright">(&nbsp;function&nbsp;)</td></tr></table></div>
+<p>creates the parametrized <strong class="pkg">Julia</strong> type <var class="Arg">T</var><code class="code">{para1, para2, ...}</code>, where <var class="Arg">T</var> is a <strong class="pkg">Julia</strong> type and <var class="Arg">parameters</var> is a list of <strong class="pkg">Julia</strong> types which are its intended type parameters.</p>
+
+
+<div class="example"><pre>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">JuliaType( Julia.Vector, [ Julia.Int ] );</span>
+&lt;Julia: Vector{Int64}&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">JuliaType( Julia.Tuple, [ Julia.Int, Julia.Int ] );</span>
+&lt;Julia: Tuple{Int64, Int64}&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">JuliaType( Julia.Tuple,</span>
+<span class="GAPprompt">&gt;</span> <span class="GAPinput">     [ JuliaType( Julia.Vector, [ Julia.Int ] ),</span>
+<span class="GAPprompt">&gt;</span> <span class="GAPinput">       JuliaType( Julia.Matrix, [ Julia.Int ] ) ] );</span>
+&lt;Julia: Tuple{Vector{Int64}, Matrix{Int64}}&gt;
+</pre></div>
+
 <p><a id="X7D5864EE7A23AD0A" name="X7D5864EE7A23AD0A"></a></p>
 
-<h5>2.2-2 JuliaIncludeFile</h5>
+<h5>2.2-3 JuliaIncludeFile</h5>
 
 <div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; JuliaIncludeFile</code>( <var class="Arg">filename</var>[, <var class="Arg">module_name</var>] )</td><td class="tdright">(&nbsp;function&nbsp;)</td></tr></table></div>
 <p>Returns: nothing.</p>
@@ -169,7 +189,7 @@ true
 
 <p><a id="X870606747AC280A1" name="X870606747AC280A1"></a></p>
 
-<h5>2.2-3 JuliaImportPackage</h5>
+<h5>2.2-4 JuliaImportPackage</h5>
 
 <div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; JuliaImportPackage</code>( <var class="Arg">pkgname</var> )</td><td class="tdright">(&nbsp;function&nbsp;)</td></tr></table></div>
 <p>Returns: <code class="keyw">true</code> or <code class="keyw">false</code>.</p>
@@ -182,7 +202,7 @@ true
 
 <p>Apparently <code class="code">libjulia</code> throws an error when trying to compile the package, which happens when some files from the package have been modified since compilation.</p>
 
-<p>Thus <strong class="pkg">GAP</strong> has to check whether the <strong class="pkg">Julia</strong> package has been loaded successfully, and can then safely load and execute code that relies on this <strong class="pkg">Julia</strong> package. In particular, we cannot just put the necessary <code class="code">import</code> statements into the relevant <code class="file">.jl</code> files, and then load these files with <code class="func">JuliaIncludeFile</code> (<a href="chap2.html#X7D5864EE7A23AD0A"><span class="RefLink">2.2-2</span></a>).</p>
+<p>Thus <strong class="pkg">GAP</strong> has to check whether the <strong class="pkg">Julia</strong> package has been loaded successfully, and can then safely load and execute code that relies on this <strong class="pkg">Julia</strong> package. In particular, we cannot just put the necessary <code class="code">import</code> statements into the relevant <code class="file">.jl</code> files, and then load these files with <code class="func">JuliaIncludeFile</code> (<a href="chap2.html#X7D5864EE7A23AD0A"><span class="RefLink">2.2-3</span></a>).</p>
 
 <p><a id="X86C0CFC88175498D" name="X86C0CFC88175498D"></a></p>
 
@@ -249,7 +269,8 @@ false
 <span class="GAPprompt">gap&gt;</span> <span class="GAPinput">res.value{ [ 1 .. Position( res.value, '(' )-1 ] };</span>
 "DomainError"
 <span class="GAPprompt">gap&gt;</span> <span class="GAPinput">inv:= Julia.inv;;</span>
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">m:= GAPToJulia( JuliaEvalString( "Matrix{Int}" ), [[1,2],[2,4]] );</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">m:= GAPToJulia( JuliaType( Julia.Matrix, [ Julia.Int ] ),</span>
+<span class="GAPprompt">&gt;</span> <span class="GAPinput">                   [ [ 1, 2 ], [ 2, 4 ] ] );</span>
 &lt;Julia: [1 2; 2 4]&gt;
 <span class="GAPprompt">gap&gt;</span> <span class="GAPinput">res:= CallJuliaFunctionWithCatch( inv, [ m ] );;</span>
 <span class="GAPprompt">gap&gt;</span> <span class="GAPinput">res.ok;</span>
@@ -286,8 +307,8 @@ false
 <span class="GAPprompt">gap&gt;</span> <span class="GAPinput">CallJuliaFunctionWithKeywordArguments(</span>
 <span class="GAPprompt">&gt;</span> <span class="GAPinput">       Julia.Base.range, [ 2 ], rec( length:= 5, step:= 2 ) );</span>
 &lt;Julia: 2:2:10&gt;
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">m:= GAPToJulia( JuliaEvalString( "Matrix{Int}" ),</span>
-<span class="GAPprompt">&gt;</span> <span class="GAPinput">           [ [ 1, 2 ], [ 3, 4 ] ] );</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">m:= GAPToJulia( JuliaType( Julia.Matrix, [ Julia.Int ] ),</span>
+<span class="GAPprompt">&gt;</span> <span class="GAPinput">                   [ [ 1, 2 ], [ 3, 4 ] ] );</span>
 &lt;Julia: [1 2; 3 4]&gt;
 <span class="GAPprompt">gap&gt;</span> <span class="GAPinput">CallJuliaFunctionWithKeywordArguments(</span>
 <span class="GAPprompt">&gt;</span> <span class="GAPinput">       Julia.Base.reverse, [ m ], rec( dims:= 1 ) );</span>
@@ -295,7 +316,7 @@ false
 <span class="GAPprompt">gap&gt;</span> <span class="GAPinput">CallJuliaFunctionWithKeywordArguments(</span>
 <span class="GAPprompt">&gt;</span> <span class="GAPinput">       Julia.Base.reverse, [ m ], rec( dims:= 2 ) );</span>
 &lt;Julia: [2 1; 4 3]&gt;
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">tuptyp:= JuliaEvalString( "Tuple{Int,Int}" );;</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">tuptyp:= JuliaType( Julia.Tuple, [ Julia.Int, Julia.Int ]  );;</span>
 <span class="GAPprompt">gap&gt;</span> <span class="GAPinput">t1:= GAPToJulia( tuptyp, [ 2, 1 ] );</span>
 &lt;Julia: (2, 1)&gt;
 <span class="GAPprompt">gap&gt;</span> <span class="GAPinput">t2:= GAPToJulia( tuptyp, [ 1, 3 ] );</span>
@@ -386,7 +407,7 @@ false
 </ul>
 
 <div class="example"><pre>
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">m:= GAPToJulia( JuliaEvalString( "Matrix{Int}" ),</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">m:= GAPToJulia( JuliaType( Julia.Matrix, [ Julia.Int ] ),</span>
 <span class="GAPprompt">&gt;</span> <span class="GAPinput">           [ [ 1, 2 ], [ 3, 4 ] ] );</span>
 &lt;Julia: [1 2; 3 4]&gt;
 <span class="GAPprompt">gap&gt;</span> <span class="GAPinput">m[1,2];</span>
