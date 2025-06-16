@@ -177,7 +177,7 @@ InstallMethod( ContextGAPSingular,
     if Length( indetnames ) = 1 then
       names:= GAPToJulia( indetnames[1] );
     else
-      names:= JuliaEvalString( "Vector{String}" )( GAPToJulia( indetnames ) );
+      names:= JuliaType( Julia.Vector, [ Julia.String ] )( GAPToJulia( indetnames ) );
     fi;
 
     # See '.julia/packages/Singular/.../src/Singular.jl'.

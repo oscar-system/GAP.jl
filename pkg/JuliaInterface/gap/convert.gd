@@ -491,17 +491,17 @@ DeclareConstructor("JuliaToGAP", [IsObject, IsObject, IsBool]);
 #!<Example>
 #!gap> GAPToJulia( 1 );
 #!1
-#!gap> GAPToJulia( JuliaEvalString( "Rational{Int64}" ), 1 );
+#!gap> GAPToJulia( JuliaType( Julia.Rational, [ Julia.Int64 ] ), 1 );
 #!&lt;Julia: 1//1>
 #!gap> l:= [ 1, 3, 4 ];;
 #!gap> GAPToJulia( l );
 #!&lt;Julia: Any[1, 3, 4]>
-#!gap> GAPToJulia( JuliaEvalString( "Vector{Int}" ), l );
+#!gap> GAPToJulia( JuliaType( Julia.Vector, [ Julia.Int ] ), l );
 #!&lt;Julia: [1, 3, 4]>
 #!gap> m:= [ [ 1, 2 ], [ 3, 4 ] ];;
 #!gap> GAPToJulia( m );
 #!&lt;Julia: Any[Any[1, 2], Any[3, 4]]>
-#!gap> GAPToJulia( JuliaEvalString( "Matrix{Int}" ), m );
+#!gap> GAPToJulia( JuliaType( Julia.Matrix, [ Julia.Int ] ), m );
 #!&lt;Julia: [1 2; 3 4]>
 #!gap> r:= rec( a:= 1, b:= [ 1, 2, 3 ] );;
 #!gap> GAPToJulia( r );
@@ -566,7 +566,7 @@ DeclareGlobalFunction("GAPToJulia");
 #! gap> rs1:= RandomSource( IsRandomSourceJulia );
 #! <RandomSource in IsRandomSourceJulia>
 #! gap> rs2:= RandomSource( IsRandomSourceJulia,
-#! >                        Julia.GAP.Random.default_rng() );
+#! >                        GAP_jl.Random.default_rng() );
 #! <RandomSource in IsRandomSourceJulia>
 #! gap> repeat
 #! >   x:= Random( rs1, [ 1 .. 100 ] );
