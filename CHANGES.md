@@ -1,5 +1,11 @@
 # Changes in GAP.jl
 
+## Version 0.14.0-DEV (released 2025-MM-DD)
+
+- **Breaking:** Remove hack that made sure that in GAP accessing `Julia.GAP`
+  always returns the `GAP` package module, even when `GAP` was not loaded
+  directly by the user (e.g. if it was loaded indirectly from `Oscar`). To
+  access the `GAP` module reliably, use the GAP variable `GAP_jl` instead.
 - Add the GAP function `JuliaType`,
   for constructing parametrized Julia types in GAP
 
