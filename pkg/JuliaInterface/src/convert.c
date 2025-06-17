@@ -37,8 +37,7 @@ jl_value_t * julia_gap(Obj obj)
     if (obj == False) {
         return jl_false;
     }
-    jl_value_t * result = (jl_value_t *)obj;
-    return result;
+    return (jl_value_t *)obj;
 }
 
 // Turn a Julia object into a GAP object.

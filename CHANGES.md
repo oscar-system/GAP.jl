@@ -6,14 +6,15 @@
   always returns the `GAP` package module, even when `GAP` was not loaded
   directly by the user (e.g. if it was loaded indirectly from `Oscar`). To
   access the `GAP` module reliably, use the GAP variable `GAP_jl` instead.
-- Add the GAP function `JuliaType`,
-  for constructing parametrized Julia types in GAP
-- Remove the GAP filter `IsJuliaWrapper`.
+- **Breaking:** Remove the GAP filter `IsJuliaWrapper`
+  and its special treatment.
   Its purpose was to automatically replace a GAP object by its `JuliaPointer`
   value when accessing the GAP object from the Julia side.
   The main drawback was that it was virtually impossible to deal with such a
   GAP object on the Julia side.
   See <https://github.com/oscar-system/GAP.jl/issues/1193> for details.
+- Add the GAP function `JuliaType`,
+  for constructing parametrized Julia types in GAP
 
 ## Version 0.13.4 (released 2025-06-02)
 
