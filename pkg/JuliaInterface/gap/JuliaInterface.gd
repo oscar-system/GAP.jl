@@ -129,26 +129,9 @@ BindGlobal("TheTypeJuliaObject", NewType( JuliaObjectFamily, IsJuliaObject ));
 
 #! @Arguments obj
 #! @Description
-#!  If the component or positional object <A>obj</A> is in this filter
-#!  then calling a &Julia; function with <A>obj</A> as an argument
-#!  will not pass <A>obj</A> as an <C>GapObj</C>,
-#!  but instead its <Ref Attr="JuliaPointer" Label="for IsJuliaWrapper"/>
-#!  value is passed, which must be a &Julia; object.
-#!  This admits implementing high-level wrapper objects
-#!  for &Julia; objects that behave just like the &Julia; objects
-#!  when used as arguments in calls to &Julia; functions.
-#!
-#!  Objects in <Ref Filt="IsJuliaWrapper" Label="for IsObject"/>
-#!  should <E>not</E> be in the filter
-#!  <Ref Filt="IsJuliaObject" Label="for IsObject"/>.
-DeclareCategory( "IsJuliaWrapper", IsObject );
-
-#! @Arguments obj
-#! @Description
-#!  is an attribute for &GAP; objects in the filter
-#!  <Ref Filt="IsJuliaWrapper" Label="for IsObject"/>.
+#!  is an attribute for storing a &Julia; object in a &GAP; object.
 #!  The value must be a &Julia; object.
-DeclareAttribute( "JuliaPointer", IsJuliaWrapper );
+DeclareAttribute( "JuliaPointer", IsObject );
 
 #! @Arguments obj
 #! @Description
@@ -438,8 +421,6 @@ DeclareGlobalFunction( "CallJuliaFunctionWithKeywordArguments" );
 #!    <Ref Oper="CallFuncList" BookName="ref"/>,
 #!    delegating to &Julia;'s <C>func(args...)</C> syntax;
 #!    this yields the function call syntax in &GAP;,
-#!    it is installed also for objects in
-#!    <Ref Filt="IsJuliaWrapper" Label="for IsObject"/>,
 #!  </Item>
 #!  <Item>
 #!    access to and assignment of entries of arrays, via

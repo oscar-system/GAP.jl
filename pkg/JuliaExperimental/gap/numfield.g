@@ -202,6 +202,9 @@ InstallMethod( ContextGAPNemo,
       end,
 
       ElementJuliaToGAP:= function( C, obj )
+        if HasJuliaPointer( obj ) then
+          obj:= JuliaPointer( obj );
+        fi;
         return FmpzToGAP( Julia.Base.numerator( obj ) ) /
                FmpzToGAP( Julia.Base.denominator( obj ) );
       end,
@@ -382,7 +385,7 @@ InstallMethod( ContextGAPNemo,
           fi;
           obj:= GAPToNemo( FContext, obj );
           # This yields 'Nemo.QQMatrix', but we need 'Vector{Nemo.QQFieldElem}'.
-          obj:= Julia.GAPNumberFields.VectorToArray( obj );
+          obj:= Julia.GAPNumberFields.VectorToArray( JuliaPointer( obj ) );
           pol:= C!.JuliaDomainPointer( obj );
         else
           if IsPolynomial( obj ) then
@@ -390,10 +393,10 @@ InstallMethod( ContextGAPNemo,
           fi;
           len:= Length( obj );
           if len = 0 then
-            pol:= Julia.Base.zero( C!.JuliaDomain );
+            pol:= Julia.Base.zero( C!.JuliaDomainPointer );
           else
             coeffs:= GAPToNemo( FContext, obj{ [ 2, 4 .. len ] } );
-            coeffs:= Julia.GAPNumberFields.VectorToArray( coeffs );
+            coeffs:= Julia.GAPNumberFields.VectorToArray( JuliaPointer( coeffs ) );
             n:= Length( indets );
             monoms:= JuliaType( Julia.Vector, [ JuliaType( Julia.Vector, [ Julia.UInt ] ) ] )(
                          List( obj{ [ 1, 3 .. len-1 ] },
@@ -507,7 +510,7 @@ InstallMethod( ContextGAPNemo,
 
     # Create the Nemo ring.
     npol:= GAPToNemo( PContext, pol );
-    juliaRing:= Julia.Nemo.number_field( npol, name );
+    juliaRing:= Julia.Nemo.number_field( JuliaPointer( npol ), name );
 
     # Create the GAP wrappers.
     # Create a new family.
@@ -695,13 +698,13 @@ InstallMethod( PrintObj,
     end );
 
 InstallOtherMethod( Zero, [ "IsNemoObject" ], NEMO_RANK_SHIFT,
-    F -> NemoElement( F, Julia.Base.zero( Julia.Base.parent( F ) ) ) );
+    F -> NemoElement( F, Julia.Base.zero( Julia.Base.parent( JuliaPointer( F ) ) ) ) );
 
 InstallOtherMethod( One, [ "IsNemoObject" ], NEMO_RANK_SHIFT,
-    F -> NemoElement( F, Julia.Base.one( Julia.Base.parent( F ) ) ) );
+    F -> NemoElement( F, Julia.Base.one( Julia.Base.parent( JuliaPointer( F ) ) ) ) );
 
 InstallMethod( RootOfDefiningPolynomial, [ "IsNemoField" ],
-    F -> NemoElement( F, Julia.Nemo.gen( F ) ) );
+    F -> NemoElement( F, Julia.Nemo.gen( JuliaPointer( F ) ) ) );
 
 
 #############################################################################
@@ -714,59 +717,47 @@ InstallOtherMethod( ViewString, [ "IsNemoObject" ], NEMO_RANK_SHIFT,
     x -> Concatenation( "<", ViewString( JuliaPointer( x ) ), ">" ) );
 
 InstallOtherMethod( \=, [ "IsNemoObject", "IsNemoObject" ], NEMO_RANK_SHIFT,
-    Julia.Base.\=\= );
+    { x, y } -> Julia.Base.\=\=( JuliaPointer( x ), JuliaPointer( y ) ) );
 
 InstallOtherMethod( \+, [ "IsNemoObject", "IsNemoObject" ], NEMO_RANK_SHIFT,
-    function( x, y )
-      return NemoElement( x, Julia.Base.\+( x, y ) );
-    end );
+    { x, y } -> NemoElement( x, Julia.Base.\+( JuliaPointer( x ), JuliaPointer( y ) ) ) );
 
 #T TODO: Addition '<matrix> + <int>' is defined differently in Julia/Nemo,
 #T       the <int> is added just on the diagonal of the matrix!
 #T       How to deal with this incompatibility?
 InstallOtherMethod( \+, [ "IsNemoObject", "IsInt" ], NEMO_RANK_SHIFT,
-    function( x, y )
-      return NemoElement( x, Julia.Base.\+( x, y ) );
-    end );
+    { x, y } -> NemoElement( x, Julia.Base.\+( JuliaPointer( x ), y ) ) );
 
 InstallOtherMethod( AdditiveInverse, [ "IsNemoObject" ], NEMO_RANK_SHIFT,
-    x -> NemoElement( x, Julia.Base.\-( x ) ) );
+    x -> NemoElement( x, Julia.Base.\-( JuliaPointer( x ) ) ) );
 
 InstallOtherMethod( \-, [ "IsNemoObject", "IsNemoObject" ], NEMO_RANK_SHIFT,
-    function( x, y )
-      return NemoElement( x, Julia.Base.\-( x, y ) );
-    end );
+    { x, y } -> NemoElement( x, Julia.Base.\-( JuliaPointer( x ), JuliaPointer( y ) ) ) );
 
 InstallOtherMethod( \*, [ "IsNemoObject", "IsNemoObject" ], NEMO_RANK_SHIFT,
-    function( x, y )
-      return NemoElement( x, Julia.Base.\*( x, y ) );
-    end );
+    { x, y } -> NemoElement( x, Julia.Base.\*( JuliaPointer( x ), JuliaPointer( y ) ) ) );
 
 InstallOtherMethod( \/, [ "IsNemoObject", "IsNemoObject" ], NEMO_RANK_SHIFT,
-    function( x, y )
-      return NemoElement( x, Julia.Nemo.divexact( x, y ) );
-    end );
+    { x, y } -> NemoElement( x, Julia.Nemo.divexact( JuliaPointer( x ), JuliaPointer( y ) ) ) );
 
 InstallOtherMethod( \^, [ "IsNemoObject", "IsPosInt" ], NEMO_RANK_SHIFT,
-    function( x, n )
-      return NemoElement( x, Julia.Base.\^( x, n ) );
-    end );
+    { x, n } -> NemoElement( x, Julia.Base.\^( JuliaPointer( x ), n ) ) );
 
 InstallOtherMethod( InverseMutable, [ "IsNemoObject" ], NEMO_RANK_SHIFT,
-    x -> NemoElement( x, Julia.Base.inv( x ) ) );
+    x -> NemoElement( x, Julia.Base.inv( JuliaPointer( x ) ) ) );
 
 
 InstallMethod( NumberRows,
     [ "IsNemoMatrixObj" ],
-    Julia.Nemo.nrows );
+    x -> Julia.Nemo.nrows( JuliaPointer( x ) ) );
 
 InstallMethod( NumberColumns,
     [ "IsNemoMatrixObj" ],
-    Julia.Nemo.ncols );
+    x -> Julia.Nemo.ncols( JuliaPointer( x ) ) );
 
 InstallMethod( RankMat,
     [ "IsNemoMatrixObj" ],
-    Julia.Nemo.rank );
+    x -> Julia.Nemo.rank( JuliaPointer( x ) ) );
 
 InstallMethod( MatElm,
     [ "IsNemoMatrixObj", "IsPosInt", "IsPosInt" ],
@@ -792,7 +783,7 @@ InstallMethod( \^,
     local C, power;
 
     C:= ContextGAPNemo( FamilyObj( nemomat ) );
-    power:= C!.MatrixWrapped( C, Julia.Base.\^( nemomat, n ) );
+    power:= C!.MatrixWrapped( C, Julia.Base.\^( JuliaPointer( nemomat ), n ) );
     SetNumberRows( power, NumberRows( nemomat ) );
     SetNumberColumns( power, NumberColumns( nemomat ) );
     return power;
@@ -801,7 +792,7 @@ InstallMethod( \^,
 
 InstallOtherMethod( IsZero,
     [ "IsNemoObject" ], NEMO_RANK_SHIFT,
-    Julia.Base.iszero );
+    x -> Julia.Base.iszero( JuliaPointer( x ) ) );
 
 InstallMethod( Characteristic,
     [ "IsNemoObject" ], NEMO_RANK_SHIFT,
@@ -810,7 +801,7 @@ InstallMethod( Characteristic,
     function( obj )
     local R;
 
-    R:= ContextGAPNemo( FamilyObj( obj ) )!.JuliaDomain;
+    R:= ContextGAPNemo( FamilyObj( obj ) )!.JuliaDomainPointer;
     if Julia.isa(R, Julia.Nemo.zzModRing) then
       # We need this for matrix groups over residue class rings.
       # Nemo does not support it.
@@ -831,7 +822,7 @@ InstallMethod( ZeroSameMutability,
     nr:= NumberRows( nemomat );
     nc:= NumberColumns( nemomat );
     zero:= C!.MatrixWrapped( C,
-               Julia.Nemo.zero_matrix( C!.JuliaDomain, nr, nc ) );
+               Julia.Nemo.zero_matrix( C!.JuliaDomainPointer, nr, nc ) );
     SetNumberRows( zero, nr );
     SetNumberColumns( zero, nc );
     return zero;
@@ -840,7 +831,7 @@ InstallMethod( ZeroSameMutability,
 
 InstallOtherMethod( IsOne,
     [ "IsNemoObject" ], NEMO_RANK_SHIFT,
-    Julia.Base.isone );
+    x -> Julia.Base.isone( JuliaPointer( x ) ) );
 
 InstallOtherMethod( OneSameMutability,
      [ "IsNemoMatrixObj" ],
@@ -854,7 +845,7 @@ InstallOtherMethod( OneSameMutability,
       Error( "<nemomat> is not square" );
     fi;
     one:= C!.MatrixWrapped( C,
-              Julia.Nemo.identity_matrix( C!.JuliaDomain, nr ) );
+              Julia.Nemo.identity_matrix( C!.JuliaDomainPointer, nr ) );
     SetNumberRows( one, nr );
     SetNumberColumns( one, nc );
     return one;
@@ -862,7 +853,7 @@ InstallOtherMethod( OneSameMutability,
 
 InstallOtherMethod( InverseMutable,
      [ "IsNemoMatrixObj" ], NEMO_RANK_SHIFT,
-#    x -> NemoElement( x, Julia.Base.inv( x ) ) );
+#    x -> NemoElement( x, Julia.Base.inv( JuliaPointer( x ) ) ) );
 #T Remove the code below as soon as it becomes obsolete.
 #T (The critical case is inversion of 'Nemo.zzModMatrix' objects.)
      function( x )
@@ -880,7 +871,7 @@ InstallOtherMethod( InverseMutable,
        # compute the reductions of the entries (numerators and denominators).
        modulus:= Julia.Nemo.ZZRingElem(
                      Size( ContextGAPNemo( FamilyObj( x ) )!.GAPDomain ) );
-       res:= Julia.Nemo.lift( x );
+       res:= Julia.Nemo.lift( ptr );
        m:= NumberRows( x );
 #T 'res:= Julia.Nemo.matrix( Julia.Nemo.QQ, m, m, res );' does not work
        s:= Julia.Nemo.matrix_space( Julia.Nemo.QQ, m, m );
@@ -908,7 +899,7 @@ InstallMethod( TraceMat,
     local C;
 
     C:= ContextGAPNemo( FamilyObj( nemomat ) );
-    return C!.ElementWrapped( C, Julia.Nemo.tr( nemomat ) );
+    return C!.ElementWrapped( C, Julia.Nemo.tr( JuliaPointer( nemomat ) ) );
     end );
 
 InstallOtherMethod( DeterminantMat,
@@ -917,7 +908,7 @@ InstallOtherMethod( DeterminantMat,
     local C;
 
     C:= ContextGAPNemo( FamilyObj( nemomat ) );
-    return C!.ElementWrapped( C, Julia.Nemo.det( nemomat ) );
+    return C!.ElementWrapped( C, Julia.Nemo.det( JuliaPointer( nemomat ) ) );
     end );
 
 
@@ -928,7 +919,7 @@ InstallMethod( ZeroMatrix,
 
     C:= ContextGAPNemo( FamilyObj( nemomat ) );
     zero:= C!.MatrixWrapped( C,
-               Julia.Nemo.zero_matrix( C!.JuliaDomain, m, n ) );
+               Julia.Nemo.zero_matrix( C!.JuliaDomainPointer, m, n ) );
     SetNumberRows( zero, m );
     SetNumberColumns( zero, n );
     return zero;
@@ -942,7 +933,7 @@ InstallTagBasedMethod( NewZeroMatrix,
 
     C:= ContextGAPNemo( R );
     zero:= C!.MatrixWrapped( C,
-               Julia.Nemo.zero_matrix( C!.JuliaDomain, m, n ) );
+               Julia.Nemo.zero_matrix( C!.JuliaDomainPointer, m, n ) );
     SetNumberRows( zero, m );
     SetNumberColumns( zero, n );
     return zero;
@@ -955,7 +946,7 @@ InstallMethod( IdentityMatrix,
 
     C:= ContextGAPNemo( FamilyObj( nemomat ) );
     id:= C!.MatrixWrapped( C,
-             Julia.Nemo.identity_matrix( C!.JuliaDomain, n ) );
+             Julia.Nemo.identity_matrix( C!.JuliaDomainPointer, n ) );
     SetNumberRows( id, n );
     SetNumberColumns( id, n );
     return id;
@@ -969,7 +960,7 @@ InstallTagBasedMethod( NewIdentityMatrix,
 
     C:= ContextGAPNemo( R );
     id:= C!.MatrixWrapped( C,
-             Julia.Nemo.identity_matrix( C!.JuliaDomain, n ) );
+             Julia.Nemo.identity_matrix( C!.JuliaDomainPointer, n ) );
     SetNumberRows( id, n );
     SetNumberColumns( id, n );
     return id;
@@ -983,7 +974,7 @@ InstallOtherMethod( CompanionMatrix,
 
     C:= ContextGAPNemo( FamilyObj( nemomat ) );
     return C!.MatrixWrapped( C,
-               Julia.GAPNemoExperimental.CompanionMatrix( nemopol ) );
+               Julia.GAPNemoExperimental.CompanionMatrix( JuliaPointer( nemopol ) ) );
     end );
 
 InstallMethod( TransposedMat,
@@ -992,7 +983,7 @@ InstallMethod( TransposedMat,
     local C;
 
     C:= ContextGAPNemo( FamilyObj( nemomat ) );
-    return C!.MatrixWrapped( C, Julia.Nemo.transpose( nemomat ) );
+    return C!.MatrixWrapped( C, Julia.Nemo.transpose( JuliaPointer( nemomat ) ) );
     end );
 
 InstallMethod( KroneckerProduct,
@@ -1002,8 +993,9 @@ InstallMethod( KroneckerProduct,
     local C;
 
     C:= ContextGAPNemo( FamilyObj( nemomat1 ) );
-    return C!.MatrixWrapped( C, Julia.Nemo.kronecker_product( nemomat1,
-                                                              nemomat2 ) );
+    return C!.MatrixWrapped( C, Julia.Nemo.kronecker_product(
+                                  JuliaPointer( nemomat1 ),
+                                  JuliaPointer( nemomat2 ) ) );
     end );
 
 # InstallMethod( Unfold,
@@ -1014,7 +1006,7 @@ InstallMethod( KroneckerProduct,
 # 
 #     C:= ContextGAPNemo( FamilyObj( nemomat ) );
 #     return C!.VectorWrapped( C,
-#                Julia.GAPNemoExperimental.unfoldedNemoMatrix( nemomat ) );
+#                Julia.GAPNemoExperimental.unfoldedNemoMatrix( JuliaPointer( nemomat ) ) );
 #     end );
 # 
 # InstallMethod( Fold,
@@ -1025,6 +1017,6 @@ InstallMethod( KroneckerProduct,
 # 
 #     C:= ContextGAPNemo( FamilyObj( nemovec ) );
 #     return C!.MatrixWrapped( C,
-#                Julia.GAPNemoExperimental.foldedNemoVector( nemovec, ncols ) );
+#                Julia.GAPNemoExperimental.foldedNemoVector( JuliaPointer( nemovec ), ncols ) );
 #     end );
 

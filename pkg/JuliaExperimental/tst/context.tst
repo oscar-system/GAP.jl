@@ -8,6 +8,7 @@
 ##
 ##  SPDX-License-Identifier: LGPL-3.0-or-later
 ##
+#@local R,c,x,gap_vec,vec,gap_mat,mat,gap_x,indets,gap_pol,pol,f,gap_elm,elm,a
 gap> START_TEST( "context.tst" );
 
 ##  call NewContextGAPNemo

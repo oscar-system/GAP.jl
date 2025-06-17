@@ -569,7 +569,7 @@ InstallOtherMethod( IdealByGenerators,
     # Create the Singular ideal.
     # Note that 'Singular.Ideal' does not expect a list of generators.
     juliaobj:= CallFuncList( Julia.Singular.Ideal,
-                   Concatenation( [ JuliaPointer( R ) ], gens ) );
+                   Concatenation( [ JuliaPointer( R ) ], List( gens, JuliaPointer ) ) );
 
     # Create the GAP domain.
     I:= ObjectifyWithAttributes( rec(),
@@ -649,10 +649,10 @@ BindGlobal( "GroebnerBasisIdeal", function( I )
 ##  methods for Singular's polynomials and polynomial rings
 ##
 InstallOtherMethod( Zero, [ "IsSingularObject" ], 200,
-    F -> SingularElement( F, Julia.Base.zero( F ) ) );
+    F -> SingularElement( F, Julia.Base.zero( JuliaPointer( F ) ) ) );
 
 InstallOtherMethod( One, [ "IsSingularObject" ], 200,
-    F -> SingularElement( F, Julia.Base.one( F ) ) );
+    F -> SingularElement( F, Julia.Base.one( JuliaPointer( F ) ) ) );
 
 #T avoid 'One' for an ideal?
 
@@ -674,7 +674,7 @@ SINGULAR_RANK_SHIFT:= 100;
 ##
 InstallOtherMethod( Degree,
     [ "IsSingularPolynomial" ],
-    Julia.Singular.degree );
+    x -> Julia.Singular.degree( JuliaPointer( x ) ) );
 
 
 InstallOtherMethod( ViewString,
@@ -683,82 +683,82 @@ InstallOtherMethod( ViewString,
 
 InstallOtherMethod( \=,
     [ "IsSingularObject", "IsSingularObject" ], SINGULAR_RANK_SHIFT,
-    Julia.Base.\=\= );
+    { x, y } -> Julia.Base.\=\=( JuliaPointer( x ), JuliaPointer( y ) ) );
 
 #T 'Singular.jl' does not define 'isless' methods for polynomials.
 # InstallOtherMethod( \<,
 #     [ "IsSingularObject", "IsSingularObject" ],
 #     function( x, y )
-#       return Julia.Base.isless( x, y ) );
+#       return Julia.Base.isless( JuliaPointer( x ), JuliaPointer( y ) ) );
 #     end );
 
 InstallOtherMethod( \+,
     [ "IsSingularObject", "IsSingularObject" ], SINGULAR_RANK_SHIFT,
     function( x, y )
-      return SingularElement( x, Julia.Base.\+( x, y ) );
+      return SingularElement( x, Julia.Base.\+( JuliaPointer( x ), JuliaPointer( y ) ) );
     end );
 
 InstallOtherMethod( \+,
     [ "IsSingularObject", "IsInt" ], SINGULAR_RANK_SHIFT,
     function( x, y )
-      return SingularElement( x, Julia.Base.\+( x, y ) );
+      return SingularElement( x, Julia.Base.\+( JuliaPointer( x ), y ) );
     end );
 
 InstallOtherMethod( \+,
     [ "IsInt", "IsSingularObject" ], SINGULAR_RANK_SHIFT,
     function( x, y )
-      return SingularElement( y, Julia.Base.\+( x, y ) );
+      return SingularElement( y, Julia.Base.\+( x, JuliaPointer( y ) ) );
     end );
 
 InstallOtherMethod( AdditiveInverse,
     [ "IsSingularObject" ], SINGULAR_RANK_SHIFT,
-    x -> SingularElement( x, Julia.Base.\-( x ) ) );
+    x -> SingularElement( x, Julia.Base.\-( JuliaPointer( x ) ) ) );
 
 InstallOtherMethod( \-,
     [ "IsSingularObject", "IsSingularObject" ], SINGULAR_RANK_SHIFT,
     function( x, y )
-      return SingularElement( x, Julia.Base.\-( x, y ) );
+      return SingularElement( x, Julia.Base.\-( JuliaPointer( x ), JuliaPointer( y ) ) );
     end );
 
 InstallOtherMethod( \-,
     [ "IsSingularObject", "IsInt" ], SINGULAR_RANK_SHIFT,
     function( x, y )
-      return SingularElement( x, Julia.Base.\-( x, y ) );
+      return SingularElement( x, Julia.Base.\-( JuliaPointer( x ), y ) );
     end );
 
 InstallOtherMethod( \-,
     [ "IsInt", "IsSingularObject" ], SINGULAR_RANK_SHIFT,
     function( x, y )
-      return SingularElement( y, Julia.Base.\-( x, y ) );
+      return SingularElement( y, Julia.Base.\-( x, JuliaPointer( y ) ) );
     end );
 
 InstallOtherMethod( \*,
     [ "IsSingularObject", "IsSingularObject" ], SINGULAR_RANK_SHIFT,
     function( x, y )
-      return SingularElement( x, Julia.Base.\*( x, y ) );
+      return SingularElement( x, Julia.Base.\*( JuliaPointer( x ), JuliaPointer( y ) ) );
     end );
 
 InstallOtherMethod( \*,
     [ "IsSingularObject", "IsInt" ], SINGULAR_RANK_SHIFT,
     function( x, y )
-      return SingularElement( x, Julia.Base.\*( x, y ) );
+      return SingularElement( x, Julia.Base.\*( JuliaPointer( x ), y ) );
     end );
 
 InstallOtherMethod( \*,
     [ "IsInt", "IsSingularObject" ], SINGULAR_RANK_SHIFT,
     function( x, y )
-      return SingularElement( y, Julia.Base.\*( x, y ) );
+      return SingularElement( y, Julia.Base.\*( x, JuliaPointer( y ) ) );
     end );
 
 InstallOtherMethod( \/,
     [ "IsSingularObject", "IsInt" ], SINGULAR_RANK_SHIFT,
     function( x, y )
-      return SingularElement( x, Julia.Singular.divexact( x, y ) );
+      return SingularElement( x, Julia.Singular.divexact( JuliaPointer( x ), y ) );
     end );
 
 InstallOtherMethod( \^,
     [ "IsSingularObject", "IsPosInt" ], SINGULAR_RANK_SHIFT,
     function( x, n )
-      return SingularElement( x, Julia.Base.\^( x, n ) );
+      return SingularElement( x, Julia.Base.\^( JuliaPointer( x ), n ) );
     end );
 

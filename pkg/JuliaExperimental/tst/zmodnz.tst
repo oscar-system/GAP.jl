@@ -8,6 +8,7 @@
 ##
 ##  SPDX-License-Identifier: LGPL-3.0-or-later
 ##
+#@local R,c,mat,x,m,inv,g,gens
 gap> START_TEST( "zmodnz.tst" );
 
 # 

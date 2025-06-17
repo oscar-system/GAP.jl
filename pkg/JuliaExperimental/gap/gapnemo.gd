@@ -27,7 +27,7 @@ JuliaImportPackage( "Nemo" );
 ##
 ##  Declare filters for the wrapped Julia objects.
 ##
-DeclareCategory( "IsNemoObject", IsJuliaWrapper );
+DeclareCategory( "IsNemoObject", IsObject );
 
 DeclareCategoryCollections( "IsNemoObject" );
 DeclareCategoryCollections( "IsNemoObjectCollection" );

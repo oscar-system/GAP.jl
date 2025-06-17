@@ -8,6 +8,8 @@
 ##
 ##  SPDX-License-Identifier: LGPL-3.0-or-later
 ##
+#@local typeof,x,int,big2,string,list,emptylist,emptystring,parse,list2,xx
+#@local dict,i
 gap> START_TEST( "convert.tst" );
 
 ##

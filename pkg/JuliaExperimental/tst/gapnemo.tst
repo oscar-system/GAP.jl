@@ -1,3 +1,4 @@
+#@local l
 #############################################################################
 ##
 ##  This file is part of GAP.jl, a bidirectional interface between Julia and

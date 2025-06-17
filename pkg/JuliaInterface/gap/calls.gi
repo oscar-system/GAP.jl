@@ -25,12 +25,6 @@ InstallMethod( CallFuncList,
         return GAP_jl._apply( julia_obj, args );
     end );
 
-InstallMethod( CallFuncList,
-    [ "IsJuliaWrapper", "IsList" ],
-    function( julia_obj, args )
-        return CallFuncList( JuliaPointer( julia_obj ), args );
-    end );
-
 InstallGlobalFunction( CallJuliaFunctionWithCatch,
     function( julia_obj, args, kwargs... )
     local res;

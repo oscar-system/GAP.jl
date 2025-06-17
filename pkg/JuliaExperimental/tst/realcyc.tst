@@ -8,6 +8,7 @@
 ##
 ##  SPDX-License-Identifier: LGPL-3.0-or-later
 ##
+#@local a,b,c,d,z
 gap> START_TEST( "realcyc.tst" );
 
 # need 16 bits precision

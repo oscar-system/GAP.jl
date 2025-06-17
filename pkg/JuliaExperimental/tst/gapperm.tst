@@ -8,6 +8,7 @@
 ##
 ##  SPDX-License-Identifier: LGPL-3.0-or-later
 ##
+#@local p1,oneperm,p2,p11,prod
 gap> START_TEST( "gapperm.tst" );
 
 ##
