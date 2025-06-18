@@ -12,25 +12,43 @@
 module Setup
 
 using Pkg: GitTools
+using ..GAP: GAP
 import GAP_jll
 import GAP_pkg_juliainterface_jll
-import Scratch: @get_scratch!
 import Pidfile
 
-# to separate the scratchspaces of different GAP.jl copies and Julia versions
-# put the Julia version and the hash of the path to this file into the key
-const scratch_key = "gap_$(hash(@__FILE__))-nopkg-$(VERSION.major).$(VERSION.minor)"
-
-gaproot() = @get_scratch!(scratch_key)
+export create_gap_sh
 
 #############################################################################
 #
-# Set up the primary, mutable GAP root
+# Set up a GAP root that is only used for building GAP packages
 #
 # For this we read the sysinfo.gap bundled with GAP_jll and then modify it
 # to be usable on this computer
 #
 #############################################################################
+
+const _gaproot_for_building = Ref{String}()
+
+function gaproot_for_building()
+    if !isassigned(_gaproot_for_building)
+        # first time we call this in a session
+        _gaproot_for_building[] = mktempdir()
+    end
+    assure_gaproot_for_building(_gaproot_for_building[])
+    return _gaproot_for_building[]
+end
+
+function assure_gaproot_for_building(gaproot::String)
+    is_already_setup = Pidfile.mkpidlock("$gaproot.lock"; stale_age=10) do
+        isdir(gaproot) && isfile(joinpath(gaproot, "sysinfo.gap")) && isfile(joinpath(gaproot, "gac"))
+    end # mkpidlock
+
+    is_already_setup && return
+
+    @debug "Set up sysinfo.gap and gac at $(gaproot)"
+    create_sysinfo_gap_and_gac(gaproot)
+end
 
 # ensure `link` is a symlink pointing to `target` in a way that is hopefully
 # safe against races with other Julia processes doing the exact same thing
@@ -113,21 +131,13 @@ end
 
 include("julia-config.jl")
 
-function regenerate_gaproot()
-    gaproot_mutable = gaproot()
-
-    @debug "Set up gaproot at $(gaproot_mutable)"
-    sysinfo = create_sysinfo_gap_and_gac(gaproot_mutable)
-    return sysinfo
-end
-
 function create_sysinfo_gap_and_gac(dir::String)
     mkpath(dir)
 
     gap_prefix = GAP_jll.find_artifact_dir()
 
     # load the existing sysinfo.gap
-    sysinfo = read_sysinfo_gap(joinpath(gap_prefix, "lib", "gap", "sysinfo.gap"))
+    sysinfo = deepcopy(GAP.sysinfo)
 
     #
     # now we modify sysinfo for our needs
@@ -185,12 +195,15 @@ function create_sysinfo_gap_and_gac(dir::String)
         gac = replace(gac, r"^\. \"[^\"]+\"$"m => ". \"$(dir)/sysinfo.gap\"")
         write("$dir/gac", gac)
         chmod("$dir/gac", 0o755)
+
+        # create bin/gap.sh
+        create_gap_sh(joinpath(dir, "bin"); use_active_project=true)
     end # mkpidlock
 
     return sysinfo
 end
 
-function build_JuliaInterface(sysinfo::Dict{String, String})
+function build_JuliaInterface()
     @info "Compiling JuliaInterface ..."
 
     # run code in julia-config.jl to determine compiler and linker flags for Julia;
@@ -204,18 +217,19 @@ function build_JuliaInterface(sysinfo::Dict{String, String})
     JULIA_LIBS = filter(c -> c != '\'', ldlibs())
 
     jipath = joinpath(@__DIR__, "..", "pkg", "JuliaInterface")
+    gaproot = gaproot_for_building()
     cd(jipath) do
         withenv("CFLAGS" => JULIA_CFLAGS,
                 "LDFLAGS" => JULIA_LDFLAGS * " " * JULIA_LIBS) do
-            run(pipeline(`./configure $(gaproot())`, stdout="build.log"))
+            run(pipeline(`./configure $(gaproot)`, stdout="build.log"))
             run(pipeline(`make V=1 -j$(Sys.CPU_THREADS)`, stdout="build.log", append=true))
         end
     end
 
-    return normpath(joinpath(jipath, "bin", sysinfo["GAParch"]))
+    return normpath(joinpath(jipath, "bin", GAP.sysinfo["GAParch"]))
 end
 
-function locate_JuliaInterface_so(sysinfo::Dict{String, String})
+function locate_JuliaInterface_so()
     # compare the C sources used to build GAP_pkg_juliainterface_jll with bundled copies
     # by comparing tree hashes
     jll = GAP_pkg_juliainterface_jll.find_artifact_dir()
@@ -228,13 +242,11 @@ function locate_JuliaInterface_so(sysinfo::Dict{String, String})
         path = joinpath(jll, "lib", "gap")
     else
         # tree hashes differ: we must compile the bundled sources (or requested re-compilation via ENV)
-        path = build_JuliaInterface(sysinfo)
+        path = build_JuliaInterface()
         @debug "Use JuliaInterface.so from $(path)"
     end
     return joinpath(path, "JuliaInterface.so")
 end
-
-end # module
 
 """
     create_gap_sh(dstdir::String)
@@ -246,22 +258,24 @@ Given a directory path, create three files in that directory:
   `gap.sh` to function (they record the precise versions of GAP.jl and other
   Julia packages involved)
 """
-function create_gap_sh(dstdir::String)
+function create_gap_sh(dstdir::String; use_active_project::Bool=false)
 
     mkpath(dstdir)
 
-    gaproot_gapjl = abspath(@__DIR__, "..")
+    if use_active_project
+        projectdir = dirname(Base.active_project())
 
-    ##
-    ## Create Project.toml & Manifest.toml for use by gap.sh
-    ##
-    @info "Generating custom Julia project ..."
-    run(`$(Base.julia_cmd()) --startup-file=no --project=$(dstdir) -e "using Pkg; Pkg.develop(PackageSpec(path=\"$(gaproot_gapjl)\"))"`)
+        @debug "Generating gap.sh for active project ..."
+    else
+        projectdir = dstdir
 
-    ##
-    ## Create custom gap.sh
-    ##
-    @info "Generating gap.sh ..."
+        @info "Generating custom Julia project ..."
+        gaproot_gapjl = abspath(@__DIR__, "..")
+        run(`$(Base.julia_cmd()) --startup-file=no --project=$(projectdir) -e "using Pkg; Pkg.develop(PackageSpec(path=\"$(gaproot_gapjl)\"))"`)
+        
+        @info "Generating gap.sh ..."
+    end
+
 
     gap_sh_path = joinpath(dstdir, "gap.sh")
     write(gap_sh_path,
@@ -279,7 +293,7 @@ function create_gap_sh(dstdir::String)
         else
             READ_STARTUP_FILE="no"
         fi
-        exec $(joinpath(Sys.BINDIR, Base.julia_exename())) --startup-file=\$READ_STARTUP_FILE --project=$(dstdir) -i -- "$(gap_sh_path)" "\$@"
+        exec $(join(Base.julia_cmd().exec, " ")) --startup-file=\$READ_STARTUP_FILE --project=$(projectdir) -i -- "$(gap_sh_path)" "\$@"
         =#
 
         # pass command line arguments to GAP.jl via a small hack
@@ -292,3 +306,7 @@ function create_gap_sh(dstdir::String)
     chmod(gap_sh_path, 0o755)
 
 end # function
+
+end # module
+
+using .Setup

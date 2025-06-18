@@ -2,6 +2,11 @@
 
 ## Version 0.14.0-DEV (released 2025-MM-DD)
 
+- **Breaking:** GAP.jl no longer creates a GAP root on startup that its dependents
+  can use. Instead, dependent packages should add their own GAP root using
+  `GAP.Globals.ExtendRootDirectories`. 
+- **Breaking:** `GAP.sysinfo` now contains the data from the `sysinfo.gap` file
+  that was bundled with the GAP installation, without any modifications by GAP.jl.
 - **Breaking:** Remove hack that made sure that in GAP accessing `Julia.GAP`
   always returns the `GAP` package module, even when `GAP` was not loaded
   directly by the user (e.g. if it was loaded indirectly from `Oscar`). To
