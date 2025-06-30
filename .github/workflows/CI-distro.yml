@@ -59,7 +59,6 @@ jobs:
         exclude:
           - gap-package: 'atlasrep'                   # random segfaults during testing
           - gap-package: 'autodoc'                    # tries and fails to build its own documentation, inside the (partially write protected) artifacts dir
-          - gap-package: 'curlInterface'              # tests fail until https://github.com/gap-packages/curlInterface/pull/53 is available
           - gap-package: 'example'                    # no jll
           - gap-package: 'examplesforhomalg'          # `Error, found no GAP executable in PATH`
           - gap-package: 'guava'                      # random test failures in `guava-3.19/tst/guava.tst:649`: Syntax error: expression expected in /tmp/gaptempfile.i8tlxS:1 GUAVA_TEMP_VAR := � &
