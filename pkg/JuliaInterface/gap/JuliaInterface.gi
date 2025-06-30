@@ -1,8 +1,13 @@
 #############################################################################
 ##
-##  JuliaInterface package
+##  This file is part of GAP.jl, a bidirectional interface between Julia and
+##  the GAP computer algebra system.
 ##
-#############################################################################
+##  Copyright of GAP.jl and its parts belongs to its developers.
+##  Please refer to its README.md file for details.
+##
+##  SPDX-License-Identifier: LGPL-3.0-or-later
+##
 
 BindGlobal( "_JuliaCoreModule", _JuliaGetGlobalVariableByModule( "Core", _JuliaGetMainModule() ) );
 BindGlobal( "_JULIA_FUNCTION_TYPE", _JuliaGetGlobalVariableByModule( "Function", _JuliaCoreModule ) );
@@ -37,15 +42,6 @@ InstallMethod( \.,
     local rnam, var;
 
     rnam := NameRNam( rnum );
-
-    ## TODO: remove this special case in a future breaking release.
-    ## See https://github.com/oscar-system/GAP.jl/issues/1053 for details.
-    if IsIdenticalObj(module, Julia) and rnam = "GAP" then
-        ## Ensure that the Julia module GAP is always accessible as GAP_jl,
-        ## even while it is still being initialized, and also if it not actually
-        ## exported to the Julia Main module
-        return GAP_jl;
-    fi;
 
     var := _JuliaGetGlobalVariableByModule( rnam, module );
     if var = fail then
@@ -143,6 +139,10 @@ InstallGlobalFunction( JuliaImportPackage, function( pkgname )
       return false;
     fi;
 end );
+
+
+InstallGlobalFunction( JuliaType,
+  { T, paras } -> GAP_jl.create_type( T, GAP_jl._gap_to_julia( paras, true ) ) );
 
 
 InstallGlobalFunction( GetJuliaScratchspace,

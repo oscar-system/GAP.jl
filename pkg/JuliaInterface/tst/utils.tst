@@ -1,3 +1,12 @@
+#############################################################################
+##
+##  This file is part of GAP.jl, a bidirectional interface between Julia and
+##  the GAP computer algebra system.
+##
+##  Copyright of GAP.jl and its parts belongs to its developers.
+##  Please refer to its README.md file for details.
+##
+##  SPDX-License-Identifier: LGPL-3.0-or-later
 ##
 gap> START_TEST( "utils.tst" );
 
@@ -17,11 +26,11 @@ gap> JuliaEvalString(fail);
 Error, JuliaEvalString: <string> must be a string (not the value 'fail')
 
 ##
-gap> Julia.Core.Tuple( GAPToJulia( JuliaEvalString( "Vector{Any}" ), [] ) );
+gap> Julia.Core.Tuple( GAPToJulia( JuliaType( Julia.Vector, [ Julia.Any ] ), [] ) );
 <Julia: ()>
-gap> Julia.Core.Tuple( GAPToJulia( JuliaEvalString( "Vector{Any}" ), [1] ) );
+gap> Julia.Core.Tuple( GAPToJulia( JuliaType( Julia.Vector, [ Julia.Any ] ), [1] ) );
 <Julia: (1,)>
-gap> Julia.Core.Tuple( GAPToJulia( JuliaEvalString( "Vector{GAP.Obj}" ), [1,true,fail] ));
+gap> Julia.Core.Tuple( GAPToJulia( JuliaType( Julia.Vector, [ GAP_jl.Obj ] ), [1,true,fail] ));
 <Julia: (1, true, GAP: fail)>
 gap> Julia.Core.Tuple(1);
 <Julia: (1,)>

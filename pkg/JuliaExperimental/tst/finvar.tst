@@ -1,7 +1,15 @@
 #############################################################################
 ##
-#W  finvar.tst         GAP 4 package JuliaExperimental          Thomas Breuer
+##  This file is part of GAP.jl, a bidirectional interface between Julia and
+##  the GAP computer algebra system.
 ##
+##  Copyright of GAP.jl and its parts belongs to its developers.
+##  Please refer to its README.md file for details.
+##
+##  SPDX-License-Identifier: LGPL-3.0-or-later
+##
+#@local P,indets,G1,pol,R1,G2,R2,prim1,sec1,prim2,sec2,G3,P3,R3,prim3,sec3,a
+#@local G4,P4,R4
 gap> START_TEST( "finvar.tst" );
 
 ##  trivialities: various constructions of an inv. ring

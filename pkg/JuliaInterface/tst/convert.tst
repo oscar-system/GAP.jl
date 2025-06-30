@@ -1,4 +1,15 @@
+#############################################################################
 ##
+##  This file is part of GAP.jl, a bidirectional interface between Julia and
+##  the GAP computer algebra system.
+##
+##  Copyright of GAP.jl and its parts belongs to its developers.
+##  Please refer to its README.md file for details.
+##
+##  SPDX-License-Identifier: LGPL-3.0-or-later
+##
+#@local typeof,x,int,big2,string,list,emptylist,emptystring,parse,list2,xx
+#@local dict,i
 gap> START_TEST( "convert.tst" );
 
 ##
@@ -219,7 +230,7 @@ gap> JuliaToGAP( IsRange, JuliaEvalString( "[ 1, 2, 4 ]" ) );
 Error, <obj> must be a Julia range
 
 ##  empty list vs. empty string
-gap> emptylist:= GAPToJulia( JuliaEvalString( "Vector{Any}"), [] );
+gap> emptylist:= GAPToJulia( JuliaType( Julia.Vector, [ Julia.Any ] ), [] );
 <Julia: Any[]>
 gap> emptystring:= GAPToJulia( Julia.Base.String, "" );
 <Julia: "">
@@ -235,7 +246,7 @@ gap> GAP_jl.Obj( emptystring );
 ##  'GAPToJulia' for Julia functions (inside arrays)
 gap> parse:= Julia.parse;
 <Julia: parse>
-gap> list:= GAPToJulia( JuliaEvalString( "Vector{Any}"), [ 1, parse, 3 ] );
+gap> list:= GAPToJulia( JuliaType( Julia.Vector, [ Julia.Any ] ), [ 1, parse, 3 ] );
 <Julia: Any[1, parse, 3]>
 gap> list2:= JuliaToGAP( IsList, list );
 [ 1, <Julia: parse>, 3 ]

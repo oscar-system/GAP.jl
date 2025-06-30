@@ -1,9 +1,15 @@
 //
-// JuliaInterface package
+//  This file is part of GAP.jl, a bidirectional interface between Julia and
+//  the GAP computer algebra system.
+//
+//  Copyright of GAP.jl and its parts belongs to its developers.
+//  Please refer to its README.md file for details.
+//
+//  SPDX-License-Identifier: LGPL-3.0-or-later
 //
 // Contains GAP wrapper objects for Julia objects, and GAP kernel functions
 // used by the GAP code of JuliaInterface.
-//
+
 #include "JuliaInterface.h"
 
 #include "calls.h"
@@ -26,9 +32,6 @@ static jl_datatype_t * gap_datatype_mptr;
 static Obj  TheTypeOfJuliaModules;
 static Obj  TheTypeJuliaObject;
 static UInt T_JULIA_OBJ;
-
-Obj JULIAINTERFACE_IsJuliaWrapper;
-Obj JULIAINTERFACE_JuliaPointer;
 
 void handle_jl_exception(void)
 {
@@ -314,9 +317,6 @@ static Int InitKernel(StructInitInfo * module)
     // import mptr type from GAP, by getting the Julia type of any GAP object
     gap_datatype_mptr = (jl_datatype_t *)jl_typeof(True);
     GAP_ASSERT(gap_datatype_mptr);
-
-    ImportFuncFromLibrary("IsJuliaWrapper", &JULIAINTERFACE_IsJuliaWrapper);
-    ImportFuncFromLibrary("JuliaPointer", &JULIAINTERFACE_JuliaPointer);
 
     // return success
     return 0;

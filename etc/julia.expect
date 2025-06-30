@@ -29,6 +29,7 @@ expect "julia> "
 # test tab completing of a GAP record
 send -- "GAP.Globals.GAPInfo.MaxNrArgs"
 expect "GAP.Globals.GAPInfo.MaxNrArgs"
+sleep 0.5
 send -- "\t"
 expect "Method"
 send -- "\r"

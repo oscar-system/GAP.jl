@@ -1,3 +1,14 @@
+#############################################################################
+##
+##  This file is part of GAP.jl, a bidirectional interface between Julia and
+##  the GAP computer algebra system.
+##
+##  Copyright of GAP.jl and its parts belongs to its developers.
+##  Please refer to its README.md file for details.
+##
+##  SPDX-License-Identifier: LGPL-3.0-or-later
+##
+
 @testset "packages" begin
 
     @test GAP.Packages.load("PackageManager")
@@ -10,6 +21,11 @@
     @test ! isempty(GAP.Packages.locate_package("fga"))
     @test ! isempty(GAP.Packages.locate_package("FGA"))
     @test GAP.Packages.remove("fga", interactive = false)
+
+    # Test the installation of a package with a kernel extension, but without a jll
+    @test GAP.Packages.install("https://github.com/gap-packages/RegisterPackageTNUMDemo/releases/download/v0.4/RegisterPackageTNUMDemo-0.4.tar.gz", interactive = false)
+    @test GAP.Packages.load("RegisterPackageTNUMDemo")
+    @test GAP.Packages.remove("RegisterPackageTNUMDemo", interactive = false)
 
 #    pkgdir = mktempdir()
 #    @test GAP.Packages.install("fga", interactive = false, pkgdir = pkgdir)

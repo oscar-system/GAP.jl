@@ -1,3 +1,13 @@
+#############################################################################
+##
+##  This file is part of GAP.jl, a bidirectional interface between Julia and
+##  the GAP computer algebra system.
+##
+##  Copyright of GAP.jl and its parts belongs to its developers.
+##  Please refer to its README.md file for details.
+##
+##  SPDX-License-Identifier: LGPL-3.0-or-later
+##
 
 @testset "integer_arithmetics" begin
 
@@ -119,11 +129,17 @@ end
     @test sym5.:1 === sym5."1"
 end
 
+@testset "create_type" begin
+    @test GAP.create_type(Vector, [Int]) === Vector{Int}
+    @test GAP.create_type(Tuple, [Int, Int]) === Tuple{Int, Int}
+    @test GAP.create_type(Tuple, [GAP.create_type(Vector, [Int]), GAP.create_type(Matrix, [Int])]) === Tuple{Vector{Int64}, Matrix{Int64}}
+end
+
 @testset "functionloc" begin
 
     file, line = Base.functionloc(GAP.Globals.BangComponent)
     @test Base.samefile(file, joinpath(@__DIR__, "../pkg/JuliaInterface/gap/utils.gi"))
-    @test line == 8
+    @test line == 13
 
     @test_throws ArgumentError Base.functionloc(GAP.Globals.LETTERS)
     @test_throws ErrorException Base.functionloc(GAP.Globals.IsAbelian)

@@ -1,6 +1,12 @@
-##############################################################################
+#############################################################################
 ##
-##  gapnemo.gd
+##  This file is part of GAP.jl, a bidirectional interface between Julia and
+##  the GAP computer algebra system.
+##
+##  Copyright of GAP.jl and its parts belongs to its developers.
+##  Please refer to its README.md file for details.
+##
+##  SPDX-License-Identifier: LGPL-3.0-or-later
 ##
 ##  This is an experimental interface to Nemo's objects.
 ##
@@ -21,7 +27,7 @@ JuliaImportPackage( "Nemo" );
 ##
 ##  Declare filters for the wrapped Julia objects.
 ##
-DeclareCategory( "IsNemoObject", IsJuliaWrapper );
+DeclareCategory( "IsNemoObject", IsObject );
 
 DeclareCategoryCollections( "IsNemoObject" );
 DeclareCategoryCollections( "IsNemoObjectCollection" );

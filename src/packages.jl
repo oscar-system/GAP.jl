@@ -1,12 +1,25 @@
+#############################################################################
+##
+##  This file is part of GAP.jl, a bidirectional interface between Julia and
+##  the GAP computer algebra system.
+##
+##  Copyright of GAP.jl and its parts belongs to its developers.
+##  Please refer to its README.md file for details.
+##
+##  SPDX-License-Identifier: LGPL-3.0-or-later
+##
+
 ## dealing with GAP packages
 module Packages
 
 import Downloads
 import Pidfile
+import Scratch: @get_scratch!
 import ...GAP: disable_error_handler, Globals, GapObj, replace_global!, RNamObj, Wrappers
 import ...GAP: gap_pkg_jlls, Compat, GAP_VERSION, GAP_jll, GAP_lib_jll
+import ...GAP.Setup: gaproot_for_building
 
-gap_packages_rootdir() = joinpath(Base.DEPOT_PATH[1], "gaproot", "v$(GAP_VERSION.major).$(GAP_VERSION.minor)")
+gap_packages_rootdir() = @get_scratch!("gap_packagedir_v$(GAP_VERSION.major).$(GAP_VERSION.minor)")
 
 const DEFAULT_PKGDIR = Ref(joinpath(gap_packages_rootdir(), "pkg"))
 const DOWNLOAD_HELPER = Ref{Downloads.Downloader}()
@@ -242,6 +255,9 @@ function install(spec::String, version::String = "";
     # point PackageManager to the given pkg dir
     Globals.PKGMAN_CustomPackageDir = GapObj(pkgdir)
     mkpath(pkgdir)
+    # inject our custom sysinfo.gap into the package manager
+    Globals.PKGMAN_Sysinfo = GapObj(joinpath(gaproot_for_building(), "sysinfo.gap"))
+
     # pidlock timeout: 300 seconds = 5 minutes should suffice; about the
     # slowest packages to install are Semigroups and NormalizInterface.
     Pidfile.mkpidlock("$pkgdir.lock"; stale_age=300) do
@@ -385,6 +401,10 @@ function build(name::String; quiet::Bool = false,
 
   gname = GapObj(name)
   Globals.TestPackageAvailability(gname) != Globals.fail && return true # already available, build not necessary
+
+  # inject our custom sysinfo.gap into the package manager
+  Globals.PKGMAN_Sysinfo = GapObj(joinpath(gaproot_for_building(), "sysinfo.gap"))
+
   allinfo = collect(Globals.PackageInfo(gname))
   userinfo = filter(info -> startswith(String(info.InstallationPath), pkgdir), allinfo)
   isempty(allinfo) && error("package not found")

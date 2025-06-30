@@ -1,7 +1,14 @@
 #############################################################################
 ##
-#W  singular.tst       GAP 4 package JuliaExperimental          Thomas Breuer
+##  This file is part of GAP.jl, a bidirectional interface between Julia and
+##  the GAP computer algebra system.
 ##
+##  Copyright of GAP.jl and its parts belongs to its developers.
+##  Please refer to its README.md file for details.
+##
+##  SPDX-License-Identifier: LGPL-3.0-or-later
+##
+#@local r,c,R,indets,x,y,f,g
 gap> START_TEST( "singular.tst" );
 
 ##
@@ -20,9 +27,7 @@ gap> Print( indets, "\n" );
 [ x, y ]
 gap> List( indets, String );
 [ "x", "y" ]
-gap> Unbind( x );  Unbind( y ); 
-gap> AssignGeneratorVariables( R ); 
-#I  Assigned the global variables [ x, y ]
+gap> x:= indets[1];;  y:= indets[2];;
 gap> IsSingularPolynomial( x );
 true
 gap> x;  y;

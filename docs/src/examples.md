@@ -72,21 +72,10 @@ GAP: [ [ 2, 27 ], [ 3, 14 ], [ 5, 3 ], [ 7, 2 ], [ 11, 1 ] ]
 
 (The result tells us that the size is ``2^{27} 3^{14} 5^3 7^2 11``.)
 
-In order to convert this GAP list to Julia,
-we can either use [`gap_to_julia`](@ref) or a suitable `Vector` constructor,
-see [Conversions](@ref).
-Note that the one-argument version of the former returns a vector of
-`Any` objects.
+In order to convert this GAP list to Julia, we can "coerce" it into
+a Julia `Vector`, see [Conversions](@ref):
 
 ```jldoctest rubik
-julia> GAP.gap_to_julia(cf)
-5-element Vector{Any}:
- Any[2, 27]
- Any[3, 14]
- Any[5, 3]
- Any[7, 2]
- Any[11, 1]
-
 julia> Vector{Vector{Int}}(cf)
 5-element Vector{Vector{Int64}}:
  [2, 27]

@@ -1,4 +1,15 @@
-#
+#############################################################################
+##
+##  This file is part of GAP.jl, a bidirectional interface between Julia and
+##  the GAP computer algebra system.
+##
+##  Copyright of GAP.jl and its parts belongs to its developers.
+##  Please refer to its README.md file for details.
+##
+##  SPDX-License-Identifier: LGPL-3.0-or-later
+##
+#@local N,N_p1,N_m1,N_squared,N_t2,zero,one,data,TestBinOp,l,m,i,foo,G,rs
+#@local state,res1,res2,res3,res4,rs2,state2,rs3,state3
 gap> START_TEST( "adapter.tst" );
 
 #
@@ -184,7 +195,7 @@ gap> ForAny( [ 1 .. 10000 ], i -> Random( rs, G ) <> Random( rs2, G ) );
 true
 
 # create a random source by an explicit Julia rng
-gap> rs3:= RandomSource( IsRandomSourceJulia, Julia.GAP.Random.default_rng() );
+gap> rs3:= RandomSource( IsRandomSourceJulia, GAP_jl.Random.default_rng() );
 <RandomSource in IsRandomSourceJulia>
 gap> state3:= State( rs3 );;
 gap> res1:= List( [ 1 .. 10 ], i -> Random( rs3, l ) );;

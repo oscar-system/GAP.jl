@@ -1,6 +1,12 @@
-##############################################################################
+#############################################################################
 ##
-##  zmodnz.g
+##  This file is part of GAP.jl, a bidirectional interface between Julia and
+##  the GAP computer algebra system.
+##
+##  Copyright of GAP.jl and its parts belongs to its developers.
+##  Please refer to its README.md file for details.
+##
+##  SPDX-License-Identifier: LGPL-3.0-or-later
 ##
 ##  This is an experimental interface to Nemo's residue class rings,
 ##  their elements and matrices of them.
@@ -80,6 +86,9 @@ InstallMethod( ContextGAPNemo,
       end,
 
       ElementJuliaToGAP:= function( C, obj )
+        if HasJuliaPointer( obj ) then
+          obj:= JuliaPointer( obj );
+        fi;
         return JuliaToGAP( IsInt, Julia.Base.getfield( obj,
                    Julia.Symbol( "data" ) ) ) * One( C!.GAPDomain );
 #T Deal with the case of ZZRingElem!
@@ -105,6 +114,9 @@ InstallMethod( ContextGAPNemo,
       end,
 
       VectorJuliaToGAP:= function( C, mat )
+        if HasJuliaPointer( mat ) then
+          mat:= JuliaPointer( mat );
+        fi;
         return GAPMatrix_fmpz_mat( Julia.Nemo.lift( mat ) )[1]
                * One( C!.GAPDomain );
       end,
@@ -130,6 +142,9 @@ InstallMethod( ContextGAPNemo,
       end,
 
       MatrixJuliaToGAP:= function( C, mat )
+        if HasJuliaPointer( mat ) then
+          mat:= JuliaPointer( mat );
+        fi;
         return GAPMatrix_fmpz_mat( Julia.Nemo.lift( mat ) )
                * One( C!.GAPDomain );
       end,

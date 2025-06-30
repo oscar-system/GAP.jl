@@ -1,13 +1,13 @@
 #############################################################################
 ##
-##  JuliaInterface package
+##  This file is part of GAP.jl, a bidirectional interface between Julia and
+##  the GAP computer algebra system.
 ##
-##  Copyright 2018-2025
-##    Thomas Breuer, RWTH Aachen University
-##    Sebastian Gutsche, Siegen University
-##    Max Horn, University of Kaiserslautern-Landau
+##  Copyright of GAP.jl and its parts belongs to its developers.
+##  Please refer to its README.md file for details.
 ##
-#############################################################################
+##  SPDX-License-Identifier: LGPL-3.0-or-later
+##
 
 #! @Chapter Introduction to <Package>JuliaInterface</Package>
 #!  The &GAP; package <Package>JuliaInterface</Package> is part of
@@ -129,26 +129,9 @@ BindGlobal("TheTypeJuliaObject", NewType( JuliaObjectFamily, IsJuliaObject ));
 
 #! @Arguments obj
 #! @Description
-#!  If the component or positional object <A>obj</A> is in this filter
-#!  then calling a &Julia; function with <A>obj</A> as an argument
-#!  will not pass <A>obj</A> as an <C>GapObj</C>,
-#!  but instead its <Ref Attr="JuliaPointer" Label="for IsJuliaWrapper"/>
-#!  value is passed, which must be a &Julia; object.
-#!  This admits implementing high-level wrapper objects
-#!  for &Julia; objects that behave just like the &Julia; objects
-#!  when used as arguments in calls to &Julia; functions.
-#!
-#!  Objects in <Ref Filt="IsJuliaWrapper" Label="for IsObject"/>
-#!  should <E>not</E> be in the filter
-#!  <Ref Filt="IsJuliaObject" Label="for IsObject"/>.
-DeclareCategory( "IsJuliaWrapper", IsObject );
-
-#! @Arguments obj
-#! @Description
-#!  is an attribute for &GAP; objects in the filter
-#!  <Ref Filt="IsJuliaWrapper" Label="for IsObject"/>.
+#!  is an attribute for storing a &Julia; object in a &GAP; object.
 #!  The value must be a &Julia; object.
-DeclareAttribute( "JuliaPointer", IsJuliaWrapper );
+DeclareAttribute( "JuliaPointer", IsObject );
 
 #! @Arguments obj
 #! @Description
@@ -161,8 +144,8 @@ DeclareAttribute( "JuliaPointer", IsJuliaWrapper );
 #! <Julia module GAP>
 #! gap> IsJuliaModule( GAP_jl );
 #! true
-#! gap> GAP_jl.gap_to_julia;
-#! <Julia: gap_to_julia>
+#! gap> GAP_jl.prompt;
+#! <Julia: prompt>
 #! @EndExampleSession
 DeclareCategory( "IsJuliaModule", IsJuliaObject and IsRecord  );
 
@@ -183,6 +166,24 @@ BindGlobal( "TheTypeOfJuliaModules", NewType( TheFamilyOfJuliaModules, IsJuliaMo
 #! 4
 #! @EndExampleSession
 #DeclareGlobalFunction( "JuliaEvalString" );
+
+#! @Arguments T, parameters
+#! @Description
+#!  creates the parametrized &Julia; type
+#!  <A>T</A><C>{para1, para2, ...}</C>,
+#!  where <A>T</A> is a &Julia; type and <A>parameters</A> is a list of
+#!  &Julia; types which are its intended type parameters.
+#! @BeginExampleSession
+#! gap> JuliaType( Julia.Vector, [ Julia.Int ] );
+#! <Julia: Vector{Int64}>
+#! gap> JuliaType( Julia.Tuple, [ Julia.Int, Julia.Int ] );
+#! <Julia: Tuple{Int64, Int64}>
+#! gap> JuliaType( Julia.Tuple,
+#! >      [ JuliaType( Julia.Vector, [ Julia.Int ] ),
+#! >        JuliaType( Julia.Matrix, [ Julia.Int ] ) ] );
+#! <Julia: Tuple{Vector{Int64}, Matrix{Int64}}>
+#! @EndExampleSession
+DeclareGlobalFunction( "JuliaType" );
 
 #! @Arguments filename[, module_name]
 #! @Returns nothing.
@@ -299,7 +300,8 @@ DeclareGlobalVariable( "Julia" );
 #! gap> res.value{ [ 1 .. Position( res.value, '(' )-1 ] };
 #! "DomainError"
 #! gap> inv:= Julia.inv;;
-#! gap> m:= GAPToJulia( JuliaEvalString( "Matrix{Int}" ), [[1,2],[2,4]] );
+#! gap> m:= GAPToJulia( JuliaType( Julia.Matrix, [ Julia.Int ] ),
+#! >                    [ [ 1, 2 ], [ 2, 4 ] ] );
 #! <Julia: [1 2; 2 4]>
 #! gap> res:= CallJuliaFunctionWithCatch( inv, [ m ] );;
 #! gap> res.ok;
@@ -336,8 +338,8 @@ DeclareGlobalFunction( "CallJuliaFunctionWithCatch" );
 #! gap> CallJuliaFunctionWithKeywordArguments(
 #! >        Julia.Base.range, [ 2 ], rec( length:= 5, step:= 2 ) );
 #! <Julia: 2:2:10>
-#! gap> m:= GAPToJulia( JuliaEvalString( "Matrix{Int}" ),
-#! >            [ [ 1, 2 ], [ 3, 4 ] ] );
+#! gap> m:= GAPToJulia( JuliaType( Julia.Matrix, [ Julia.Int ] ),
+#! >                    [ [ 1, 2 ], [ 3, 4 ] ] );
 #! <Julia: [1 2; 3 4]>
 #! gap> CallJuliaFunctionWithKeywordArguments(
 #! >        Julia.Base.reverse, [ m ], rec( dims:= 1 ) );
@@ -345,7 +347,7 @@ DeclareGlobalFunction( "CallJuliaFunctionWithCatch" );
 #! gap> CallJuliaFunctionWithKeywordArguments(
 #! >        Julia.Base.reverse, [ m ], rec( dims:= 2 ) );
 #! <Julia: [2 1; 4 3]>
-#! gap> tuptyp:= JuliaEvalString( "Tuple{Int,Int}" );;
+#! gap> tuptyp:= JuliaType( Julia.Tuple, [ Julia.Int, Julia.Int ]  );;
 #! gap> t1:= GAPToJulia( tuptyp, [ 2, 1 ] );
 #! <Julia: (2, 1)>
 #! gap> t2:= GAPToJulia( tuptyp, [ 1, 3 ] );
@@ -419,8 +421,6 @@ DeclareGlobalFunction( "CallJuliaFunctionWithKeywordArguments" );
 #!    <Ref Oper="CallFuncList" BookName="ref"/>,
 #!    delegating to &Julia;'s <C>func(args...)</C> syntax;
 #!    this yields the function call syntax in &GAP;,
-#!    it is installed also for objects in
-#!    <Ref Filt="IsJuliaWrapper" Label="for IsObject"/>,
 #!  </Item>
 #!  <Item>
 #!    access to and assignment of entries of arrays, via
@@ -476,7 +476,7 @@ DeclareGlobalFunction( "CallJuliaFunctionWithKeywordArguments" );
 #!  </List>
 #!
 #! @BeginExampleSession
-#! gap> m:= GAPToJulia( JuliaEvalString( "Matrix{Int}" ),
+#! gap> m:= GAPToJulia( JuliaType( Julia.Matrix, [ Julia.Int ] ),
 #! >            [ [ 1, 2 ], [ 3, 4 ] ] );
 #! <Julia: [1 2; 3 4]>
 #! gap> m[1,2];

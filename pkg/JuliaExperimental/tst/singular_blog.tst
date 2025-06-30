@@ -1,6 +1,12 @@
 #############################################################################
 ##
-#W  singular_blog.tst  GAP 4 package JuliaExperimental          Thomas Breuer
+##  This file is part of GAP.jl, a bidirectional interface between Julia and
+##  the GAP computer algebra system.
+##
+##  Copyright of GAP.jl and its parts belongs to its developers.
+##  Please refer to its README.md file for details.
+##
+##  SPDX-License-Identifier: LGPL-3.0-or-later
 ##
 ##  Run the examples from a blog post by Bill Hart, see
 ##  'https://wbhart.blogspot.de/2017/01/singular-and-julia.html'.
@@ -8,6 +14,7 @@
 ##  The examples use (mainly) the Singular objects and the Julia functions,
 ##  not GAP wrappers.
 ##
+#@local R,vecstr,indetnames,Rinfo,x,f,g,I1,I2,I,gbasis,M,J,r,J1,indets,p
 gap> START_TEST( "singular_blog.tst" );
 
 ##  Load the package.
@@ -23,7 +30,7 @@ gap> Julia.Base.parent( R(12) );
 <Julia: Residue Ring of Integer Ring modulo 23>
 
 ##  polynomial rings, polynomials
-gap> vecstr := JuliaEvalString( "Vector{String}" );
+gap> vecstr := JuliaType( Julia.Vector, [ Julia.String ] );
 gap> indetnames:= vecstr( [ "x", "y", "z", "t" ] );
 <Julia: ["x", "y", "z", "t"]>
 gap> Rinfo:= Julia.Singular.polynomial_ring( Julia.Singular.QQ, indetnames );
