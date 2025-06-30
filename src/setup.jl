@@ -105,28 +105,32 @@ end
 
 
 function select_compiler(lang::String, candidates::Vector{String}, extension::String)
-    tmpfilename = tempname()
-    open(tmpfilename * extension, "w") do file
-        write(file, """
-        #include <stdio.h>
-        int main(int argc, char **argv) {
-          return 0;
-        }
-        """)
-    end
-    for compiler in candidates
-        try
-            rm(tmpfilename; force = true)
-            run(`$(compiler) -o $(tmpfilename) $(tmpfilename)$(extension)`)
-            run(`$(tmpfilename)`)
-            @debug "selected $(compiler) as $(lang) compiler"
-            return compiler
-        catch
-            @debug "$(lang) compiler candidate '$(compiler)' not working"
+    mktempdir() do tmpdir
+        cd(tmpdir) do
+            tmpfilename = "gapcomptest"
+            srcfilename = tmpfilename * extension
+            open(srcfilename, "w") do file
+                write(file, """
+                #include <stdio.h>
+                int main(int argc, char **argv) {
+                  return 0;
+                }
+                """)
+            end
+            for compiler in candidates
+                try
+                    run(`$(compiler) -o $(tmpfilename) $(srcfilename)`)
+                    run(`$(tmpfilename)`)
+                    @debug "selected $(compiler) as $(lang) compiler"
+                    return compiler
+                catch
+                    @debug "$(lang) compiler candidate '$(compiler)' not working"
+                end
+            end
+            @debug "Could not locate a working $(lang) compiler"
+            return first(candidates)
         end
     end
-    @debug "Could not locate a working $(lang) compiler"
-    return first(candidates)
 end
 
 include("julia-config.jl")
