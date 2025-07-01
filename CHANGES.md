@@ -1,25 +1,26 @@
 # Changes in GAP.jl
 
-## Version 0.14.0-DEV (released 2025-MM-DD)
+## Version 0.14.0 (released 2025-07-02)
 
-- **Breaking:** GAP.jl no longer creates a GAP root on startup that its dependents
-  can use. Instead, dependent packages should add their own GAP root using
-  `GAP.Globals.ExtendRootDirectories`. 
-- **Breaking:** `GAP.sysinfo` now contains the data from the `sysinfo.gap` file
-  that was bundled with the GAP installation, without any modifications by GAP.jl.
+- **Breaking:** GAP.jl no longer creates a GAP root on startup that its
+  dependents can use. Instead, dependent packages should add their own GAP
+  root using `GAP.Globals.ExtendRootDirectories`.
+- **Breaking:** `GAP.sysinfo` now contains the data from the `sysinfo.gap`
+  file that was bundled with the GAP installation, without any modifications
+  by GAP.jl.
 - **Breaking:** Remove hack that made sure that in GAP accessing `Julia.GAP`
   always returns the `GAP` package module, even when `GAP` was not loaded
   directly by the user (e.g. if it was loaded indirectly from `Oscar`). To
   access the `GAP` module reliably, use the GAP variable `GAP_jl` instead.
-- **Breaking:** Remove the GAP filter `IsJuliaWrapper`
-  and its special treatment.
-  Its purpose was to automatically replace a GAP object by its `JuliaPointer`
-  value when accessing the GAP object from the Julia side.
-  The main drawback was that it was virtually impossible to deal with such a
-  GAP object on the Julia side.
-  See <https://github.com/oscar-system/GAP.jl/issues/1193> for details.
-- Add the GAP function `JuliaType`,
-  for constructing parametrized Julia types in GAP
+- **Breaking:** Remove the GAP filter `IsJuliaWrapper` and its special
+  treatment. Its purpose was to automatically replace a GAP object by its
+  `JuliaPointer` value when accessing the GAP object from the Julia side. The
+  main drawback was that it was virtually impossible to deal with such a GAP
+  object on the Julia side. For details, see
+  <https://github.com/oscar-system/GAP.jl/issues/1193>.
+- Add the GAP function `JuliaType`, for constructing parametrized Julia types in GAP
+- Clarify licensing terms
+- Several "behind the scenes" changes that should be invisible for most users
 
 ## Version 0.13.4 (released 2025-06-02)
 
