@@ -1,7 +1,7 @@
 name = "GAP"
 uuid = "c863536a-3901-11e9-33e7-d5cd0df7b904"
 authors = ["Thomas Breuer <sam@math.rwth-aachen.de>", "Sebastian Gutsche <gutsche@mathematik.uni-siegen.de>", "Max Horn <horn@mathematik.uni-kl.de>"]
-version = "0.14.0"
+version = "0.14.1"
 
 [deps]
 AbstractAlgebra = "c3fe647b-3220-5bb0-a1ea-a7954cac585d"
@@ -83,7 +83,7 @@ GAP_pkg_gauss_jll = "202400.1100.100"
 GAP_pkg_guava_jll = "300.1900.0"
 GAP_pkg_io_jll = "400.900.100"
 GAP_pkg_json_jll = "200.200.200"
-GAP_pkg_juliainterface_jll = "=0.1300.103"
+GAP_pkg_juliainterface_jll = "=0.1400.100"
 GAP_pkg_kbmag_jll = "100.500.1100"
 GAP_pkg_normalizinterface_jll = "100.300.700"
 GAP_pkg_nq_jll = "200.500.1100"
