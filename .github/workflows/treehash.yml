@@ -7,6 +7,7 @@ on:
       - 'release-*'
     tags: '*'
   pull_request:
+  workflow_dispatch:
 
 concurrency:
   # group by workflow and ref; the last slightly strange component ensures that for pull
@@ -31,24 +32,23 @@ jobs:
       - name: "Check treehash match"
         run: |
           julia --project --color=yes -e '
-            using Pkg
-            using libsingular_julia_jll
-            path = libsingular_julia_jll.find_artifact_dir()
-            path = joinpath(path, "lib", "libsingular_julia.treehash")
-            jll_hash = chomp(read(path, String))
-            src_hash = bytes2hex(Pkg.GitTools.tree_hash(joinpath("deps", "src")))
-            jll_hash == src_hash || error("tree hash is $src_hash, but JLL uses $jll_hash")
+            using Pkg: GitTools
+            using GAP_pkg_juliainterface_jll
+            jll = GAP_pkg_juliainterface_jll.find_artifact_dir()
+            jll_hash = GitTools.tree_hash(joinpath(jll, "src"))
+            bundled = joinpath(@__DIR__, "..", "pkg", "JuliaInterface")
+            bundled_hash = GitTools.tree_hash(joinpath(bundled, "src"))
+            jll_hash == bundled_hash || error("tree hash is $src_hash, but JLL uses $jll_hash")
             '
-      # next force a treehash mismatch and verify that Singular runs in this
-      # setup; as a side effect this also reduce code coverage fluctuation when
-      # updating libsingular_julia_jll
-      - name: "Force treehash mismatch"
-        run: |
-          touch deps/src/FORCE_TREEHASH_MISMATCH
+      # next verify that GAP.jl still runs when forced to rebuild juliainterface;
+      # as a side effect this also reduce code coverage fluctuation when
+      # updating GAP_pkg_juliainterface_jll
       - name: "Run tests"
         uses: julia-actions/julia-runtest@v1
         with:
           depwarn: error
+        env:
+          FORCE_JULIAINTERFACE_COMPILATION: "true"
       - name: "Process code coverage"
         uses: julia-actions/julia-processcoverage@v1
       - name: "Upload coverage data to Codecov"
