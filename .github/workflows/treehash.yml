@@ -1,0 +1,56 @@
+name: Treehash
+
+on:
+  push:
+    branches:
+      - 'master'
+      - 'release-*'
+    tags: '*'
+  pull_request:
+
+concurrency:
+  # group by workflow and ref; the last slightly strange component ensures that for pull
+  # requests, we limit to 1 concurrent job, but for the master branch we don't
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.ref != 'refs/heads/master' || github.run_number }}
+  # Cancel intermediate builds, but only if it is a pull request build.
+  cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
+
+jobs:
+  treehash:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: "Set up Julia"
+        uses: julia-actions/setup-julia@v2
+        with:
+          version: 1
+      - name: "Cache artifacts"
+        uses: julia-actions/cache@v2
+      - name: "Build package"
+        uses: julia-actions/julia-buildpkg@v1
+      - name: "Check treehash match"
+        run: |
+          julia --project --color=yes -e '
+            using Pkg
+            using libsingular_julia_jll
+            path = libsingular_julia_jll.find_artifact_dir()
+            path = joinpath(path, "lib", "libsingular_julia.treehash")
+            jll_hash = chomp(read(path, String))
+            src_hash = bytes2hex(Pkg.GitTools.tree_hash(joinpath("deps", "src")))
+            jll_hash == src_hash || error("tree hash is $src_hash, but JLL uses $jll_hash")
+            '
+      # next force a treehash mismatch and verify that Singular runs in this
+      # setup; as a side effect this also reduce code coverage fluctuation when
+      # updating libsingular_julia_jll
+      - name: "Force treehash mismatch"
+        run: |
+          touch deps/src/FORCE_TREEHASH_MISMATCH
+      - name: "Run tests"
+        uses: julia-actions/julia-runtest@v1
+        with:
+          depwarn: error
+      - name: "Process code coverage"
+        uses: julia-actions/julia-processcoverage@v1
+      - name: "Upload coverage data to Codecov"
+        continue-on-error: true
+        uses: codecov/codecov-action@v5
