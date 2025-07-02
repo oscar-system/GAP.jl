@@ -1,0 +1,56 @@
+name: Treehash
+
+on:
+  push:
+    branches:
+      - 'master'
+      - 'release-*'
+    tags: '*'
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  # group by workflow and ref; the last slightly strange component ensures that for pull
+  # requests, we limit to 1 concurrent job, but for the default repository branch we don't
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.ref_name != github.event.repository.default_branch || github.run_number }}
+  # Cancel intermediate builds, but only if it is a pull request build.
+  cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
+
+jobs:
+  treehash:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: "Set up Julia"
+        uses: julia-actions/setup-julia@v2
+        with:
+          version: 1
+      - name: "Cache artifacts"
+        uses: julia-actions/cache@v2
+      - name: "Build package"
+        uses: julia-actions/julia-buildpkg@v1
+      - name: "Check treehash match"
+        run: |
+          julia --project --color=yes -e '
+            using Pkg: GitTools
+            using GAP_pkg_juliainterface_jll
+            jll = GAP_pkg_juliainterface_jll.find_artifact_dir()
+            jll_hash = GitTools.tree_hash(joinpath(jll, "src"))
+            bundled = joinpath(@__DIR__, "..", "pkg", "JuliaInterface")
+            bundled_hash = GitTools.tree_hash(joinpath(bundled, "src"))
+            jll_hash == bundled_hash || error("tree hash is $src_hash, but JLL uses $jll_hash")
+            '
+      # next verify that GAP.jl still runs when forced to rebuild juliainterface;
+      # as a side effect this also reduce code coverage fluctuation when
+      # updating GAP_pkg_juliainterface_jll
+      - name: "Run tests"
+        uses: julia-actions/julia-runtest@v1
+        with:
+          depwarn: error
+        env:
+          FORCE_JULIAINTERFACE_COMPILATION: "true"
+      - name: "Process code coverage"
+        uses: julia-actions/julia-processcoverage@v1
+      - name: "Upload coverage data to Codecov"
+        continue-on-error: true
+        uses: codecov/codecov-action@v5
