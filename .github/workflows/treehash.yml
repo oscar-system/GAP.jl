@@ -36,7 +36,7 @@ jobs:
             using GAP_pkg_juliainterface_jll
             jll = GAP_pkg_juliainterface_jll.find_artifact_dir()
             jll_hash = GitTools.tree_hash(joinpath(jll, "src"))
-            bundled = joinpath(@__DIR__, "..", "pkg", "JuliaInterface")
+            bundled = joinpath(@__DIR__, "pkg", "JuliaInterface")
             bundled_hash = GitTools.tree_hash(joinpath(bundled, "src"))
             jll_hash == bundled_hash || error("tree hash is $src_hash, but JLL uses $jll_hash")
             '
