@@ -1,5 +1,9 @@
 # Changes in GAP.jl
 
+## Version 0.14.1 (released 2025-07-02)
+
+- Fix bundled pre-build binaries for the `juliainterface` GAP package.
+
 ## Version 0.14.0 (released 2025-07-02)
 
 - **Breaking:** GAP.jl no longer creates a GAP root on startup that its
