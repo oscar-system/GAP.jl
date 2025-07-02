@@ -38,7 +38,7 @@ jobs:
             jll_hash = GitTools.tree_hash(joinpath(jll, "src"))
             bundled = joinpath(@__DIR__, "pkg", "JuliaInterface")
             bundled_hash = GitTools.tree_hash(joinpath(bundled, "src"))
-            jll_hash == bundled_hash || error("tree hash is $src_hash, but JLL uses $jll_hash")
+            jll_hash == bundled_hash || error("tree hash is $bundled_hash, but JLL uses $jll_hash")
             '
       # next verify that GAP.jl still runs when forced to rebuild juliainterface;
       # as a side effect this also reduce code coverage fluctuation when
