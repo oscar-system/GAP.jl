@@ -1,7 +1,7 @@
 # Directions for updating GAP.jl
 
 `GAP.jl` depends on the GAP kernel, the GAP library,
-and some glue code in the `juliainterface` GAP package,
+and some glue code in the `JuliaInterface` GAP package,
 which is located in the `pkg/JuliaInterface/` directory.
 Additionally, there are various GAP packages that either
 depend on a GAP kernel extension, or some binary that
@@ -11,7 +11,7 @@ Compiled versions of each are distributed to users
 as binary artifacts via the Julia "JLL" packages `GAP_jll`,
 `GAP_lib_jll`, `GAP_pkg_juliainterface_jll`, and
 various `GAP_pkg_*_jll` packages (where `*` stands for
-the name of the GAP package).
+the name of the GAP package written in all lowercase).
 
 The build scripts for these JLL packages can be found here:
 
@@ -23,13 +23,14 @@ The build scripts for these JLL packages can be found here:
 ## Updating the glue code in `juliainterface`
 
 Suppose just the code in `juliainterface` was updated, without any changes to GAP itself.
+Then `GAP_pkg_juliainterface_jll` needs to be rebuilt before the next GAP.jl release.
 One can detect that such a rebuild is necessary when the CI job `treehash` in the GAP.jl
 repository fails in a PR.
 
 1. Merge that PR.
 
-2. After the changes are merged (and before the next `Singular.jl` release), update
-   the `GAP_pkg_juliainterface` build script with a new version number and using the
+2. After the changes are merged (and before the next `GAP.jl` release), update
+   the `GAP_pkg_juliainterface` build recipe with a new version number and using the
    latest commit SHA for the `master` branch of `GAP.jl`.
    > ex: <https://github.com/JuliaPackaging/Yggdrasil/pull/11582>
 
@@ -58,7 +59,7 @@ happening on a new julia release or on julia nightly.
 
 3. Wait for the Yggdrasil merge, and wait for the registry.
 
-4. Update the GAP_pkg_juliainterface with the version number of the
+4. Update the `GAP_pkg_juliainterface` with the version number of the
    `GAP_jll` from the previous step, bump the patch part of `offset`,
    and change the `libjulia_jll` version number to the new one.
    > ex: <https://github.com/JuliaPackaging/Yggdrasil/pull/11336>
