@@ -13,7 +13,7 @@ as binary artifacts via the Julia "JLL" packages `GAP_jll`,
 various `GAP_pkg_*_jll` packages (where `*` stands for
 the name of the GAP package written in all lowercase).
 
-The build scripts for these JLL packages can be found here:
+The build recipes for these JLL packages can be found here:
 
 - <https://github.com/JuliaPackaging/Yggdrasil/blob/master/G/GAP/build_tarballs.jl>
 - <https://github.com/JuliaPackaging/Yggdrasil/blob/master/G/GAP_lib/build_tarballs.jl>
@@ -53,13 +53,13 @@ happening on a new julia release or on julia nightly.
 
 1. Wait for someone to update `libjulia_jll` to a new version.
 
-2. Update the GAP build script by bumping the patch part of the version,
+2. Update the GAP build recipe by bumping the patch part of the version,
    and changing the `libjulia_jll` version number to the new one.
    > ex: <https://github.com/JuliaPackaging/Yggdrasil/pull/11335>
 
 3. Wait for the Yggdrasil merge, and wait for the registry.
 
-4. Update the `GAP_pkg_juliainterface` with the version number of the
+4. Update the `GAP_pkg_juliainterface` build recipe with the version number of the
    `GAP_jll` from the previous step, bump the patch part of `offset`,
    and change the `libjulia_jll` version number to the new one.
    > ex: <https://github.com/JuliaPackaging/Yggdrasil/pull/11336>
@@ -74,7 +74,7 @@ happening on a new julia release or on julia nightly.
 After a new GAP version is released, the following steps are necessary to update
 all of the JLL packages that depend on GAP.
 
-1. Update the GAP build script with the new `upstream_version` and SHA256 of the release tarball
+1. Update the GAP build recipe with the new `upstream_version` and SHA256 of the release tarball
    > ex: <https://github.com/JuliaPackaging/Yggdrasil/pull/9937>
 
    In this specific commit, there was also an update to `Readline_jll` and some build flags,
@@ -83,7 +83,7 @@ all of the JLL packages that depend on GAP.
 2. Wait for the Yggdrasil merge, and wait for the registry.
    > ex: <https://github.com/JuliaRegistries/General/pull/120909>
 
-3. Update the GAP_lib build script with the new `upstream_version` and SHA256 of the release tarball
+3. Update the GAP_lib build recipe with the new `upstream_version` and SHA256 of the release tarball
    > ex: <https://github.com/JuliaPackaging/Yggdrasil/pull/9938>
 
 4. Wait for the Yggdrasil merge, and wait for the registry.
