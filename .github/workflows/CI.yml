@@ -71,7 +71,7 @@ jobs:
       - name: "Test REPL integration"
         run: etc/expect.sh --project=@.
       - name: "Add optional Julia dependencies for GAP tests"
-        run: julia --color=yes -e 'using Pkg ; Pkg.add(["Singular", "Nemo"])'
+        run: julia --color=yes -e 'using Pkg ; Pkg.add(["Singular", "Nemo"]) ; using Singular, Nemo'
       - name: "GAP tests"
         run: |
           julia --project=. -e 'import GAP; GAP.create_gap_sh("/tmp")'
