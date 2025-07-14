@@ -1,5 +1,9 @@
 # Changes in GAP.jl
 
+## Version 0.14.2 (released 2025-07-14)
+
+- Declare compatibility with AbstractAlgebra 0.46
+
 ## Version 0.14.1 (released 2025-07-02)
 
 - Fix bundled pre-build binaries for the `juliainterface` GAP package.
