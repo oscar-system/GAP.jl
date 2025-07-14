@@ -25,7 +25,7 @@ include("macros.jl")
 include("packages.jl")
 include("help.jl")
 
-@static if VERSION < v"1.10-DEV" || Base.JLOptions().code_coverage == 0
+@static if Base.JLOptions().code_coverage == 0
   # REPL completion doesn't work in Julia >= 1.10 when code coverage
   # tracking is active. For more details see the discussions at
   # <https://github.com/oscar-system/GAP.jl/pull/914> and
