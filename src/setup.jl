@@ -15,7 +15,7 @@ using Pkg: GitTools
 using ..GAP: GAP
 import GAP_jll
 import GAP_pkg_juliainterface_jll
-import Pidfile
+import FileWatching: Pidfile
 
 export create_gap_sh
 
