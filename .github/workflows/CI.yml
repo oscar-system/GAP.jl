@@ -29,7 +29,6 @@ jobs:
       fail-fast: false
       matrix:
         julia-version:
-          - '1.6'
           - '1.10'
           - '1.11'
           - '1.12-nightly'
@@ -59,9 +58,6 @@ jobs:
         id: setup-julia
       - name: "Cache artifacts"
         uses: julia-actions/cache@v2
-      - name: "workaround libstdc++ issue for julia 1.6"
-        if: matrix.julia-version == '1.6' && runner.os == 'Linux'
-        run: rm -f ${{ steps.setup-julia.outputs.julia-bindir }}/../lib/julia/libstdc++.so.6
       - name: "Build package"
         uses: julia-actions/julia-buildpkg@v1
       - name: "Run tests"
