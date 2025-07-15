@@ -32,7 +32,6 @@ jobs:
           - 'master'
           - 'stable-4.14'
         julia-version:
-          - '1.6'
           - '1'         # latest stable release
           - '1.12-nightly'
           - 'nightly'
@@ -54,9 +53,6 @@ jobs:
         id: setup-julia
         with:
           version: ${{ matrix.julia-version }}
-      - name: "workaround libstdc++ issue for julia 1.6"
-        if: matrix.julia-version == '1.6' && runner.os == 'Linux'
-        run: rm -f ${{ steps.setup-julia.outputs.julia-bindir }}/../lib/julia/libstdc++.so.6
       - name: Checkout GAP
         uses: actions/checkout@v4
         with:

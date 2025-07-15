@@ -53,20 +53,19 @@ happening on a new julia release or on julia nightly.
 
 1. Wait for someone to update `libjulia_jll` to a new version.
 
-2. Update the GAP build recipe by bumping the patch part of the version,
-   and changing the `libjulia_jll` version number to the new one.
-   > ex: <https://github.com/JuliaPackaging/Yggdrasil/pull/11335>
+2. Update the GAP build recipe by changing the `libjulia_jll` version number to the new one.
+   There is no need to change any other version number in the recipe.
+   > ex: <https://github.com/JuliaPackaging/Yggdrasil/pull/11656>
 
 3. Wait for the Yggdrasil merge, and wait for the registry.
+   > ex: <https://github.com/JuliaRegistries/General/pull/134713>
 
-4. Update the `GAP_pkg_juliainterface` build recipe with the version number of the
-   `GAP_jll` from the previous step, bump the patch part of `offset`,
-   and change the `libjulia_jll` version number to the new one.
-   > ex: <https://github.com/JuliaPackaging/Yggdrasil/pull/11336>
+4. Update the `GAP_pkg_juliainterface` build recipe by changing the `libjulia_jll` version number to the new one.
+   There is no need to change any other version number in the recipe.
+   > ex: <https://github.com/JuliaPackaging/Yggdrasil/pull/11659>
 
 5. Wait for the Yggdrasil merge, and wait for the registry.
-
-4. Bump the dependence in `GAP.jl` to whatever version numbers were released in Steps 3 and 5.
+   > ex: <https://github.com/JuliaRegistries/General/pull/134734>
 
 
 ## Updating GAP
