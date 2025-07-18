@@ -44,27 +44,6 @@ GAP_jll.is_available() ||
    error("""This platform or julia version is currently not supported by GAP:
             $(Base.BinaryPlatforms.host_triplet())""")
 
-# Julia >= 1.10 will at some point add support for (de)serializing foreign
-# types (the types, not the instances, at least not yet). We want (and need)
-# to use that if available, which also requires changes in GAP resp. GAP_jll.
-# To determine whether to use it, we therefore check two conditions:
-# (1) whether the Julia kernel exports `jl_reinit_foreign_type`, and
-# (2) whether or not GAP_jll defines GapObj.
-# See https://github.com/JuliaLang/julia/pull/44527
-# and https://github.com/JuliaLang/julia/pull/47407
-function use_jl_reinit_foreign_type()
-    if isdefined(GAP_jll, :GapObj)
-        # GAP_jll still provides GapObj => use the old system
-        return false
-    end
-    # otherwise try to use the new system
-    try
-        cglobal(:jl_reinit_foreign_type) != C_NULL
-    catch
-        false
-    end
-end
-
 include("setup.jl")
 
 import Libdl
@@ -117,9 +96,7 @@ JuliaInterface_path() = real_JuliaInterface_path[]
 const _saved_argv = Ref{Ref{Ptr{UInt8}}}()
 
 function initialize(argv::Vector{String})
-    if use_jl_reinit_foreign_type()
-        @ccall libgap.GAP_InitJuliaMemoryInterface((@__MODULE__)::Any, C_NULL::Ptr{Nothing})::Nothing
-    end
+    @ccall libgap.GAP_InitJuliaMemoryInterface((@__MODULE__)::Any, C_NULL::Ptr{Nothing})::Nothing
 
     handle_signals = isdefined(Main, :__GAP_ARGS__)  # a bit of a hack...
     error_handler_func = handle_signals ? C_NULL : @cfunction(copy_gap_error_to_julia, Cvoid, ())
