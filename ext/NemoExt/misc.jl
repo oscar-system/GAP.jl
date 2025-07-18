@@ -9,23 +9,7 @@
 ##  SPDX-License-Identifier: LGPL-3.0-or-later
 ##
 
-module NemoExt
-
-using GAP
-using Nemo
-
-import GAP: GapObj, Wrappers
-
-import Nemo:
-  QQMatrix,
-  QQFieldElem,
-  ZZMatrix,
-  ZZRingElem,
-  characteristic,
-  matrix
-
-include("misc.jl")
-include("gap_to_nemo.jl")
-include("nemo_to_gap.jl")
-
-end # module
+# TODO: the following could be made faster for GAP.FFE by extracting the
+# characteristic directly from the GAP FFE
+characteristic(x::GAP.FFE) = ZZRingElem(Wrappers.CHAR_FFE_DEFAULT(x))
+characteristic(x::GapObj) = ZZRingElem(Wrappers.Characteristic(x))
