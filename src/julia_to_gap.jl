@@ -356,11 +356,3 @@ function GapObj_internal(
 end
 
 GAP.@install GapObj(func::Function) = WrapJuliaFunc(func)
-
-# For backwards compatibility,
-# provide methods for `julia_to_gap` that cover the conversions promised
-# in the documentation.
-# (Installing other methods for `julia_to_gap` will not work in recursive
-# situations, only `GapObj_internal` methods can be used for that.)
-julia_to_gap(obj::Any; recursive::Bool = false) = GapObj_internal(obj, nothing, Val(recursive))
-julia_to_gap(obj::Any, recursion_dict::IdDict{Any,Any}; recursive::Bool = false) = GapObj_internal(obj, nothing, Val(recursive))
