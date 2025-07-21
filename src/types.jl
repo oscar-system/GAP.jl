@@ -9,18 +9,11 @@
 ##  SPDX-License-Identifier: LGPL-3.0-or-later
 ##
 
-if use_jl_reinit_foreign_type()
-    const GapObj = @ccall libgap.GAP_DeclareGapObj(:GapObj::Symbol, GAP::Module, Any::Any)::Any
+const GapObj = @ccall libgap.GAP_DeclareGapObj(:GapObj::Symbol, GAP::Module, Any::Any)::Any
 
-    const SmallBag = @ccall libgap.GAP_DeclareBag(:SmallBag::Symbol, GAP::Module, Any::Any, 0::Cint)::Any
+const SmallBag = @ccall libgap.GAP_DeclareBag(:SmallBag::Symbol, GAP::Module, Any::Any, 0::Cint)::Any
 
-    const LargeBag = @ccall libgap.GAP_DeclareBag(:LargeBag::Symbol, GAP::Module, Any::Any, 1::Cint)::Any
-
-else
-
-import GAP_jll: GapObj
-
-end
+const LargeBag = @ccall libgap.GAP_DeclareBag(:LargeBag::Symbol, GAP::Module, Any::Any, 1::Cint)::Any
 
 
 """
