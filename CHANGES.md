@@ -3,9 +3,9 @@
 ## Version 0.15.0-DEV (released 2025-XX-XX)
 
 - Drop support for Julia 1.6 to 1.9; require Julia 1.10 or later.
-- Remove `julia_to_gap` (code which called it, say as `julia_to_gap(val)`,
-  can instead use `GapObj(val)`; code that provided custom methods
-  for it should instead use the `GAP.@install` macro)
+- **Breaking:** Remove `julia_to_gap` (code which called it, say as
+  `julia_to_gap(val)`, can instead use `GapObj(val)`; code that provided
+  custom methods for it should instead use the `GAP.@install` macro).
 
 ## Version 0.14.2 (released 2025-07-14)
 
