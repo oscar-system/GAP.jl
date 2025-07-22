@@ -64,7 +64,7 @@ function ZZMatrix(obj::GapObj)
   return m
 end
 
-GAP.gap_to_julia(::Type{ZZMatrix}, obj::GapObj; recursive::Bool = true) = ZZMatrix(obj) # TODO: deprecate/remove this
+GAP.gap_to_julia(::Type{ZZMatrix}, obj::GapObj; recursive::Bool = true) = ZZMatrix(obj)
 
 ##
 ## matrix of GAP rationals or integers to `QQMatrix`
@@ -81,7 +81,7 @@ function QQMatrix(obj::GapObj)
   return m
 end
 
-GAP.gap_to_julia(::Type{QQMatrix}, obj::GapObj; recursive::Bool = true) = QQMatrix(obj) # TODO: deprecate/remove this
+GAP.gap_to_julia(::Type{QQMatrix}, obj::GapObj; recursive::Bool = true) = QQMatrix(obj)
 
 ##
 ## generic matrix() method for GAP matrices which converts each element on its

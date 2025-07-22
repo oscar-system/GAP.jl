@@ -29,7 +29,9 @@ GAP.@install GapObj(obj::QQFieldElem) = Wrappers.QUO(GapObj(numerator(obj)), Gap
 GAP.@install GapObj(obj::PosInf) = GAP.Globals.infinity
 
 ## `ZZMatrix` to matrix of GAP integers
+## TODO/FIXME: rewrite to not first convert to `Matrix`
 GAP.@install GapObj(obj::ZZMatrix) = GapObj(Matrix(obj); recursive = true)
 
 ## `QQMatrix` to matrix of GAP rationals or integers
+## TODO/FIXME: rewrite to not first convert to `Matrix`
 GAP.@install GapObj(obj::QQMatrix) = GapObj(Matrix(obj); recursive = true)
