@@ -25,8 +25,9 @@ end
 ## `QQFieldElem` to GAP rational
 GAP.@install GapObj(obj::QQFieldElem) = Wrappers.QUO(GapObj(numerator(obj)), GapObj(denominator(obj)))
 
-## `PosInf` to GAP infinity
+## `PosInf` and `NegInf` to GAP infinity
 GAP.@install GapObj(obj::PosInf) = GAP.Globals.infinity
+GAP.@install GapObj(obj::NegInf) = -GAP.Globals.infinity
 
 ## `ZZMatrix` to matrix of GAP integers
 ## TODO/FIXME: rewrite to not first convert to `Matrix`
