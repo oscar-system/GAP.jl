@@ -15,9 +15,9 @@ _declare_bag(sym::Symbol, large::Bool) = @ccall libgap.GAP_DeclareBag(sym::Symbo
 
 const GapObj = _declare_gap_obj()::Type
 
-const SmallBag = _declare_bag(:SmallBag::Symbol, false)
+const SmallBag = _declare_bag(:SmallBag, false)
 
-const LargeBag = _declare_bag(:LargeBag::Symbol, true)
+const LargeBag = _declare_bag(:LargeBag, true)
 
 
 """
