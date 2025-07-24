@@ -9,11 +9,13 @@
 ##  SPDX-License-Identifier: LGPL-3.0-or-later
 ##
 
-const GapObj = @ccall libgap.GAP_DeclareGapObj(:GapObj::Symbol, GAP::Module, Any::Any)::Any
+# Helper functions so we can avoid using @ccall at the top level, which makes JET unhappy
+_declare_gap_obj() = @ccall libgap.GAP_DeclareGapObj(:GapObj::Symbol, GAP::Module, Any::Any)::Any
+_declare_bag(sym::Symbol, large::Bool) = @ccall libgap.GAP_DeclareBag(sym::Symbol, GAP::Module, Any::Any, large::Cint)::Any
 
-const SmallBag = @ccall libgap.GAP_DeclareBag(:SmallBag::Symbol, GAP::Module, Any::Any, 0::Cint)::Any
-
-const LargeBag = @ccall libgap.GAP_DeclareBag(:LargeBag::Symbol, GAP::Module, Any::Any, 1::Cint)::Any
+const GapObj = _declare_gap_obj()::Type
+const SmallBag = _declare_bag(:SmallBag, false)
+const LargeBag = _declare_bag(:LargeBag, true)
 
 
 """
