@@ -512,13 +512,13 @@ function(::Type{T})(obj::GapObj) where {T<:StepRange}
         step = 1
         stop = 0
     elseif len == 1
-        start = obj[1]
+        start = obj[1]::Int
         step = 1
-        stop = obj[1]
+        stop = obj[1]::Int
     else
-        start = obj[1]
-        step = obj[2]-obj[1]
-        stop = obj[len]
+        start = obj[1]::Int
+        step = obj[2]::Int - start
+        stop = obj[len]::Int
     end
 
     # Julia does not support `StepRange(obj)` (but `StepRange{S,T}(obj)`),
