@@ -119,6 +119,7 @@ function create_sysinfo_gap_and_gac(dir::String)
     mkpath(dir)
 
     gap_prefix = GAP_jll.find_artifact_dir()
+    gap_prefix !== nothing || error("failed to locate GAP_jll artifact dir")
 
     # load the existing sysinfo.gap
     sysinfo = deepcopy(GAP.sysinfo)
@@ -247,7 +248,9 @@ function create_gap_sh(dstdir::String; use_active_project::Bool=false)
     mkpath(dstdir)
 
     if use_active_project
-        projectdir = dirname(Base.active_project())
+        ap = Base.active_project()
+        ap !== nothing || error("no active project")
+        projectdir = dirname(ap)
 
         @debug "Generating gap.sh for active project ..."
     else
