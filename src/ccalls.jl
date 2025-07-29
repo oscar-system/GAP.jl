@@ -19,7 +19,7 @@ import Base: getproperty, hasproperty, setproperty!, propertynames
 #
 # The 'assume_effects' is needed for tab completion of "nested" constructs,
 # e.g. when entering `GAP.Globals.MTX.S` on the REPL then pressing TAB.
-Compat.@assume_effects :foldable !:consistent function _GAP_TO_JULIA(ptr::Ptr{Cvoid})
+Base.@assume_effects :foldable !:consistent function _GAP_TO_JULIA(ptr::Ptr{Cvoid})
     ptr == C_NULL && return nothing
     # convert immediate ints and FFEs directly, to avoid (un)boxing
     as_int = reinterpret(Int, ptr)
@@ -176,7 +176,7 @@ end
 #
 # The 'assume_effects' is needed for tab completion of "nested" constructs,
 # e.g. when entering `GAP.Globals.MTX.S` on the REPL then pressing TAB.
-Compat.@assume_effects :foldable !:consistent function _ValueGlobalVariable(name::Union{AbstractString,Symbol})
+Base.@assume_effects :foldable !:consistent function _ValueGlobalVariable(name::Union{AbstractString,Symbol})
     return @ccall libgap.GAP_ValueGlobalVariable(name::Cstring)::Ptr{Cvoid}
 end
 
