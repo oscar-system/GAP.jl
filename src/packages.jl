@@ -16,7 +16,7 @@ import Downloads
 import FileWatching: Pidfile
 import Scratch: @get_scratch!
 import ...GAP: disable_error_handler, Globals, GapObj, replace_global!, RNamObj, Wrappers
-import ...GAP: gap_pkg_jlls, Compat, GAP_VERSION, GAP_jll, GAP_lib_jll
+import ...GAP: gap_pkg_jlls, GAP_VERSION, GAP_jll, GAP_lib_jll
 import ...GAP.Setup: gaproot_for_building
 
 gap_packages_rootdir() = @get_scratch!("gap_packagedir_v$(GAP_VERSION.major).$(GAP_VERSION.minor)")

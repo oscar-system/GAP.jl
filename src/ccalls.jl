@@ -10,7 +10,6 @@
 ##
 
 ## Internal ccall's
-import Compat # for Base.@assume_effects emulation in Julia <= 1.7
 
 import Base: getproperty, hasproperty, setproperty!, propertynames
 
