@@ -319,7 +319,7 @@ function versioninfo(io::IO = stdout; jll::Bool = false, full::Bool = false, pad
   if full
     jll = true
   end
-  println(io, "GAP.jl version ", Compat.pkgversion(@__MODULE__))
+  println(io, "GAP.jl version ", Base.pkgversion(@__MODULE__))
   GAP.Packages.versioninfo(io; GAP = true, full = full, jll = jll, padding = padding)
 end
 
