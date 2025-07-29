@@ -583,7 +583,7 @@ function versioninfo(io::IO = stdout; GAP::Bool = false, jll::Bool = false, full
     if GAP
       deps = vcat(deps, [GAP_jll, GAP_lib_jll])
     end
-    jlldeps = [(name = string(nameof(x)), version = Compat.pkgversion(x)) for x in deps]
+    jlldeps = [(name = string(nameof(x)), version = Base.pkgversion(x)) for x in deps]
     sort!(jlldeps, by = x -> x.name)
     jllnamewidth = maximum([length(d.name) for d in jlldeps]) + 2
     println(io, padding, "building on:")
