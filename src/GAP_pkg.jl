@@ -12,53 +12,40 @@
 import Artifacts: @artifact_str
 using BinaryWrappers
 
-const gap_pkgs_with_overrides = [
-    "ace"
-    "anupq"
-    "browse"
-    "caratinterface"
-    "cddinterface"
-    "cohomolo"
-    "crypting"
-    "curlinterface"
-    "cvec"
-    "datastructures"
-    "deepthought"
-    "digraphs"
-    "edim"
-    #"example"          # not useful
-    "ferret"
-    "float"
-    "fplsa"
-    "gauss"
-    #"grape"            # handled via nauty_jll below
-    "guava"
-    "io"
-    "json"
-    #"jupyterkernel"    # useful?
-    "kbmag"
-    "normalizinterface"
-    "nq"
-    "orb"
-    "profiling"
-    "semigroups"
-    "simpcomp"
-    #"xgap"             # useful?
-    "zeromqinterface"
-    ]
+import GAP_pkg_ace_jll
+import GAP_pkg_anupq_jll
+import GAP_pkg_browse_jll
+import GAP_pkg_caratinterface_jll
+import GAP_pkg_cddinterface_jll
+import GAP_pkg_cohomolo_jll
+import GAP_pkg_crypting_jll
+import GAP_pkg_curlinterface_jll
+import GAP_pkg_cvec_jll
+import GAP_pkg_datastructures_jll
+import GAP_pkg_deepthought_jll
+import GAP_pkg_digraphs_jll
+import GAP_pkg_edim_jll
+#import GAP_pkg_example_jll          # not useful
+import GAP_pkg_ferret_jll
+import GAP_pkg_float_jll
+import GAP_pkg_fplsa_jll
+import GAP_pkg_gauss_jll
+#import GAP_pkg_grape_jll            # handled via nauty_jll below
+import GAP_pkg_guava_jll
+import GAP_pkg_io_jll
+import GAP_pkg_json_jll
+#import GAP_pkg_jupyterkernel_jll    # useful?
+import GAP_pkg_kbmag_jll
+import GAP_pkg_normalizinterface_jll
+import GAP_pkg_nq_jll
+import GAP_pkg_orb_jll
+import GAP_pkg_profiling_jll
+import GAP_pkg_semigroups_jll
+import GAP_pkg_simpcomp_jll
+#import GAP_pkg_xgap_jll             # useful?
+import GAP_pkg_zeromqinterface_jll
 
-const gap_pkg_jlls = []
-
-# import JLLs from above
-for pkg in gap_pkgs_with_overrides
-    jll = Symbol("GAP_pkg_$(pkg)_jll")
-    @eval begin
-      import $jll
-      push!(gap_pkg_jlls, $jll)
-    end
-end
-
-push!(gap_pkg_jlls, Setup.GAP_pkg_juliainterface_jll)
+const gap_pkg_jlls = Module[]
 
 # GAP package "4ti2interface" uses executables from lib4ti2_jll
 import lib4ti2_jll
@@ -77,8 +64,11 @@ function gap_pkg_artifact_dir(pkgname)
 end
 
 function setup_overrides()
-    for pkg in gap_pkgs_with_overrides
-        jll = getproperty(GAP, Symbol("GAP_pkg_$(pkg)_jll"))
+    gap_pkg_jll_names = filter(startswith("GAP_pkg"), String.(names(GAP; imported=true)))
+    for pkg in gap_pkg_jll_names
+        jll = getproperty(GAP, Symbol(pkg))
+        @assert jll isa Module
+        pkg = pkg[9:end-4]
 
         # Crude heuristic: if the JLL has a `bin` directory then we assume it
         # contains executables the packages uses; otherwise assume it contains
