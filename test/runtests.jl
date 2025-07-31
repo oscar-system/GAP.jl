@@ -45,3 +45,8 @@ end
     @test success(pipeline(cmd; stdout, stderr))
   end
 end
+
+using Nemo
+
+include("NemoExt/gap_to_nemo.jl")
+include("NemoExt/nemo_to_gap.jl")

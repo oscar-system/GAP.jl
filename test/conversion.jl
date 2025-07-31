@@ -397,6 +397,23 @@ end
     @test GapObj(Set([4, 3, 1])) == x
     x = GAP.evalstr("[\"a\", \"b\", \"c\"]")
     @test GapObj(Set(["c", "b", "a"]); recursive = true) == x
+
+    for coll in [
+      [7, 1, 5, 3, 10],
+      [:c, :b, :a, :b],
+      [(1, :a), (1, :b), (2, :a), (2, :b)],
+    ]
+      # create a set
+      s = Set(coll)
+      # create sort duplicate free list (this is how GAP represents sets)
+      l = sort(unique(coll))
+
+      x = GapObj(s)
+      @test x == GapObj(l)
+
+      x = GapObj(s; recursive = true)
+      @test x == GapObj(l; recursive = true)
+    end
   end
 
   @testset "BitVectors" begin
