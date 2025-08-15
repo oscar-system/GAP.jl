@@ -155,6 +155,9 @@
     x = GAP.evalstr( "NewVector( IsPlistVectorRep, Integers, [ 0, 2, 5 ] )" )
     @test GAP.gap_to_julia(x) == Vector{Any}([0, 2, 5])
     @test GAP.gap_to_julia(Vector{Int}, x) == Vector{Int}([0, 2, 5])
+    x = GAP.evalstr( "[ [ 1, 2 ], ~[1] ]" )
+    y = GAP.gap_to_julia(Vector{Set{Int}}, x; recursive = true)
+    @test y[1] === y[2]
   end
 
   @testset "Matrices" begin
@@ -211,7 +214,7 @@
     y = GAP.gap_to_julia(Tuple{GAP.Obj,Any}, x; recursive = false)
     @test isa(y, Tuple)
     @test isa(y[1], GAP.Obj)
-    @test isa(y[2], Array)
+    @test isa(y[2], GapObj)
     @test isa(y[2][2], GAP.Obj)
   end
 
@@ -277,7 +280,7 @@
 
   @testset "Catch conversions to types that are not supported" begin
     xx = GapObj("a")
-    @test_throws ErrorException GAP.gap_to_julia(Dict{Int64,Int64}, xx)
+    @test_throws GAP.ConversionError GAP.gap_to_julia(Dict{Int64,Int64}, xx)
   end
 
   @testset "Test converting GAP lists with holes in them" begin
