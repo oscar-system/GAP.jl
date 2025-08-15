@@ -9,6 +9,10 @@
 ##  SPDX-License-Identifier: LGPL-3.0-or-later
 ##
 
+#############################################################################
+##
+## some utilities
+
 ## Show a specific error on conversion failure.
 struct ConversionError <: Base.Exception
     obj::Any
@@ -19,17 +23,325 @@ Base.showerror(io::IO, e::ConversionError) =
     print(io, "failed to convert $(typeof(e.obj)) to $(e.jl_type):\n $(e.obj)")
 
 """
-    RecDict
+    RecDict_j
 
 An internal type of GAP.jl used for tracking conversion results in `gap_to_julia`.
 """
-const RecDict = IdDict{Any,Any}
+const RecDict_j = IdDict{Any, IdDict{Type, Any}}
 
-const GapCacheDict = Union{Nothing,RecDict}
+const JuliaCacheDict = Union{Nothing,RecDict_j}
 
-## Conversion from GAP to Julia
+
+#############################################################################
+##
+## the function `gap_to_julia_internal`
+
 """
-    gap_to_julia(type, x, recursion_dict::Union{Nothing,RecDict}=nothing; recursive::Bool=true)
+    gap_to_julia_internal(::Type{T}, x::Any, rec_dict::JuliaCacheDict, ::Val{recursive}) where {T, recursive}
+
+returns an object of type `T` that corresponds to the GAP object `x`.
+
+The function `gap_to_julia` may call `gap_to_julia_internal`,
+but the other direction is not allowed.
+
+New methods for the conversion from GAP to Julia shall be implemented via
+methods for `gap_to_julia_internal` not for `gap_to_julia`.
+"""
+function gap_to_julia_internal end
+
+## Handle "conversion" to GAP.Obj and GapObj (may occur in recursions).
+gap_to_julia_internal(::Type{Obj}, x::Obj, ::JuliaCacheDict, ::Val{recursive}) where recursive = x
+gap_to_julia_internal(::Type{GapObj}, x::GapObj, ::JuliaCacheDict, ::Val{recursive}) where recursive = x
+
+## Integers
+gap_to_julia_internal(::Type{T}, x::GapInt, ::JuliaCacheDict, ::Val{recursive}) where {T<:Integer, recursive} = T(x)
+
+## Rationals
+gap_to_julia_internal(::Type{Rational{T}}, x::GapInt, ::JuliaCacheDict, ::Val{recursive}) where {T<:Integer, recursive} = Rational{T}(x)
+
+## Floats
+gap_to_julia_internal(::Type{T}, obj::GapObj, ::JuliaCacheDict, ::Val{recursive}) where {T<:AbstractFloat, recursive} = T(obj)
+
+## Chars
+gap_to_julia_internal(::Type{Char}, obj::GapObj, ::JuliaCacheDict, ::Val{recursive}) where recursive = Char(obj)
+gap_to_julia_internal(::Type{Cuchar}, obj::GapObj, ::JuliaCacheDict, ::Val{recursive}) where recursive = Cuchar(obj)
+
+## Strings
+gap_to_julia_internal(::Type{String}, obj::GapObj, ::JuliaCacheDict, ::Val{recursive}) where recursive = String(obj)
+
+## Symbols
+gap_to_julia_internal(::Type{Symbol}, obj::GapObj, ::JuliaCacheDict, ::Val{recursive}) where recursive = Symbol(obj)
+
+## Convert GAP string to Vector{UInt8}
+function gap_to_julia_internal(::Type{Vector{UInt8}}, obj::GapObj, ::JuliaCacheDict, ::Val{recursive}) where recursive
+    Wrappers.IsStringRep(obj) && return CSTR_STRING_AS_ARRAY(obj)
+    Wrappers.IsList(obj) && return UInt8[gap_to_julia_internal(UInt8, obj[i], nothing, Val(false)) for i = 1:length(obj)]
+    throw(ConversionError(obj, Vector{UInt8}))
+end
+
+## BitVectors
+gap_to_julia_internal(::Type{BitVector}, obj::GapObj, ::JuliaCacheDict, ::Val{recursive}) where recursive = BitVector(obj)
+
+## Ranges
+gap_to_julia_internal(::Type{T}, obj::GapObj, recursion_dict::JuliaCacheDict, ::Val{recursive}) where {T<:UnitRange, recursive} = T(obj)
+gap_to_julia_internal(::Type{T}, obj::GapObj, recursion_dict::JuliaCacheDict, ::Val{recursive}) where {T<:StepRange, recursive} = T(obj)
+
+## Functions
+function gap_to_julia_internal(::Type{Function}, obj::GapObj, ::JuliaCacheDict, ::Val{recursive}) where recursive
+  Wrappers.IS_JULIA_FUNC(obj) && return UnwrapJuliaFunc(obj)
+  throw(ConversionError(obj, Function))
+end
+
+
+## Now come conversions that support recursion.
+
+# helper functions for recursion in conversion from GAP to Julia
+function recursion_info_g(::Type{T}, obj, recursive::Bool, recursion_dict::JuliaCacheDict) where {T}
+    if recursive && recursion_dict === nothing
+        return RecDict_j()
+    else
+        return recursion_dict
+    end
+end
+
+function handle_recursion_g(obj, ::Type{T}, ret_val, rec::Bool, rec_dict::JuliaCacheDict) where T
+    if rec_dict !== nothing
+      if !haskey(rec_dict, obj)
+        rec_dict[obj] = IdDict{Type, Any}()
+      end
+      rec_dict[obj][T] = ret_val
+    end
+    return rec ? rec_dict : nothing
+end
+
+
+## Vectors
+function gap_to_julia_internal(
+    TT::Type{Vector{T}},
+    obj::GapObj,
+    recursion_dict::JuliaCacheDict,
+    ::Val{recursive},
+) where {T, recursive}
+
+    recursive && recursion_dict !== nothing && haskey(recursion_dict, obj) && haskey(recursion_dict[obj], TT) && return recursion_dict[obj][TT]
+    rec_dict = recursion_info_g(TT, obj, recursive, recursion_dict)
+
+    if Wrappers.IsList(obj)
+        islist = true
+    elseif Wrappers.IsVectorObj(obj)
+        islist = false
+        ELM_LIST = Wrappers.ELM_LIST
+    else
+        throw(ConversionError(obj, TT))
+    end
+
+    len_list = length(obj)
+    new_array = TT(undef, len_list)
+    recursion_dict = handle_recursion_g(obj, TT, new_array, recursive, rec_dict)
+    for i = 1:len_list
+        if islist
+            current_obj = ElmList(obj, i)  # returns 'nothing' for holes in the list
+        else
+            # vector objects aren't lists,
+            # but the function for accessing entries is `ELM_LIST`
+            current_obj = ELM_LIST(obj, i)
+        end
+        if recursive && !isbitstype(typeof(current_obj))
+            new_array[i] =
+                gap_to_julia_internal(T, current_obj, recursion_dict, Val(recursive))
+        else
+            new_array[i] = current_obj
+        end
+    end
+
+    return new_array::TT
+end
+
+## Matrices or lists of lists
+function gap_to_julia_internal(
+    TT::Type{Matrix{T}},
+    obj::GapObj,
+    recursion_dict::JuliaCacheDict,
+    ::Val{recursive},
+) where {T, recursive}
+
+    recursive && recursion_dict !== nothing && haskey(recursion_dict, obj) && haskey(recursion_dict[obj], TT) && return recursion_dict[obj][TT]
+    rec_dict = recursion_info_g(TT, obj, recursive, recursion_dict)
+
+    if Wrappers.IsMatrixObj(obj)
+        nrows = Wrappers.NumberRows(obj)::Int
+        ncols = Wrappers.NumberColumns(obj)::Int
+    elseif Wrappers.IsList(obj)
+        nrows = length(obj)
+        ncols = nrows == 0 ? 0 : length(obj[1])
+    else
+        throw(ConversionError(obj, TT))
+    end
+
+    elm = Wrappers.ELM_MAT
+    new_array = TT(undef, nrows, ncols)
+    recursion_dict = handle_recursion_g(obj, TT, new_array, recursive, rec_dict)
+
+    for i = 1:nrows, j = 1:ncols
+        current_obj = elm(obj, i, j)
+        if recursive && !isbitstype(typeof(current_obj))
+            new_array[i, j] =
+                gap_to_julia_internal(T, current_obj, recursion_dict, Val(recursive))
+        else
+            new_array[i, j] = current_obj
+        end
+    end
+    return new_array::TT
+end
+
+## Sets
+## Assume that the argument `obj` of this function is not self-referential,
+## for example we cannot really sort a self-referential GAP list.
+## Then we need not worry about creating the result in the end,
+## and then adding it to the dictionary that is needed for the recursion.
+function gap_to_julia_internal(
+    TT::Type{Set{T}},
+    obj::GapObj,
+    recursion_dict::JuliaCacheDict,
+    ::Val{recursive},
+) where {T, recursive}
+
+    recursive && recursion_dict !== nothing && haskey(recursion_dict, obj) && haskey(recursion_dict[obj], TT) && return recursion_dict[obj][TT]
+    rec_dict = recursion_info_g(TT, obj, recursive, recursion_dict)
+
+    if Wrappers.IsCollection(obj)
+        newobj = Wrappers.AsSet(obj)
+    elseif Wrappers.IsList(obj)
+        # The list entries may be not comparable via `<`.
+        newobj = Wrappers.DuplicateFreeList(obj)
+    else
+        throw(ConversionError(obj, TT))
+    end
+    len_list = length(newobj)
+    new_array = Vector{T}(undef, len_list)
+    for i = 1:len_list
+        current_obj = ElmList(newobj, i)
+        if recursive && !isbitstype(typeof(current_obj))
+            new_array[i] =
+                gap_to_julia_internal(T, current_obj, rec_dict, Val(recursive))
+        else
+            new_array[i] = current_obj
+        end
+    end
+    ret_val = TT(new_array)
+    handle_recursion_g(obj, TT, ret_val, recursive, rec_dict)
+    return ret_val
+end
+
+## Tuples
+## Note that the tuple type prescribes the types of the entries,
+## thus we have to convert at least also the next layer,
+## even if `recursive == false` holds.
+function gap_to_julia_internal(
+    ::Type{T},
+    obj::GapObj,
+    recursion_dict::JuliaCacheDict,
+    ::Val{recursive},
+) where {T<:Tuple, recursive}
+
+    recursive && recursion_dict !== nothing && haskey(recursion_dict, obj) && haskey(recursion_dict[obj], T) && return recursion_dict[obj][T]
+    rec_dict = recursion_info_g(T, obj, recursive, recursion_dict)
+
+    !Wrappers.IsList(obj) && throw(ConversionError(obj, T))
+    parameters = T.parameters
+    len = length(parameters)
+    length(obj) == len ||
+        throw(ArgumentError("length of $obj does not match type $T"))
+    list = [
+        gap_to_julia_internal(parameters[i], obj[i], rec_dict, Val(recursive))
+        for i = 1:len
+    ]
+
+    ret_val = T(list)
+    recursion_dict = handle_recursion_g(obj, T, ret_val, recursive, rec_dict)
+    return ret_val
+end
+
+## Dictionaries
+function gap_to_julia_internal(
+    TT::Type{Dict{Symbol,T}},
+    obj::GapObj,
+    recursion_dict::JuliaCacheDict,
+    ::Val{recursive},
+) where {T, recursive}
+
+    recursive && recursion_dict !== nothing && haskey(recursion_dict, obj) && haskey(recursion_dict[obj], TT) && return recursion_dict[obj][TT]
+    rec_dict = recursion_info_g(TT, obj, recursive, recursion_dict)
+
+    !Wrappers.IsRecord(obj) && throw(ConversionError(obj, TT))
+    dict = TT()
+    recursion_dict = handle_recursion_g(obj, TT, dict, recursive, rec_dict)
+
+    names = Wrappers.RecNames(obj)
+    names_list = Vector{Symbol}(names)
+    for key in names_list
+      current_obj = getproperty(obj, key)
+      if recursive && !isbitstype(typeof(current_obj))
+        dict[key] =
+          gap_to_julia_internal(T, current_obj, recursion_dict, Val(true))
+      else
+        dict[key] = current_obj
+      end
+    end
+    return dict
+end
+
+## Generic method:
+## If it gets called then none of the more special methods is applicable.
+## - If `obj` is a `GapObj` to be "converted" to a supertype `T` of its type
+##   then return `obj` except if recursive conversion is requested.
+##   In the latter case check whether the default Julia type for `obj` is a
+##   subtype of `T`, and if yes then convert `obj` to that type.
+## - If `obj` is not a `GapObj` then recursion has no meaning,
+##   and either `obj` has already the type `T` (and we return `obj`
+##   or we give up because the GAP to Julia conversion is not the right
+##   situation.
+##
+function gap_to_julia_internal(
+    ::Type{T},
+    obj::Any,
+    recursion_dict::JuliaCacheDict,
+    ::Val{recursive},
+) where {T, recursive}
+
+  if obj isa GapObj
+    (obj isa T) && !recursive && return obj
+    D, rec = _default_type(obj, recursive)
+    (D === T || !(D <: T)) && throw(ConversionError(obj, T))
+    return gap_to_julia_internal(D, obj, recursion_dict, Val(rec))
+  else
+    (obj isa T) && return obj
+    throw(ConversionError(obj, T))
+  end
+end
+
+
+#############################################################################
+##
+## the function `gap_to_julia`
+##
+## - If no target type is given and if `obj` is a `GapObj`
+##   then choose a default Julia type.
+##
+## - If no type is given and if `obj` is another `GAP.Obj`
+##   then return the input.
+##
+## - If a type `T` is given but no specific method fits
+##   and if `obj` is a `GapObj`
+##   and if `recursive == true` holds then we want to convert recursively;
+##   for that, we take `_default_type(obj, true)` instead,
+##   and accept this type if it is a subtype of `T`.
+##   (This happens for example inside recursions where `T == Any`,
+##   for example when one wants to convert a GAP list of lists recursively
+##   to a `Vector{Any}`.)
+
+"""
+    gap_to_julia([type, ]x, recursion_dict::JuliaCacheDict=nothing; recursive::Bool=true)
 
 Try to convert the object `x` to a Julia object of type `type`.
 If `x` is a `GapObj` then the conversion rules are defined in the
@@ -40,7 +352,7 @@ defined in Julia by `type`.
 The parameter `recursion_dict` is used to preserve the identity
 of converted subobjects and should never be given by the user.
 
-For GAP lists and records, it makes sense to convert also the subobjects
+For GAP lists and records, it makes sense to either convert also the subobjects
 recursively, or to keep the subobjects as they are;
 the behaviour is controlled by `recursive`, which can be `true` or `false`.
 
@@ -81,11 +393,11 @@ The following `gap_to_julia` conversions are supported by GAP.jl.
 
 | GAP filter    | default Julia type       | other Julia types     |
 |---------------|--------------------------|-----------------------|
-| `IsInt`       | `BigInt`                 | `T <: Integer         |
+| `IsInt`       | `BigInt`                 | `T <: Integer`        |
 | `IsFFE`       | `FFE`                    |                       |
 | `IsBool`      | `Bool`                   |                       |
-| `IsRat`       | `Rational{BigInt}`       | `Rational{T}          |
-| `IsFloat`     | `Float64`                | `T <: AbstractFloat   |
+| `IsRat`       | `Rational{BigInt}`       | `Rational{T}`         |
+| `IsFloat`     | `Float64`                | `T <: AbstractFloat`  |
 | `IsChar`      | `Cuchar`                 | `Char`                |
 | `IsStringRep` | `String`                 | `Symbol`, `Vector{T}` |
 | `IsRangeRep`  | `StepRange{Int64,Int64}` | `Vector{T}`           |
@@ -95,275 +407,62 @@ The following `gap_to_julia` conversions are supported by GAP.jl.
 | `IsMatrixObj` | `Matrix{Any}`            | `Matrix{T}`           |
 | `IsRecord`    | `Dict{Symbol, Any}`      | `Dict{Symbol, T}`     |
 """
-function gap_to_julia(t::T, x::Any; recursive::Bool = true) where {T<:Type}
-    ## Default for conversion:
-    ## Base case for conversion (least specialized method): Allow converting any
-    ## Julia object x to type T, provided that the type of x is a subtype of T;
-    ## otherwise, explicitly reject the conversion.
-    ## As an example why this is useful, suppose you have a GAP list x (i.e., an
-    ## object of type GapObj) containing a bunch of Julia tuples. Then this method
-    ## enables conversion of that list to a Julia array of type Vector{Tuple},
-    ## like this:
-    ##    gap_to_julia(Vector{Tuple{Int64}},xx)
-    ## This works because first the gap_to_julia method with signature
-    ## (::Type{Vector{T}}, :: GapObj) is invoked, with T = Tuple{Int64}; this then
-    ## invokes gap_to_julia recursively with signature (::Tuple{Int64},::Any),
-    ## which ends up selecting the method below.
-    if !(typeof(x) <: t)
-        throw(ErrorException(
-            "Don't know how to convert value of type " *
-            string(typeof(x)) *
-            " to type " *
-            string(t),
-        ))
-    end
-    return x
-end
+function gap_to_julia end
 
-## If no method for the given arguments supports 'recursion_dict'
-## then assume that it is not needed.
-gap_to_julia(type_obj, obj, recursion_dict::Union{Nothing,RecDict}; recursive::Bool = true) =
-    gap_to_julia(type_obj, obj; recursive)
-
-## Default
-gap_to_julia(::Type{Any}, x::GapObj; recursive::Bool = true) =
-    gap_to_julia(x; recursive)
+gap_to_julia(x::Bool) = x
+gap_to_julia(x::Int) = x
+gap_to_julia(x::FFE) = x
+gap_to_julia(T::Type, x::Any; recursive::Bool = true) = gap_to_julia_internal(T, x, nothing, Val(recursive))
 gap_to_julia(::Type{Any}, x::Any; recursive::Bool = true) = x
 gap_to_julia(::T, x::Nothing; recursive::Bool = true) where {T<:Type} = nothing
 gap_to_julia(::Type{Any}, x::Nothing; recursive::Bool = true) = nothing
-
-## Handle "conversion" to GAP.Obj and GapObj (may occur in recursions).
-gap_to_julia(::Type{Obj}, x::Obj; recursive::Bool = true) = x
-gap_to_julia(::Type{GapObj}, x::GapObj; recursive::Bool = true) = x
-
-## Integers
-gap_to_julia(::Type{T}, x::GapInt; recursive::Bool = true) where {T<:Integer} = T(x)
-
-## Rationals
-gap_to_julia(::Type{Rational{T}}, x::GapInt; recursive::Bool = true) where {T<:Integer} = Rational{T}(x)
-
-## Floats
-gap_to_julia(::Type{T}, obj::GapObj; recursive::Bool = true) where {T<:AbstractFloat} = T(obj)
-
-## Chars
-gap_to_julia(::Type{Char}, obj::GapObj; recursive::Bool = true) = Char(obj)
-gap_to_julia(::Type{Cuchar}, obj::GapObj; recursive::Bool = true) = Cuchar(obj)
-
-## Strings
-gap_to_julia(::Type{String}, obj::GapObj; recursive::Bool = true) = String(obj)
-
-## Symbols
-gap_to_julia(::Type{Symbol}, obj::GapObj; recursive::Bool = true) = Symbol(obj)
-
-## Convert GAP string to Vector{UInt8}
-function gap_to_julia(::Type{Vector{UInt8}}, obj::GapObj; recursive::Bool = true)
-    Wrappers.IsStringRep(obj) && return CSTR_STRING_AS_ARRAY(obj)
-    Wrappers.IsList(obj) && return UInt8[gap_to_julia(UInt8, obj[i]) for i = 1:length(obj)]
-    throw(ConversionError(obj, Vector{UInt8}))
-end
-
-## BitVectors
-gap_to_julia(::Type{BitVector}, obj::GapObj; recursive::Bool = true) = BitVector(obj)
-
-## Vectors
-function gap_to_julia(
-    ::Type{Vector{T}},
-    obj::GapObj,
-    recursion_dict::RecDict = IdDict();
-    recursive::Bool = true,
-) where {T}
-    if Wrappers.IsList(obj)
-        islist = true
-    elseif Wrappers.IsVectorObj(obj)
-        islist = false
-        ELM_LIST = Wrappers.ELM_LIST
-    else
-        throw(ConversionError(obj, Vector{T}))
-    end
-
-    if !haskey(recursion_dict, obj)
-        len_list = length(obj)
-        new_array = Vector{T}(undef, len_list)
-        recursion_dict[obj] = new_array
-        for i = 1:len_list
-            if islist
-                current_obj = ElmList(obj, i)  # returns 'nothing' for holes in the list
-            else
-                # vector objects aren't lists,
-                # but the function for accessing entries is `ELM_LIST`
-                current_obj = ELM_LIST(obj, i)
-            end
-            if recursive && !isbitstype(typeof(current_obj))
-                new_array[i] = get!(recursion_dict, current_obj) do
-                    gap_to_julia(T, current_obj, recursion_dict; recursive = true)
-                end
-            else
-                new_array[i] = current_obj
-            end
-        end
-    end
-    return recursion_dict[obj]::Vector{T}
-end
-
-## Matrices or lists of lists
-function gap_to_julia(
-    type::Type{Matrix{T}},
-    obj::GapObj,
-    recursion_dict::RecDict = IdDict();
-    recursive::Bool = true,
-) where {T}
-    if haskey(recursion_dict, obj)
-        return recursion_dict[obj]::Matrix{T}
-    end
-    if Wrappers.IsMatrixObj(obj)
-        nrows = Wrappers.NumberRows(obj)::Int
-        ncols = Wrappers.NumberColumns(obj)::Int
-    elseif Wrappers.IsList(obj)
-        nrows = length(obj)
-        ncols = nrows == 0 ? 0 : length(obj[1])
-    else
-        throw(ConversionError(obj, type))
-    end
-
-    elm = Wrappers.ELM_MAT
-    new_array = type(undef, nrows, ncols)
-    if recursive
-        recursion_dict[obj] = new_array
-    end
-    for i = 1:nrows
-        for j = 1:ncols
-            current_obj = elm(obj, i, j)
-            if recursive
-                new_array[i, j] = get!(recursion_dict, current_obj) do
-                    gap_to_julia(T, current_obj, recursion_dict; recursive = true)
-                end
-            else
-                new_array[i, j] = current_obj
-            end
-        end
-    end
-    return new_array::Matrix{T}
-end
-
-## Sets
-## Assume that this function cannot be called inside recursions.
-## Note that Julia does not support `Set{Set{Int}}([[1], [1, 1]])`.
-## Without this assumption, we would have to construct the set
-## in the beginning, and then fill it up using `union!`.
-function gap_to_julia(::Type{Set{T}}, obj::GapObj; recursive::Bool = true) where {T}
-    if Wrappers.IsCollection(obj)
-        obj = Wrappers.AsSet(obj)
-    elseif Wrappers.IsList(obj)
-        # The list entries may be not comparable via `<`.
-        obj = Wrappers.DuplicateFreeList(obj)
-    else
-        throw(ConversionError(obj, Set{T}))
-    end
-    len_list = length(obj)
-    new_array = Vector{T}(undef, len_list)
-    if recursive
-        recursion_dict = IdDict()
-    end
-    for i = 1:len_list
-        current_obj = ElmList(obj, i)
-        if recursive
-            new_array[i] = get!(recursion_dict, current_obj) do
-                gap_to_julia(T, current_obj, recursion_dict; recursive = true)
-            end
-        else
-            new_array[i] = current_obj
-        end
-    end
-    return Set{T}(new_array)
-end
-
-## Tuples
-## Note that the tuple type prescribes the types of the entries,
-## thus we have to convert at least also the next layer,
-## even if `recursive == false` holds.
-function gap_to_julia(
-    ::Type{T},
-    obj::GapObj,
-    recursion_dict::RecDict = IdDict();
-    recursive::Bool = true,
-) where {T<:Tuple}
-    !Wrappers.IsList(obj) && throw(ConversionError(obj, T))
-    if !haskey(recursion_dict, obj)
-        parameters = T.parameters
-        len = length(parameters)
-        length(obj) == len ||
-            throw(ArgumentError("length of $obj does not match type $T"))
-        list = [
-            gap_to_julia(parameters[i], obj[i], recursion_dict; recursive)
-            for i = 1:len
-        ]
-        recursion_dict[obj] = T(list)
-    end
-    return recursion_dict[obj]::T
-end
-
-## Ranges
-gap_to_julia(::Type{T}, obj::GapObj; recursive::Bool = true) where {T<:UnitRange} = T(obj)
-gap_to_julia(::Type{T}, obj::GapObj; recursive::Bool = true) where {T<:StepRange} = T(obj)
-
-## Dictionaries
-function gap_to_julia(
-    ::Type{Dict{Symbol,T}},
-    obj::GapObj,
-    recursion_dict::RecDict = IdDict();
-    recursive::Bool = true,
-) where {T}
-    !Wrappers.IsRecord(obj) && throw(ConversionError(obj, Dict{Symbol,T}))
-    if !haskey(recursion_dict, obj)
-        names = Wrappers.RecNames(obj)
-        names_list = Vector{Symbol}(names)
-        dict = Dict{Symbol,T}()
-        recursion_dict[obj] = dict
-        for key in names_list
-            current_obj = getproperty(obj, key)
-            if recursive
-                dict[key] = get!(recursion_dict, current_obj) do
-                    gap_to_julia(T, current_obj, recursion_dict; recursive = true)
-                end
-            else
-                dict[key] = current_obj
-            end
-        end
-    end
-    return recursion_dict[obj]::Dict{Symbol,T}
-end
-
-## Generic conversions
 gap_to_julia(x::Any; recursive::Bool = true) = x
 
-function gap_to_julia(x::GapObj; recursive::Bool = true)
-    GAP_IS_INT(x) && return gap_to_julia(BigInt, x)
-    GAP_IS_RAT(x) && return gap_to_julia(Rational{BigInt}, x)
-    GAP_IS_MACFLOAT(x) && return gap_to_julia(Float64, x)
-    GAP_IS_CHAR(x) && return gap_to_julia(Cuchar, x)
-    # Do not choose this conversion for other lists in 'IsString'.
-    Wrappers.IsStringRep(x) && return gap_to_julia(String, x)
-    # Do not choose this conversion for other lists in 'IsRange'.
-    Wrappers.IsRangeRep(x) && return gap_to_julia(StepRange{Int64,Int64}, x)
-    # Do not choose this conversion for other lists in 'IsBlist'.
-    Wrappers.IsBlistRep(x) && return gap_to_julia(BitVector, x)
-    Wrappers.IsList(x) && return gap_to_julia(Vector{Any}, x; recursive)
-    Wrappers.IsMatrixObj(x) && return gap_to_julia(Matrix{Any}, x; recursive)
-    Wrappers.IsVectorObj(x) && return gap_to_julia(Vector{Any}, x; recursive)
-    Wrappers.IsRecord(x) && return gap_to_julia(Dict{Symbol,Any}, x; recursive)
-    Wrappers.IS_JULIA_FUNC(x) && return UnwrapJuliaFunc(x)
-    throw(ConversionError(x, "any known type"))
+function _default_type(x::GapObj, recursive::Bool)
+  GAP_IS_INT(x) && return BigInt, false
+  GAP_IS_RAT(x) && return Rational{BigInt}, false
+  GAP_IS_MACFLOAT(x) && return Float64, false
+  GAP_IS_CHAR(x) && return Cuchar, false
+  Wrappers.IsStringRep(x) && return String, false
+  Wrappers.IsRangeRep(x) && return StepRange{Int64,Int64}, false
+  Wrappers.IsBlistRep(x) && return BitVector, false
+  Wrappers.IsList(x) && return Vector{Any}, recursive
+  Wrappers.IsMatrixObj(x) && return Matrix{Any}, recursive
+  Wrappers.IsVectorObj(x) && return Vector{Any}, recursive
+  Wrappers.IsRecord(x) && return Dict{Symbol,Any}, recursive
+  Wrappers.IS_JULIA_FUNC(x) && return Function, false
+  return Any, false
 end
 
-## for the GAP function GAPToJulia:
-## turning arguments into keyword arguments is easier in Julia than in GAP
+function gap_to_julia(x::GapObj; recursive::Bool = true)
+  T, recursive = _default_type(x, recursive)
+  T == Any && throw(ConversionError(x, "any known type"))
+  return gap_to_julia_internal(T, x, nothing, Val(recursive))
+end
+
+
+#############################################################################
+##
+## the function `_gap_to_julia`
+
+"""
+    _gap_to_julia([::Type{T}, ]x::Obj[, recursive::Bool])
+
+This function implements the GAP function GAPToJulia.
+It just delegates to `gap_to_julia`.
+Its purpose is to turn the `recursive` argument into a keyword argument,
+which is easier in Julia than in GAP.
+"""
 _gap_to_julia(x::Obj) = gap_to_julia(x)
-
-_gap_to_julia(x::Bool, recursive::Bool) = x
-_gap_to_julia(x::Int, recursive::Bool) = x
-_gap_to_julia(x::FFE, recursive::Bool) = x
-_gap_to_julia(x::GapObj, recursive::Bool) = gap_to_julia(x; recursive)
-
 _gap_to_julia(::Type{T}, x::Obj) where {T} = gap_to_julia(T, x)
 _gap_to_julia(::Type{T}, x::Obj, recursive::Bool) where {T} =
     gap_to_julia(T, x; recursive)
+
+# for GapObj, gap_to_julia knows default types
+_gap_to_julia(x::GapObj, recursive::Bool) = gap_to_julia(x; recursive)
+
+# for GAP.Obj except GapObj, we can do better
+_gap_to_julia(x::Bool, recursive::Bool) = x
+_gap_to_julia(x::Int, recursive::Bool) = x
+_gap_to_julia(x::FFE, recursive::Bool) = x
+

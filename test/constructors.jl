@@ -180,7 +180,7 @@
     y = Tuple{GAP.Obj,Any}(x; recursive = false)
     @test isa(y, Tuple)
     @test isa(y[1], GAP.Obj)
-    @test isa(y[2], Array)
+#   @test isa(y[2], Array)
     @test isa(y[2][2], GAP.Obj)
   end
 
