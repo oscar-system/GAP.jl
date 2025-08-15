@@ -9,11 +9,23 @@
 ##  SPDX-License-Identifier: LGPL-3.0-or-later
 ##
 
-using Aqua
+module NemoExt
 
-@testset "Aqua.jl" begin
-    Aqua.test_all(
-        GAP;
-        ambiguities=false, # some from AbstractAlgebra.jl show up here
-    )
-end
+using GAP
+using Nemo
+
+import GAP: GapObj, Wrappers
+
+import Nemo:
+  QQMatrix,
+  QQFieldElem,
+  ZZMatrix,
+  ZZRingElem,
+  characteristic,
+  matrix
+
+include("misc.jl")
+include("gap_to_nemo.jl")
+include("nemo_to_gap.jl")
+
+end # module

@@ -23,8 +23,8 @@
 jl_module_t * gap_module;
 
 static jl_value_t *    JULIA_ERROR_IOBuffer;
-static jl_function_t * JULIA_FUNC_take_inplace;
-static jl_function_t * JULIA_FUNC_showerror;
+static jl_value_t *    JULIA_FUNC_take_inplace;
+static jl_value_t *    JULIA_FUNC_showerror;
 static jl_datatype_t * JULIA_GAPFFE_type;
 
 static jl_datatype_t * gap_datatype_mptr;
@@ -137,7 +137,7 @@ static Obj Func_WrapJuliaFunction(Obj self, Obj func)
     if (!IS_JULIA_OBJ(func))
         ErrorMayQuit("argument is not a julia object", 0, 0);
 
-    jl_function_t * f = (jl_function_t *)GET_JULIA_OBJ(func);
+    jl_value_t * f = (jl_value_t *)GET_JULIA_OBJ(func);
     return WrapJuliaFunc(f);
 }
 

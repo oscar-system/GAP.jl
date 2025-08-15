@@ -23,6 +23,8 @@ import GAP: @wrap
 @wrap ASS_REC(x::Any, y::Int, v::Any)::Nothing
 @wrap AsSet(x::GapObj)::GapObj
 @wrap ASSS_LIST(x::Any, y::Any, v::Any)::Any
+@wrap Characteristic(x::Any)::GapInt
+@wrap CHAR_FFE_DEFAULT(x::Any)::GapInt
 @wrap CopyToStringRep(x::Any)::Any
 @wrap DenominatorRat(x::Any)::GapInt
 @wrap DIFF(x::Any, y::Any)::Any
@@ -49,6 +51,7 @@ import GAP: @wrap
 @wrap IsIterator(x::Any)::Bool
 @wrap IsList(x::Any)::Bool
 @wrap IsMatrixObj(x::Any)::Bool
+@wrap IsMatrixOrMatrixObj(x::Any)::Bool
 @wrap IsPackageLoaded(x::GapObj)::Bool
 @wrap IsRange(x::Any)::Bool
 @wrap IsRangeRep(x::Any)::Bool

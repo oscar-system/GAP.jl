@@ -15,15 +15,8 @@ import REPL.REPLCompletions: completions
 
 # a helper function, not to be documented
 function _setglobal(M::Module, name::Symbol, val::Any)
-  @static if isdefined(Core, :setglobal!)
-    # `setglobal!` is available in Julia 1.9.
     Core.eval(M, Expr(:global, name)) # see https://github.com/JuliaLang/julia/pull/54678
     return invokelatest(Core.setglobal!, M, name, val)
-  else
-    # `jl_set_global` is available up to Julia 1.8.
-    @ccall jl_set_global(M::Any, name::Any, val::Any)::Cvoid
-    return val
-  end
 end
 
 # avoid the deprecated `Core._apply`

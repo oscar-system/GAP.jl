@@ -60,11 +60,11 @@ end
 
 
 """
-    CoefficientVectorOfNumberFieldElement( elm::Nemo.nf_elem, d::Int )
+    CoefficientVectorOfNumberFieldElement( elm::Nemo.AbsSimpleNumFieldElem, d::Int )
 > Return the coefficient vector of the number field element `elm`,
 > as an array of length `d` and consisting of `Nemo.QQFieldElem` objects.
 """
-function CoefficientVectorOfNumberFieldElement( elm::Nemo.nf_elem, d::Int )
+function CoefficientVectorOfNumberFieldElement( elm::Nemo.AbsSimpleNumFieldElem, d::Int )
     local arr, i
 
     arr = Vector{Nemo.QQFieldElem}( undef, d )
@@ -77,7 +77,7 @@ end
 
 
 """
-    CoefficientVectorsNumDenOfNumberFieldElement( elm::Nemo.nf_elem, d::Int )
+    CoefficientVectorsNumDenOfNumberFieldElement( elm::Nemo.AbsSimpleNumFieldElem, d::Int )
 > Return the tuple that consists of the coefficient vectors
 > of the numerators and the denominators of the coefficient vector
 > of the number field element `elm`,

@@ -21,7 +21,7 @@ import Nemo
 > of the root of unity `exp( 2*pi*I*(k-1) // N )`.
 """
 function arbCyc( coeffs::Vector, R::Nemo.ArbField )
-    val::Nemo.arb = zero( R )
+    val::Nemo.ArbFieldElem = zero( R )
     N::Int = length( coeffs )
     for k = 1:N
       if coeffs[k] != 0
@@ -45,7 +45,7 @@ function isPositiveRealPartCyc( coeffs::Vector )
     prec::Int = 16
     while true
       R::Nemo.ArbField = Nemo.ArbField( prec )
-      x::Nemo.arb = arbCyc( coeffs, R )
+      x::Nemo.ArbFieldElem = arbCyc( coeffs, R )
       if Nemo.is_positive( x )
         return ( true, prec )
       elseif Nemo.is_negative( x )

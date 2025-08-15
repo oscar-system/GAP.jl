@@ -9,11 +9,7 @@
 ##  SPDX-License-Identifier: LGPL-3.0-or-later
 ##
 
-using Aqua
-
-@testset "Aqua.jl" begin
-    Aqua.test_all(
-        GAP;
-        ambiguities=false, # some from AbstractAlgebra.jl show up here
-    )
-end
+# TODO: the following could be made faster for GAP.FFE by extracting the
+# characteristic directly from the GAP FFE
+characteristic(x::GAP.FFE) = ZZRingElem(Wrappers.CHAR_FFE_DEFAULT(x))
+characteristic(x::GapObj) = ZZRingElem(Wrappers.Characteristic(x))

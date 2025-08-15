@@ -13,10 +13,10 @@
 module Packages
 
 import Downloads
-import Pidfile
+import FileWatching: Pidfile
 import Scratch: @get_scratch!
 import ...GAP: disable_error_handler, Globals, GapObj, replace_global!, RNamObj, Wrappers
-import ...GAP: gap_pkg_jlls, Compat, GAP_VERSION, GAP_jll, GAP_lib_jll
+import ...GAP: gap_pkg_jlls, GAP_VERSION, GAP_jll, GAP_lib_jll
 import ...GAP.Setup: gaproot_for_building
 
 gap_packages_rootdir() = @get_scratch!("gap_packagedir_v$(GAP_VERSION.major).$(GAP_VERSION.minor)")
@@ -583,7 +583,7 @@ function versioninfo(io::IO = stdout; GAP::Bool = false, jll::Bool = false, full
     if GAP
       deps = vcat(deps, [GAP_jll, GAP_lib_jll])
     end
-    jlldeps = [(name = string(nameof(x)), version = Compat.pkgversion(x)) for x in deps]
+    jlldeps = [(name = string(nameof(x)), version = Base.pkgversion(x)) for x in deps]
     sort!(jlldeps, by = x -> x.name)
     jllnamewidth = maximum([length(d.name) for d in jlldeps]) + 2
     println(io, padding, "building on:")

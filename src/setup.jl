@@ -14,7 +14,7 @@ module Setup
 using ..GAP: GAP
 import GAP_jll
 import GAP_pkg_juliainterface_jll
-import Pidfile
+import FileWatching: Pidfile
 
 export create_gap_sh
 
@@ -49,26 +49,6 @@ function assure_gaproot_for_building(gaproot::String)
 
     @debug "Set up sysinfo.gap and gac at $(gaproot)"
     create_sysinfo_gap_and_gac(gaproot)
-end
-
-# ensure `link` is a symlink pointing to `target` in a way that is hopefully
-# safe against races with other Julia processes doing the exact same thing
-function force_symlink(target::AbstractString, link::AbstractString)
-    # Do nothing if the symlink already exists and points at the right
-    # target
-    if Base.islink(link) && Base.readlink(link) == target
-      return nothing
-    end
-
-    # Otherwise we create the symlink with a temporary name, and then use
-    # an atomic `rename` to rename it to the `link` name. The latter
-    # unfortunately requires invoking an undocumented function.
-    # But all of this together helps avoid a race condition if multiple
-    # Julia instances try to create the symlink concurrently
-    tmpfile = tempname(dirname(abspath(link)); cleanup=false)
-    symlink(target, tmpfile)
-    Base.Filesystem.rename(tmpfile, link)
-    return nothing
 end
 
 function read_sysinfo_gap(fname::String)
@@ -106,28 +86,32 @@ end
 
 
 function select_compiler(lang::String, candidates::Vector{String}, extension::String)
-    tmpfilename = tempname()
-    open(tmpfilename * extension, "w") do file
-        write(file, """
-        #include <stdio.h>
-        int main(int argc, char **argv) {
-          return 0;
-        }
-        """)
-    end
-    for compiler in candidates
-        try
-            rm(tmpfilename; force = true)
-            run(`$(compiler) -o $(tmpfilename) $(tmpfilename)$(extension)`)
-            run(`$(tmpfilename)`)
-            @debug "selected $(compiler) as $(lang) compiler"
-            return compiler
-        catch
-            @debug "$(lang) compiler candidate '$(compiler)' not working"
+    mktempdir() do tmpdir
+        cd(tmpdir) do
+            tmpfilename = "gapcomptest"
+            srcfilename = tmpfilename * extension
+            open(srcfilename, "w") do file
+                write(file, """
+                #include <stdio.h>
+                int main(int argc, char **argv) {
+                  return 0;
+                }
+                """)
+            end
+            for compiler in candidates
+                try
+                    run(`$(compiler) -o $(tmpfilename) $(srcfilename)`)
+                    run(`$(tmpfilename)`)
+                    @debug "selected $(compiler) as $(lang) compiler"
+                    return compiler
+                catch
+                    @debug "$(lang) compiler candidate '$(compiler)' not working"
+                end
+            end
+            @debug "Could not locate a working $(lang) compiler"
+            return first(candidates)
         end
     end
-    @debug "Could not locate a working $(lang) compiler"
-    return first(candidates)
 end
 
 include("julia-config.jl")

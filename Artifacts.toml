@@ -279,14 +279,14 @@ git-tree-sha1 = "abdec5749420f898dfbaad5f963ad808dbb0e52f"
     url = "https://files.gap-system.org/pkg/cubefree-1.20.tar.gz"
 
 [GAP_pkg_curlinterface]
-git-tree-sha1 = "b8a06a673e380404d268262e4a73863ca5e0374b"
+git-tree-sha1 = "d0bc5391d133cdd06643ebde1be7b15ce288ddcc"
 
     [[GAP_pkg_curlinterface.download]]
-    sha256 = "6f758ad512edf033ba8892875c3216cf111feb5b856909b84889cad89c78a4ff"
-    url = "https://github.com/gap-packages/curlInterface/releases/download/v2.4.0/curlInterface-2.4.0.tar.gz"
+    sha256 = "f1939d6bde96aa096274f9b09ede046cdee7c3a8443db45940164c1905c1ee38"
+    url = "https://github.com/gap-packages/curlInterface/releases/download/v2.4.1/curlInterface-2.4.1.tar.gz"
     [[GAP_pkg_curlinterface.download]]
-    sha256 = "6f758ad512edf033ba8892875c3216cf111feb5b856909b84889cad89c78a4ff"
-    url = "https://files.gap-system.org/pkg/curlInterface-2.4.0.tar.gz"
+    sha256 = "f1939d6bde96aa096274f9b09ede046cdee7c3a8443db45940164c1905c1ee38"
+    url = "https://files.gap-system.org/pkg/curlInterface-2.4.1.tar.gz"
 
 [GAP_pkg_cvec]
 git-tree-sha1 = "408ae9c34b89b536a0da80d9951896af9db6a9b1"

@@ -110,7 +110,7 @@ static ALWAYS_INLINE Obj DoCallJuliaFunc(Obj func, const int narg, Obj * a)
         a[i] = (Obj)julia_gap(a[i]);
     }
 
-    jl_function_t * f = (jl_function_t *)GET_JULIA_FUNC(func);
+    jl_value_t * f = (jl_value_t *)GET_JULIA_FUNC(func);
     switch (narg) {
     case 0:
         result = jl_call0(f);
@@ -197,7 +197,7 @@ static Obj DoCallJuliaFuncXArg(Obj func, Obj args)
 //
 //
 //
-Obj WrapJuliaFunc(jl_function_t * function)
+Obj WrapJuliaFunc(jl_value_t * function)
 {
     BEGIN_GAP_SYNC();
     Obj name = MakeImmString(jl_symbol_name(jl_gf_name(function)));
