@@ -112,10 +112,18 @@ gap> GAP_jl.Obj(x);
 #
 gap> int := GAPToJulia( Julia.Base.Int64, 11 );
 11
+gap> int = GAPToJulia( 11, true );
+true
 gap> JuliaToGAP(IsInt,  int );
 11
 gap> GAP_jl.Obj( int );
 11
+
+#
+gap> GAPToJulia( Z(3) );
+Z(3)
+gap> GAPToJulia( Z(3), false );
+Z(3)
 
 #
 gap> x := JuliaEvalString("BigInt(123)");;
@@ -190,6 +198,8 @@ gap> GAPToJulia( true );
 true
 gap> GAPToJulia( false );
 false
+gap> GAPToJulia( true, false );
+true
 
 ##
 gap> list:= GAPToJulia( [ 1, 2, 3 ] );
