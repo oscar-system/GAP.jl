@@ -12,6 +12,9 @@
 @testset "conversion from GAP" begin
 
   @testset "Defaults" begin
+    @test GAP.gap_to_julia(true) == true
+    @test GAP.gap_to_julia(1) == 1
+    @test GAP.gap_to_julia(Z(3)) == Z(3)
     @test GAP.gap_to_julia(Any, true) == true
     @test GAP.gap_to_julia(GAP.Obj, true) == true
     @test GAP.gap_to_julia(Any, "foo") == "foo"
@@ -196,6 +199,8 @@
     x = GAP.evalstr("[ Z(2), Z(3) ]")  # a non-collection
     y = [GAP.evalstr("Z(2)"), GAP.evalstr("Z(3)")]
     #@test GAP.gap_to_julia(Set{GAP.FFE}, x) == Set(y)
+    @test GAP.gap_to_julia(Set{Int}, GAP.evalstr("[ 1, true ]")) == Set([1, true])
+    @test_throws GAP.ConversionError GAP.gap_to_julia(Set{Int}, GAP.evalstr("rec( 1:= 1 )"))
   end
 
   @testset "Tuples" begin
@@ -257,9 +262,17 @@
     @test isa(y[:b], GAP.Obj)
   end
 
+  @testset "Julia Functions" begin
+    @test GAP.gap_to_julia(GAP.Globals.Julia.sqrt) === sqrt
+    @test_throws GAP.ConversionError GAP.gap_to_julia(Function, 1)
+  end
+
   @testset "Default" begin
     x = GAP.evalstr("(1,2,3)")
     @test_throws GAP.ConversionError GAP.gap_to_julia(x)
+    @test_throws GAP.ConversionError GAP.gap_to_julia(Int, (1, 2))
+    @test GAP.gap_to_julia(Nothing, nothing) == nothing
+    @test GAP.gap_to_julia(Any, nothing) == nothing
   end
 
   @testset "Conversions involving circular references" begin
