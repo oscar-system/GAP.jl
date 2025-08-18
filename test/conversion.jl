@@ -14,7 +14,7 @@
   @testset "Defaults" begin
     @test GAP.gap_to_julia(true) == true
     @test GAP.gap_to_julia(1) == 1
-    @test GAP.gap_to_julia(Z(3)) == Z(3)
+    @test GAP.gap_to_julia(GAP.Globals.Z(3)) == GAP.Globals.Z(3)
     @test GAP.gap_to_julia(Any, true) == true
     @test GAP.gap_to_julia(GAP.Obj, true) == true
     @test GAP.gap_to_julia(Any, "foo") == "foo"

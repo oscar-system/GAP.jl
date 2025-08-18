@@ -10,9 +10,11 @@
 ##
 
 """
-    RecDict_g
+    RecDict_g = IdDict{Any,Any}
 
 An internal type of GAP.jl used for tracking conversion results in `julia_to_gap`.
+The value stored at the key `obj` is the result
+of the Julia to GAP conversion of `obj`.
 """
 const RecDict_g = IdDict{Any,Any}
 
@@ -170,7 +172,7 @@ GAP.@install GapObj(x::AbstractString) = MakeString(string(x))
 GAP.@install GapObj(x::Symbol) = MakeString(string(x))
 
 # helper functions for recursion (conversion from Julia to GAP)
-function recursion_info_j(::Type{T}, obj, recursive::Bool, recursion_dict::GapCacheDict) where {T}
+function recursion_info_g(::Type{T}, obj, recursive::Bool, recursion_dict::GapCacheDict) where {T}
     rec = recursive && _needs_tracking_julia_to_gap(T)
     if rec && recursion_dict === nothing
         rec_dict = RecDict_g()
@@ -183,6 +185,7 @@ end
 
 function handle_recursion(obj, ret_val, rec::Bool, rec_dict::GapCacheDict)
     if rec_dict !== nothing
+        # We assume that `obj` is not yet cached.
         rec_dict[obj] = ret_val
     end
     return rec ? rec_dict : nothing
@@ -196,7 +199,7 @@ function GapObj_internal(
 ) where {T, recursive}
 
     recursive && recursion_dict !== nothing && haskey(recursion_dict, obj) && return recursion_dict[obj]
-    rec, rec_dict = recursion_info_j(T, obj, recursive, recursion_dict)
+    rec, rec_dict = recursion_info_g(T, obj, recursive, recursion_dict)
 
     len = length(obj)
     ret_val = NewPlist(len)
@@ -232,7 +235,7 @@ function GapObj_internal(
 ) where {T, recursive}
 
     recursive && recursion_dict !== nothing && haskey(recursion_dict, obj) && return recursion_dict[obj]
-    rec, rec_dict = recursion_info_j(T, obj, recursive, recursion_dict)
+    rec, rec_dict = recursion_info_g(T, obj, recursive, recursion_dict)
 
     ret_val = NewPlist(length(obj))
 
@@ -260,7 +263,7 @@ function GapObj_internal(
 ) where {T, recursive}
 
     recursive && recursion_dict !== nothing && haskey(recursion_dict, obj) && return recursion_dict[obj]
-    rec, rec_dict = recursion_info_j(T, obj, recursive, recursion_dict)
+    rec, rec_dict = recursion_info_g(T, obj, recursive, recursion_dict)
 
     rows = size(obj, 1)
     ret_val = NewPlist(rows)
@@ -298,7 +301,7 @@ function GapObj_internal(
 ) where {T, S<:Union{Symbol,AbstractString}, recursive}
 
     recursive && recursion_dict !== nothing && haskey(recursion_dict, obj) && return recursion_dict[obj]
-    rec, rec_dict = recursion_info_j(T, obj, recursive, recursion_dict)
+    rec, rec_dict = recursion_info_g(T, obj, recursive, recursion_dict)
 
     ret_val = NewPrecord(0)
 
