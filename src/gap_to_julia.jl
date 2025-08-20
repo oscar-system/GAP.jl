@@ -174,21 +174,20 @@ function gap_to_julia_internal(
     end
 
     recursive && recursion_dict !== nothing && haskey(recursion_dict, (obj, TT)) && return recursion_dict[(obj, TT)]
-    rec_dict = recursion_info_j(TT, obj, recursive, recursion_dict)
 
-    len_list = length(newobj)
-    new_array = Vector{T}(undef, len_list)
-    for i = 1:len_list
+    ret_val = Set{T}()
+
+    rec_dict = recursion_info_j(TT, obj, recursive, recursion_dict)
+    handle_recursion((obj, TT), ret_val, recursive, rec_dict)
+
+    for i = 1:length(newobj)
         current_obj = ElmList(newobj, i)
         if recursive && !isbitstype(typeof(current_obj))
-            new_array[i] =
-                gap_to_julia_internal(T, current_obj, rec_dict, Val(recursive))
+            push!(ret_val, gap_to_julia_internal(T, current_obj, rec_dict, Val(recursive)))
         else
-            new_array[i] = current_obj
+            push!(ret_val, current_obj)
         end
     end
-    ret_val = TT(new_array)
-    handle_recursion((obj, TT), ret_val, recursive, rec_dict)
     return ret_val
 end
 
