@@ -168,11 +168,11 @@ function GapObj_internal(
 ) where {T, recursive}
 
     recursive && recursion_dict !== nothing && haskey(recursion_dict, obj) && return recursion_dict[obj]
-    rec, rec_dict = recursion_info_g(T, obj, recursive, recursion_dict)
 
     len = length(obj)
     ret_val = NewPlist(len)
 
+    rec, rec_dict = recursion_info_g(T, obj, recursive, recursion_dict)
     recursion_dict = handle_recursion(obj, ret_val, rec, rec_dict)
 
     # Set the subobjects.
@@ -204,10 +204,10 @@ function GapObj_internal(
 ) where {T, recursive}
 
     recursive && recursion_dict !== nothing && haskey(recursion_dict, obj) && return recursion_dict[obj]
-    rec, rec_dict = recursion_info_g(T, obj, recursive, recursion_dict)
 
     ret_val = NewPlist(length(obj))
 
+    rec, rec_dict = recursion_info_g(T, obj, recursive, recursion_dict)
     recursion_dict = handle_recursion(obj, ret_val, rec, rec_dict)
 
     for x in obj
@@ -232,11 +232,11 @@ function GapObj_internal(
 ) where {T, recursive}
 
     recursive && recursion_dict !== nothing && haskey(recursion_dict, obj) && return recursion_dict[obj]
-    rec, rec_dict = recursion_info_g(T, obj, recursive, recursion_dict)
 
     rows = size(obj, 1)
     ret_val = NewPlist(rows)
 
+    rec, rec_dict = recursion_info_g(T, obj, recursive, recursion_dict)
     recursion_dict = handle_recursion(obj, ret_val, rec, rec_dict)
 
     for i = 1:rows
@@ -270,10 +270,10 @@ function GapObj_internal(
 ) where {T, S<:Union{Symbol,AbstractString}, recursive}
 
     recursive && recursion_dict !== nothing && haskey(recursion_dict, obj) && return recursion_dict[obj]
-    rec, rec_dict = recursion_info_g(T, obj, recursive, recursion_dict)
 
     ret_val = NewPrecord(0)
 
+    rec, rec_dict = recursion_info_g(T, obj, recursive, recursion_dict)
     recursion_dict = handle_recursion(obj, ret_val, rec, rec_dict)
 
     for (x, y) in obj
