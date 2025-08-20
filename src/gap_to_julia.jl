@@ -86,7 +86,6 @@ function gap_to_julia_internal(
         islist = true
     elseif Wrappers.IsVectorObj(obj)
         islist = false
-        ELM_LIST = Wrappers.ELM_LIST
     else
         throw(ConversionError(obj, TT))
     end
@@ -100,7 +99,7 @@ function gap_to_julia_internal(
         else
             # vector objects aren't lists,
             # but the function for accessing entries is `ELM_LIST`
-            current_obj = ELM_LIST(obj, i)
+            current_obj = Wrappers.ELM_LIST(obj, i)
         end
         if recursive && !isbitstype(typeof(current_obj))
             new_array[i] =
