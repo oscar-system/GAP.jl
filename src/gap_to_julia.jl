@@ -79,9 +79,6 @@ function gap_to_julia_internal(
     ::Val{recursive},
 ) where {T, recursive}
 
-    recursive && recursion_dict !== nothing && haskey(recursion_dict, (obj, TT)) && return recursion_dict[(obj, TT)]
-    rec_dict = recursion_info_j(TT, obj, recursive, recursion_dict)
-
     if Wrappers.IsList(obj)
         islist = true
     elseif Wrappers.IsVectorObj(obj)
@@ -89,6 +86,9 @@ function gap_to_julia_internal(
     else
         throw(ConversionError(obj, TT))
     end
+
+    recursive && recursion_dict !== nothing && haskey(recursion_dict, (obj, TT)) && return recursion_dict[(obj, TT)]
+    rec_dict = recursion_info_j(TT, obj, recursive, recursion_dict)
 
     len_list = length(obj)
     new_array = TT(undef, len_list)
@@ -120,9 +120,6 @@ function gap_to_julia_internal(
     ::Val{recursive},
 ) where {T, recursive}
 
-    recursive && recursion_dict !== nothing && haskey(recursion_dict, (obj, TT)) && return recursion_dict[(obj, TT)]
-    rec_dict = recursion_info_j(TT, obj, recursive, recursion_dict)
-
     if Wrappers.IsMatrixObj(obj)
         nrows = Wrappers.NumberRows(obj)::Int
         ncols = Wrappers.NumberColumns(obj)::Int
@@ -132,6 +129,9 @@ function gap_to_julia_internal(
     else
         throw(ConversionError(obj, TT))
     end
+
+    recursive && recursion_dict !== nothing && haskey(recursion_dict, (obj, TT)) && return recursion_dict[(obj, TT)]
+    rec_dict = recursion_info_j(TT, obj, recursive, recursion_dict)
 
     elm = Wrappers.ELM_MAT
     new_array = TT(undef, nrows, ncols)
@@ -161,9 +161,6 @@ function gap_to_julia_internal(
     ::Val{recursive},
 ) where {T, recursive}
 
-    recursive && recursion_dict !== nothing && haskey(recursion_dict, (obj, TT)) && return recursion_dict[(obj, TT)]
-    rec_dict = recursion_info_j(TT, obj, recursive, recursion_dict)
-
     if Wrappers.IsCollection(obj)
         newobj = Wrappers.AsSet(obj)
     elseif Wrappers.IsList(obj)
@@ -172,6 +169,10 @@ function gap_to_julia_internal(
     else
         throw(ConversionError(obj, TT))
     end
+
+    recursive && recursion_dict !== nothing && haskey(recursion_dict, (obj, TT)) && return recursion_dict[(obj, TT)]
+    rec_dict = recursion_info_j(TT, obj, recursive, recursion_dict)
+
     len_list = length(newobj)
     new_array = Vector{T}(undef, len_list)
     for i = 1:len_list
@@ -199,10 +200,12 @@ function gap_to_julia_internal(
     ::Val{recursive},
 ) where {T<:Tuple, recursive}
 
+    !Wrappers.IsList(obj) && throw(ConversionError(obj, T))
+
     recursive && recursion_dict !== nothing && haskey(recursion_dict, (obj, TT)) && return recursion_dict[(obj, TT)]
     rec_dict = recursion_info_j(TT, obj, recursive, recursion_dict)
 
-    !Wrappers.IsList(obj) && throw(ConversionError(obj, T))
+    # extract the Tuple parameters, i.e. from Tuple{T1, T2, ...}  the list T1,T2,...
     parameters = T.parameters
     len = length(parameters)
     length(obj) == len ||
@@ -225,10 +228,11 @@ function gap_to_julia_internal(
     ::Val{recursive},
 ) where {T, recursive}
 
+    !Wrappers.IsRecord(obj) && throw(ConversionError(obj, TT))
+
     recursive && recursion_dict !== nothing && haskey(recursion_dict, (obj, TT)) && return recursion_dict[(obj, TT)]
     rec_dict = recursion_info_j(TT, obj, recursive, recursion_dict)
 
-    !Wrappers.IsRecord(obj) && throw(ConversionError(obj, TT))
     dict = TT()
     recursion_dict = handle_recursion((obj, TT), dict, recursive, rec_dict)
 
