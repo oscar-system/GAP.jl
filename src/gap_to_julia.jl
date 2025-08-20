@@ -9,39 +9,6 @@
 ##  SPDX-License-Identifier: LGPL-3.0-or-later
 ##
 
-#############################################################################
-##
-## some utilities
-
-## Show a specific error on conversion failure.
-struct ConversionError <: Base.Exception
-    obj::Any
-    jl_type::Any
-end
-
-Base.showerror(io::IO, e::ConversionError) =
-    print(io, "failed to convert $(typeof(e.obj)) to $(e.jl_type):\n $(e.obj)")
-
-"""
-    RecDict_j = IdDict{Tuple{Any, Type}, Any}
-
-An internal type of GAP.jl used for tracking conversion results in `gap_to_julia`.
-The value stored at the key `(obj, T)` is the result
-of the GAP to Julia conversion of `obj` that has type `T`.
-Note that several Julia types can occur for the same GAP object.
-
-Lookups for the key `(obj, T)` in an `IdDict` are successful if the conversion
-result of an object identical to `obj` with target type `T` has been stored
-in the dictionary.
-
-Note that comparing two `GapObj`s with `===` yields the same result as
-comparing them with `GAP.Globals.IsIdenticalObj`
-because `GapObj` is a mutable type.
-"""
-const RecDict_j = IdDict{Tuple{Any, Type}, Any}
-
-const JuliaCacheDict = Union{Nothing,RecDict_j}
-
 
 #############################################################################
 ##
@@ -101,26 +68,6 @@ gap_to_julia_internal(::Type{T}, obj::GapObj, recursion_dict::JuliaCacheDict, ::
 function gap_to_julia_internal(::Type{Function}, obj::GapObj, ::JuliaCacheDict, ::Val{recursive}) where recursive
   Wrappers.IS_JULIA_FUNC(obj) && return UnwrapJuliaFunc(obj)
   throw(ConversionError(obj, Function))
-end
-
-
-## Now come conversions that support recursion.
-
-# helper functions for recursion in conversion from GAP to Julia
-function recursion_info_j(::Type{T}, obj, recursive::Bool, recursion_dict::JuliaCacheDict) where {T}
-    if recursive && recursion_dict === nothing
-        return RecDict_j()
-    else
-        return recursion_dict
-    end
-end
-
-function handle_recursion_g(obj, ::Type{T}, ret_val, rec::Bool, rec_dict::JuliaCacheDict) where T
-    if rec_dict !== nothing
-      # We assume that `obj` is not yet cached.
-      rec_dict[(obj, T)] = ret_val
-    end
-    return rec ? rec_dict : nothing
 end
 
 
@@ -307,7 +254,7 @@ end
 ##   In the latter case check whether the default Julia type for `obj` is a
 ##   subtype of `T`, and if yes then convert `obj` to that type.
 ## - If `obj` is not a `GapObj` then recursion has no meaning,
-##   and either `obj` has already the type `T` (and we return `obj`
+##   and either `obj` is already of type `T` (and we return `obj`)
 ##   or we give up because the GAP to Julia conversion is not the right
 ##   situation.
 ##

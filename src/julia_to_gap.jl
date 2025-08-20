@@ -9,17 +9,6 @@
 ##  SPDX-License-Identifier: LGPL-3.0-or-later
 ##
 
-"""
-    RecDict_g = IdDict{Any,Any}
-
-An internal type of GAP.jl used for tracking conversion results in `julia_to_gap`.
-The value stored at the key `obj` is the result
-of the Julia to GAP conversion of `obj`.
-"""
-const RecDict_g = IdDict{Any,Any}
-
-const GapCacheDict = Union{Nothing,RecDict_g}
-
 
 ## Converters
 """
@@ -170,26 +159,6 @@ GAP.@install GapObj(x::Char) = CharWithValue(Cuchar(x))
 ## Strings and symbols
 GAP.@install GapObj(x::AbstractString) = MakeString(string(x))
 GAP.@install GapObj(x::Symbol) = MakeString(string(x))
-
-# helper functions for recursion (conversion from Julia to GAP)
-function recursion_info_g(::Type{T}, obj, recursive::Bool, recursion_dict::GapCacheDict) where {T}
-    rec = recursive && _needs_tracking_julia_to_gap(T)
-    if rec && recursion_dict === nothing
-        rec_dict = RecDict_g()
-    else
-        rec_dict = recursion_dict
-    end
-
-    return rec, rec_dict
-end
-
-function handle_recursion(obj, ret_val, rec::Bool, rec_dict::GapCacheDict)
-    if rec_dict !== nothing
-        # We assume that `obj` is not yet cached.
-        rec_dict[obj] = ret_val
-    end
-    return rec ? rec_dict : nothing
-end
 
 ## Arrays (including BitVector)
 function GapObj_internal(
