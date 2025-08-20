@@ -204,14 +204,15 @@ function gap_to_julia_internal(
 
     !Wrappers.IsList(obj) && throw(ConversionError(obj, T))
 
-    recursive && recursion_dict !== nothing && haskey(recursion_dict, (obj, TT)) && return recursion_dict[(obj, TT)]
-    rec_dict = recursion_info_j(TT, obj, recursive, recursion_dict)
-
     # extract the Tuple parameters, i.e. from Tuple{T1, T2, ...}  the list T1,T2,...
     parameters = T.parameters
     len = length(parameters)
     length(obj) == len ||
         throw(ArgumentError("length of $obj does not match type $T"))
+
+    recursive && recursion_dict !== nothing && haskey(recursion_dict, (obj, TT)) && return recursion_dict[(obj, TT)]
+    rec_dict = recursion_info_j(TT, obj, recursive, recursion_dict)
+
     list = [
         gap_to_julia_internal(parameters[i], obj[i], rec_dict, Val(recursive))
         for i = 1:len
