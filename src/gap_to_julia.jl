@@ -93,7 +93,7 @@ function gap_to_julia_internal(
 
     len_list = length(obj)
     new_array = TT(undef, len_list)
-    recursion_dict = handle_recursion_g(obj, TT, new_array, recursive, rec_dict)
+    recursion_dict = handle_recursion((obj, TT), new_array, recursive, rec_dict)
     for i = 1:len_list
         if islist
             current_obj = ElmList(obj, i)  # returns 'nothing' for holes in the list
@@ -136,7 +136,7 @@ function gap_to_julia_internal(
 
     elm = Wrappers.ELM_MAT
     new_array = TT(undef, nrows, ncols)
-    recursion_dict = handle_recursion_g(obj, TT, new_array, recursive, rec_dict)
+    recursion_dict = handle_recursion((obj, TT), new_array, recursive, rec_dict)
 
     for i = 1:nrows, j = 1:ncols
         current_obj = elm(obj, i, j)
@@ -185,7 +185,7 @@ function gap_to_julia_internal(
         end
     end
     ret_val = TT(new_array)
-    handle_recursion_g(obj, TT, ret_val, recursive, rec_dict)
+    handle_recursion((obj, TT), ret_val, recursive, rec_dict)
     return ret_val
 end
 
@@ -214,7 +214,7 @@ function gap_to_julia_internal(
     ]
 
     ret_val = T(list)
-    recursion_dict = handle_recursion_g(obj, T, ret_val, recursive, rec_dict)
+    recursion_dict = handle_recursion((obj, TT), ret_val, recursive, rec_dict)
     return ret_val
 end
 
@@ -231,7 +231,7 @@ function gap_to_julia_internal(
 
     !Wrappers.IsRecord(obj) && throw(ConversionError(obj, TT))
     dict = TT()
-    recursion_dict = handle_recursion_g(obj, TT, dict, recursive, rec_dict)
+    recursion_dict = handle_recursion((obj, TT), dict, recursive, rec_dict)
 
     names = Wrappers.RecNames(obj)
     names_list = Vector{Symbol}(names)

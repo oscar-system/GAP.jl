@@ -66,14 +66,6 @@ function recursion_info_j(::Type{T}, obj, recursive::Bool, recursion_dict::Julia
     end
 end
 
-function handle_recursion_g(obj, ::Type{T}, ret_val, rec::Bool, rec_dict::JuliaCacheDict) where T
-    if rec_dict !== nothing
-      # We assume that `obj` is not yet cached.
-      rec_dict[(obj, T)] = ret_val
-    end
-    return rec ? rec_dict : nothing
-end
-
 
 # helper functions for recursion (conversion from Julia to GAP)
 function recursion_info_g(::Type{T}, obj, recursive::Bool, recursion_dict::GapCacheDict) where {T}
@@ -83,11 +75,11 @@ function recursion_info_g(::Type{T}, obj, recursive::Bool, recursion_dict::GapCa
     else
         rec_dict = recursion_dict
     end
-
+    
     return rec, rec_dict
 end
 
-function handle_recursion(obj, ret_val, rec::Bool, rec_dict::GapCacheDict)
+function handle_recursion(obj, ret_val, rec::Bool, rec_dict::Union{Nothing,IdDict})
     if rec_dict !== nothing
         # We assume that `obj` is not yet cached.
         rec_dict[obj] = ret_val
