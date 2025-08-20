@@ -230,7 +230,9 @@ function __init__()
     cmdline_options = ["", "-l", join(roots, ";")]
 
     # tell GAP about all artifacts that contain GAP packages
-    pkg_artifacts = filter(startswith("GAP_pkg_"), keys(TOML.parsefile(find_artifacts_toml(@__FILE__)::String)))
+    artifacts_toml = find_artifacts_toml(@__FILE__)
+    artifacts_toml !== nothing || error("Cannot locate 'Artifacts.toml' file for package GAP")
+    pkg_artifacts = filter(startswith("GAP_pkg_"), keys(TOML.parsefile(artifacts_toml)))
     pkgdirs = [realpath(@artifact_str(name)) for name in pkg_artifacts]
     push!(pkgdirs, abspath(@__DIR__, "..", "pkg", "JuliaInterface"))
     push!(pkgdirs, abspath(@__DIR__, "..", "pkg", "JuliaExperimental"))
