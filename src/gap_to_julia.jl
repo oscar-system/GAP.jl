@@ -90,10 +90,10 @@ function gap_to_julia_internal(
     recursive && recursion_dict !== nothing && haskey(recursion_dict, (obj, TT)) && return recursion_dict[(obj, TT)]
 
     len_list = length(obj)
-    new_array = TT(undef, len_list)
+    ret_val = TT(undef, len_list)::TT
 
     rec_dict = recursion_info_j(TT, obj, recursive, recursion_dict)
-    recursion_dict = handle_recursion((obj, TT), new_array, recursive, rec_dict)
+    recursion_dict = handle_recursion((obj, TT), ret_val, recursive, rec_dict)
 
     for i = 1:len_list
         if islist
@@ -104,14 +104,14 @@ function gap_to_julia_internal(
             current_obj = Wrappers.ELM_LIST(obj, i)
         end
         if recursive && !isbitstype(typeof(current_obj))
-            new_array[i] =
+            ret_val[i] =
                 gap_to_julia_internal(T, current_obj, recursion_dict, Val(recursive))
         else
-            new_array[i] = current_obj
+            ret_val[i] = current_obj
         end
     end
 
-    return new_array::TT
+    return ret_val::TT
 end
 
 ## Matrices or lists of lists
@@ -135,21 +135,21 @@ function gap_to_julia_internal(
     recursive && recursion_dict !== nothing && haskey(recursion_dict, (obj, TT)) && return recursion_dict[(obj, TT)]
 
     elm = Wrappers.ELM_MAT
-    new_array = TT(undef, nrows, ncols)
+    ret_val = TT(undef, nrows, ncols)::TT
 
     rec_dict = recursion_info_j(TT, obj, recursive, recursion_dict)
-    recursion_dict = handle_recursion((obj, TT), new_array, recursive, rec_dict)
+    recursion_dict = handle_recursion((obj, TT), ret_val, recursive, rec_dict)
 
     for i = 1:nrows, j = 1:ncols
         current_obj = elm(obj, i, j)
         if recursive && !isbitstype(typeof(current_obj))
-            new_array[i, j] =
+            ret_val[i, j] =
                 gap_to_julia_internal(T, current_obj, recursion_dict, Val(recursive))
         else
-            new_array[i, j] = current_obj
+            ret_val[i, j] = current_obj
         end
     end
-    return new_array::TT
+    return ret_val
 end
 
 ## Sets
@@ -234,23 +234,23 @@ function gap_to_julia_internal(
 
     recursive && recursion_dict !== nothing && haskey(recursion_dict, (obj, TT)) && return recursion_dict[(obj, TT)]
 
-    dict = TT()
+    ret_val = TT()
 
     rec_dict = recursion_info_j(TT, obj, recursive, recursion_dict)
-    recursion_dict = handle_recursion((obj, TT), dict, recursive, rec_dict)
+    recursion_dict = handle_recursion((obj, TT), ret_val, recursive, rec_dict)
 
     names = Wrappers.RecNames(obj)
     names_list = Vector{Symbol}(names)
     for key in names_list
       current_obj = getproperty(obj, key)
       if recursive && !isbitstype(typeof(current_obj))
-        dict[key] =
+        ret_val[key] =
           gap_to_julia_internal(T, current_obj, recursion_dict, Val(true))
       else
-        dict[key] = current_obj
+        ret_val[key] = current_obj
       end
     end
-    return dict
+    return ret_val
 end
 
 ## Generic method:
