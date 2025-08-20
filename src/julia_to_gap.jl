@@ -172,8 +172,7 @@ function GapObj_internal(
     len = length(obj)
     ret_val = NewPlist(len)
 
-    rec, rec_dict = recursion_info_g(T, obj, recursive, recursion_dict)
-    recursion_dict = handle_recursion(obj, ret_val, rec, rec_dict)
+    recursion_dict = recursion_info_g(T, obj, ret_val, recursive, recursion_dict)
 
     # Set the subobjects.
     for i = 1:len
@@ -181,15 +180,7 @@ function GapObj_internal(
         if x === nothing
             continue
         end
-        if recursive
-            # Convert the subobjects.
-            # Do not care about findíng them in the dictionary
-            # or adding them to the dictionary,
-            # since their conversion method decides about that.
-            res = GAP.GapObj_internal(x, recursion_dict, Val(true))
-        else
-            res = x
-        end
+        res = recursive ? GapObj_internal(x, recursion_dict, Val(true)) : x
         ret_val[i] = res
     end
 
@@ -207,15 +198,10 @@ function GapObj_internal(
 
     ret_val = NewPlist(length(obj))
 
-    rec, rec_dict = recursion_info_g(T, obj, recursive, recursion_dict)
-    recursion_dict = handle_recursion(obj, ret_val, rec, rec_dict)
+    recursion_dict = recursion_info_g(T, obj, ret_val, recursive, recursion_dict)
 
     for x in obj
-        if recursive
-            res = GapObj_internal(x, recursion_dict, Val(true))
-        else
-            res = x
-        end
+        res = recursive ? GapObj_internal(x, recursion_dict, Val(true)) : x
         Wrappers.Add(ret_val, res)
     end
     Wrappers.Sort(ret_val)
@@ -236,8 +222,7 @@ function GapObj_internal(
     rows = size(obj, 1)
     ret_val = NewPlist(rows)
 
-    rec, rec_dict = recursion_info_g(T, obj, recursive, recursion_dict)
-    recursion_dict = handle_recursion(obj, ret_val, rec, rec_dict)
+    recursion_dict = recursion_info_g(T, obj, ret_val, recursive, recursion_dict)
 
     for i = 1:rows
         ret_val[i] = GapObj_internal(obj[i, :], recursion_dict, Val(recursive))
@@ -273,16 +258,11 @@ function GapObj_internal(
 
     ret_val = NewPrecord(0)
 
-    rec, rec_dict = recursion_info_g(T, obj, recursive, recursion_dict)
-    recursion_dict = handle_recursion(obj, ret_val, rec, rec_dict)
+    recursion_dict = recursion_info_g(T, obj, ret_val, recursive, recursion_dict)
 
     for (x, y) in obj
         x = Wrappers.RNamObj(MakeString(string(x)))
-        if recursive
-            res = GapObj_internal(y, recursion_dict, Val(true))
-        else
-            res = y
-        end
+        res = recursive ? GapObj_internal(y, recursion_dict, Val(true)) : y
         Wrappers.ASS_REC(ret_val, x, res)
     end
 
