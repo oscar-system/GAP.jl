@@ -34,8 +34,7 @@ if Sys.iswindows()
 end
 
 import AbstractAlgebra # for should_show_banner()
-import Artifacts: find_artifacts_toml, @artifact_str
-import TOML
+import Artifacts: find_artifacts_toml, load_artifacts_toml, artifact_path
 
 import GAP_jll: GAP_jll, libgap
 import GAP_lib_jll
@@ -230,8 +229,16 @@ function __init__()
     cmdline_options = ["", "-l", join(roots, ";")]
 
     # tell GAP about all artifacts that contain GAP packages
-    pkg_artifacts = filter(startswith("GAP_pkg_"), keys(TOML.parsefile(find_artifacts_toml(@__FILE__))))
-    pkgdirs = [realpath(@artifact_str(name)) for name in pkg_artifacts]
+    artifacts_toml = find_artifacts_toml(@__FILE__)
+    artifacts_toml !== nothing || error("Cannot locate 'Artifacts.toml' file for package GAP")
+    artifact_dict = load_artifacts_toml(artifacts_toml)
+
+    pkgdirs = String[]
+    for (name, meta) in artifact_dict
+        startswith(name, "GAP_pkg_") || continue
+        hash = Base.SHA1(meta["git-tree-sha1"]::String)
+        push!(pkgdirs, artifact_path(hash; honor_overrides=true))
+    end
     push!(pkgdirs, abspath(@__DIR__, "..", "pkg", "JuliaInterface"))
     push!(pkgdirs, abspath(@__DIR__, "..", "pkg", "JuliaExperimental"))
     push!(cmdline_options, "--packagedirs", join(pkgdirs, ';'))
