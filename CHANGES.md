@@ -6,6 +6,8 @@
 - **Breaking:** Remove `julia_to_gap` (code which called it, say as
   `julia_to_gap(val)`, can instead use `GapObj(val)`; code that provided
   custom methods for it should instead use the `GAP.@install` macro).
+- Improve support for upcoming Julia 1.13.
+- Several "behind the scenes" changes that should be invisible for most users
 
 ## Version 0.14.2 (released 2025-07-14)
 
