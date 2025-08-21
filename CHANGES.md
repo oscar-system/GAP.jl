@@ -10,12 +10,20 @@
   Julia to GAP conversion in 0.12.0), in order to speed it up, reduce
   allocations, and make future improvements easier. This should not affect
   most code, but anyone implementing custom `gap_to_julia` methods should now
-  instead define `gap_to_julia_intern` methods. Other code should generally
-  avoid using `gap_to_julia` and instead call explicit constructors. For
-  example, instead of `gap_to_julia(Vector{Int}, x)` write `Vector{Int}(x)`.
-  And instead of `gap_to_julia(x)` (which "guesses") a conversion, use an
-  explicit type conversion, so e.g. `Int(x)` or `Vector{Int}(x)` etc. -- this
-  improves the readability of your code.
+  instead define `gap_to_julia_intern` methods. For example, change
+
+      GAP.gap_to_julia(::Type{MyType}, obj::GapObj; recursive::Bool = true) = ...
+
+  to
+
+      GAP.gap_to_julia_internal(::Type{MyType}, obj::GapObj, ::GAP.JuliaCacheDict,
+                                ::Val{recursive}) where recursive = ...
+
+  Other code should generally avoid using `gap_to_julia` and instead call
+  explicit constructors. For example, instead of `gap_to_julia(Vector{Int},
+  x)` write `Vector{Int}(x)`. And instead of `gap_to_julia(x)` (which
+  "guesses") a conversion, use an explicit type conversion, so e.g. `Int(x)`
+  or `Vector{Int}(x)` etc. -- this improves the readability of your code.
 - Add a package extension for [Nemo.jl](https://github.com/Nemocas/Nemo.jl/)
   that defines conversion methods for some of its basic types to/from GAP.
 - Improve support for upcoming Julia 1.13.
