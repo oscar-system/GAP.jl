@@ -105,7 +105,7 @@ function gap_to_julia_internal(
         end
         if recursive && !isbitstype(typeof(current_obj))
             ret_val[i] =
-                gap_to_julia_internal(T, current_obj, recursion_dict, Val(recursive))
+                gap_to_julia_internal(T, current_obj, recursion_dict, BoolVal(recursive))
         else
             ret_val[i] = current_obj
         end
@@ -144,7 +144,7 @@ function gap_to_julia_internal(
         current_obj = elm(obj, i, j)
         if recursive && !isbitstype(typeof(current_obj))
             ret_val[i, j] =
-                gap_to_julia_internal(T, current_obj, recursion_dict, Val(recursive))
+                gap_to_julia_internal(T, current_obj, recursion_dict, BoolVal(recursive))
         else
             ret_val[i, j] = current_obj
         end
@@ -179,7 +179,7 @@ function gap_to_julia_internal(
     for i = 1:length(newobj)
         current_obj = ElmList(newobj, i)
         if recursive && !isbitstype(typeof(current_obj))
-            push!(ret_val, gap_to_julia_internal(T, current_obj, rec_dict, Val(recursive)))
+            push!(ret_val, gap_to_julia_internal(T, current_obj, rec_dict, BoolVal(recursive)))
         else
             push!(ret_val, current_obj)
         end
@@ -210,7 +210,7 @@ function gap_to_julia_internal(
     rec_dict = recursion_info_j(TT, obj, recursive, recursion_dict)
 
     list = [
-        gap_to_julia_internal(parameters[i], obj[i], rec_dict, Val(recursive))
+        gap_to_julia_internal(parameters[i], obj[i], rec_dict, BoolVal(recursive))
         for i = 1:len
     ]
 
@@ -272,7 +272,7 @@ function gap_to_julia_internal(
     (obj isa T) && !recursive && return obj
     D, rec = _default_type(obj, recursive)
     (D === T || !(D <: T)) && throw(ConversionError(obj, T))
-    return gap_to_julia_internal(D, obj, recursion_dict, Val(rec))
+    return gap_to_julia_internal(D, obj, recursion_dict, BoolVal(rec))
   else
     (obj isa T) && return obj
     throw(ConversionError(obj, T))
@@ -371,7 +371,7 @@ function gap_to_julia end
 gap_to_julia(x::Bool) = x
 gap_to_julia(x::Int) = x
 gap_to_julia(x::FFE) = x
-gap_to_julia(T::Type, x::Any; recursive::Bool = true) = gap_to_julia_internal(T, x, nothing, Val(recursive))
+gap_to_julia(T::Type, x::Any; recursive::Bool = true) = gap_to_julia_internal(T, x, nothing, BoolVal(recursive))
 gap_to_julia(::Type{Any}, x::Any; recursive::Bool = true) = x
 gap_to_julia(::T, x::Nothing; recursive::Bool = true) where {T<:Type} = nothing
 gap_to_julia(::Type{Any}, x::Nothing; recursive::Bool = true) = nothing
@@ -396,7 +396,7 @@ end
 function gap_to_julia(x::GapObj; recursive::Bool = true)
   T, recursive = _default_type(x, recursive)
   T == Any && throw(ConversionError(x, "any known type"))
-  return gap_to_julia_internal(T, x, nothing, Val(recursive))
+  return gap_to_julia_internal(T, x, nothing, BoolVal(recursive))
 end
 
 

@@ -91,3 +91,12 @@ function handle_recursion(obj, ret_val, rec::Bool, rec_dict::Union{Nothing,IdDic
     end
     return rec ? rec_dict : nothing
 end
+
+
+# Helper to make use of `Val{true}` and `Val{false}` more efficient:
+# whenever we use patterns like `Val(recursive)` this throws a curve ball
+# to the Julia optimizer, as it cannot infer the type of the result.
+# But in fact we know only two types are possible: `Val{true}` and `Val{false}`.
+# By explicitly "unrolling" this, the compiler can perform a union split
+# to replace the dynamic dispatch with a non-dynamic dispatch
+BoolVal(x::Bool) = x ? Val(true) : Val(false)

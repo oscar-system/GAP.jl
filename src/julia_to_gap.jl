@@ -81,7 +81,7 @@ The following `GapObj` conversions are supported by GAP.jl.
 | `UnitRange{T}`, `StepRange{T, S}`    | `IsRange`    |
 | `Function`                           | `IsFunction` |
 """
-GapObj(x, cache::GapCacheDict = nothing; recursive::Bool = false) = GapObj_internal(x, cache, Val(recursive))
+GapObj(x, cache::GapCacheDict = nothing; recursive::Bool = false) = GapObj_internal(x, cache, BoolVal(recursive))
 
 # The calls to `GAP.@install` install methods for `GAP.GapObj_internal`
 # so we must make sure it is declared before
@@ -143,8 +143,8 @@ function GapObj_internal(x::Rational{T}, cache::GapCacheDict, ::Val{recursive}) 
             return -Globals.infinity
         end
     end
-    numer = GapObj_internal(numer_julia, cache, Val(recursive))
-    denom = GapObj_internal(denom_julia, cache, Val(recursive))
+    numer = GapObj_internal(numer_julia, cache, BoolVal(recursive))
+    denom = GapObj_internal(denom_julia, cache, BoolVal(recursive))
     return Wrappers.QUO(numer, denom)
 end
 
@@ -225,7 +225,7 @@ function GapObj_internal(
     recursion_dict = recursion_info_g(T, obj, ret_val, recursive, recursion_dict)
 
     for i = 1:rows
-        ret_val[i] = GapObj_internal(obj[i, :], recursion_dict, Val(recursive))
+        ret_val[i] = GapObj_internal(obj[i, :], recursion_dict, BoolVal(recursive))
     end
     return ret_val
 end
@@ -237,7 +237,7 @@ function GapObj_internal(
     ::Val{recursive},
 ) where recursive
     array = collect(Any, obj)
-    return GapObj_internal(array, recursion_dict, Val(recursive))
+    return GapObj_internal(array, recursion_dict, BoolVal(recursive))
 end
 
 ## Ranges
@@ -294,7 +294,7 @@ function GapObj_internal(
         recursion_dict[obj] = ret_val
         for i = 1:len
             x = obj[i]
-            ret_val[i] = GapObj_internal(x, recursion_dict::RecDict_g, Val(recursive))
+            ret_val[i] = GapObj_internal(x, recursion_dict::RecDict_g, BoolVal(recursive))
         end
     elseif Wrappers.IsRecord(obj)
         ret_val = NewPrecord(0)
@@ -306,7 +306,7 @@ function GapObj_internal(
         for xx in Wrappers.RecNames(obj)::GapObj
             x = Wrappers.RNamObj(xx)
             y = Wrappers.ELM_REC(obj, x)
-            res = GapObj_internal(y, recursion_dict::RecDict_g, Val(recursive))
+            res = GapObj_internal(y, recursion_dict::RecDict_g, BoolVal(recursive))
             Wrappers.ASS_REC(ret_val, x, res)
         end
     else
