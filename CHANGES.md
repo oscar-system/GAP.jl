@@ -9,7 +9,7 @@
 - Add a package extension for [Nemo.jl](https://github.com/Nemocas/Nemo.jl/)
   that defines conversion methods for some of its basic types to/from GAP.
 - Improve support for upcoming Julia 1.13.
-- Several "behind the scenes" changes that should be invisible for most users
+- Several "behind the scenes" changes that should be invisible for most users.
 
 ## Version 0.14.2 (released 2025-07-14)
 
