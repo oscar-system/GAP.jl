@@ -24,7 +24,7 @@ suitable Julia type for the conversion (e.g. GAP strings will be converted to
 Julia strings). However, we generally recommend against using it, as usually
 it is better to coerce to a specific type, as that makes it easier to reason
 about the code, and helps code to become "type stable" (an important concept
-for writing performant Julia code, see TODO).
+for [writing performant Julia code](https://docs.julialang.org/en/v1/manual/performance-tips/#Write-%22type-stable%22-functions)).
 
 
 ## Automatic GAP-to-Julia and Julia-to-GAP Conversions
