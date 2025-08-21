@@ -6,6 +6,8 @@
 - **Breaking:** Remove `julia_to_gap` (code which called it, say as
   `julia_to_gap(val)`, can instead use `GapObj(val)`; code that provided
   custom methods for it should instead use the `GAP.@install` macro).
+- Add a package extension for [Nemo.jl](https://github.com/Nemocas/Nemo.jl/)
+  that defines conversion methods for some of its basic types to/from GAP.
 - Improve support for upcoming Julia 1.13.
 - Several "behind the scenes" changes that should be invisible for most users
 
