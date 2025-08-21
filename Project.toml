@@ -44,7 +44,6 @@ InteractiveUtils = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
 Libdl = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
 MacroTools = "1914dd2f-81c6-5fcd-8719-6d5c9610ff09"
 Markdown = "d6f4376e-aef5-505a-96c1-9c027394607a"
-Ncurses_jll = "68e3532b-a499-55ff-9963-d1c0c0748b3a"
 Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 REPL = "3fa0cd96-eef1-5676-8a61-b3b8758bbffb"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
@@ -55,6 +54,9 @@ nauty_jll = "55c6dc9b-343a-50ca-8ff2-b71adb3733d5"
 
 [weakdeps]
 Nemo = "2edaba10-b0f1-5616-af89-8c11ac63239a"
+
+[extras]
+Ncurses_jll = "68e3532b-a499-55ff-9963-d1c0c0748b3a"
 
 [extensions]
 NemoExt = "Nemo"
