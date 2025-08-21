@@ -153,10 +153,6 @@ function gap_to_julia_internal(
 end
 
 ## Sets
-## Assume that the argument `obj` of this function is not self-referential,
-## for example we cannot really sort a self-referential GAP list.
-## Then we need not worry about creating the result in the end,
-## and then adding it to the dictionary that is needed for the recursion.
 function gap_to_julia_internal(
     TT::Type{Set{T}},
     obj::GapObj,
