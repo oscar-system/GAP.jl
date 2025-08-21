@@ -10,7 +10,7 @@
   Julia to GAP conversion in 0.12.0), in order to speed it up, reduce
   allocations, and make future improvements easier. This should not affect
   most code, but anyone implementing custom `gap_to_julia` methods should now
-  instead define `gap_to_julia_intern` methods. For example, change
+  instead define `gap_to_julia_internal` methods. For example, change
 
       GAP.gap_to_julia(::Type{MyType}, obj::GapObj; recursive::Bool = true) = ...
 
