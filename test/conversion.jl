@@ -291,6 +291,19 @@
     @test conv === conv[:b]
   end
 
+  @testset "Conversion to GapObj and Union types containing it" begin
+    v = [GapObj("a")]
+    xx = GapObj(v)
+
+    yy = GAP.gap_to_julia(Vector{GapObj}, xx)
+    @test v == yy
+    @test yy isa Vector{GapObj}
+
+    yy = GAP.gap_to_julia(Vector{Union{Nothing,GapObj}}, xx)
+    @test v == yy
+    @test yy isa Vector{Union{Nothing,GapObj}}
+  end
+
   @testset "Catch conversions to types that are not supported" begin
     xx = GapObj("a")
     @test_throws GAP.ConversionError GAP.gap_to_julia(Dict{Int64,Int64}, xx)
