@@ -276,7 +276,7 @@ function gap_to_julia_internal(
   if obj isa T
     # ... except in a special case: if the target type T is "Any" this has a
     # special meaning: if also recursion is enabled, and the object is a GAP
-    # objects, then we should try to convert the object recursively, guessing
+    # object, then we should try to convert the object recursively, guessing
     # an output type
     if !(T === Any && obj isa GapObj && recursive)
       return obj
