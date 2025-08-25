@@ -252,10 +252,13 @@ end
 
 ## Generic method:
 ## If it gets called then none of the more special methods is applicable.
-## - If `obj` is a `GapObj` to be "converted" to a supertype `T` of its type
-##   then return `obj` except if recursive conversion is requested.
-##   In the latter case check whether the default Julia type for `obj` is a
-##   subtype of `T`, and if yes then convert `obj` to that type.
+## - If `obj` is already of type `T`, just return it, except in a special
+##   case: if the target type T is "Any" this has a special meaning: if also
+##   recursion is enabled, and the object is a GAP objects, then we should
+##   try to convert the object recursively, guessing an output type.
+## - If `obj` is a `GapObj` check whether the default Julia type `D` for
+##   `obj` is a subtype of `T` distinct from `D`, and if so convert it
+##   to that type.
 ## - If `obj` is not a `GapObj` then recursion has no meaning,
 ##   and either `obj` is already of type `T` (and we return `obj`)
 ##   or we give up because the GAP to Julia conversion is not the right
@@ -268,13 +271,23 @@ function gap_to_julia_internal(
     ::Val{recursive},
 ) where {T, recursive}
 
+  # first check if obj maybe already has the desired output type T:
+  # in that case we can probably just return it...
+  if obj isa T
+    # ... except in a special case: if the target type T is "Any" this has a
+    # special meaning: if also recursion is enabled, and the object is a GAP
+    # object, then we should try to convert the object recursively, guessing
+    # an output type
+    if !(T === Any && obj isa GapObj && recursive)
+      return obj
+    end
+  end
+
   if obj isa GapObj
-    (obj isa T) && !recursive && return obj
     D, rec = _default_type(obj, recursive)
     (D === T || !(D <: T)) && throw(ConversionError(obj, T))
     return gap_to_julia_internal(D, obj, recursion_dict, BoolVal(rec))
   else
-    (obj isa T) && return obj
     throw(ConversionError(obj, T))
   end
 end
