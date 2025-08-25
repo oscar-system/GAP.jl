@@ -271,7 +271,6 @@ function gap_to_julia_internal(
   if obj isa GapObj
     (obj isa T) && !recursive && return obj
     D, rec = _default_type(obj, recursive)
-    (D === T || !(D <: T)) && throw(ConversionError(obj, T))
     return gap_to_julia_internal(D, obj, recursion_dict, BoolVal(rec))
   else
     (obj isa T) && return obj
