@@ -26,7 +26,7 @@ function ZZRingElem(obj::GapObj)
   end
 end
 
-GAP.gap_to_julia(::Type{ZZRingElem}, obj::GapInt; recursive::Bool = true) = ZZRingElem(obj)
+GAP.gap_to_julia_internal(::Type{ZZRingElem}, obj::GapInt, ::GAP.JuliaCacheDict, ::Val{recursive}) where recursive = ZZRingElem(obj)
 (::ZZRing)(obj::GapObj) = ZZRingElem(obj)
 
 ##
@@ -38,7 +38,7 @@ function QQFieldElem(obj::GapObj)
   return QQFieldElem(ZZRingElem(Wrappers.NumeratorRat(obj)), ZZRingElem(Wrappers.DenominatorRat(obj)))
 end
 
-GAP.gap_to_julia(::Type{QQFieldElem}, obj::GapInt; recursive::Bool = true) = QQFieldElem(obj)
+GAP.gap_to_julia_internal(::Type{QQFieldElem}, obj::GapInt, ::GAP.JuliaCacheDict, ::Val{recursive}) where recursive = QQFieldElem(obj)
 (::QQField)(obj::GapObj) = QQFieldElem(obj)
 
 ##
@@ -64,7 +64,7 @@ function ZZMatrix(obj::GapObj)
   return m
 end
 
-GAP.gap_to_julia(::Type{ZZMatrix}, obj::GapObj; recursive::Bool = true) = ZZMatrix(obj)
+GAP.gap_to_julia_internal(::Type{ZZMatrix}, obj::GapObj, ::GAP.JuliaCacheDict, ::Val{recursive}) where recursive = ZZMatrix(obj)
 
 ##
 ## matrix of GAP rationals or integers to `QQMatrix`
@@ -81,7 +81,7 @@ function QQMatrix(obj::GapObj)
   return m
 end
 
-GAP.gap_to_julia(::Type{QQMatrix}, obj::GapObj; recursive::Bool = true) = QQMatrix(obj)
+GAP.gap_to_julia_internal(::Type{QQMatrix}, obj::GapObj, ::GAP.JuliaCacheDict, ::Val{recursive}) where recursive = QQMatrix(obj)
 
 ##
 ## generic matrix() method for GAP matrices which converts each element on its

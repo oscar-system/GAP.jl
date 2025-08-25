@@ -14,10 +14,10 @@ Obj(x::Obj) = x
 GapObj(x::GapObj) = x
 
 ## Handle conversion of Julia objects to GAP objects
-Obj(obj; recursive::Bool = false) = GapObj_internal(obj, nothing, Val(recursive))::Obj
+Obj(obj; recursive::Bool = false) = GapObj_internal(obj, nothing, BoolVal(recursive))::Obj
 
-Obj(obj, recursive::Bool) = GapObj_internal(obj, nothing, Val(recursive))::Obj
-GapObj(obj, recursive::Bool) = GapObj_internal(obj, nothing, Val(recursive))::Obj
+Obj(obj, recursive::Bool) = GapObj_internal(obj, nothing, BoolVal(recursive))::Obj
+GapObj(obj, recursive::Bool) = GapObj_internal(obj, nothing, BoolVal(recursive))::Obj
 
 ## Conversion to gap integers
 GapInt(x::Integer) = GapObj(x)

@@ -338,9 +338,12 @@ include("macros.jl")
 include("wrappers.jl")
 
 include("adapter.jl")
+
+include("conversion.jl")
 include("gap_to_julia.jl")
 include("constructors.jl")
 include("julia_to_gap.jl")
+
 include("utils.jl")
 include("help.jl")
 include("prompt.jl")

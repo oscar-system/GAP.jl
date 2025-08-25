@@ -12,6 +12,9 @@
 @testset "conversion from GAP" begin
 
   @testset "Defaults" begin
+    @test GAP.gap_to_julia(true) == true
+    @test GAP.gap_to_julia(1) == 1
+    @test GAP.gap_to_julia(GAP.Globals.Z(3)) == GAP.Globals.Z(3)
     @test GAP.gap_to_julia(Any, true) == true
     @test GAP.gap_to_julia(GAP.Obj, true) == true
     @test GAP.gap_to_julia(Any, "foo") == "foo"
@@ -155,6 +158,9 @@
     x = GAP.evalstr( "NewVector( IsPlistVectorRep, Integers, [ 0, 2, 5 ] )" )
     @test GAP.gap_to_julia(x) == Vector{Any}([0, 2, 5])
     @test GAP.gap_to_julia(Vector{Int}, x) == Vector{Int}([0, 2, 5])
+    x = GAP.evalstr( "[ [ 1, 2 ], ~[1] ]" )
+    y = GAP.gap_to_julia(Vector{Set{Int}}, x; recursive = true)
+    @test y[1] === y[2]
   end
 
   @testset "Matrices" begin
@@ -193,6 +199,8 @@
     x = GAP.evalstr("[ Z(2), Z(3) ]")  # a non-collection
     y = [GAP.evalstr("Z(2)"), GAP.evalstr("Z(3)")]
     #@test GAP.gap_to_julia(Set{GAP.FFE}, x) == Set(y)
+    @test GAP.gap_to_julia(Set{Int}, GAP.evalstr("[ 1, true ]")) == Set([1, true])
+    @test_throws GAP.ConversionError GAP.gap_to_julia(Set{Int}, GAP.evalstr("rec( 1:= 1 )"))
   end
 
   @testset "Tuples" begin
@@ -211,7 +219,7 @@
     y = GAP.gap_to_julia(Tuple{GAP.Obj,Any}, x; recursive = false)
     @test isa(y, Tuple)
     @test isa(y[1], GAP.Obj)
-    @test isa(y[2], Array)
+    @test isa(y[2], GapObj)
     @test isa(y[2][2], GAP.Obj)
   end
 
@@ -254,9 +262,17 @@
     @test isa(y[:b], GAP.Obj)
   end
 
+  @testset "Julia Functions" begin
+    @test GAP.gap_to_julia(GAP.Globals.Julia.sqrt) === sqrt
+    @test_throws GAP.ConversionError GAP.gap_to_julia(Function, 1)
+  end
+
   @testset "Default" begin
     x = GAP.evalstr("(1,2,3)")
     @test_throws GAP.ConversionError GAP.gap_to_julia(x)
+    @test_throws GAP.ConversionError GAP.gap_to_julia(Int, (1, 2))
+    @test GAP.gap_to_julia(Nothing, nothing) == nothing
+    @test GAP.gap_to_julia(Any, nothing) == nothing
   end
 
   @testset "Conversions involving circular references" begin
@@ -277,7 +293,7 @@
 
   @testset "Catch conversions to types that are not supported" begin
     xx = GapObj("a")
-    @test_throws ErrorException GAP.gap_to_julia(Dict{Int64,Int64}, xx)
+    @test_throws GAP.ConversionError GAP.gap_to_julia(Dict{Int64,Int64}, xx)
   end
 
   @testset "Test converting GAP lists with holes in them" begin
