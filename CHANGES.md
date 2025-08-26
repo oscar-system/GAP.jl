@@ -1,6 +1,6 @@
 # Changes in GAP.jl
 
-## Version 0.15.0-DEV (released 2025-XX-XX)
+## Version 0.15.0 (released 2025-08-26)
 
 - Drop support for Julia 1.6 to 1.9; require Julia 1.10 or later.
 - **Breaking:** Remove `julia_to_gap` (code which called it, say as
