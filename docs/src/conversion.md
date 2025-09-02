@@ -48,6 +48,105 @@ The exceptions are as follows.
 
 ## Explicit GAP-to-Julia and Julia-to-GAP Conversions
 
+The following rules hold for explicit conversions.
+
+1. Julia types control the conversions.
+
+   - For conversions from Julia to GAP,
+     there is at most one possibility on the GAP side,
+     and the type of the given Julia object determines which code is used.
+
+   - For conversions from GAP to Julia, several Julia types can be possible
+     for the result, for example a GAP integer can be converted to several
+     Julia integer types, or a GAP string can be converted to a Julia `String`
+     or `Tuple`.
+     Usually one wants to specify the target type,
+     and then this type determines which code is used for the conversion.
+     If one does not specify the target type, a default type will be chosen.
+
+2. Subobjects, recursive conversions
+
+   - GAP lists and records can have subobjects,
+     the same holds for various Julia objects such as vectors, matrices,
+     tuples, and dictionaries.
+     One may or may not want to convert the subobjects recursively,
+     this is controlled by the `recursive` keyword argument of the functions
+     `GAP.gap_to_julia` and `GapObj`, which can be set to `true` or `false`.
+
+   - For Julia-to-GAP conversion, the default is non-recursive conversion.
+
+   - For GAP-to-Julia conversion, the default is recursive conversion.
+
+   - For Julia-to-GAP conversion, recursion stops at subobjects of type
+     `GapObj`.
+
+   - For GAP-to-Julia conversion, recursion stops at subobjects that do
+     not have the type `GAP.Obj`.
+
+   - For GAP-to-Julia conversion, the given target type may force a
+     conversion of subobjects up to a certain level also if non-recursive
+     conversion is requested.
+     In this case, recursive conversion means to convert subobjects to
+     Julia also if the result has already the target type.
+
+     For example, converting a GAP list of lists `l` to a Julia object of
+     type `Vector{Vector{Any}}` means to convert the entries of `l`
+     to `Vector{Any}` objects,
+     and non-recursive conversion means that the entries of the `l[i]`
+     will be kept in the result since the type requirement `Any` is satisfied,
+     whereas these entries will get converted to Julia objects
+     in the case of recursive conversion.
+
+   - When recursive conversion is requested, identical subobjects
+     in the given object correspond to identical subobjects in the result
+     of the conversion.
+
+     In order to achieve this, a dictionary gets created in the case of
+     recursive conversion, which stores the subobjects and their conversion
+     results.
+     Some of the implications are as follows.
+
+     - Recursive conversion is more expensive than non-recursive conversion.
+
+     - It can happen that the results of recursive and non-recursive
+       conversion are equal, but they differ w.r.t. the identity of subobjects.
+       For example, the two entries of the GAP list
+       `GAP.evalstr("[ [ 1, 2 ], ~[1] ]")` are identical,
+       the same holds for the two entries of the vector obtained by
+       recursive conversion of this list to an object of type
+       `Vector{Vector{Int}}`;
+       however, the two entries of the vector obtained by
+       non-recursive conversion of this list to an object of type
+       `Vector{Vector{Int}}` are equal but not identical.
+
+     (Note that "identity of objects" has different meanings in GAP and Julia.
+     For example, converting a GAP list of equal but nonidentical
+     strings to a Julia vector of symbols will yield an object with
+     identical subobjects.)
+
+3. Mutability of results of conversions
+
+   - In GAP, mutability is defined for individual objects.
+     GAP objects that are newly created by Julia-to-GAP conversions
+     are mutable whenever this is possible.
+
+   - In Julia, mutability is defined for types.
+     (The type `GapObj` is a mutable type.)
+
+4. Implementation of conversion methods
+
+   - In order to install a new GAP-to-Julia conversion for some
+     prescribed target type `T`,
+     one has to install a [`GAP.gap_to_julia_internal`](@ref) method
+     where `T` is specified as the first argument.
+
+   - In order to install a new Julia-to-GAP conversion for
+     objects of type `T`,
+     one has to install a [`GAP.GapObj_internal`](@ref) method.
+     If one knows that objects of type `T` need not support
+     recursive conversion then one can alternatively use the
+     [`GAP.@install`](@ref) macro for the installation.
+
 ```@docs
 gap_to_julia
 GapObj(x, cache::GapCacheDict = nothing; recursive::Bool = false)

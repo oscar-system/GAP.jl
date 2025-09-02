@@ -234,8 +234,7 @@
 #!  </Item>
 #!  <Item>
 #!    <C>IsString</C> to
-#!    <C>AbstractString</C> (default),
-#!    <C>String</C>,
+#!    <C>String</C> (default),
 #!    <C>Symbol</C>,
 #!    <C>Vector{UInt8}</C>,
 #!    or types available for <C>IsList</C>,
