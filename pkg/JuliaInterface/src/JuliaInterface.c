@@ -16,7 +16,7 @@
 #include "convert.h"
 #include "sync.h"
 
-#include <julia_gc.h>    // GAP header
+#include <gap/julia_gc.h>   // GAP header
 
 #include <julia_gcext.h>    // Julia header
 
