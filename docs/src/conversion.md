@@ -54,14 +54,14 @@ The following rules hold for explicit conversions.
 
    - For conversions from Julia to GAP,
      there is at most one possibility on the GAP side,
-     and the type of the given Julia object decides which code is used.
+     and the type of the given Julia object determines which code is used.
 
    - For conversions from GAP to Julia, several Julia types can be possible
      for the result, for example a GAP integer can be converted to several
      Julia integer types, or a GAP string can be converted to a Julia `String`
      or `Tuple`.
      Usually one wants to specify the target type,
-     and then this type decides which code is used for the conversion.
+     and then this type determines which code is used for the conversion.
      If one does not specify the target type, a default type will be chosen.
 
 2. Subobjects, recursive conversions
@@ -81,7 +81,7 @@ The following rules hold for explicit conversions.
      `GapObj`.
 
    - For GAP-to-Julia conversion, recursion stops at subobjects that do
-     not have the type `GapObj`.
+     not have the type `GAP.Obj`.
 
    - For GAP-to-Julia conversion, the given target type may force a
      conversion of subobjects up to a certain level also if non-recursive
@@ -116,7 +116,7 @@ The following rules hold for explicit conversions.
        recursive conversion of this list to an object of type
        `Vector{Vector{Int}}`;
        however, the two entries of the vector obtained by
-       recursive conversion of this list to an object of type
+       non-recursive conversion of this list to an object of type
        `Vector{Vector{Int}}` are equal but not identical.
 
      (Note that "identity of objects" has different meanings in GAP and Julia.

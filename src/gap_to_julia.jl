@@ -19,7 +19,7 @@
 
 Return an object of type `T` that corresponds to the GAP object `x`.
 
-The value of `recursive` can be `GAP.BoolVal(true)` or `GAP.BoolVal(false)`,
+The value of `recursive` can be `Val(true)` or `Val(false)`,
 the former meaning that subobjects of `x` shall get converted recursively,
 the latter meaning that no recursion is requested.
 In the case of recursive conversion, a dictionary is used as the value of
