@@ -1,7 +1,7 @@
 name = "GAP"
 uuid = "c863536a-3901-11e9-33e7-d5cd0df7b904"
 authors = ["Thomas Breuer <sam@math.rwth-aachen.de>", "Sebastian Gutsche <gutsche@mathematik.uni-siegen.de>", "Max Horn <horn@mathematik.uni-kl.de>"]
-version = "0.15.0"
+version = "0.15.1"
 
 [deps]
 AbstractAlgebra = "c3fe647b-3220-5bb0-a1ea-a7954cac585d"
@@ -62,7 +62,7 @@ Ncurses_jll = "68e3532b-a499-55ff-9963-d1c0c0748b3a"
 NemoExt = "Nemo"
 
 [compat]
-AbstractAlgebra = "0.41.11, 0.42.1, 0.43, 0.44, 0.45, 0.46"
+AbstractAlgebra = "0.41.11, 0.42.1, 0.43, 0.44, 0.45, 0.46, 0.47"
 Artifacts = "1.10"
 BinaryWrappers = "0.1.3"
 Downloads = "1.4.3"
