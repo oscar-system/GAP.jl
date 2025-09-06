@@ -1,5 +1,9 @@
 # Changes in GAP.jl
 
+## Version 0.15.1 (released 2025-09-06)
+
+- Declare compatibility with AbstractAlgebra 0.47
+
 ## Version 0.15.0 (released 2025-08-26)
 
 - Drop support for Julia 1.6 to 1.9; require Julia 1.10 or later.
@@ -299,7 +303,7 @@
 
 ## Version 0.9.0 (released 2022-11-01)
 
-- Update go GAP 4.12.1.
+- Update to GAP 4.12.1.
 
 ## Version 0.8.5 (released 2022-10-18)
 
