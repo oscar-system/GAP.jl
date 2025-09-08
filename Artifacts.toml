@@ -349,14 +349,14 @@ git-tree-sha1 = "17db1566d589e68dc79cc0bb003b04af8da9da8f"
     url = "https://files.gap-system.org/pkg/difsets-2.3.1.tar.gz"
 
 [GAP_pkg_digraphs]
-git-tree-sha1 = "881545956eecc2e7dfe55fcd20755cdec708132e"
+git-tree-sha1 = "45acc610bb00fc2d5f864c8945a7e6d389f49d8e"
 
     [[GAP_pkg_digraphs.download]]
-    sha256 = "e1968f3bc2ffccd99fb407836e9f67c8916aa8e3362ffec9e0d9c653efbfb1e8"
-    url = "https://github.com/digraphs/Digraphs/releases/download/v1.11.0/digraphs-1.11.0.tar.gz"
+    sha256 = "c6a16647437a17d6cfe76cd53f33e6e35e118f57e1e732f4fc147167657eabc4"
+    url = "https://github.com/digraphs/Digraphs/releases/download/v1.12.0/digraphs-1.12.0.tar.gz"
     [[GAP_pkg_digraphs.download]]
-    sha256 = "e1968f3bc2ffccd99fb407836e9f67c8916aa8e3362ffec9e0d9c653efbfb1e8"
-    url = "https://files.gap-system.org/pkg/digraphs-1.11.0.tar.gz"
+    sha256 = "c6a16647437a17d6cfe76cd53f33e6e35e118f57e1e732f4fc147167657eabc4"
+    url = "https://files.gap-system.org/pkg/digraphs-1.12.0.tar.gz"
 
 [GAP_pkg_edim]
 git-tree-sha1 = "af19036c239a2d3e28884dd13ea7a02d1e8adf89"
