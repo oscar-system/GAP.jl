@@ -1,5 +1,7 @@
 # Changes in GAP.jl
 
+## Version 0.16.0-DEV (released YYYY-MM-DD)
+
 ## Version 0.15.2 (released 2025-09-06)
 
 - Declare compatibility with Nemo 0.52
