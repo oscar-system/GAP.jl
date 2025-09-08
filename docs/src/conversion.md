@@ -64,6 +64,11 @@ The following rules hold for explicit conversions.
      and then this type determines which code is used for the conversion.
      If one does not specify the target type, a default type will be chosen.
 
+     Certain Julia types are not supported, for technical reasons.
+     For example, converting a nonempty GAP list to a Julia object of type
+     `Set{GapObj}` is not possible
+     because no `hash` method is defined for [`GapObj`](@ref).
+
 2. Subobjects, recursive conversions
 
    - GAP lists and records can have subobjects,
@@ -149,7 +154,7 @@ The following rules hold for explicit conversions.
 
 ```@docs
 gap_to_julia
-GapObj(x, cache::GapCacheDict = nothing; recursive::Bool = false)
+GapObj(x; recursive::Bool = false)
 ```
 
 ## Constructor Methods for GAP-to-Julia Conversions
