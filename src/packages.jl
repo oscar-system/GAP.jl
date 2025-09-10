@@ -560,15 +560,20 @@ function versioninfo(io::IO = stdout; GAP::Bool = false, jll::Bool = false, full
     name = String(key)
     push!(names, name)
     vals = dict[key]
-    path = replace(realpath(vals[1]), default_artifacts_path => "ARTIFACTS")
-    if startswith(path, "ARTIFACTS")
-      pos = findall("/", path)
-      if length(pos) > 1 && pos[2][1]-pos[1][1] > 10
-        path = path[1:(pos[1][1]+7)] * "..." * path[pos[2][1]:end]
+    if ispath(vals[1])
+      path = replace(realpath(vals[1]), default_artifacts_path => "ARTIFACTS")
+      if startswith(path, "ARTIFACTS")
+        pos = findall("/", path)
+        if length(pos) > 1 && pos[2][1]-pos[1][1] > 10
+          path = path[1:(pos[1][1]+7)] * "..." * path[pos[2][1]:end]
+        end
       end
+      push!(paths, path)
+      push!(versions, vals[2])
+    else
+      push!(paths, "($(vals[1])) -- loaded but not existing")
+      push!(versions, "")
     end
-    push!(paths, path)
-    push!(versions, vals[2])
   end
   namewidth = maximum(length.(names)) + 2
   verswidth = maximum(length.(versions)) + 2
