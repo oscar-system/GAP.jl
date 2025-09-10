@@ -26,6 +26,7 @@
     @test GAP.Packages.install("https://github.com/gap-packages/RegisterPackageTNUMDemo/releases/download/v0.4/RegisterPackageTNUMDemo-0.4.tar.gz", interactive = false)
     @test GAP.Packages.load("RegisterPackageTNUMDemo")
     @test GAP.Packages.remove("RegisterPackageTNUMDemo", interactive = false)
+    GAP.Packages.versioninfo(IOBuffer(); full = true)
 
 #    pkgdir = mktempdir()
 #    @test GAP.Packages.install("fga", interactive = false, pkgdir = pkgdir)
