@@ -379,14 +379,16 @@
 #! <A>juliaobj</A> and chooses a method depending on its &Julia; type
 #! for computing a &GAP; object corresponding to <A>juliaobj</A>.
 #! If <A>recursive</A> is <K>true</K> then nested objects are converted
-#! recursively.
+#! recursively,
+#! and identical subobjects of <A>juliaobj</A> correspond to identical
+#! subobjects of the result.
 #! <P/>
 #! <!-- Note that the Julia output contains the "forbidden" sequence "]]>",
 #!      thus the CDATA syntax cannot be used. -->
 #!<Example>
 #!gap> GAP_jl.Obj( 42 );
 #!42
-#!gap> m:= GAPToJulia( [ [ 1, 2 ], [ 3, 4 ] ] );
+#!gap> m:= GAPToJulia( [ [ 1, 2 ], [ 3, 4 ] ], true );
 #!&lt;Julia: Any[Any[1, 2], Any[3, 4]]>
 #!gap> GAP_jl.Obj( m );
 #![ &lt;Julia: Any[1, 2]>, &lt;Julia: Any[3, 4]> ]
@@ -435,17 +437,11 @@
 #!  only the outermost level is converted except if the optional argument
 #!  <A>recursive</A> is given and has the value <K>true</K>,
 #!  in this case all layers are converted recursively.
-#!
-#!  Note that this default is different from the default in the other
-#!  direction (see <Ref Func="GAPToJulia"/>).
-#!  The idea behind this choice is that from the viewpoint of a &GAP; session,
-#!  it is more likely to use plain &Julia; objects for computations on the
-#!  &Julia; side than &Julia; objects that contain &GAP; subobjects,
-#!  whereas <Q>shallow conversion</Q> of &Julia; objects to &GAP; yields
-#!  something useful on the &GAP; side.
+#!  In the case of recursive conversion, identical subobjects of
+#!  <A>juliaobj</A> correspond to identical subobjects of the result.
 #!
 #! @BeginExampleSession
-#! gap> m:= GAPToJulia( [ [ 1, 2 ], [ 3, 4 ] ] );
+#! gap> m:= GAPToJulia( [ [ 1, 2 ], [ 3, 4 ] ], true );
 #! <Julia: Any[Any[1, 2], Any[3, 4]]>
 #! gap> JuliaToGAP( IsList, m );
 #! [ <Julia: Any[1, 2]>, <Julia: Any[3, 4]> ]
@@ -498,33 +494,30 @@ DeclareConstructor("JuliaToGAP", [IsObject, IsObject, IsBool]);
 #!gap> GAPToJulia( JuliaType( Julia.Vector, [ Julia.Int ] ), l );
 #!&lt;Julia: [1, 3, 4]>
 #!gap> m:= [ [ 1, 2 ], [ 3, 4 ] ];;
-#!gap> GAPToJulia( m );
+#!gap> GAPToJulia( m, true );
 #!&lt;Julia: Any[Any[1, 2], Any[3, 4]]>
 #!gap> GAPToJulia( JuliaType( Julia.Matrix, [ Julia.Int ] ), m );
 #!&lt;Julia: [1 2; 3 4]>
 #!gap> r:= rec( a:= 1, b:= [ 1, 2, 3 ] );;
-#!gap> GAPToJulia( r );
+#!gap> GAPToJulia( r, true );
 #!&lt;Julia: Dict{Symbol,Any}(:a => 1,:b => Any[1, 2, 3])>
 #!</Example>
 #!
 #!  If <A>gapobj</A> is a list or a record, one may want that its subobjects
 #!  are also converted to &Julia; or that they are kept as they are,
 #!  which can be decided by entering <K>true</K> or <K>false</K> as the value
-#!  of the optional argument <A>recursive</A>;
-#!  the default is <K>true</K>, that is, the subobjects of <A>gapobj</A> are
-#!  converted recursively.
-#!
-#!  Note that this default is different from the default in the other
-#!  direction,
-#!  see the description of
-#!  <Ref Constr="JuliaToGAP" Label="for IsObject, IsObject"/>.
+#!  of the optional argument <A>recursive</A>.
+#!  In the case of recursive conversion, identical subobjects of <A>gapobj</A>
+#!  correspond to identical subobjects of the result.
+#!  The default is <K>false</K>, that is, the subobjects of <A>gapobj</A> are
+#!  not converted, and identical subobjects are not tracked.
 #!
 #!<Example>
-#!gap> jl:= GAPToJulia( m, false );
+#!gap> jl:= GAPToJulia( m );
 #!&lt;Julia: Any[GAP: [ 1, 2 ], GAP: [ 3, 4 ]]>
 #!gap> jl[1];
 #![ 1, 2 ]
-#!gap> jr:= GAPToJulia( r, false );
+#!gap> jr:= GAPToJulia( r );
 #!&lt;Julia: Dict{Symbol,Any}(:a => 1,:b => GAP: [ 1, 2, 3 ])>
 #!gap> Julia.Base.get( jr, Julia.Symbol( "b" ), fail );
 #![ 1, 2, 3 ]

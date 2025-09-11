@@ -110,7 +110,7 @@ InstallMethod( ContextGAPNemo,
         fi;
         return Julia.Nemo.matrix( C!.JuliaDomainPointer,
                    Julia.GAPUtilsExperimental.MatrixFromNestedArray(
-                       GAPToJulia( [ vec ] ) ) );
+                       GAPToJulia( [ vec ], true ) ) );
       end,
 
       VectorJuliaToGAP:= function( C, mat )
@@ -138,7 +138,7 @@ InstallMethod( ContextGAPNemo,
         fi;
         return Julia.Nemo.matrix( C!.JuliaDomainPointer,
                    Julia.GAPUtilsExperimental.MatrixFromNestedArray(
-                       GAPToJulia( mat ) ) );
+                       GAPToJulia( mat, true ) ) );
       end,
 
       MatrixJuliaToGAP:= function( C, mat )

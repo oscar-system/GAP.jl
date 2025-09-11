@@ -256,7 +256,8 @@ gap> GAP_jl.Obj( emptystring );
 ##  'GAPToJulia' for Julia functions (inside arrays)
 gap> parse:= Julia.parse;
 <Julia: parse>
-gap> list:= GAPToJulia( JuliaType( Julia.Vector, [ Julia.Any ] ), [ 1, parse, 3 ] );
+gap> list:= GAPToJulia( JuliaType( Julia.Vector, [ Julia.Any ] ),
+>             [ 1, parse, 3 ], true );
 <Julia: Any[1, parse, 3]>
 gap> list2:= JuliaToGAP( IsList, list );
 [ 1, <Julia: parse>, 3 ]
@@ -286,7 +287,7 @@ rec(  )
 gap> dict:= GAPToJulia( rec( bool:= true,
 >                            string:= "abc",
 >                            list:= [ 1, 2, 3 ],
->                          ) );;
+>                          ), true );;
 gap> JuliaToGAP( IsRecord, dict );
 rec( bool := true, list := <Julia: Any[1, 2, 3]>, string := <Julia: "abc"> )
 gap> GAP_jl.Obj( dict );
@@ -297,8 +298,7 @@ gap> GAP_jl.Obj( dict, true );
 rec( bool := true, list := [ 1, 2, 3 ], string := "abc" )
 
 ##  something where recursive conversion would run into a Julia error
-gap> dict:= GAPToJulia( rec( juliafunc:= Julia.Base.map,
->                          ) );
+gap> dict:= GAPToJulia( rec( juliafunc:= Julia.Base.map ), true );
 <Julia: Dict{Symbol,Any}(:juliafunc=>map)>
 gap> JuliaToGAP( IsRecord, dict );
 rec( juliafunc := <Julia: map> )
