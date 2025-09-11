@@ -103,7 +103,7 @@ InstallMethod( ContextGAPNemo,
       VectorGAPToJulia:= function( C, vec )
         return Julia.Nemo.matrix( C!.JuliaDomainPointer,
                  Julia.GAPUtilsExperimental.MatrixFromNestedArray(
-                   GAPToJulia( [ vec ] ) ) );
+                   GAPToJulia( [ vec ], true ) ) );
       end,
 
       VectorJuliaToGAP:= function( C, mat )
@@ -124,7 +124,7 @@ InstallMethod( ContextGAPNemo,
       MatrixGAPToJulia:= function( C, mat )
         return Julia.Nemo.matrix( C!.JuliaDomainPointer,
                  Julia.GAPUtilsExperimental.MatrixFromNestedArray(
-                   GAPToJulia( mat ) ) );
+                   GAPToJulia( mat, true ) ) );
       end,
 
       MatrixJuliaToGAP:= function( C, mat )
@@ -297,7 +297,7 @@ InstallMethod( ContextGAPNemo,
     if Length( indetnames ) = 1 then
       names:= GAPToJulia( indetnames[1] );
     else
-      names:= JuliaType( Julia.Vector, [ Julia.String ] )( GAPToJulia( indetnames ) );
+      names:= JuliaType( Julia.Vector, [ Julia.String ] )( GAPToJulia( indetnames, true ) );
     fi;
 
     # Create the Nemo ring.
@@ -436,7 +436,7 @@ InstallMethod( ContextGAPNemo,
 
       VectorGAPToJulia:= function( C, vec )
         return Julia.Nemo.matrix( C!.JuliaDomainPointer, 1, Length( vec ),
-                   GAPToJulia( List( vec, x -> C!.ElementGAPToJulia( C, x ) ) ) );
+                   GAPToJulia( List( vec, x -> C!.ElementGAPToJulia( C, x ) ), true ) );
       end,
 
       VectorJuliaToGAP:= function( C, vec )
@@ -459,7 +459,7 @@ InstallMethod( ContextGAPNemo,
         return Julia.Nemo.matrix( C!.JuliaDomainPointer,
                    NumberRows( mat ), NumberColumns( mat ),
                    GAPToJulia( List( Concatenation( mat ),
-                                     x -> C!.ElementGAPToJulia( C, x ) ) ) );
+                                     x -> C!.ElementGAPToJulia( C, x ) ), true ) );
       end,
 
       MatrixJuliaToGAP:= function( C, mat )
@@ -569,7 +569,7 @@ InstallMethod( ContextGAPNemo,
         # Convert the list of integral coefficient vectors
         # to a suitable matrix in Julia (Nemo.ZZMatrix).
         res:= Julia.GAPUtilsExperimental.MatrixFromNestedArray(
-                  GAPToJulia( [ coeffs ] ) );
+                  GAPToJulia( [ coeffs ], true ) );
         res:= Julia.Nemo.matrix( Julia.Nemo.ZZ, res );
 
         # Call the Julia function.
@@ -604,7 +604,7 @@ InstallMethod( ContextGAPNemo,
 
       VectorGAPToJulia:= function( C, vec )
         return Julia.Nemo.matrix( C!.JuliaDomainPointer, 1, Length( vec ),
-                   GAPToJulia( List( vec, x -> C!.ElementGAPToJulia( C, x ) ) ) );
+                   GAPToJulia( List( vec, x -> C!.ElementGAPToJulia( C, x ) ), true ) );
       end,
 
       VectorJuliaToGAP:= function( C, vec )
@@ -628,7 +628,7 @@ InstallMethod( ContextGAPNemo,
         return Julia.Nemo.matrix( C!.JuliaDomainPointer,
                    NumberRows( mat ), NumberColumns( mat ),
                    GAPToJulia( List( Concatenation( mat ),
-                                     x -> C!.ElementGAPToJulia( C, x ) ) ) );
+                                     x -> C!.ElementGAPToJulia( C, x ) ), true ) );
       end,
 
       MatrixJuliaToGAP:= function( C, mat )
@@ -886,7 +886,7 @@ InstallOtherMethod( InverseMutable,
                                           modulus ) );
          od;
        od;
-       arr:= JuliaType( Julia.Vector, [ Julia.Nemo.ZZRingElem ] )( GAPToJulia( arr ) );
+       arr:= JuliaType( Julia.Vector, [ Julia.Nemo.ZZRingElem ] )( GAPToJulia( arr, true ) );
        res:= Julia.Nemo.parent( ptr )( arr );
      fi;
 

@@ -93,7 +93,7 @@ BindGlobal( "OrthogonalEmbeddingsUsingJulia", function( juliagrammat, arec... )
     fi;
 
     # Compute the shortest vectors in Julia.
-    dict:= GAPToJulia( dict );
+    dict:= GAPToJulia( dict, true );
     juliaresult:= Julia.GAPZLattice.OrthogonalEmbeddings( juliagrammat, dict );
 
     # Convert the result to GAP.
