@@ -1,5 +1,17 @@
 # Changes in GAP.jl
 
+## Version 0.16.0-DEV
+
+- **Breaking:** Change the default behaviour of `gap_to_julia`
+  w.r.t. the recursive conversion of subobjects.
+  Now `gap_to_julia(T, obj)` converts subobjects of `obj` only until the
+  result has the type `T`.
+  In order to convert subobjects of `obj` recursively,
+  one can call `gap_to_julia(T, obj; recursive = true)`.
+  In earlier versions, recursive conversion was the default,
+  and `gap_to_julia(T, obj; recursive = false)` was used to request
+  non-recursive conversion.
+
 ## Version 0.15.3 (released 2025-09-24)
 
 - Drop dependency on `Pkg`.

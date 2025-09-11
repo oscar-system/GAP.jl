@@ -93,7 +93,7 @@ InstallMethod( ContextGAPSingular,
 
       VectorGAPToJulia:= function( C, vec )
         return Julia.Singular.matrix( C!.JuliaDomainPointer, 1, Length( vec ),
-                   GAPToJulia( List( vec, x -> C!.ElementGAPToJulia( C, x ) ) ) );
+                   GAPToJulia( List( vec, x -> C!.ElementGAPToJulia( C, x ) ), true ) );
       end,
 
       VectorJuliaToGAP:= function( C, vec )
@@ -116,7 +116,7 @@ InstallMethod( ContextGAPSingular,
         return Julia.Singular.matrix( C!.JuliaDomainPointer,
                    NumberRows( mat ), NumberColumns( mat ),
                    GAPToJulia( List( Concatenation( mat ),
-                                     x -> C!.ElementGAPToJulia( C, x ) ) ) );
+                                     x -> C!.ElementGAPToJulia( C, x ) ), true ) );
       end,
 
       MatrixJuliaToGAP:= function( C, mat )
@@ -177,7 +177,7 @@ InstallMethod( ContextGAPSingular,
     if Length( indetnames ) = 1 then
       names:= GAPToJulia( indetnames[1] );
     else
-      names:= JuliaType( Julia.Vector, [ Julia.String ] )( GAPToJulia( indetnames ) );
+      names:= JuliaType( Julia.Vector, [ Julia.String ] )( GAPToJulia( indetnames, true ) );
     fi;
 
     # See '.julia/packages/Singular/.../src/Singular.jl'.
@@ -363,7 +363,7 @@ InstallMethod( ContextGAPSingular,
 
       VectorGAPToJulia:= function( C, vec )
         return Julia.Singular.matrix( C!.JuliaDomainPointer, 1, Length( vec ),
-                   GAPToJulia( List( vec, x -> C!.ElementGAPToJulia( C, x ) ) ) );
+                   GAPToJulia( List( vec, x -> C!.ElementGAPToJulia( C, x ) ), true ) );
       end,
 
       VectorJuliaToGAP:= function( C, vec )
@@ -386,7 +386,7 @@ InstallMethod( ContextGAPSingular,
         return Julia.Singular.matrix( C!.JuliaDomainPointer,
                    NumberRows( mat ), NumberColumns( mat ),
                    GAPToJulia( List( Concatenation( mat ),
-                                     x -> C!.ElementGAPToJulia( C, x ) ) ) );
+                                     x -> C!.ElementGAPToJulia( C, x ) ), true ) );
       end,
 
       MatrixJuliaToGAP:= function( C, mat )

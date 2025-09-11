@@ -120,7 +120,7 @@
     @test_throws GAP.ConversionError Vector{BigInt}(n)
     x = GAP.evalstr("[ [ 1, 2 ], [ 3, 4 ] ]")
     nonrec1 = @inferred Vector{GapObj}(x)
-    nonrec2 = @inferred Vector{Any}(x; recursive = false)
+    nonrec2 = @inferred Vector{Any}(x)
     rec = @inferred Vector{Any}(x; recursive = true)
     @test all(x -> isa(x, GapObj), nonrec1)
     @test nonrec1 == nonrec2
@@ -136,7 +136,7 @@
     n = GAP.evalstr("[[1,2],[3,4]]")
     @test (@inferred Matrix{Int64}(n)) == [1 2; 3 4]
     xt = [(1,) (2,); (3,) (4,)]
-    n = GapObj(xt; recursive = false)
+    n = GapObj(xt)
     @test (@inferred Matrix{Tuple{Int64}}(n)) == xt
     n = GapObj(big(2)^100)
     @test_throws GAP.ConversionError Matrix{Int64}(n)
@@ -147,10 +147,10 @@
     m[1, 1] = x
     m[2, 2] = x
     x = GapObj(m; recursive = true)
-    y = @inferred Matrix{Any}(x)
+    y = @inferred Matrix{Any}(x; recursive = true)
     @test !isa(y[1, 1], GapObj)
     @test y[1, 1] === y[2, 2]
-    z = @inferred Matrix{Any}(x; recursive = false)
+    z = @inferred Matrix{Any}(x)
     @test isa(z[1, 1], GapObj)
     @test z[1, 1] === z[2, 2]
   end
@@ -172,12 +172,12 @@
     n = GapObj(big(2)^100)
     @test_throws GAP.ConversionError Tuple{Int64,Any,Int32}(n)
     x = GAP.evalstr("[ [ 1, 2 ], [ 3, [ 4, 5 ] ] ]")
-    y = Tuple{GAP.Obj,Any}(x)
+    y = Tuple{GAP.Obj,Any}(x; recursive = true)
     @test isa(y, Tuple)
     @test isa(y[1], GAP.Obj)
     @test isa(y[2], Array)
     @test isa(y[2][2], Array)
-    y = Tuple{GAP.Obj,Any}(x; recursive = false)
+    y = Tuple{GAP.Obj,Any}(x)
     @test isa(y, Tuple)
     @test isa(y[1], GAP.Obj)
 #   @test isa(y[2], Array)
@@ -208,16 +208,16 @@
   @testset "Dictionaries" begin
     x = GAP.evalstr("rec( foo := 1, bar := \"foo\" )")
     y = Dict{Symbol,Any}(:foo => 1, :bar => "foo")
-    @test (@inferred Dict{Symbol,Any}(x)) == y
+    @test (@inferred Dict{Symbol,Any}(x; recursive = true)) == y
     n = GapObj(big(2)^100)
     @test_throws GAP.ConversionError Dict{Symbol,Any}(n)
     x = GAP.evalstr("rec( a:= [ 1, 2 ], b:= [ 3, [ 4, 5 ] ] )")
-    y = @inferred Dict{Symbol,Any}(x)
+    y = @inferred Dict{Symbol,Any}(x; recursive = true)
     @test isa(y, Dict)
     @test isa(y[:a], Array)
     @test isa(y[:b], Array)
     @test isa(y[:b][2], Array)
-    y = @inferred Dict{Symbol,Any}(x; recursive = false)
+    y = @inferred Dict{Symbol,Any}(x)
     @test isa(y[:a], GAP.Obj)
     @test isa(y[:b], GAP.Obj)
   end

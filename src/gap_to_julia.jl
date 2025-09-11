@@ -384,7 +384,7 @@ end
 ##   to a `Vector{Any}`.)
 
 """
-    gap_to_julia([type, ]x; recursive::Bool=true)
+    gap_to_julia([type, ]x; recursive::Bool=false)
 
 Try to convert the object `x` to a Julia object of type `type`.
 If `x` is a `GapObj` then the conversion rules are defined in
@@ -407,12 +407,12 @@ julia> GAP.gap_to_julia(GapObj("abc"))
 julia> val = GapObj([1 2 ; 3 4])
 GAP: [ [ 1, 2 ], [ 3, 4 ] ]
 
-julia> GAP.gap_to_julia(val)
+julia> GAP.gap_to_julia(val, recursive = true)
 2-element Vector{Any}:
  Any[1, 2]
  Any[3, 4]
 
-julia> GAP.gap_to_julia(val, recursive = false)
+julia> GAP.gap_to_julia(val)
 2-element Vector{Any}:
  GAP: [ 1, 2 ]
  GAP: [ 3, 4 ]
@@ -452,11 +452,11 @@ function gap_to_julia end
 gap_to_julia(x::Bool) = x
 gap_to_julia(x::Int) = x
 gap_to_julia(x::FFE) = x
-gap_to_julia(T::Type, x::Any; recursive::Bool = true) = gap_to_julia_internal(T, x, nothing, BoolVal(recursive))
-gap_to_julia(::Type{Any}, x::Any; recursive::Bool = true) = x
-gap_to_julia(::T, x::Nothing; recursive::Bool = true) where {T<:Type} = nothing
-gap_to_julia(::Type{Any}, x::Nothing; recursive::Bool = true) = nothing
-gap_to_julia(x::Any; recursive::Bool = true) = x
+gap_to_julia(T::Type, x::Any; recursive::Bool = false) = gap_to_julia_internal(T, x, nothing, BoolVal(recursive))
+gap_to_julia(::Type{Any}, x::Any; recursive::Bool = false) = x
+gap_to_julia(::T, x::Nothing; recursive::Bool = false) where {T<:Type} = nothing
+gap_to_julia(::Type{Any}, x::Nothing; recursive::Bool = false) = nothing
+gap_to_julia(x::Any; recursive::Bool = false) = x
 
 """
     _default_type(x::GapObj, recursive::Bool)
@@ -489,7 +489,7 @@ function _default_type(x::GapObj, recursive::Bool)
   return Any, false
 end
 
-function gap_to_julia(x::GapObj; recursive::Bool = true)
+function gap_to_julia(x::GapObj; recursive::Bool = false)
   T, recursive = _default_type(x, recursive)
   T == Any && throw(ConversionError(x, "any known type"))
   return gap_to_julia_internal(T, x, nothing, BoolVal(recursive))

@@ -78,9 +78,8 @@ The following rules hold for explicit conversions.
      this is controlled by the `recursive` keyword argument of the functions
      `GAP.gap_to_julia` and `GapObj`, which can be set to `true` or `false`.
 
-   - For Julia-to-GAP conversion, the default is non-recursive conversion.
-
-   - For GAP-to-Julia conversion, the default is recursive conversion.
+   - For both GAP-to-Julia and Julia-to-GAP conversion,
+     the default is non-recursive conversion.
 
    - For Julia-to-GAP conversion, recursion stops at subobjects of type
      `GapObj`.
