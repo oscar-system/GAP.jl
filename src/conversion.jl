@@ -93,6 +93,13 @@ function handle_recursion(obj, ret_val, rec::Bool, rec_dict::Union{Nothing,IdDic
 end
 
 
+# Switch off recursion (hence avoid the creation of a dictionary)
+# if `isbitstype(T)` or `T <: GAP.Obj` holds (includes `GapObj`).
+function _needs_tracking_gap_to_julia(::Type{T}, recursive::Bool) where T
+  return recursive && !(isbitstype(T) || T <: GAP.Obj)
+end
+
+
 # Helper to make use of `Val{true}` and `Val{false}` more efficient:
 # whenever we use patterns like `Val(recursive)` this throws a curve ball
 # to the Julia optimizer, as it cannot infer the type of the result.
