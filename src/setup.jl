@@ -11,13 +11,14 @@
 
 module Setup
 
-using Pkg: GitTools
 using ..GAP: GAP
 import GAP_jll
 import GAP_pkg_juliainterface_jll
 import FileWatching: Pidfile
 
 export create_gap_sh
+
+include("treehash.jl")
 
 #############################################################################
 #
@@ -218,9 +219,9 @@ function locate_JuliaInterface_so()
     # compare the C sources used to build GAP_pkg_juliainterface_jll with bundled copies
     # by comparing tree hashes
     jll = GAP_pkg_juliainterface_jll.find_artifact_dir()
-    jll_hash = GitTools.tree_hash(joinpath(jll, "src"))
+    jll_hash = tree_hash(joinpath(jll, "src"))
     bundled = joinpath(@__DIR__, "..", "pkg", "JuliaInterface")
-    bundled_hash = GitTools.tree_hash(joinpath(bundled, "src"))
+    bundled_hash = tree_hash(joinpath(bundled, "src"))
     if jll_hash == bundled_hash && get(ENV, "FORCE_JULIAINTERFACE_COMPILATION", "false") != "true"
         # if the tree hashes match then we can use JuliaInterface.so from the JLL
         @debug "Use JuliaInterface.so from GAP_pkg_juliainterface_jll"
