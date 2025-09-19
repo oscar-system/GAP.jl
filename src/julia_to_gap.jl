@@ -78,9 +78,6 @@ The following `GapObj` conversions are supported by GAP.jl.
 """
 GapObj(x; recursive::Bool = false) = GapObj_internal(x, nothing, BoolVal(recursive))
 
-GapObj(x, cache::GapCacheDict; recursive::Bool = false) = GapObj_internal(x, cache, BoolVal(recursive))
-#TODO: omit this method?
-
 # The calls to `GAP.@install` install methods for `GAP.GapObj_internal`
 # so we must make sure it is declared before
 """
