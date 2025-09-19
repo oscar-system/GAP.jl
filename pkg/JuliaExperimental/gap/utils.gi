@@ -34,7 +34,7 @@ JuliaIncludeFile(
 BindGlobal( "JuliaMatrixFromGapMatrix", function( gapmatrix )
     local juliamatrix;
 
-    juliamatrix:= GAPToJulia( gapmatrix );  # nested array
+    juliamatrix:= GAPToJulia( gapmatrix, true );  # nested array
     return Julia.GAPUtilsExperimental.MatrixFromNestedArray( juliamatrix );
     end );
 

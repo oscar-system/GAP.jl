@@ -12,7 +12,6 @@
 
 ## Converters
 """
-    GapObj(input, recursion_dict::GapCacheDict = nothing; recursive::Bool = false)
     GapObj(input, recursive::Bool = false)
 
 One can use the type [`GapObj`](@ref) as a constructor,
@@ -20,10 +19,6 @@ in order to convert the julia object `input` to an appropriate GAP object.
 
 If `recursive` is set to `true`, recursive conversion of nested Julia objects
 (arrays, tuples, and dictionaries) is performed.
-
-
-The input `recursion_dict` should never be set by the user, it is meant to keep egality
-of input data, by converting equal data to identical objects in GAP.
 
 # Examples
 ```jldoctest
@@ -81,10 +76,30 @@ The following `GapObj` conversions are supported by GAP.jl.
 | `UnitRange{T}`, `StepRange{T, S}`    | `IsRange`    |
 | `Function`                           | `IsFunction` |
 """
-GapObj(x, cache::GapCacheDict = nothing; recursive::Bool = false) = GapObj_internal(x, cache, BoolVal(recursive))
+GapObj(x; recursive::Bool = false) = GapObj_internal(x, nothing, BoolVal(recursive))
 
 # The calls to `GAP.@install` install methods for `GAP.GapObj_internal`
 # so we must make sure it is declared before
+"""
+    GapObj_internal(x::Any, rec_dict::GapCacheDict, ::Val{recursive}) where recursive
+
+Return a `GapObj` that corresponds to the Julia object `x`.
+
+The value of `recursive` can be `GAP.BoolVal(true)` or `GAP.BoolVal(false)`,
+the former meaning that subobjects of `x` shall get converted recursively,
+the latter meaning that no recursion is requested.
+In the case of recursive conversion, a dictionary is used as the value of
+`rec_dict` in order to make sure that identical subobjects of `x` correspond
+to identical subobjects in the result of the conversion.
+This dictionary is created automatically on demand,
+it should never be supplied by the user.
+
+The function `GapObj_internal` may call `GapObj`,
+but the other direction is not allowed.
+
+New methods for Julia-to-GAP conversions must be implemented via
+methods for `GapObj_internal` not for `GapObj`.
+"""
 function GapObj_internal end
 
 
