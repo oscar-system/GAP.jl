@@ -245,7 +245,6 @@ Given a directory path, create three files in that directory:
 """
 function create_gap_sh(dstdir::String; use_active_project::Bool=false)
 
-    dstdir = expanduser(dstdir)
     mkpath(dstdir)
 
     if use_active_project
