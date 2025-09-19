@@ -539,8 +539,7 @@ end
     @test GapObj(1:3:10) == r
     @test_throws GAP.ConversionError GapObj(1:2^62)
 
-    r = GapObj(1:2:11, IdDict())
-    @test r == GapObj(1:2:11)
+    r == GapObj(1:2:11)
     @test String(GAP.Globals.TNAM_OBJ(r)) == "list (range,ssort)"
     r = GAP.Obj(1:10)
     @test String(GAP.Globals.TNAM_OBJ(r)) == "list (range,ssort)"

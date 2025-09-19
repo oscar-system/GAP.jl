@@ -12,6 +12,12 @@
   and `gap_to_julia(T, obj; recursive = false)` was used to request
   non-recursive conversion.
 
+- **Breaking:** Do not support the optional `GapCacheDict` argument for
+  `GapObj` anymore, because recursive conversion to GAP is handled by
+  `GAP.GapObj_internal` and does not involve cals to `GapObj`.
+  We had always stated in the documentation that users should not enter
+  this argument because it gets created automatically in recursive conversions.
+
 ## Version 0.15.3 (released 2025-09-24)
 
 - Drop dependency on `Pkg`.
