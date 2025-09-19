@@ -82,8 +82,10 @@ Module
 
 Equality of two `GapObj`s is defined by delegating to GAP's equality test.
 Since GAP does not define hash values for its objects,
-Julia cannot provide a nontrivial `hash` method for the type `GapObj`.
-We could have defined `hash` to be constant on objects of type `GapObj`,
+it cannot provide data for a nontrivial `hash` method for the type `GapObj`.
+This is because a `hash` method must satisfy the condition that `a == b`
+implies `hash(a) == hash(b)`. The only universal way to guarantee that
+would be to define `hash` to be constant on objects of type `GapObj`,
 but this would lead to inefficient code.
 Therefore we decided to throw an error exception whenever `hash` is called
 with a `GapObj`.

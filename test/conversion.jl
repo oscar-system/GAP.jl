@@ -378,7 +378,6 @@
     conv = GAP.gap_to_julia(Vector{Union{Nothing,Int64}}, xx)
     @test conv == Union{Nothing,Int64}[1, nothing, 1]
     @test conv == GAP.gap_to_julia(Vector, xx)
-    @test conv == GAP.gap_to_julia(Vector{Union{Int64,Nothing}}, xx)
   end
 
   @testset "GAP lists with Julia objects" begin
