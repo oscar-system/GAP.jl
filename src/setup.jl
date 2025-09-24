@@ -259,6 +259,8 @@ function create_gap_sh(dstdir::String; use_active_project::Bool=false)
 
         @info "Generating custom Julia project ..."
         gaproot_gapjl = abspath(@__DIR__, "..")
+        # workaround: pre-populate Project.toml, otherwise the `run` command
+        # afterwards complaints about Pkg not being in the environment.
         write(joinpath(projectdir, "Project.toml"),
                 """
                 [deps]
