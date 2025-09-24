@@ -259,6 +259,11 @@ function create_gap_sh(dstdir::String; use_active_project::Bool=false)
 
         @info "Generating custom Julia project ..."
         gaproot_gapjl = abspath(@__DIR__, "..")
+        write(joinpath(projectdir, "Project.toml"),
+                """
+                [deps]
+                Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
+                """)
         run(`$(Base.julia_cmd()) --startup-file=no --project=$(projectdir) -e "using Pkg; Pkg.develop(PackageSpec(path=\"$(gaproot_gapjl)\"))"`)
         
         @info "Generating gap.sh ..."
