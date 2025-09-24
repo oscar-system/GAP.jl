@@ -1,4 +1,5 @@
 # The code in this file is taken from Pkg.GitTools
+# <https://github.com/JuliaLang/Pkg.jl/blob/a84228360d6cff568a55911733e830cdf1c492da/src/GitTools.jl>
 #
 #  As such the following licensing terms apply:
 #
@@ -29,8 +30,8 @@
 import SHA
 
 # This code gratefully adapted from https://github.com/simonbyrne/GitX.jl
-@enum GitMode mode_dir=0o040000 mode_normal=0o100644 mode_executable=0o100755 mode_symlink=0o120000 mode_submodule=0o160000
-Base.string(mode::GitMode) = string(UInt32(mode); base=8)
+@enum GitMode mode_dir = 0o040000 mode_normal = 0o100644 mode_executable = 0o100755 mode_symlink = 0o120000 mode_submodule = 0o160000
+Base.string(mode::GitMode) = string(UInt32(mode); base = 8)
 Base.print(io::IO, mode::GitMode) = print(io, string(mode))
 
 function gitmode(path::AbstractString)
@@ -60,7 +61,7 @@ end
 
 Calculate the git blob hash of a given path.
 """
-function blob_hash(::Type{HashType}, path::AbstractString) where HashType
+function blob_hash(::Type{HashType}, path::AbstractString) where {HashType}
     ctx = HashType()
     if islink(path)
         datalen = length(readlink(path))
@@ -72,7 +73,7 @@ function blob_hash(::Type{HashType}, path::AbstractString) where HashType
     SHA.update!(ctx, Vector{UInt8}("blob $(datalen)\0"))
 
     # Next, read data in in chunks of 4KB
-    buff = Vector{UInt8}(undef, 4*1024)
+    buff = Vector{UInt8}(undef, 4 * 1024)
 
     try
         if islink(path)
@@ -120,9 +121,9 @@ end
 
 Calculate the git tree hash of a given path.
 """
-function tree_hash(::Type{HashType}, root::AbstractString; debug_out::Union{IO,Nothing} = nothing, indent::Int=0) where HashType
+function tree_hash(::Type{HashType}, root::AbstractString; debug_out::Union{IO, Nothing} = nothing, indent::Int = 0) where {HashType}
     entries = Tuple{String, Vector{UInt8}, GitMode}[]
-    for f in sort(readdir(root; join=true); by = f -> gitmode(f) == mode_dir ? f*"/" : f)
+    for f in sort(readdir(root; join = true); by = f -> gitmode(f) == mode_dir ? f * "/" : f)
         # Skip `.git` directories
         if basename(f) == ".git"
             continue
@@ -139,7 +140,7 @@ function tree_hash(::Type{HashType}, root::AbstractString; debug_out::Union{IO,N
             if debug_out !== nothing
                 child_stream = IOBuffer()
             end
-            hash = tree_hash(HashType, filepath; debug_out=child_stream, indent=indent+1)
+            hash = tree_hash(HashType, filepath; debug_out = child_stream, indent = indent + 1)
             if debug_out !== nothing
                 indent_str = "| "^indent
                 println(debug_out, "$(indent_str)+ [D] $(basename(filepath)) - $(bytes2hex(hash))")
@@ -159,7 +160,7 @@ function tree_hash(::Type{HashType}, root::AbstractString; debug_out::Union{IO,N
 
     content_size = 0
     for (n, h, m) in entries
-        content_size += ndigits(UInt32(m); base=8) + 1 + sizeof(n) + 1 + sizeof(h)
+        content_size += ndigits(UInt32(m); base = 8) + 1 + sizeof(n) + 1 + sizeof(h)
     end
 
     # Return the hash of these entries
@@ -171,4 +172,4 @@ function tree_hash(::Type{HashType}, root::AbstractString; debug_out::Union{IO,N
     end
     return SHA.digest!(ctx)
 end
-tree_hash(root::AbstractString; debug_out::Union{IO,Nothing} = nothing) = tree_hash(SHA.SHA1_CTX, root; debug_out)
+tree_hash(root::AbstractString; debug_out::Union{IO, Nothing} = nothing) = tree_hash(SHA.SHA1_CTX, root; debug_out)
