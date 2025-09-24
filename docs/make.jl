@@ -137,6 +137,7 @@ DocMeta.setdocmeta!(GAP, :DocTestSetup, :(using GAP, GAP.Random); recursive = tr
 makedocs(
     sitename = "GAP.jl",
     modules = [GAP],
+    checkdocs = :public,
     doctest = false,
     doctestfilters = GAP.GAP_doctestfilters,
     pages = GAP.GAP_docs_pages,
