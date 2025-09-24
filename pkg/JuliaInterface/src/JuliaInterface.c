@@ -16,7 +16,11 @@
 #include "convert.h"
 #include "sync.h"
 
+// With gap 4.15, the header julia_gc.h is available through gap_all.h.
+// To still support GAP 4.14, we include it conditionally.
+#ifndef GAP_JULIA_GC_H
 #include <julia_gc.h>    // GAP header
+#endif
 
 #include <julia_gcext.h>    // Julia header
 
