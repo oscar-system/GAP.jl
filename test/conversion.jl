@@ -185,6 +185,7 @@
     @test isa(z[1, 1], GapObj)
     @test z[1, 1] === z[2, 2]
     m = GAP.evalstr( "NewMatrix( IsPlistMatrixRep, Integers, 2, [ 0, 1, 2, 3 ] )" )
+    @test GAP.gap_to_julia(m) == Matrix([0 1; 2 3])
     @test GAP.gap_to_julia(m) == Matrix{Any}([0 1; 2 3])
     @test GAP.gap_to_julia(Matrix{Int}, m) == Matrix{Int}([0 1; 2 3])
   end
