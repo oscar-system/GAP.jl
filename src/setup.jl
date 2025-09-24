@@ -203,11 +203,13 @@ function build_JuliaInterface()
 
     jipath = joinpath(@__DIR__, "..", "pkg", "JuliaInterface")
     gaproot = gaproot_for_building()
-    cd(jipath) do
-        withenv("CFLAGS" => JULIA_CFLAGS,
-                "LDFLAGS" => JULIA_LDFLAGS * " " * JULIA_LIBS) do
-            run(pipeline(`./configure $(gaproot)`, stdout="build.log"))
-            run(pipeline(`make V=1 -j$(Sys.CPU_THREADS)`, stdout="build.log", append=true))
+    Pidfile.mkpidlock("$jipath.lock"; stale_age=300) do
+        cd(jipath) do
+            withenv("CFLAGS" => JULIA_CFLAGS,
+                    "LDFLAGS" => JULIA_LDFLAGS * " " * JULIA_LIBS) do
+                run(pipeline(`./configure $(gaproot)`, stdout="build.log"))
+                run(pipeline(`make V=1 -j$(Sys.CPU_THREADS)`, stdout="build.log", append=true))
+            end
         end
     end
 
