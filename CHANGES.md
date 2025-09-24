@@ -1,5 +1,14 @@
 # Changes in GAP.jl
 
+## Version 0.15.3 (released 2025-09-24)
+
+- Drop dependency on `Pkg`.
+- `create_gap_sh` now expands `~` to the user's home directory in
+  the provided path.
+- Fix some edgecases in `GAP.Packages.versioninfo` when working with
+  local GAP packages.
+- Several "behind the scenes" changes that should be invisible for most users.
+
 ## Version 0.15.2 (released 2025-09-06)
 
 - Declare compatibility with Nemo 0.52
