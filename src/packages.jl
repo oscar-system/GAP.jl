@@ -551,7 +551,7 @@ function versioninfo(io::IO = stdout; GAP::Bool = false, jll::Bool = false, full
   end
   GAP && println(io, padding, "GAP version ", String(Globals.GAPInfo.Version))
   println(io, padding, "GAP packages:")
-  dict = Dict{Symbol, Any}(Globals.GAPInfo.PackagesLoaded)
+  dict = Dict{Symbol, Any}(Globals.GAPInfo.PackagesLoaded, recursive = true)
   default_artifacts_path = realpath(joinpath(DEPOT_PATH[1], "artifacts"))
   names = String[]
   paths = String[]
