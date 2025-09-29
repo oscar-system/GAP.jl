@@ -349,14 +349,14 @@ git-tree-sha1 = "17db1566d589e68dc79cc0bb003b04af8da9da8f"
     url = "https://files.gap-system.org/pkg/difsets-2.3.1.tar.gz"
 
 [GAP_pkg_digraphs]
-git-tree-sha1 = "6161d8b81ba8146aba8c429dff7875e404a525cc"
+git-tree-sha1 = "9892498a9fbbb30ba582ad50de8c15cf9a218f00"
 
     [[GAP_pkg_digraphs.download]]
-    sha256 = "7dfbc15618282e40bddafd3524d3fcf48a7a80ce5725069a1e3f34e5f44cec2c"
-    url = "https://github.com/digraphs/Digraphs/releases/download/v1.12.2/digraphs-1.12.2.tar.gz"
+    sha256 = "b965094b187b448c36edac9eb8400809adcd3045df7067aea47ba3dd5fec7396"
+    url = "https://github.com/digraphs/Digraphs/releases/download/v1.13.1/digraphs-1.13.1.tar.gz"
     [[GAP_pkg_digraphs.download]]
-    sha256 = "7dfbc15618282e40bddafd3524d3fcf48a7a80ce5725069a1e3f34e5f44cec2c"
-    url = "https://files.gap-system.org/pkg/digraphs-1.12.2.tar.gz"
+    sha256 = "b965094b187b448c36edac9eb8400809adcd3045df7067aea47ba3dd5fec7396"
+    url = "https://files.gap-system.org/pkg/digraphs-1.13.1.tar.gz"
 
 [GAP_pkg_edim]
 git-tree-sha1 = "af19036c239a2d3e28884dd13ea7a02d1e8adf89"
@@ -1359,14 +1359,14 @@ git-tree-sha1 = "f6353215406b277253336193280ff6e3b42005c1"
     url = "https://files.gap-system.org/pkg/sla-1.6.2.tar.gz"
 
 [GAP_pkg_smallantimagmas]
-git-tree-sha1 = "2f283eb6fbf5deb190da64859a8b0a38867c7233"
+git-tree-sha1 = "f0d4ea2b0382e314ad41a3be2ad5a5ef0972c460"
 
     [[GAP_pkg_smallantimagmas.download]]
-    sha256 = "dc3785bea30acaf892158e71273c00a630b2862190ab86d1639d137a46b595a1"
-    url = "https://github.com/gap-packages/smallantimagmas/releases/download/v0.4.1/smallantimagmas-v0.4.1.tar.gz"
+    sha256 = "4bee1a2853d1399e36110201f49617ee1570f220b63ead28a1e77a4f36c2e5f2"
+    url = "https://github.com/gap-packages/smallantimagmas/releases/download/v0.5.1/smallantimagmas-v0.5.1.tar.gz"
     [[GAP_pkg_smallantimagmas.download]]
-    sha256 = "dc3785bea30acaf892158e71273c00a630b2862190ab86d1639d137a46b595a1"
-    url = "https://files.gap-system.org/pkg/smallantimagmas-v0.4.1.tar.gz"
+    sha256 = "4bee1a2853d1399e36110201f49617ee1570f220b63ead28a1e77a4f36c2e5f2"
+    url = "https://files.gap-system.org/pkg/smallantimagmas-v0.5.1.tar.gz"
 
 [GAP_pkg_smallclassnr]
 git-tree-sha1 = "1fe537042cbe9e2093e6298e2e0930e5e15a9ede"
