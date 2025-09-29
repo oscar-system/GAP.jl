@@ -2,6 +2,8 @@
 
 ## Version 0.16.0-DEV (released YYYY-MM-DD)
 
+- **Breaking:** Update to GAP 4.14.0
+
 ## Version 0.15.3 (released 2025-09-24)
 
 - Drop dependency on `Pkg`.
