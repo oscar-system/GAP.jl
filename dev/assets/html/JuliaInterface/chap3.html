@@ -177,7 +177,7 @@
 <li><p><code class="code">IsChar</code> to <code class="code">Cuchar</code>,</p>
 
 </li>
-<li><p><code class="code">IsString</code> to <code class="code">AbstractString</code> (default), <code class="code">String</code>, <code class="code">Symbol</code>, <code class="code">Vector{UInt8}</code>, or types available for <code class="code">IsList</code>,</p>
+<li><p><code class="code">IsString</code> to <code class="code">String</code> (default), <code class="code">Symbol</code>, <code class="code">Vector{UInt8}</code>, or types available for <code class="code">IsList</code>,</p>
 
 </li>
 <li><p><code class="code">IsRange</code> to <code class="code">StepRange{Int64,Int64}</code> (default), <code class="code">StepRange{T1,T2}</code>, <code class="code">UnitRange{T}</code>, or types available for <code class="code">IsList</code>,</p>
@@ -281,13 +281,13 @@
 <div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; GAP_jl.GapObj</code>( <var class="Arg">juliaobj</var>[, <var class="Arg">recursive</var>] )</td><td class="tdright">(&nbsp;function&nbsp;)</td></tr></table></div>
 <p>Returns: a <strong class="pkg">GAP</strong> object</p>
 
-<p>The <strong class="pkg">Julia</strong> constructor <code class="func">GAP_jl.Obj</code> takes an object <var class="Arg">juliaobj</var> and chooses a method depending on its <strong class="pkg">Julia</strong> type for computing a <strong class="pkg">GAP</strong> object corresponding to <var class="Arg">juliaobj</var>. If <var class="Arg">recursive</var> is <code class="keyw">true</code> then nested objects are converted recursively.</p>
+<p>The <strong class="pkg">Julia</strong> constructor <code class="func">GAP_jl.Obj</code> takes an object <var class="Arg">juliaobj</var> and chooses a method depending on its <strong class="pkg">Julia</strong> type for computing a <strong class="pkg">GAP</strong> object corresponding to <var class="Arg">juliaobj</var>. If <var class="Arg">recursive</var> is <code class="keyw">true</code> then nested objects are converted recursively, and identical subobjects of <var class="Arg">juliaobj</var> correspond to identical subobjects of the result.</p>
 
 
 <div class="example"><pre>
 <span class="GAPprompt">gap&gt;</span> <span class="GAPinput">GAP_jl.Obj( 42 );</span>
 42
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">m:= GAPToJulia( [ [ 1, 2 ], [ 3, 4 ] ] );</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">m:= GAPToJulia( [ [ 1, 2 ], [ 3, 4 ] ], true );</span>
 &lt;Julia: Any[Any[1, 2], Any[3, 4]]&gt;
 <span class="GAPprompt">gap&gt;</span> <span class="GAPinput">GAP_jl.Obj( m );</span>
 [ &lt;Julia: Any[1, 2]&gt;, &lt;Julia: Any[3, 4]&gt; ]
@@ -320,13 +320,11 @@
 [ 1, 2, 4 ]
 </pre></div>
 
-<p>For recursive structures (<strong class="pkg">GAP</strong> lists and records), only the outermost level is converted except if the optional argument <var class="Arg">recursive</var> is given and has the value <code class="keyw">true</code>, in this case all layers are converted recursively.</p>
-
-<p>Note that this default is different from the default in the other direction (see <code class="func">GAPToJulia</code> (<a href="chap3.html#X860C2F3184F70021"><span class="RefLink">3.2-3</span></a>)). The idea behind this choice is that from the viewpoint of a <strong class="pkg">GAP</strong> session, it is more likely to use plain <strong class="pkg">Julia</strong> objects for computations on the <strong class="pkg">Julia</strong> side than <strong class="pkg">Julia</strong> objects that contain <strong class="pkg">GAP</strong> subobjects, whereas <q>shallow conversion</q> of <strong class="pkg">Julia</strong> objects to <strong class="pkg">GAP</strong> yields something useful on the <strong class="pkg">GAP</strong> side.</p>
+<p>For recursive structures (<strong class="pkg">GAP</strong> lists and records), only the outermost level is converted except if the optional argument <var class="Arg">recursive</var> is given and has the value <code class="keyw">true</code>, in this case all layers are converted recursively. In the case of recursive conversion, identical subobjects of <var class="Arg">juliaobj</var> correspond to identical subobjects of the result.</p>
 
 
 <div class="example"><pre>
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">m:= GAPToJulia( [ [ 1, 2 ], [ 3, 4 ] ] );</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">m:= GAPToJulia( [ [ 1, 2 ], [ 3, 4 ] ], true );</span>
 &lt;Julia: Any[Any[1, 2], Any[3, 4]]&gt;
 <span class="GAPprompt">gap&gt;</span> <span class="GAPinput">JuliaToGAP( IsList, m );</span>
 [ &lt;Julia: Any[1, 2]&gt;, &lt;Julia: Any[3, 4]&gt; ]
@@ -359,26 +357,24 @@
 <span class="GAPprompt">gap&gt;</span> <span class="GAPinput">GAPToJulia( JuliaType( Julia.Vector, [ Julia.Int ] ), l );</span>
 &lt;Julia: [1, 3, 4]&gt;
 <span class="GAPprompt">gap&gt;</span> <span class="GAPinput">m:= [ [ 1, 2 ], [ 3, 4 ] ];;</span>
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">GAPToJulia( m );</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">GAPToJulia( m, true );</span>
 &lt;Julia: Any[Any[1, 2], Any[3, 4]]&gt;
 <span class="GAPprompt">gap&gt;</span> <span class="GAPinput">GAPToJulia( JuliaType( Julia.Matrix, [ Julia.Int ] ), m );</span>
 &lt;Julia: [1 2; 3 4]&gt;
 <span class="GAPprompt">gap&gt;</span> <span class="GAPinput">r:= rec( a:= 1, b:= [ 1, 2, 3 ] );;</span>
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">GAPToJulia( r );</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">GAPToJulia( r, true );</span>
 &lt;Julia: Dict{Symbol,Any}(:a =&gt; 1,:b =&gt; Any[1, 2, 3])&gt;
 </pre></div>
 
-<p>If <var class="Arg">gapobj</var> is a list or a record, one may want that its subobjects are also converted to <strong class="pkg">Julia</strong> or that they are kept as they are, which can be decided by entering <code class="keyw">true</code> or <code class="keyw">false</code> as the value of the optional argument <var class="Arg">recursive</var>; the default is <code class="keyw">true</code>, that is, the subobjects of <var class="Arg">gapobj</var> are converted recursively.</p>
-
-<p>Note that this default is different from the default in the other direction, see the description of <code class="func">JuliaToGAP</code> (<a href="chap3.html#X7D0471F77A0C6E1D"><span class="RefLink">3.2-2</span></a>).</p>
+<p>If <var class="Arg">gapobj</var> is a list or a record, one may want that its subobjects are also converted to <strong class="pkg">Julia</strong> or that they are kept as they are, which can be decided by entering <code class="keyw">true</code> or <code class="keyw">false</code> as the value of the optional argument <var class="Arg">recursive</var>. In the case of recursive conversion, identical subobjects of <var class="Arg">gapobj</var> correspond to identical subobjects of the result. The default is <code class="keyw">false</code>, that is, the subobjects of <var class="Arg">gapobj</var> are not converted, and identical subobjects are not tracked.</p>
 
 
 <div class="example"><pre>
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">jl:= GAPToJulia( m, false );</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">jl:= GAPToJulia( m );</span>
 &lt;Julia: Any[GAP: [ 1, 2 ], GAP: [ 3, 4 ]]&gt;
 <span class="GAPprompt">gap&gt;</span> <span class="GAPinput">jl[1];</span>
 [ 1, 2 ]
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">jr:= GAPToJulia( r, false );</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">jr:= GAPToJulia( r );</span>
 &lt;Julia: Dict{Symbol,Any}(:a =&gt; 1,:b =&gt; GAP: [ 1, 2, 3 ])&gt;
 <span class="GAPprompt">gap&gt;</span> <span class="GAPinput">Julia.Base.get( jr, Julia.Symbol( "b" ), fail );</span>
 [ 1, 2, 3 ]
