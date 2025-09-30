@@ -95,8 +95,8 @@ end
 
 # Switch off recursion (hence avoid the creation of a dictionary)
 # if `isbitstype(T)` or `T <: GAP.Obj` holds (includes `GapObj`).
-function _needs_tracking_gap_to_julia(::Type{T}, recursive::Bool) where T
-  return recursive && !(isbitstype(T) || T <: GAP.Obj)
+function _needs_tracking_gap_to_julia(::Type{T}) where T
+  return !(isbitstype(T) || T <: GAP.Obj)
 end
 
 
