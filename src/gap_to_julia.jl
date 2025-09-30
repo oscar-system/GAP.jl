@@ -212,20 +212,20 @@ end
 ## thus we have to convert at least also the next layer,
 ## even if `recursive == false` holds.
 function gap_to_julia_internal(
-    TT::Type{T},
+    ::Type{TT},
     obj::GapObj,
     recursion_dict::JuliaCacheDict,
     ::Val{recursive},
-) where {T<:Tuple, recursive}
+) where {TT<:Tuple, recursive}
 
-    !Wrappers.IsList(obj) && throw(ConversionError(obj, T))
+    !Wrappers.IsList(obj) && throw(ConversionError(obj, TT))
 
     # extract the Tuple parameters, i.e. from Tuple{T1, T2, ...}  the list T1,T2,...
-    parameters = T.parameters
+    parameters = TT.parameters
     if length(parameters) == 0
       # only the empty tuple is allowed
       length(obj) == 0 && return ()
-      throw(ArgumentError("length of $obj does not match type $T"))
+      throw(ArgumentError("length of $obj does not match type $TT"))
     end
 
     len = length(parameters)
@@ -236,10 +236,10 @@ function gap_to_julia_internal(
       S = parameters[len].T
       if isdefined(parameters[len], :N)
         length(obj) == len-1+parameters[len].N ||
-          throw(ArgumentError("length of $obj does not match type $T"))
+          throw(ArgumentError("length of $obj does not match type $TT"))
       else
         length(obj) >= len-1 ||
-          throw(ArgumentError("length of $obj does not match type $T"))
+          throw(ArgumentError("length of $obj does not match type $TT"))
       end
 
       recursive && recursion_dict !== nothing && haskey(recursion_dict, (obj, TT)) && return recursion_dict[(obj, TT)]
@@ -258,7 +258,7 @@ function gap_to_julia_internal(
     else
       # The parameters correspond to the entries of `obj`.
       length(obj) == len ||
-        throw(ArgumentError("length of $obj does not match type $T"))
+        throw(ArgumentError("length of $obj does not match type $TT"))
 
       recursive && recursion_dict !== nothing && haskey(recursion_dict, (obj, TT)) && return recursion_dict[(obj, TT)]
 
@@ -273,7 +273,7 @@ function gap_to_julia_internal(
       ]
     end
 
-    ret_val = T(list)
+    ret_val = TT(list)
     recursion_dict = handle_recursion((obj, TT), ret_val, rec, rec_dict)
     return ret_val
 end
