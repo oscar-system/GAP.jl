@@ -47,14 +47,14 @@ jobs:
             os: macOS-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: "Set up Julia"
         uses: julia-actions/setup-julia@v2
         id: setup-julia
         with:
           version: ${{ matrix.julia-version }}
       - name: Checkout GAP
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: 'gap-system/gap'
           ref: ${{ matrix.gap-version }}
