@@ -39,7 +39,7 @@ BindGlobal( "IsPositiveRealPartCyclotomic", function( cyc )
     fi;
 
     if ForAll( coeffs, IsSmallIntRep ) then
-      coeffs:= GAPToJulia( coeffs );
+      coeffs:= GAPToJulia( coeffs, true );
     else
       coeffs:= JuliaArrayOfFmpz( coeffs );
     fi;
