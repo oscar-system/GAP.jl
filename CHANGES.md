@@ -1,6 +1,6 @@
 # Changes in GAP.jl
 
-## Version 0.16.0-DEV
+## Version 0.16.0-DEV (released YYYY-MM-DD)
 
 - **Breaking:** Change the default behaviour of `gap_to_julia`
   w.r.t. the recursive conversion of subobjects.
