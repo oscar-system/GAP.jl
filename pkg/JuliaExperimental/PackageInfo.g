@@ -18,7 +18,7 @@ SetPackageInfo( rec(
 PackageName := "JuliaExperimental",
 Subtitle := "Experimental code for the GAP Julia integration",
 Version := "0.16.0-DEV",
-Date := "08/09/2025", # dd/mm/yyyy format
+Date := "01/10/2025", # dd/mm/yyyy format
 License := "LGPL-3.0-or-later",
 
 Persons := [
