@@ -25,7 +25,7 @@ jobs:
     outputs:
       gap-packages: ${{ steps.set-matrix.outputs.gap-packages }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: "Set up Julia"
         uses: julia-actions/setup-julia@v2
         with:
@@ -79,7 +79,7 @@ jobs:
           - gap-package: 'xgap'                       # no jll
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: "Install PARI/GP"   # for alnuth, and thus guarana, polenta, radiroot
         if: matrix.gap-package == 'alnuth' || matrix.gap-package == 'guarana' || matrix.gap-package == 'polenta' || matrix.gap-package == 'radiroot'
         run: |
