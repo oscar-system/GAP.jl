@@ -2,6 +2,7 @@
 
 ## Version 0.16.0-DEV (released YYYY-MM-DD)
 
+- **Breaking:** Update to GAP 4.14.0.
 - **Breaking:** Change the default behaviour of `gap_to_julia`
   w.r.t. the recursive conversion of subobjects.
   Now `gap_to_julia(T, obj)` converts subobjects of `obj` only until the
@@ -11,7 +12,6 @@
   In earlier versions, recursive conversion was the default,
   and `gap_to_julia(T, obj; recursive = false)` was used to request
   non-recursive conversion.
-
 - **Breaking:** Do not support the optional `GapCacheDict` argument for
   `GapObj` anymore, because recursive conversion to GAP is handled by
   `GAP.GapObj_internal` and does not involve cals to `GapObj`.

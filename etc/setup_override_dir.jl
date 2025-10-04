@@ -130,18 +130,3 @@ run(`make install-bin install-headers install-libgap install-sysinfo install-gap
 # We deliberately do NOT install the GAP library, documentation, etc. because
 # they are identical across all platforms; instead, we use another platform
 # independent artifact to ship them to the user.
-
-
-# HACK: BinaryBuilder.jl puts the dylib version number into the GAP_jll.jl wrapper package (but only for macOS)
-# To still be able to use GAP versions after https://github.com/gap-system/gap/pull/5859 we patch the dylib for
-# these GAP versions back to the old version number.
-# This needs to be removed, once GAP_jll provides `libgap.10.dylib` itself.
-if Sys.isapple()
-    if isfile(joinpath(prefix, "lib", "libgap.10.dylib"))
-        @info "Patching libgap.10.dylib to libgap.9.dylib"
-        mv(joinpath(prefix, "lib", "libgap.10.dylib"), joinpath(prefix, "lib", "libgap.9.dylib"))
-        rm(joinpath(prefix, "lib", "libgap.dylib"))
-        symlink(joinpath(prefix, "lib", "libgap.9.dylib"), joinpath(prefix, "lib", "libgap.dylib"))
-        run(`install_name_tool -id "$(joinpath(prefix, "lib", "libgap.9.dylib"))" $(joinpath(prefix, "lib", "libgap.9.dylib"))`)
-    end
-end

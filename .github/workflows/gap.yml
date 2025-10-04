@@ -30,7 +30,7 @@ jobs:
       matrix:
         gap-version:
           - 'master'
-          - 'stable-4.14'
+          - 'stable-4.15'
         julia-version:
           - '1'         # latest stable release
           - '1.12-nightly'
@@ -42,7 +42,7 @@ jobs:
           - gap-version: 'master'
             julia-version: '1'
             os: macOS-latest
-          - gap-version: 'stable-4.14'
+          - gap-version: 'stable-4.15'
             julia-version: '1'
             os: macOS-latest
 
