@@ -17,6 +17,8 @@
   `GAP.GapObj_internal` and does not involve cals to `GapObj`.
   We had always stated in the documentation that users should not enter
   this argument because it gets created automatically in recursive conversions.
+- Fix `GAP.Packages.test` to work correctly when the package to be tested
+  quits GAP with a boolean exit code.
 
 ## Version 0.15.3 (released 2025-09-24)
 
