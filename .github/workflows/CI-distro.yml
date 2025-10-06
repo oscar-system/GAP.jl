@@ -80,8 +80,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
-      - name: "Install PARI/GP"   # for alnuth, and thus guarana, polenta, radiroot
-        if: matrix.gap-package == 'alnuth' || matrix.gap-package == 'guarana' || matrix.gap-package == 'polenta' || matrix.gap-package == 'radiroot'
+      - name: "Install PARI/GP"   # for alnuth, and thus guarana, polenta, radiroot, twistedconjugacy
+        if: matrix.gap-package == 'alnuth' || matrix.gap-package == 'guarana' || matrix.gap-package == 'polenta' || matrix.gap-package == 'radiroot' || matrix.gap-package == 'twistedconjugacy'
         run: |
           sudo apt-get update
           sudo apt-get install pari-gp
