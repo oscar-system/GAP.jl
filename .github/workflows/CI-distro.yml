@@ -70,14 +70,12 @@ jobs:
           - gap-package: 'polymaking'                 # `polymake command not found. Please set POLYMAKE_COMMAND by hand`
           - gap-package: 'profiling'                  # segfaults during testing
           - gap-package: 'ringsforhomalg'             # `Error, found no GAP executable in PATH`
-          - gap-package: 'smallclassnr'               # tests pass, but the job fails. Needs to be investigated further
-          - gap-package: 'toricvarieties'             # random segfaults during testing
           - gap-package: 'xgap'                       # no jll
 
     steps:
       - uses: actions/checkout@v5
-      - name: "Install PARI/GP"   # for alnuth, and thus guarana, polenta, polycyclic, radiroot
-        if: matrix.gap-package == 'alnuth' || matrix.gap-package == 'guarana' || matrix.gap-package == 'polenta' || matrix.gap-package == 'polycyclic' || matrix.gap-package == 'radiroot'
+      - name: "Install PARI/GP"   # for alnuth, and thus guarana, polenta, polycyclic, radiroot, twistedconjugacy
+        if: matrix.gap-package == 'alnuth' || matrix.gap-package == 'guarana' || matrix.gap-package == 'polenta' || matrix.gap-package == 'polycyclic' || matrix.gap-package == 'radiroot' || matrix.gap-package == 'twistedconjugacy'
         run: |
           sudo apt-get update
           sudo apt-get install pari-gp

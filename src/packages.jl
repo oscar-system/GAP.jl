@@ -501,7 +501,7 @@ function test(name::String)
   function fake_QuitGap(code)
     called_QuitGap && return # only do something on the first call
     called_QuitGap = true
-    if code != 0
+    if (code isa Bool && !code) || (code isa Int && code % 256 != 0)
       error_occurred = true
     end
     return
