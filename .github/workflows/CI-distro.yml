@@ -57,6 +57,7 @@ jobs:
           - ubuntu-latest
         gap-package: ${{fromJSON(needs.generate-matrix.outputs.gap-packages)}}
         exclude:
+          - gap-package: 'atlasrep'                   # random gc-related segfaults during testing
           - gap-package: 'autodoc'                    # tries and fails to build its own documentation, inside the (partially write protected) artifacts dir
           - gap-package: 'example'                    # no jll
           - gap-package: 'examplesforhomalg'          # `Error, found no GAP executable in PATH`
