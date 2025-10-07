@@ -53,6 +53,18 @@ const GAP_VERSION = VersionNumber(sysinfo["GAP_VERSION"])
 
 include("types.jl")
 
+"""
+    GAP.@include(path)
+
+Read and execute the GAP code in the file at `path`,
+which is interpreted as a relative path relative to the file where this macro is used.
+This is similar to julia's built-in `include` function,
+but for GAP code instead of Julia code.
+"""
+macro include(path)
+    return :(Wrappers.Read(GapObj(normpath(@__DIR__, $path))))
+end
+
 const last_error = Ref{String}("")
 
 const disable_error_handler = Ref{Bool}(false)
@@ -202,7 +214,7 @@ function initialize(argv::Vector{String})
     end
 
     # Redirect error messages, in order not to print them to the screen.
-    GAP.Globals.Read(GapObj(joinpath(@__DIR__, "..", "gap", "err.g")))
+    GAP.@include("../gap/err.g")
     @debug "finished reading gap/err.g"
 
     return nothing
