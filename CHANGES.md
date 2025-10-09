@@ -17,6 +17,8 @@
   `GAP.GapObj_internal` and does not involve cals to `GapObj`.
   We had always stated in the documentation that users should not enter
   this argument because it gets created automatically in recursive conversions.
+- Add `GAP.@include(filepath)` as a counterpart to julia's `include(filepath)`,
+  for reading GAP files into the GAP session.
 - Fix `GAP.Packages.test` to work correctly when the package to be tested
   quits GAP with a boolean exit code.
 

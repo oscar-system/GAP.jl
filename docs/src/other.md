@@ -10,6 +10,7 @@ DocTestSetup = :(using GAP)
 ```@docs
 @gap
 @g_str
+GAP.@include
 @gapwrap
 @gapattribute
 @wrap
