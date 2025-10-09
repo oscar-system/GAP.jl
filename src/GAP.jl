@@ -57,7 +57,7 @@ include("types.jl")
     GAP.@include(path)
 
 Read and execute the GAP code in the file at `path`,
-which is interpreted as a relative path relative to the file where this macro is used.
+which must be either an absolute path or a path relative to the file where this macro is used.
 This is similar to julia's built-in `include` function,
 but for GAP code instead of Julia code.
 """
