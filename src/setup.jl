@@ -204,13 +204,11 @@ function build_JuliaInterface()
 
     jipath = joinpath(@__DIR__, "..", "pkg", "JuliaInterface")
     gaproot = gaproot_for_building()
-    Pidfile.mkpidlock("$jipath.lock"; stale_age=300) do
-        cd(jipath) do
-            withenv("CFLAGS" => JULIA_CFLAGS,
-                    "LDFLAGS" => JULIA_LDFLAGS * " " * JULIA_LIBS) do
-                run(pipeline(`./configure $(gaproot)`, stdout="build.log"))
-                run(pipeline(`make V=1 -j$(Sys.CPU_THREADS)`, stdout="build.log", append=true))
-            end
+    cd(jipath) do
+        withenv("CFLAGS" => JULIA_CFLAGS,
+                "LDFLAGS" => JULIA_LDFLAGS * " " * JULIA_LIBS) do
+            run(pipeline(`./configure $(gaproot)`, stdout="build.log"))
+            run(pipeline(`make V=1 -j$(Sys.CPU_THREADS)`, stdout="build.log", append=true))
         end
     end
 
@@ -223,15 +221,39 @@ function locate_JuliaInterface_so()
     jll = GAP_pkg_juliainterface_jll.find_artifact_dir()
     jll_hash = tree_hash(joinpath(jll, "src"))
     bundled = joinpath(@__DIR__, "..", "pkg", "JuliaInterface")
-    bundled_hash = tree_hash(joinpath(bundled, "src"))
-    if jll_hash == bundled_hash && get(ENV, "FORCE_JULIAINTERFACE_COMPILATION", "false") != "true"
-        # if the tree hashes match then we can use JuliaInterface.so from the JLL
-        @debug "Use JuliaInterface.so from GAP_pkg_juliainterface_jll"
-        path = joinpath(jll, "lib", "gap")
-    else
-        # tree hashes differ: we must compile the bundled sources (or requested re-compilation via ENV)
+    path = Pidfile.mkpidlock("$bundled.lock"; stale_age=300) do
+        bundled_hash = tree_hash(joinpath(bundled, "src"))
+
+        # requested re-compilation via ENV -> re-compile
+        if get(ENV, "FORCE_JULIAINTERFACE_COMPILATION", "false") == "true"
+            @debug "FORCE_JULIAINTERFACE_COMPILATION is set -> recompile JuliaInterface"
+            path = build_JuliaInterface()
+            @debug "Use JuliaInterface.so from $(path)"
+            return path
+        end
+
+        # tree hashes of bundled C sources and GAP_pkg_juliainterface_jll match -> use JuliaInterface.so from the JLL
+        if jll_hash == bundled_hash
+            @debug "Use JuliaInterface.so from GAP_pkg_juliainterface_jll"
+            return joinpath(jll, "lib", "gap")
+        end
+
+        # tree hashes of bundled C sources and previously compiled version match -> use that
+        prev_hash_file = normpath(joinpath(bundled, "bin", GAP.sysinfo["GAParch"], ".src_tree_hash"))
+        if isfile(prev_hash_file)
+            prev_hash = read(prev_hash_file)
+            if prev_hash == bundled_hash
+                path = dirname(prev_hash_file)
+                @debug "Use previously compiled JuliaInterface.so from $(path)"
+                return path
+            end
+        end
+
+        # fall-back case -> re-compile
         path = build_JuliaInterface()
+        write(joinpath(path, ".src_tree_hash"), bundled_hash)
         @debug "Use JuliaInterface.so from $(path)"
+        return path
     end
     return joinpath(path, "JuliaInterface.so")
 end
