@@ -217,7 +217,7 @@ function __init__()
         windows_error()
     end
 
-    JuliaInterface_path = Setup.locate_JuliaInterface_so()
+    global JuliaInterface_path = Setup.locate_JuliaInterface_so()
 
     roots = [
             # GAP root for the the actual GAP library, from GAP_lib_jll
