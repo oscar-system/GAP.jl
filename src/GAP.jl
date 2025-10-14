@@ -90,8 +90,7 @@ function ThrowObserver(depth::Cint)
 end
 
 # path to JuliaInterface.so
-const real_JuliaInterface_path = Ref{String}()
-JuliaInterface_path() = real_JuliaInterface_path[]
+JuliaInterface_path::String = "" # will be set in __init__()
 const _saved_argv = Ref{Ref{Ptr{UInt8}}}()
 
 function initialize(argv::Vector{String})
@@ -135,13 +134,13 @@ function initialize(argv::Vector{String})
     ## its kernel extension already here, and poke a pointer to this module
     ## into the kernel extension's global variable `gap_module`
     @debug "storing pointer to Julia module 'GAP' into JuliaInterface"
-    Libdl.dlopen(JuliaInterface_path())
+    Libdl.dlopen(JuliaInterface_path)
     mptr = pointer_from_objref(@__MODULE__)
-    g = cglobal((:gap_module, JuliaInterface_path()), Ptr{Cvoid})
+    g = cglobal((:gap_module, JuliaInterface_path), Ptr{Cvoid})
     unsafe_store!(g, mptr)
 
     # also declare a global GAP variable with the path to JuliaInterface.so
-    AssignGlobalVariable("_path_JuliaInterface_so", MakeString(JuliaInterface_path()))
+    AssignGlobalVariable("_path_JuliaInterface_so", MakeString(JuliaInterface_path))
 
     # now load init.g
     @debug "about to read init.g"
@@ -218,7 +217,7 @@ function __init__()
         windows_error()
     end
 
-    real_JuliaInterface_path[] = Setup.locate_JuliaInterface_so()
+    global JuliaInterface_path = Setup.locate_JuliaInterface_so()
 
     roots = [
             # GAP root for the the actual GAP library, from GAP_lib_jll
