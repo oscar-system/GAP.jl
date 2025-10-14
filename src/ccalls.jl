@@ -32,13 +32,13 @@ Base.@assume_effects :foldable !:consistent function _GAP_TO_JULIA(ptr::Ptr{Cvoi
         end
         return unsafe_pointer_to_objref(ptr)
     end
-    return @ccall JuliaInterface_path().julia_gap(ptr::Ptr{Cvoid})::Any
+    return @ccall JuliaInterface_path.julia_gap(ptr::Ptr{Cvoid})::Any
 end
 
 #
 # low-level Julia -> GAP conversion
 #
-_JULIA_TO_GAP(val::Any) = @ccall JuliaInterface_path().gap_julia(val::Any)::Ptr{Cvoid}
+_JULIA_TO_GAP(val::Any) = @ccall JuliaInterface_path.gap_julia(val::Any)::Ptr{Cvoid}
 #_JULIA_TO_GAP(x::Bool) = x ? gap_true : gap_false
 _JULIA_TO_GAP(x::FFE) = reinterpret(Ptr{Cvoid}, x)
 _JULIA_TO_GAP(x::GapObj) = pointer_from_objref(x)
@@ -254,9 +254,9 @@ CharWithValue(x::Cuchar) = @ccall libgap.GAP_CharWithValue(x::Cuchar)::GapObj
 # In the other direction, `UnwrapJuliaFunc` extracts the underlying Julia
 # function from its argument if applicable, and otherwise returns the input.
 WrapJuliaFunc(x::Any) = x
-WrapJuliaFunc(x::Function) = @ccall JuliaInterface_path().WrapJuliaFunc(x::Any)::GapObj
+WrapJuliaFunc(x::Function) = @ccall JuliaInterface_path.WrapJuliaFunc(x::Any)::GapObj
 UnwrapJuliaFunc(x::Any) = x
-UnwrapJuliaFunc(x::GapObj) = @ccall JuliaInterface_path().UnwrapJuliaFunc(x::GapObj)::Any
+UnwrapJuliaFunc(x::GapObj) = @ccall JuliaInterface_path.UnwrapJuliaFunc(x::GapObj)::Any
 
 function ElmList(x::GapObj, position)
     o = @ccall libgap.GAP_ElmList(x::Any, Culong(position)::Culong)::Ptr{Cvoid}
@@ -307,7 +307,7 @@ function call_gap_func(func::GapObj, args...; kwargs...)
 end
 
 function slow_call_gap_func_nokw(func::GapObj, args)
-    @ccall JuliaInterface_path().call_gap_func(func::Any, args::Any)::Ptr{Cvoid}
+    @ccall JuliaInterface_path.call_gap_func(func::Any, args::Any)::Ptr{Cvoid}
 end
 
 is_func(func::GapObj) = TNUM_OBJ(func) == T_FUNCTION
