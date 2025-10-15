@@ -22,6 +22,10 @@
 - Fix `GAP.Packages.test` to work correctly when the package to be tested
   quits GAP with a boolean exit code.
 
+## Version 0.15.4 (released 2025-10-15)
+
+- Improve compatibility with latest Julia nightly builds.
+
 ## Version 0.15.3 (released 2025-09-24)
 
 - Drop dependency on `Pkg`.
