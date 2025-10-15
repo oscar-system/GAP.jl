@@ -1,5 +1,9 @@
 # Changes in GAP.jl
 
+## Version 0.15.4 (released 2025-10-15)
+
+- Improve compatibility with latest Julia nightly builds.
+
 ## Version 0.15.3 (released 2025-09-24)
 
 - Drop dependency on `Pkg`.
