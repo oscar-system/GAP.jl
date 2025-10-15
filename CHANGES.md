@@ -1,6 +1,6 @@
 # Changes in GAP.jl
 
-## Version 0.15.4 (released 2025-XX-XX)
+## Version 0.15.4 (released 2025-10-15)
 
 - Improve compatibility with latest Julia nightly builds.
 
