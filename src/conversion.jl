@@ -44,6 +44,29 @@ const RecDict_j = IdDict{Tuple{Any, Type}, Any}
 
 const JuliaCacheDict = Union{Nothing,RecDict_j}
 
+# helper functions for recursion in conversion from GAP to Julia
+function recursion_info_j(::Type{T}, obj, recursive::Bool, recursion_dict::JuliaCacheDict) where {T}
+    if recursive && recursion_dict === nothing
+        return RecDict_j()
+    else
+        return recursion_dict
+    end
+end
+
+function handle_recursion(obj, ret_val, rec::Bool, rec_dict::Union{Nothing,IdDict})
+    if rec_dict !== nothing
+        # We assume that `obj` is not yet cached.
+        rec_dict[obj] = ret_val
+    end
+    return rec ? rec_dict : nothing
+end
+
+# Switch off recursion (hence avoid the creation of a dictionary)
+# if `isbitstype(T)` or `T <: GAP.Obj` holds (includes `GapObj`).
+function _needs_tracking_gap_to_julia(::Type{T}) where T
+  return !(isbitstype(T) || T <: GAP.Obj)
+end
+
 
 """
     RecDict_g = IdDict{Any,Any}
@@ -55,17 +78,6 @@ of the Julia to GAP conversion of `obj`.
 const RecDict_g = IdDict{Any,Any}
 
 const GapCacheDict = Union{Nothing,RecDict_g}
-
-
-# helper functions for recursion in conversion from GAP to Julia
-function recursion_info_j(::Type{T}, obj, recursive::Bool, recursion_dict::JuliaCacheDict) where {T}
-    if recursive && recursion_dict === nothing
-        return RecDict_j()
-    else
-        return recursion_dict
-    end
-end
-
 
 # helper functions for recursion (conversion from Julia to GAP)
 function recursion_info_g(::Type{T}, obj, ret_val, recursive::Bool, recursion_dict::GapCacheDict) where {T}
@@ -82,21 +94,6 @@ function recursion_info_g(::Type{T}, obj, ret_val, recursive::Bool, recursion_di
     end
     return rec ? rec_dict : nothing
 
-end
-
-function handle_recursion(obj, ret_val, rec::Bool, rec_dict::Union{Nothing,IdDict})
-    if rec_dict !== nothing
-        # We assume that `obj` is not yet cached.
-        rec_dict[obj] = ret_val
-    end
-    return rec ? rec_dict : nothing
-end
-
-
-# Switch off recursion (hence avoid the creation of a dictionary)
-# if `isbitstype(T)` or `T <: GAP.Obj` holds (includes `GapObj`).
-function _needs_tracking_gap_to_julia(::Type{T}) where T
-  return !(isbitstype(T) || T <: GAP.Obj)
 end
 
 
