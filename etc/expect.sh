@@ -9,4 +9,9 @@ export GAP_PRINT_BANNER=false
 # force Julia to use full REPL
 export TERM=xterm
 
-expect -c "spawn julia --startup-file=no --history-file=no --banner=no $* -e \"atreplinit() do repl; if VERSION >= v\\\"1.11.0-0\\\"; repl.options.hint_tab_completes = false; end; end;\" -i" etc/julia.expect
+julia_args="--startup-file=no --history-file=no --banner=no $*"
+# start julia with GAP once with the exact same flags to ensure precompilation
+# happens outside of expect, since its output messes up the expect script
+julia ${julia_args} -e "using GAP"
+
+expect -c "spawn julia ${julia_args} -e \"atreplinit() do repl; if VERSION >= v\\\"1.11.0-0\\\"; repl.options.hint_tab_completes = false; end; end;\" -i" etc/julia.expect
