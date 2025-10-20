@@ -191,12 +191,12 @@ function gap_to_julia_internal(
     T = eltype(TT)
     rec = recursive && _needs_tracking_gap_to_julia(T)
     rec_dict = recursion_info_j(TT, obj, rec, recursion_dict)
-    handle_recursion((obj, TT), ret_val, rec, rec_dict)
+    recursion_dict = handle_recursion((obj, TT), ret_val, rec, rec_dict)
 
     for i = 1:length(newobj)
         current_obj = ElmList(newobj, i)
         if (rec || !(current_obj isa T)) && !isbitstype(typeof(current_obj))
-            push!(ret_val, gap_to_julia_internal(T, current_obj, rec_dict, BoolVal(rec)))
+            push!(ret_val, gap_to_julia_internal(T, current_obj, recursion_dict, BoolVal(rec)))
         else
             push!(ret_val, current_obj)
         end
@@ -270,7 +270,7 @@ function gap_to_julia_internal(
     end
 
     ret_val = TT(list)
-    recursion_dict = handle_recursion((obj, TT), ret_val, rec, rec_dict)
+    handle_recursion((obj, TT), ret_val, rec, rec_dict)
     return ret_val
 end
 
