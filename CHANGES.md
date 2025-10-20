@@ -2,7 +2,7 @@
 
 ## Version 0.16.0-DEV (released YYYY-MM-DD)
 
-- **Breaking:** Update to GAP 4.14.0.
+- **Breaking:** Update to GAP 4.15.1.
 - **Breaking:** Change the default behaviour of `gap_to_julia`
   w.r.t. the recursive conversion of subobjects.
   Now `gap_to_julia(T, obj)` converts subobjects of `obj` only until the
