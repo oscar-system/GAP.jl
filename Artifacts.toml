@@ -79,14 +79,14 @@ git-tree-sha1 = "eac0e07d9389a9a61d6e38f612b9394d26e87cd5"
     url = "https://files.gap-system.org/pkg/atlasrep-2.1.9.tar.gz"
 
 [GAP_pkg_autodoc]
-git-tree-sha1 = "f264779ae27737282afc650f490759350d57368c"
+git-tree-sha1 = "e0578e2b9f89482796d54ea6d29919e81879c964"
 
     [[GAP_pkg_autodoc.download]]
-    sha256 = "49da34baa150f92d16473c9c7f25c47b53e5d6fd6c5406c91c756011e8abd678"
-    url = "https://github.com/gap-packages/AutoDoc/releases/download/v2025.05.09/AutoDoc-2025.05.09.tar.gz"
+    sha256 = "4b72c71f6bf0972102c296a4e761fcb9803fe9a7d2b5b6c4d83efef3c12bf43d"
+    url = "https://github.com/gap-packages/AutoDoc/releases/download/v2025.10.16/AutoDoc-2025.10.16.tar.gz"
     [[GAP_pkg_autodoc.download]]
-    sha256 = "49da34baa150f92d16473c9c7f25c47b53e5d6fd6c5406c91c756011e8abd678"
-    url = "https://files.gap-system.org/pkg/AutoDoc-2025.05.09.tar.gz"
+    sha256 = "4b72c71f6bf0972102c296a4e761fcb9803fe9a7d2b5b6c4d83efef3c12bf43d"
+    url = "https://files.gap-system.org/pkg/AutoDoc-2025.10.16.tar.gz"
 
 [GAP_pkg_automata]
 git-tree-sha1 = "1e143aba0160ae0739082546a43987203571fe14"
@@ -179,14 +179,14 @@ git-tree-sha1 = "d2659aaf387ff675758d0b4c39ac143df9172386"
     url = "https://files.gap-system.org/pkg/classicpres1.22.tar.gz"
 
 [GAP_pkg_cohomolo]
-git-tree-sha1 = "ec8ae531c3a8bf2fd86474ea42359642dc79b4f1"
+git-tree-sha1 = "f9a68562a4c6240012e59238b11d1124f8e9d828"
 
     [[GAP_pkg_cohomolo.download]]
-    sha256 = "63e9ff01c73e3c263b57407075a77d7981bbb32b6a1b611610f092781db5d7e5"
-    url = "https://github.com/gap-packages/cohomolo/releases/download/v1.6.11/cohomolo-1.6.11.tar.gz"
+    sha256 = "9f68a987685affd3510a21c4a7d2b1260a6a98f237c5ac76531e4980616532a8"
+    url = "https://github.com/gap-packages/cohomolo/releases/download/v1.6.12/cohomolo-1.6.12.tar.gz"
     [[GAP_pkg_cohomolo.download]]
-    sha256 = "63e9ff01c73e3c263b57407075a77d7981bbb32b6a1b611610f092781db5d7e5"
-    url = "https://files.gap-system.org/pkg/cohomolo-1.6.11.tar.gz"
+    sha256 = "9f68a987685affd3510a21c4a7d2b1260a6a98f237c5ac76531e4980616532a8"
+    url = "https://files.gap-system.org/pkg/cohomolo-1.6.12.tar.gz"
 
 [GAP_pkg_congruence]
 git-tree-sha1 = "ebca071e5c34682980f0a5ed5fba7c0835070d9a"
@@ -309,14 +309,14 @@ git-tree-sha1 = "5cefed391d884e00e1a17919043e6c90ea1ecc22"
     url = "https://files.gap-system.org/pkg/cvec-2.8.4.tar.gz"
 
 [GAP_pkg_datastructures]
-git-tree-sha1 = "e511e66ce8ad15579ac23e63bb7c01728eeb13c7"
+git-tree-sha1 = "e4c8ae1767d68207259ab6a98bf4d5b147af9d6f"
 
     [[GAP_pkg_datastructures.download]]
-    sha256 = "c0231ad18ae23a4da6c62373df5032c3bd284dae922e05362551fe55a6a14c0d"
-    url = "https://github.com/gap-packages/datastructures/releases/download/v0.3.3/datastructures-0.3.3.tar.gz"
+    sha256 = "c6ba1b9a43973e085b9f2b6bc70c216b1b297957cf59bde904e98387acf2cb3f"
+    url = "https://github.com/gap-packages/datastructures/releases/download/v0.4.0/datastructures-0.4.0.tar.gz"
     [[GAP_pkg_datastructures.download]]
-    sha256 = "c0231ad18ae23a4da6c62373df5032c3bd284dae922e05362551fe55a6a14c0d"
-    url = "https://files.gap-system.org/pkg/datastructures-0.3.3.tar.gz"
+    sha256 = "c6ba1b9a43973e085b9f2b6bc70c216b1b297957cf59bde904e98387acf2cb3f"
+    url = "https://files.gap-system.org/pkg/datastructures-0.4.0.tar.gz"
 
 [GAP_pkg_deepthought]
 git-tree-sha1 = "7412e2db01e12d02ffd7c69639bb325a7ebdcfa9"
@@ -699,14 +699,14 @@ git-tree-sha1 = "f38e827eef37f53c22704f6f681009ad231b8260"
     url = "https://files.gap-system.org/pkg/IBNP-0.17.tar.gz"
 
 [GAP_pkg_idrel]
-git-tree-sha1 = "bded145739036228dc5b0123e8205189b619329a"
+git-tree-sha1 = "cb8ba4f2f3c9da404a074625185d014edf2b4f59"
 
     [[GAP_pkg_idrel.download]]
-    sha256 = "5c31fec51dfa001a63e316c8ca3357a50878f7e80c805df6ed7d4487e69ba598"
-    url = "https://github.com/gap-packages/idrel/releases/download/v2.48/idrel-2.48.tar.gz"
+    sha256 = "3b3c2c7e781d702cd1c0e10e8af8d27c36777db7b2ecdb41967f6934b3fa8324"
+    url = "https://github.com/gap-packages/idrel/releases/download/v2.49/idrel-2.49.tar.gz"
     [[GAP_pkg_idrel.download]]
-    sha256 = "5c31fec51dfa001a63e316c8ca3357a50878f7e80c805df6ed7d4487e69ba598"
-    url = "https://files.gap-system.org/pkg/idrel-2.48.tar.gz"
+    sha256 = "3b3c2c7e781d702cd1c0e10e8af8d27c36777db7b2ecdb41967f6934b3fa8324"
+    url = "https://files.gap-system.org/pkg/idrel-2.49.tar.gz"
 
 [GAP_pkg_images]
 git-tree-sha1 = "3f9b87b7f8d8fa730055634ea0beccf77077114a"
@@ -719,14 +719,14 @@ git-tree-sha1 = "3f9b87b7f8d8fa730055634ea0beccf77077114a"
     url = "https://files.gap-system.org/pkg/images-1.3.3.tar.gz"
 
 [GAP_pkg_inducereduce]
-git-tree-sha1 = "67c98b449e6f2d3532c1d9b3c6d6009003444e24"
+git-tree-sha1 = "e96b2a61e9038873c93983bd18e6e7a362448b2b"
 
     [[GAP_pkg_inducereduce.download]]
-    sha256 = "37927103047c0f577f35a57a5f92e34b1b322be93a03404e3eac9ef64e5c8dcc"
-    url = "https://github.com/gap-packages/InduceReduce/releases/download/v1.1/InduceReduce-1.1.tar.gz"
+    sha256 = "d4069734649712fb912466b0782066ef379c7014b4ab86778b103fd5e9083d35"
+    url = "https://github.com/gap-packages/InduceReduce/releases/download/v1.3/InduceReduce-1.3.tar.gz"
     [[GAP_pkg_inducereduce.download]]
-    sha256 = "37927103047c0f577f35a57a5f92e34b1b322be93a03404e3eac9ef64e5c8dcc"
-    url = "https://files.gap-system.org/pkg/InduceReduce-1.1.tar.gz"
+    sha256 = "d4069734649712fb912466b0782066ef379c7014b4ab86778b103fd5e9083d35"
+    url = "https://files.gap-system.org/pkg/InduceReduce-1.3.tar.gz"
 
 [GAP_pkg_intpic]
 git-tree-sha1 = "d2f7b5f8b69b1f2f14b64fd61d86b744b039f5a6"
@@ -1369,14 +1369,14 @@ git-tree-sha1 = "f0d4ea2b0382e314ad41a3be2ad5a5ef0972c460"
     url = "https://files.gap-system.org/pkg/smallantimagmas-v0.5.1.tar.gz"
 
 [GAP_pkg_smallclassnr]
-git-tree-sha1 = "1fe537042cbe9e2093e6298e2e0930e5e15a9ede"
+git-tree-sha1 = "8e6cb9c64a406e3fe0d612675f1333b0fb97b116"
 
     [[GAP_pkg_smallclassnr.download]]
-    sha256 = "e80da757d1241793da41312f3364ce60da5aab7dd8d606a782cde105d9e5a410"
-    url = "https://github.com/stertooy/SmallClassNr/releases/download/v1.4.1/SmallClassNr-1.4.1.tar.gz"
+    sha256 = "3d5df691937400ff89eb88832e0e408b6e0f743f127348f311bdbabfcd9ea7fd"
+    url = "https://github.com/stertooy/SmallClassNr/releases/download/v1.4.2/SmallClassNr-1.4.2.tar.gz"
     [[GAP_pkg_smallclassnr.download]]
-    sha256 = "e80da757d1241793da41312f3364ce60da5aab7dd8d606a782cde105d9e5a410"
-    url = "https://files.gap-system.org/pkg/SmallClassNr-1.4.1.tar.gz"
+    sha256 = "3d5df691937400ff89eb88832e0e408b6e0f743f127348f311bdbabfcd9ea7fd"
+    url = "https://files.gap-system.org/pkg/SmallClassNr-1.4.2.tar.gz"
 
 [GAP_pkg_smallgrp]
 git-tree-sha1 = "051592b40f95a6f5d5b80d6d417f6c442b446de1"
@@ -1509,14 +1509,14 @@ git-tree-sha1 = "0308e773edbd0fa6000220e96226e6aa5aaad28d"
     url = "https://files.gap-system.org/pkg/transgrp3.6.5.tar.gz"
 
 [GAP_pkg_twistedconjugacy]
-git-tree-sha1 = "c6cf0a066f419a50bff8d1b41b3fc4c7e70f03d0"
+git-tree-sha1 = "e5b3315cfb46ea1144d581fbb5022c14e9e3a73f"
 
     [[GAP_pkg_twistedconjugacy.download]]
-    sha256 = "50d554fa940653f1fe4ca3b9953897b541378394bbc639ac44e2e9869c3d879a"
-    url = "https://github.com/stertooy/TwistedConjugacy/releases/download/v3.1.0/TwistedConjugacy-3.1.0.tar.gz"
+    sha256 = "6433ebd7885adeed035d52e0383649da31a28d10e5059ed17102b52a313303c1"
+    url = "https://github.com/stertooy/TwistedConjugacy/releases/download/v3.1.1/TwistedConjugacy-3.1.1.tar.gz"
     [[GAP_pkg_twistedconjugacy.download]]
-    sha256 = "50d554fa940653f1fe4ca3b9953897b541378394bbc639ac44e2e9869c3d879a"
-    url = "https://files.gap-system.org/pkg/TwistedConjugacy-3.1.0.tar.gz"
+    sha256 = "6433ebd7885adeed035d52e0383649da31a28d10e5059ed17102b52a313303c1"
+    url = "https://files.gap-system.org/pkg/TwistedConjugacy-3.1.1.tar.gz"
 
 [GAP_pkg_typeset]
 git-tree-sha1 = "9a7588f6f5218ecaf3b963702ebe5139186a0bc8"
