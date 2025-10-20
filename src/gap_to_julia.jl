@@ -146,8 +146,6 @@ function gap_to_julia_internal(
 
     recursive && recursion_dict !== nothing && haskey(recursion_dict, (obj, TT)) && return recursion_dict[(obj, TT)]
 
-    elm = Wrappers.ELM_MAT
-#T not for holes!
     ret_val = TT(undef, nrows, ncols)::TT
 
     T = eltype(TT)
@@ -156,7 +154,7 @@ function gap_to_julia_internal(
     recursion_dict = handle_recursion((obj, TT), ret_val, rec, rec_dict)
 
     for i = 1:nrows, j = 1:ncols
-        current_obj = elm(obj, i, j)
+        current_obj = Wrappers.ELM_MAT(obj, i, j)
         if (rec || !(current_obj isa T)) && !isbitstype(typeof(current_obj))
             ret_val[i, j] =
                 gap_to_julia_internal(T, current_obj, recursion_dict, BoolVal(rec))
