@@ -99,12 +99,11 @@ function gap_to_julia_internal(
     # if the desired result is already stored then return it
     recursive && recursion_dict !== nothing && haskey(recursion_dict, (obj, TT)) && return recursion_dict[(obj, TT)]
 
-    T = eltype(TT)
-    rec = recursive && _needs_tracking_gap_to_julia(T)
-
     len_list = length(obj)
     ret_val = TT(undef, len_list)::TT
 
+    T = eltype(TT)
+    rec = recursive && _needs_tracking_gap_to_julia(T)
     rec_dict = recursion_info_j(TT, obj, rec, recursion_dict)
     recursion_dict = handle_recursion((obj, TT), ret_val, rec, rec_dict)
 
@@ -147,13 +146,12 @@ function gap_to_julia_internal(
 
     recursive && recursion_dict !== nothing && haskey(recursion_dict, (obj, TT)) && return recursion_dict[(obj, TT)]
 
-    T = eltype(TT)
-    rec = recursive && _needs_tracking_gap_to_julia(T)
-
     elm = Wrappers.ELM_MAT
 #T not for holes!
     ret_val = TT(undef, nrows, ncols)::TT
 
+    T = eltype(TT)
+    rec = recursive && _needs_tracking_gap_to_julia(T)
     rec_dict = recursion_info_j(TT, obj, rec, recursion_dict)
     recursion_dict = handle_recursion((obj, TT), ret_val, rec, rec_dict)
 
@@ -188,18 +186,17 @@ function gap_to_julia_internal(
 
     recursive && recursion_dict !== nothing && haskey(recursion_dict, (obj, TT)) && return recursion_dict[(obj, TT)]
 
-    T = eltype(TT)
-    rec = recursive && _needs_tracking_gap_to_julia(T)
-
     ret_val = TT()
 
+    T = eltype(TT)
+    rec = recursive && _needs_tracking_gap_to_julia(T)
     rec_dict = recursion_info_j(TT, obj, rec, recursion_dict)
-    handle_recursion((obj, TT), ret_val, rec, rec_dict)
+    recursion_dict = handle_recursion((obj, TT), ret_val, rec, rec_dict)
 
     for i = 1:length(newobj)
         current_obj = ElmList(newobj, i)
         if (rec || !(current_obj isa T)) && !isbitstype(typeof(current_obj))
-            push!(ret_val, gap_to_julia_internal(T, current_obj, rec_dict, BoolVal(rec)))
+            push!(ret_val, gap_to_julia_internal(T, current_obj, recursion_dict, BoolVal(rec)))
         else
             push!(ret_val, current_obj)
         end
@@ -246,7 +243,6 @@ function gap_to_julia_internal(
 
       # Switch off recursion if none of the entry types needs recursion.
       rec = recursive && (_needs_tracking_gap_to_julia(S) || any(X ->_needs_tracking_gap_to_julia(X), parameters[1:(len-1)]))
-
       rec_dict = recursion_info_j(TT, obj, rec, recursion_dict)
 
       list = [
@@ -274,7 +270,7 @@ function gap_to_julia_internal(
     end
 
     ret_val = TT(list)
-    recursion_dict = handle_recursion((obj, TT), ret_val, rec, rec_dict)
+    handle_recursion((obj, TT), ret_val, rec, rec_dict)
     return ret_val
 end
 
@@ -303,7 +299,6 @@ function gap_to_julia_internal(
     ret_val = TT()
 
     rec = recursive && _needs_tracking_gap_to_julia(T)
-
     rec_dict = recursion_info_j(TT, obj, rec, recursion_dict)
     recursion_dict = handle_recursion((obj, TT), ret_val, rec, rec_dict)
 
