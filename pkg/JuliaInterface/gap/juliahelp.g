@@ -91,7 +91,6 @@ HELP_BOOK_HANDLER.juliahelpformat:= rec(
     ReadSix:= stream -> rec( bookname:= "Julia", entries:= [] ),
 
     ShowChapters:= book -> [ "" ],  # This feature is not supported for Julia.
-#T In GAP 4.11.0, PAGER_BUILTIN would run into an error when called with an empty list.
 
     ShowSections:= book -> [ "" ],   # This feature is not supported for Julia.
 

@@ -46,10 +46,6 @@ compare:= CompareUpToWhitespaceAndMatches(
     [ [ "Vector{Any}", "Vector{Any}" ],
       [ "Maybe you forgot to use an operator such as *, ^, %, / etc. ?", "" ] ] );
 
-# The testfiles assume that no traceback is printed.
-AlwaysPrintTracebackOnError:= false;
-#TODO: This can be removed as soon as GAP's `Test` sets the value to `false`-
-
 TestDirectory(dir, rec(exitGAP := true,
                        testOptions := rec(compareFunction := compare) ) );
 FORCE_QUIT_GAP(1);

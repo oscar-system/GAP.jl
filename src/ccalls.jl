@@ -204,8 +204,7 @@ function AssignGlobalVariable(name::Union{AbstractString,Symbol}, value::Any)
     _AssignGlobalVariable(name, tmp)
 end
 
-MakeString(val::String) = GC.@preserve val @ccall libgap.MakeStringWithLen(val::Ptr{UInt8}, sizeof(val)::Culong)::GapObj
-#TODO: As soon as libgap provides :GAP_MakeStringWithLen, use it.
+MakeString(val::String) = GC.@preserve val @ccall libgap.GAP_MakeStringWithLen(val::Ptr{UInt8}, sizeof(val)::Culong)::GapObj
 
 function UNSAFE_CSTR_STRING(val::GapObj)
     addr = ADDR_OBJ(val)
