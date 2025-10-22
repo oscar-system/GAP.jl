@@ -123,3 +123,4 @@ complete list.
 
 The development of this Julia package is supported by the Deutsche Forschungsgemeinschaft DFG within the [Collaborative Research Center TRR 195](https://www.computeralgebra.de/sfb/).
 The package belongs to [the OSCAR project](https://www.oscar-system.org/).
+
