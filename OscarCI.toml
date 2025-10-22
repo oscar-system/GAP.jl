@@ -9,8 +9,12 @@ title = "metadata for oscar CI run"
   [pkgs.Oscar]
   test = true
 
-#[include]
-#  [include.julia]
-#  Oscar = "master"
-#  julia-version = "nightly"
-#  os = "ubuntu-latest"
+  [pkgs.Hecke]
+  test = false
+
+[include]
+  [include.justoscarmaster]
+  Oscar = "master"
+  Hecke = "release"
+  julia-version = "1.10"
+  os = "ubuntu-latest"
