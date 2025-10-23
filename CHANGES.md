@@ -1,6 +1,6 @@
 # Changes in GAP.jl
 
-## Version 0.16.0-DEV (released YYYY-MM-DD)
+## Version 0.16.0 (released 2025-10-23)
 
 - **Breaking:** Update to GAP 4.15.1.
 - **Breaking:** Change the default behaviour of `gap_to_julia`
