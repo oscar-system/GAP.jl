@@ -127,3 +127,8 @@ all of the JLL packages that depend on GAP.
 
 8. (Optional) Release a new `GAP.jl`. This is done by pinging JuliaRegistrator in the comments of a commit.
    > ex: <https://github.com/oscar-system/GAP.jl/commit/21d5dd6b4ff8457649a922f0d5ba4a4414502f27#commitcomment-161267536>
+
+
+# TODOs for this document:
+- Resolve the `%TODO`s above. **BEFORE MERGING THIS PR**
+- Add instructions for testing the new GAP version (or rather a GAP pre-release) locally against GAP.jl and Oscar.jl.
