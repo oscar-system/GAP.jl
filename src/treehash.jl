@@ -1,5 +1,5 @@
 # The code in this file is taken from Pkg.GitTools
-# <https://github.com/JuliaLang/Pkg.jl/blob/a84228360d6cff568a55911733e830cdf1c492da/src/GitTools.jl>
+# <https://github.com/JuliaLang/Pkg.jl/blob/a84228360d6cff568a55911733e830cdf1c492da/src/GitTools.jl#L201-L344>
 #
 #  As such the following licensing terms apply:
 #
@@ -77,12 +77,12 @@ function blob_hash(::Type{HashType}, path::AbstractString) where {HashType}
 
     try
         if islink(path)
-            SHA.update!(ctx, Vector{UInt8}(readlink(path)))
+            update!(ctx, Vector{UInt8}(readlink(path)))
         else
             open(path, "r") do io
                 while !eof(io)
                     num_read = readbytes!(io, buff)
-                    SHA.update!(ctx, buff, num_read)
+                    update!(ctx, buff, num_read)
                 end
             end
         end
