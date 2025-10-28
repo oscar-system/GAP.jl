@@ -219,10 +219,10 @@ function locate_JuliaInterface_so()
     # compare the C sources used to build GAP_pkg_juliainterface_jll with bundled copies
     # by comparing tree hashes
     jll = GAP_pkg_juliainterface_jll.find_artifact_dir()
-    jll_hash = tree_hash(joinpath(jll, "src"))
+    jll_hash = TreeHash.tree_hash(joinpath(jll, "src"))
     bundled = joinpath(@__DIR__, "..", "pkg", "JuliaInterface")
     path = Pidfile.mkpidlock("$bundled.lock"; stale_age=300) do
-        bundled_hash = tree_hash(joinpath(bundled, "src"))
+        bundled_hash = TreeHash.tree_hash(joinpath(bundled, "src"))
 
         # requested re-compilation via ENV -> re-compile
         if get(ENV, "FORCE_JULIAINTERFACE_COMPILATION", "false") == "true"
