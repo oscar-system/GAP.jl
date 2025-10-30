@@ -1,5 +1,5 @@
 # The code in this file is taken from Pkg.GitTools
-# <https://github.com/JuliaLang/Pkg.jl/blob/a84228360d6cff568a55911733e830cdf1c492da/src/GitTools.jl>
+# <https://github.com/JuliaLang/Pkg.jl/blob/a84228360d6cff568a55911733e830cdf1c492da/src/GitTools.jl#L201-L344>
 #
 #  As such the following licensing terms apply:
 #
@@ -27,7 +27,9 @@
 # > SOFTWARE.
 # >
 
-import SHA
+module TreeHash
+
+using SHA: SHA, SHA1_CTX, update!
 
 # This code gratefully adapted from https://github.com/simonbyrne/GitX.jl
 @enum GitMode mode_dir = 0o040000 mode_normal = 0o100644 mode_executable = 0o100755 mode_symlink = 0o120000 mode_submodule = 0o160000
@@ -77,12 +79,12 @@ function blob_hash(::Type{HashType}, path::AbstractString) where {HashType}
 
     try
         if islink(path)
-            SHA.update!(ctx, Vector{UInt8}(readlink(path)))
+            update!(ctx, Vector{UInt8}(readlink(path)))
         else
             open(path, "r") do io
                 while !eof(io)
                     num_read = readbytes!(io, buff)
-                    SHA.update!(ctx, buff, num_read)
+                    update!(ctx, buff, num_read)
                 end
             end
         end
@@ -173,3 +175,5 @@ function tree_hash(::Type{HashType}, root::AbstractString; debug_out::Union{IO, 
     return SHA.digest!(ctx)
 end
 tree_hash(root::AbstractString; debug_out::Union{IO, Nothing} = nothing) = tree_hash(SHA.SHA1_CTX, root; debug_out)
+
+end # module
