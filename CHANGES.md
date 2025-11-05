@@ -1,5 +1,10 @@
 # Changes in GAP.jl
 
+## Version 0.16.1 (released 2025-XX-XX)
+
+- Add `GAP.GapInt(::ZZRingElem)` as an alias for `GAP.GapObj(::ZZRingElem)`.
+- Several "behind the scenes" changes that should be invisible for most users.
+
 ## Version 0.16.0 (released 2025-10-23)
 
 - **Breaking:** Update to GAP 4.15.1.
