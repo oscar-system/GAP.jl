@@ -22,6 +22,8 @@ GAP.@install function GapObj(obj::ZZRingElem)
   end
 end
 
+GapInt(obj::ZZRingElem) = GapObj(obj)
+
 ## `QQFieldElem` to GAP rational
 GAP.@install GapObj(obj::QQFieldElem) = Wrappers.QUO(GapObj(numerator(obj)), GapObj(denominator(obj)))
 
