@@ -14,7 +14,7 @@ module NemoExt
 using GAP
 using Nemo
 
-import GAP: GapObj, Wrappers
+import GAP: GapInt, GapObj, Wrappers
 
 import Nemo:
   QQMatrix,
