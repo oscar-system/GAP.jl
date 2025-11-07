@@ -105,15 +105,15 @@ all of the JLL packages that depend on GAP.
    For each `GAP_pkg_*` folder that was updated, create a separate PR with the changes to that folder only.
    Wait for all of these PRs to be merged, and wait for the registry to pick up the new versions of all
    `GAP_pkg_*_jll` packages.
-   %TODO: a sentence about `juliainterface`
 
 7. In `GAP.jl`, create a PR with the following changes:
    1. In the `Project.toml` update the compat bounds as follows:
-      - `GAP_jll` to the `version` from step 1, with a `~` prefix.
-      - `GAP_lib_jll` to the `version` from step 3, with a `~` prefix.
-      - %TODO: `GAP_pkg_juliainterface`
-      - For each `GAP_pkg_*_jll` package that was updated in step 6, update to the new version
-      with a `~` prefix. You can find the new version numbers in the registry PRs from step 6.
+      - For `GAP_jll` to the `version` from step 1, with a `~` prefix.
+      - For `GAP_lib_jll` to the `version` from step 3, with a `~` prefix.
+      - For `GAP_pkg_juliainterface_jll` to the new version number, with a `=` prefix.
+        You can find the new version number in the registry PR from step 6.
+      - For each other `GAP_pkg_*_jll` package that was updated in step 6, update to the new version
+        with a `~` prefix. You can find the new version numbers in the registry PRs from step 6.
    2. Run `etc/update_artifact.jl` with the new GAP version as argument to the `Artifacts.toml` file.
       See the top of that script for instructions.
    3. If the GAP release is not ABI-compatible with the previous one, update the minor part of the version
@@ -130,5 +130,4 @@ all of the JLL packages that depend on GAP.
 
 
 # TODOs for this document:
-- Resolve the `%TODO`s above. **BEFORE MERGING THIS PR**
 - Add instructions for testing the new GAP version (or rather a GAP pre-release) locally against GAP.jl and Oscar.jl.
