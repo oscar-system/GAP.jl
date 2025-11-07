@@ -29,10 +29,16 @@ Return all symbols in the module `m`.
 This is used in a GAP method for `RecNames`.
 """
 function get_symbols_in_module(m::Module)
-    name = string(nameof(m))::String
-    list = completions(name * ".", length(name) + 1)[1]
-    list = [Symbol(x.mod) for x in list]
-    list = filter(i -> isdefined(m, i), list)
+    @static if VERSION >= v"1.12.0-DEV.633" # https://github.com/JuliaLang/julia/pull/54609
+        list = names(m; all=true, imported=true, usings=true)
+    else
+        name = string(nameof(m))::String
+        list = completions(name * ".", length(name) + 1)[1]
+        list = [Symbol(x.mod) for x in list]
+    end
+    filter!(i -> isdefined(m, i), list)             # remove non-defined symbols
+    filter!(i -> !startswith(string(i), "#"), list) # remove compiler-generated symbols
+    filter!(i -> i != Symbol(m), list)              # remove module name itself
     return list
 end
 
