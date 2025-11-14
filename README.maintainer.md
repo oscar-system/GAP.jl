@@ -54,19 +54,30 @@ happening on a new julia release or on julia nightly.
 1. Wait for someone to update `libjulia_jll` to a new version.
 
 2. Update the GAP build recipe by changing the `libjulia_jll` version number to the new one.
-   There is no need to change any other version number in the recipe.
+   There is usually no need to change any other version number in the recipe.
+   However, if `libjulia_jll` changed its supported julia versions between the two versions,
+   you need to increase the patch part of `version`.
    > ex: <https://github.com/JuliaPackaging/Yggdrasil/pull/11656>
+   > ex: TODO add link for an example where `version` needed to be changed
 
 3. Wait for the Yggdrasil merge, and wait for the registry.
    > ex: <https://github.com/JuliaRegistries/General/pull/134713>
 
 4. Update the `GAP_pkg_juliainterface` build recipe by changing the `libjulia_jll` version number to the new one.
-   There is no need to change any other version number in the recipe.
+   There is usually no need to change any other version number in the recipe.
+   However, if `libjulia_jll` changed its supported julia versions between the two versions,
+   you need to increase the patch part of `offset`.
    > ex: <https://github.com/JuliaPackaging/Yggdrasil/pull/11659>
+   > ex: TODO add link for an example where `offset` needed to be changed
 
 5. Wait for the Yggdrasil merge, and wait for the registry.
    > ex: <https://github.com/JuliaRegistries/General/pull/134734>
 
+6. In case you changed the `version` in step 2 or the `offset` in step 4,
+   create a PR in `GAP.jl` to update the compat bounds for `GAP_jll` and/or
+   `GAP_pkg_juliainterface_jll` accordingly.
+   You can find the new version numbers in the registry PRs from steps 3 and 5.
+   > ex: TODO add link for an example PR
 
 ## Updating GAP
 
