@@ -83,7 +83,9 @@ function init_packagemanager()
 end
 
 """
-    load(spec::String, version::String = ""; install::Union{Bool, String} = false, quiet::Bool = true)
+    load(spec::String, version::String = "";
+             install::Union{Bool, String} = false,
+             quiet::Bool = true)
 
 Try to load the GAP package given by `spec`, which can be either the name
 of the package or a local path where the package is installed
@@ -221,9 +223,10 @@ end
 
 """
     install(spec::String, version::String = "";
-                          interactive::Bool = true, quiet::Bool = false,
-                          debug::Bool = false,
-                          pkgdir::AbstractString = GAP.Packages.DEFAULT_PKGDIR[])
+            interactive::Bool = true,
+            quiet::Bool = false,
+            debug::Bool = false,
+            pkgdir::AbstractString = GAP.Packages.DEFAULT_PKGDIR[])
 
 Download and install the GAP package given by `spec` into the `pkgdir`
 directory.
@@ -300,9 +303,11 @@ function install(spec::String, version::String = "";
 end
 
 """
-    update(spec::String; interactive::Bool = true, quiet::Bool = false,
-                         debug::Bool = false,
-                         pkgdir::AbstractString = GAP.Packages.DEFAULT_PKGDIR[])
+    update(spec::String;
+           interactive::Bool = true,
+           quiet::Bool = false,
+           debug::Bool = false,
+           pkgdir::AbstractString = GAP.Packages.DEFAULT_PKGDIR[])
 
 Update the GAP package given by `spec` that is installed in the
 `pkgdir` directory, to the latest version.
@@ -341,9 +346,11 @@ end
 # thus nec. to start Julia anew
 
 """
-    remove(spec::String; interactive::Bool = true, quiet::Bool = false,
-                         debug::Bool = false,
-                         pkgdir::AbstractString = GAP.Packages.DEFAULT_PKGDIR[])
+    remove(spec::String;
+           interactive::Bool = true,
+           quiet::Bool = false,
+           debug::Bool = false,
+           pkgdir::AbstractString = GAP.Packages.DEFAULT_PKGDIR[])
 
 Remove the GAP package with name `spec` that is installed in the
 `pkgdir` directory.
@@ -375,17 +382,20 @@ function remove(spec::String; interactive::Bool = true, quiet::Bool = false,
 end
 
 """
-    build(name::String; quiet::Bool = false,
-                        debug::Bool = false,
-                        pkgdir::AbstractString = GAP.Packages.DEFAULT_PKGDIR[])
+    build(name::String;
+          quiet::Bool = false,
+          debug::Bool = false,
+          pkgdir::AbstractString = GAP.Packages.DEFAULT_PKGDIR[])
 
 Build the GAP package with name `name` that is installed in the
 `pkgdir` directory.
 
-If no package with name `name` is installed in `pkgdir` but there is a version of
-`name` bundled with the GAP package distro, this version is copied to `pkgdir` and built.
+If no package with name `name` is installed in `pkgdir` but there is a
+version of `name` bundled with the GAP package distro, this version is
+copied to `pkgdir` and built.
 
-Return `true` if the build was successful or the package was already built, and `false` otherwise.
+Return `true` if the build was successful or the package was already
+built, and `false` otherwise.
 
 The function uses [the function `CompilePackage` from GAP's package
 `PackageManager`](GAP_ref(PackageManager:CompilePackage)).
@@ -429,9 +439,10 @@ function build(name::String; quiet::Bool = false,
 end
 
 """
-    build_recursive(name::String; quiet::Bool = false,
-                        debug::Bool = false,
-                        pkgdir::AbstractString = GAP.Packages.DEFAULT_PKGDIR[])
+    build_recursive(name::String;
+                    quiet::Bool = false,
+                    debug::Bool = false,
+                    pkgdir::AbstractString = GAP.Packages.DEFAULT_PKGDIR[])
 
 Build the GAP package with name `name` that is installed in the
 `pkgdir` directory, as well as all of its (transitive) dependencies.

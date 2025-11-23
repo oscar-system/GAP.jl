@@ -15,7 +15,7 @@
     GapObj(input, recursive::Bool = false)
 
 One can use the type [`GapObj`](@ref) as a constructor,
-in order to convert the julia object `input` to an appropriate GAP object.
+in order to convert the Julia object `input` to an appropriate GAP object.
 
 If `recursive` is set to `true`, recursive conversion of nested Julia objects
 (arrays, tuples, and dictionaries) is performed.
@@ -55,7 +55,6 @@ true
 ```
 
 The following `GapObj` conversions are supported by GAP.jl.
-(Other Julia packages may provide conversions for more Julia objects.)
 
 | Julia type                           | GAP filter   |
 |--------------------------------------|--------------|
@@ -75,6 +74,8 @@ The following `GapObj` conversions are supported by GAP.jl.
 | `Dict{String, T}`, `Dict{Symbol, T}` | `IsRecord`   |
 | `UnitRange{T}`, `StepRange{T, S}`    | `IsRange`    |
 | `Function`                           | `IsFunction` |
+
+Other Julia packages may provide conversions for more Julia types.
 """
 GapObj(x; recursive::Bool = false) = GapObj_internal(x, nothing, BoolVal(recursive))
 
