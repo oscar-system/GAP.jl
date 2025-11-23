@@ -56,10 +56,11 @@ include("types.jl")
 """
     GAP.@include(path)
 
-Read and execute the GAP code in the file at `path`,
-which must be either an absolute path or a path relative to the file where this macro is used.
-This is similar to julia's built-in `include` function,
-but for GAP code instead of Julia code.
+Read and execute the GAP code in the file at `path`.
+
+Note that `path`  must be either an absolute path or a path relative to
+the file where this macro is used. This is similar to julia's built-in
+`include` function, but for GAP code instead of Julia code.
 """
 macro include(path)
     return :(Wrappers.Read(GapObj(normpath(@__DIR__, $path))))
@@ -324,8 +325,9 @@ end
 """
     versioninfo(io::IO = stdout; jll::Bool = false, full::Bool = false)
 
-Print the version numbers of GAP.jl and GAP,
-and version numbers and installation paths of all currently loaded GAP packages.
+Print to `io` the versions of GAP.jl and GAP,
+and versions and installation paths of all loaded GAP packages.
+
 Note that these paths can be nonstandard because Julia's package manager
 does not control which available version of a GAP package gets loaded.
 

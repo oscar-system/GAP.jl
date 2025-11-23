@@ -46,12 +46,13 @@ end
     call_with_catch(func, args::Vector)
     call_with_catch(func, args::Vector, kwargs::Dict{Symbol,T}) where T
 
-Return a tuple `(ok, val)`
-where `ok` is either `true`, meaning that calling `func`
+Return a tuple `(ok, val)` representing the outcome of calling `func`
 with arguments `args` (and optionally with keyword arguments given by
-the keys and values of `kwargs`) returns the value `val`,
-or `false`, meaning that the function call runs into an error;
-in the latter case, `val` is set to the string of the error message.
+the keys and values of `kwargs`).
+
+Here `ok` is either `true`, meaning that calling `func` returned the value `val`,
+or `false`, meaning that the function call did run into an error.
+In the latter case, `val` is set to the string of the error message.
 
 This function is used on the GAP side.
 

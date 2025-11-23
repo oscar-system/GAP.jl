@@ -64,6 +64,7 @@ end
     show_gap_help(topic::String, onlyexact::Bool = false)
 
 Print the information from the GAP help system about `topic` to the screen.
+
 If `onlyexact` is `true` then only exact matches are shown,
 otherwise all matches.
 For example, `GAP.show_gap_help("Size")` shows also documentation for
