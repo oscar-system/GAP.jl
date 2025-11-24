@@ -54,43 +54,91 @@ happening on a new julia release or on julia nightly.
 1. Wait for someone to update `libjulia_jll` to a new version.
 
 2. Update the GAP build recipe by changing the `libjulia_jll` version number to the new one.
-   There is no need to change any other version number in the recipe.
+   There is usually no need to change any other version number in the recipe.
+   However, if `libjulia_jll` changed its supported julia versions between the two versions,
+   you need to increase the patch part of `version`.
    > ex: <https://github.com/JuliaPackaging/Yggdrasil/pull/11656>
+   > ex: TODO add link for an example where `version` needed to be changed
 
 3. Wait for the Yggdrasil merge, and wait for the registry.
    > ex: <https://github.com/JuliaRegistries/General/pull/134713>
 
 4. Update the `GAP_pkg_juliainterface` build recipe by changing the `libjulia_jll` version number to the new one.
-   There is no need to change any other version number in the recipe.
+   There is usually no need to change any other version number in the recipe.
+   However, if `libjulia_jll` changed its supported julia versions between the two versions,
+   you need to increase the patch part of `offset`.
    > ex: <https://github.com/JuliaPackaging/Yggdrasil/pull/11659>
+   > ex: TODO add link for an example where `offset` needed to be changed
 
 5. Wait for the Yggdrasil merge, and wait for the registry.
    > ex: <https://github.com/JuliaRegistries/General/pull/134734>
 
+6. In case you changed the `version` in step 2 or the `offset` in step 4,
+   create a PR in `GAP.jl` to update the compat bounds for `GAP_jll` and/or
+   `GAP_pkg_juliainterface_jll` accordingly.
+   You can find the new version numbers in the registry PRs from steps 3 and 5.
+   > ex: TODO add link for an example PR
 
 ## Updating GAP
 
 After a new GAP version is released, the following steps are necessary to update
 all of the JLL packages that depend on GAP.
 
-1. Update the GAP build recipe with the new `upstream_version` and SHA256 of the release tarball
-   > ex: <https://github.com/JuliaPackaging/Yggdrasil/pull/9937>
-
-   In this specific commit, there was also an update to `Readline_jll` and some build flags,
-   but that should not be needed in most cases.
+1. Update the GAP build recipe with the new `upstream_version` and SHA256 of the release tarball.
+   Furthermore, update the `version`; usually this is the `upstream_version` component-wise
+   multiplied by 100.
+   > ex: <https://github.com/JuliaPackaging/Yggdrasil/pull/12345>
 
 2. Wait for the Yggdrasil merge, and wait for the registry.
-   > ex: <https://github.com/JuliaRegistries/General/pull/120909>
+   > ex: <https://github.com/JuliaRegistries/General/pull/140789>
 
-3. Update the GAP_lib build recipe with the new `upstream_version` and SHA256 of the release tarball
-   > ex: <https://github.com/JuliaPackaging/Yggdrasil/pull/9938>
+3. Update the GAP_lib build recipe with the new `upstream_version` and SHA256 of the release tarball.
+   Furthermore, update the `version`; usually this is the `upstream_version` component-wise
+   multiplied by 100.
+   > ex: <https://github.com/JuliaPackaging/Yggdrasil/pull/12346>
 
 4. Wait for the Yggdrasil merge, and wait for the registry.
-   > ex: <https://github.com/JuliaRegistries/General/pull/120893>
+   > ex: <https://github.com/JuliaRegistries/General/pull/140790>
 
-TODOs: 
-- update `G/GAP_pkg/update.jl` (in Yggdrasil): `upstream_version`, `gap_version`, `gap_lib_version`, juliainterface `upstream_version`
-- run `G/GAP_pkg/update.jl` (in Yggdrasil) and push the result in multiple small PRs which each touch 3-5 folders, wait for all of them to be merged and released to the registry
-- run `etc/update_artifact.jl` (in GAP.jl)
-- update compat bounds of all JLLs
-- (optionally) release GAP.jl
+5. In Yggdrasil in the file `G/GAP_pkg/update.jl`, update the following variables:
+   - `upstream_version` to the new GAP version.
+   - `gap_version` to the `version` from step 1. If the GAP release is ABI-compatible
+     with the previous one, then this can remain unchanged.
+   - `gap_lib_version` to the `version` from step 3. If the GAP release is ABI-compatible
+     with the previous one, then this can remain unchanged.
+   - juliainterface `upstream_version` to the version that the next release of `GAP.jl` (that contains
+     the new GAP version) will have.
+   Create a PR for this change.
+   *Important:* Each commit message in this PR should contain `[skip build]`, while the PR description
+   and merge commit message should instead contain `[skip ci]`. This avoids triggering unnecessary builds.
+
+6. Run the `G/GAP_pkg/update.jl` script locally (see the top of that file for instructions).
+   For each `GAP_pkg_*` folder that was updated, create a separate PR with the changes to that folder only.
+   Wait for all of these PRs to be merged, and wait for the registry to pick up the new versions of all
+   `GAP_pkg_*_jll` packages.
+
+7. In `GAP.jl`, create a PR with the following changes:
+   1. In the `Project.toml` update the compat bounds as follows:
+      - For `GAP_jll` to the `version` from step 1, with a `~` prefix.
+      - For `GAP_lib_jll` to the `version` from step 3, with a `~` prefix.
+      - For `GAP_pkg_juliainterface_jll` to the new version number, with a `=` prefix.
+        You can find the new version number in the registry PR from step 6.
+      - For each other `GAP_pkg_*_jll` package that was updated in step 6, update to the new version
+        with a `~` prefix. You can find the new version numbers in the registry PRs from step 6.
+   2. Run `etc/update_artifact.jl` with the new GAP version as argument to the `Artifacts.toml` file.
+      See the top of that script for instructions.
+   3. If the GAP release is not ABI-compatible with the previous one, update the minor part of the version
+      of `GAP.jl` in its `Project.toml`
+   4. If the GAP release was created from a new release branch (e.g. `stable-4.15` instead of `stable-4.14`),
+      then update occurrences in `.github/workflows/gap.yml` accordingly.
+   Wait for the PR to pass CI (including the `treehash` job) and merge it.
+   > ex: <https://github.com/oscar-system/GAP.jl/pull/1274> for an ABI-compatible GAP update.
+   > ex: <https://github.com/oscar-system/GAP.jl/pull/1244> for a non-ABI-compatible GAP update. Note
+     that the version of `GAP.jl` was not updated here, since this was already done in a previous PR.
+
+8. (Optional) Release a new `GAP.jl`. This is done by pinging JuliaRegistrator in the comments of a commit.
+   > ex: <https://github.com/oscar-system/GAP.jl/commit/21d5dd6b4ff8457649a922f0d5ba4a4414502f27#commitcomment-161267536>
+
+
+# TODOs for this document:
+- Add instructions for testing the new GAP version (or rather a GAP pre-release) locally against GAP.jl and Oscar.jl.
