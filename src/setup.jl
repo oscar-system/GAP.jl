@@ -259,14 +259,21 @@ function locate_JuliaInterface_so()
 end
 
 """
-    create_gap_sh(dstdir::String)
+    create_gap_sh(dstdir::String; use_active_project::Bool=false)
 
-Given a directory path, create three files in that directory:
-- a shell script named `gap.sh` which acts like the `gap.sh` shipped with a
-  regular GAP installation, but which behind the scenes launches GAP via Julia.
-- two TOML files, `Manifest.toml` and `Project.toml`, which are required by
-  `gap.sh` to function (they record the precise versions of GAP.jl and other
-  Julia packages involved)
+Create a shell script `gap.sh` file in the directory at path `dstdir` which
+launches GAP via Julia.
+
+This script behaves from the outside like a regular GAP executable. You can
+verify that it really loads GAP via Julia by looking at the `Configuration`
+line in the GAP banner.
+
+If `use_active_project` is `false`, then it also creates two TOML files,
+`Manifest.toml` and `Project.toml`, in `dstdir`, which are used by `gap.sh`
+to fix the precise versions of GAP.jl and other Julia packages involved.
+
+If `use_active_project` is `true`, then it instead uses whatever is the active
+project when `create_gap_sh` is run.
 """
 function create_gap_sh(dstdir::String; use_active_project::Bool=false)
 
