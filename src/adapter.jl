@@ -213,7 +213,8 @@ function setbangindex!(x::GapObj, v::Any, i::Int64)
 end
 
 # records
-RNamObj(f::Union{Symbol,Int64,AbstractString}) = Wrappers.RNamObj(MakeString(string(f)))
+RNamObj(f::Union{Int64,AbstractString}) = RNamObj(string(f))
+RNamObj(f::Union{Symbol,String}) = Wrappers.RNamObj(MakeString(f))
 # note: we don't use Union{Symbol,Int64,AbstractString} below to avoid
 # ambiguity between these methods and method `getproperty(x, f::Symbol)`
 # from Julia's Base module

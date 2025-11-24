@@ -173,7 +173,7 @@ GAP.@install GapObj(x::Char) = CharWithValue(Cuchar(x))
 
 ## Strings and symbols
 GAP.@install GapObj(x::AbstractString) = MakeString(string(x))
-GAP.@install GapObj(x::Symbol) = MakeString(string(x))
+GAP.@install GapObj(x::Symbol) = MakeString(x)
 
 ## Arrays (including BitVector)
 function GapObj_internal(
