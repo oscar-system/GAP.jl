@@ -3,6 +3,7 @@
 ## Version 0.16.2 (released 2025-12-02)
 
 - Declare compatibility with Nemo 0.53
+- Optimize conversion from `Symbol` to `GapObj`
 
 ## Version 0.16.1 (released 2025-11-05)
 
