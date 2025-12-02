@@ -7,7 +7,7 @@
 - Update the "CrystCat" GAP package from 1.1.10 to 1.1.11
 - Update the "Wedderga" GAP package from 4.11.1 to 4.11.2
 - Add dependency on `polymake_jll` to provide a `polymake` executable
-  for use by the `polymaking` GAP package
+  for use by the `polymaking`, `hap` and `hapcryst` GAP packages
 
 ## Version 0.16.2 (released 2025-12-02)
 

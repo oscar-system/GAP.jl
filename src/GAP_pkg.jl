@@ -107,7 +107,9 @@ function setup_overrides()
     GAP.Globals.Add(GAP.Globals.GAPInfo.DirectoriesPrograms, d)
 
     # GAP package "polymaking" uses the 'polymake' Perl script from polymake_jll
-    Globals.POLYMAKE_COMMAND = GapObj(generate_polymake_wrapper())
+    polymake_base = generate_polymake_wrapper()
+    GAP.Globals.POLYMAKE_COMMAND = GapObj(joinpath(polymake_base, "polymake"))
+    GAP.Globals.POLYMAKE_PATH = GapObj(joinpath(polymake_base, "polymakeLegacy "))
 end
 
 function find_override(installationpath::String)
@@ -150,5 +152,39 @@ function generate_polymake_wrapper()
     # using mv would introduce some race conditions due to concurrent deletes
     Base.Filesystem.rename(tmpfile, binpath("polymake"))
 
-    return binpath("polymake")
+    # extra script for HAP
+    polymakeLegacy = raw"""
+    #!/bin/bash
+    file=$1;
+
+    if [ $# == 2 ]
+    then
+      opt1=$2;
+      \""""*binpath("polymake")*raw"""\" "my \$c=load(\\"$file\\");  print \\"$opt1\n\\", \$c->$opt1, \\"\n\n\\";" ;
+    fi
+
+    if [ $# == 3 ]
+    then
+      opt1=$2;
+      opt2=$3;
+      \""""*binpath("polymake")*raw"""\" "my \$c=load(\\"$file\\");  print \\"$opt1\n\\", \$c->$opt1, \\"\n\n\\", \\"$opt2\n\\", \$c->$opt2,  \\"\n\n\\";" ;
+    fi
+
+    if [ $# == 4 ]
+    then
+      opt1=$2;
+      opt2=$3;
+      opt3=$4;
+      \""""*binpath("polymake")*raw"""\" "my \$c=load(\\"$file\\");  print \\"$opt1\n\\", \$c->$opt1, \\"\n\n\\", \\"$opt2\n\\", \$c->$opt2,  \\"\n\n\\", \\"$opt3\n\\", \$c->$opt3, \\"\n\n\\" ;"
+    fi
+    """
+
+    (tmpfile, tmpio) = mktemp(binpath(""),cleanup=false)
+    write(tmpio, polymakeLegacy)
+    close(tmpio)
+    chmod(tmpfile, 0o755)
+    # using mv would introduce some race conditions due to concurrent deletes
+    Base.Filesystem.rename(tmpfile, binpath("polymakeLegacy"))
+
+    return binpath("")
 end
