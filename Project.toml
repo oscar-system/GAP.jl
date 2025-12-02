@@ -50,6 +50,7 @@ Scratch = "6c6a2e73-6563-6170-7368-637461726353"
 Singular_jll = "43d676ae-4934-50ba-8046-7a96366d613b"
 lib4ti2_jll = "1493ae25-0f90-5c0e-a06c-8c5077d6d66f"
 nauty_jll = "55c6dc9b-343a-50ca-8ff2-b71adb3733d5"
+polymake_jll = "7c209550-9012-526c-9264-55ba7a78ba2c"
 
 [weakdeps]
 Nemo = "2edaba10-b0f1-5616-af89-8c11ac63239a"
@@ -108,6 +109,7 @@ Singular_jll = "404.1.700"
 julia = "1.10"
 lib4ti2_jll = "1.6.10"
 nauty_jll = "2.6.13"
+polymake_jll = "400.1500.1"
 
 [extras]
 Ncurses_jll = "68e3532b-a499-55ff-9963-d1c0c0748b3a"

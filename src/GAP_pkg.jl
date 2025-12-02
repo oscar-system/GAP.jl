@@ -10,6 +10,7 @@
 ##
 
 import Artifacts: @artifact_str
+import Scratch: get_scratch!
 using BinaryWrappers
 
 import GAP_pkg_ace_jll
@@ -56,6 +57,11 @@ import nauty_jll
 # GAP package "singular" uses `Singular` executable from Singular_jll
 import Singular_jll
 
+# GAP package "polymaking" uses the 'polymake' Perl script from polymake_jll
+# which means we need to access Perl_jll a well
+import polymake_jll
+import polymake_jll: Perl_jll, JLLWrappers
+
 const pkg_bindirs = Dict{String, String}()
 
 function gap_pkg_artifact_dir(pkgname)
@@ -96,9 +102,12 @@ function setup_overrides()
 
     # GAP package "singular" uses `Singular` executable from Singular_jll
     singular_binpath = @generate_wrappers(Singular_jll)
-    Globals.sing_exec = GapObj(joinpath(singular_binpath, "Singular"))
+    GAP.Globals.sing_exec = GapObj(joinpath(singular_binpath, "Singular"))
     d = GAP.Globals.Directory(GapObj(singular_binpath))
     GAP.Globals.Add(GAP.Globals.GAPInfo.DirectoriesPrograms, d)
+
+    # GAP package "polymaking" uses the 'polymake' Perl script from polymake_jll
+    Globals.POLYMAKE_COMMAND = GapObj(generate_polymake_wrapper())
 end
 
 function find_override(installationpath::String)
@@ -109,4 +118,37 @@ function find_override(installationpath::String)
         return op
     end
     return joinpath(installationpath, "bin", String(GAP.Globals.GAPInfo.Architecture))
+end
+
+function generate_polymake_wrapper()
+
+    # we generate wrappers per minor julia version
+    # the scratch will belong to the jll which the wrappers are generated for
+    # and the usage is tied to the module calling the `@generate` macro.
+    target = get_scratch!(polymake_jll, BinaryWrappers.wrapper_key, GAP)
+
+    binpath(name) = joinpath(target, "bin", name)
+    mkpath(binpath(""))
+
+    bindir = joinpath(polymake_jll.find_artifact_dir(), "bin")
+    polymakescript = polymake_jll.get_polymake_path()
+    perlbinary = polymake_jll.Perl_jll.get_perl_path()
+    libpath = polymake_jll.LIBPATH[]
+
+    wrapper = """
+        #!/bin/sh
+        # Since we cannot run these binaries through the usual julia commands we need
+        # this wrapper that sets up the correct library paths.
+        export $(JLLWrappers.LIBPATH_env)="$(libpath)"
+        exec $(perlbinary) -- $(polymakescript) "\$@"
+        """
+
+    (tmpfile, tmpio) = mktemp(binpath(""),cleanup=false)
+    write(tmpio, wrapper)
+    close(tmpio)
+    chmod(tmpfile, 0o755)
+    # using mv would introduce some race conditions due to concurrent deletes
+    Base.Filesystem.rename(tmpfile, binpath("polymake"))
+
+    return binpath("polymake")
 end
