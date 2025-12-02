@@ -1,5 +1,10 @@
 # Changes in GAP.jl
 
+## Version 0.16.3-DEV (released 2025-MM-DD)
+
+- Add dependency on `polymake_jll` to provide a `polymake` executable
+  for use by the `polymaking`, `hap` and `hapcryst` GAP packages
+
 ## Version 0.16.2 (released 2025-12-02)
 
 - Declare compatibility with Nemo 0.53
