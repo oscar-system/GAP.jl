@@ -259,16 +259,17 @@ function locate_JuliaInterface_so()
 end
 
 """
-    create_gap_sh(dstdir::String)
+    create_gap_sh(dstdir::String, dstname::String="gap.sh")
 
 Given a directory path, create three files in that directory:
-- a shell script named `gap.sh` which acts like the `gap.sh` shipped with a
+- a shell script named `dstname` which acts like the `gap.sh` shipped with a
   regular GAP installation, but which behind the scenes launches GAP via Julia.
 - two TOML files, `Manifest.toml` and `Project.toml`, which are required by
-  `gap.sh` to function (they record the precise versions of GAP.jl and other
+  the script to function (they record the precise versions of GAP.jl and other
   Julia packages involved)
 """
-function create_gap_sh(dstdir::String; use_active_project::Bool=false)
+function create_gap_sh(dstdir::String, dstname::String="gap.sh"; use_active_project::Bool=false)
+    dstname == basename(dstname) || error("`dstname` must be a file name, not a path")
 
     dstdir = expanduser(dstdir)
     mkpath(dstdir)
@@ -297,7 +298,7 @@ function create_gap_sh(dstdir::String; use_active_project::Bool=false)
     end
 
 
-    gap_sh_path = joinpath(dstdir, "gap.sh")
+    gap_sh_path = joinpath(dstdir, dstname)
     write(gap_sh_path,
         """
         #!/bin/sh
