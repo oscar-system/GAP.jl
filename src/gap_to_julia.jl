@@ -15,7 +15,8 @@
 ## the function `gap_to_julia_internal`
 
 """
-    gap_to_julia_internal(::Type{T}, x::Any, rec_dict::JuliaCacheDict, ::Val{recursive}) where {T, recursive}
+    gap_to_julia_internal(::Type{T}, x::Any, rec_dict::JuliaCacheDict,
+                          ::Val{recursive}) where {T, recursive}
 
 Return an object of type `T` that corresponds to the GAP object `x`.
 
@@ -422,7 +423,6 @@ julia> GAP.gap_to_julia(Matrix{Int}, val)
 ```
 
 The following `gap_to_julia` conversions are supported by GAP.jl.
-(Other Julia packages may provide conversions for more GAP objects.)
 
 | GAP filter    | default Julia type       | other Julia types     |
 |---------------|--------------------------|-----------------------|
@@ -439,6 +439,8 @@ The following `gap_to_julia` conversions are supported by GAP.jl.
 | `IsMatrixObj` | `Matrix{Any}`            | `Matrix{T}`           |
 | `IsVectorObj` | `Vector{Any}`            | `Vector{T}`           |
 | `IsRecord`    | `Dict{Symbol, Any}`      | `Dict{Symbol, T}`     |
+
+Other Julia packages may provide conversions for more GAP types.
 """
 function gap_to_julia end
 
