@@ -18,6 +18,9 @@ or pressing ctrl-D, which returns to the Julia prompt.
 
 This GAP prompt allows to quickly switch between writing Julia and GAP code in
 a session where all data is shared.
+
+This function should only be called from the Julia REPL. Calling it from a GAP
+prompt may corrupt the session and lead to unexpected behavior and crashes.
 """
 function prompt()
     adapt_handlers_julia_to_gap()
@@ -30,10 +33,19 @@ function prompt()
     return # explicit return to avoid returning some random value   
 end
 
+@enum ReplProvider begin
+    REPL_JULIA
+    REPL_GAP
+end
+
 global sigint_handler = Ref{Ptr{Cvoid}}(C_NULL)
+global topmost_repl = Ref{ReplProvider}(REPL_JULIA)
 
 function adapt_handlers_julia_to_gap()
-    global disable_error_handler, sigint_handler
+    global disable_error_handler, sigint_handler, topmost_repl
+
+    topmost_repl[] == REPL_JULIA || error("Switching from Julia to GAP prompt failed: not in Julia prompt")
+    topmost_repl[] = REPL_GAP 
 
     # save the current SIGINT handler
     # (we pass NULL as signal handler; strictly speaking, we should be passing `SIG_DFL`
@@ -53,7 +65,10 @@ function adapt_handlers_julia_to_gap()
 end
 
 function adapt_handlers_gap_to_julia()
-    global disable_error_handler, sigint_handler
+    global disable_error_handler, sigint_handler, topmost_repl
+
+    topmost_repl[] == REPL_GAP || error("Switching from GAP to Julia prompt failed: not in GAP prompt")
+    topmost_repl[] = REPL_JULIA
 
     # disable break loop
     Globals.BreakOnError = false
