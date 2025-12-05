@@ -95,6 +95,7 @@ end
 
 # helper function for `gap.sh` scripts created by create_gap_sh()
 function run_session()
+    adapt_handlers_julia_to_gap()
 
     # Read the files from the GAP command line.
     @ccall libgap.Call0ArgsInNewReader(Globals.GAPInfo.LoadInitFiles_GAP_JL::Any)::Cvoid
