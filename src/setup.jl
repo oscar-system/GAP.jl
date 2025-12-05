@@ -314,7 +314,7 @@ function create_gap_sh(dstdir::String, dstname::String="gap.sh"; use_active_proj
         else
             READ_STARTUP_FILE="no"
         fi
-        exec $(join(Base.julia_cmd().exec, " ")) --startup-file=\$READ_STARTUP_FILE --project=$(projectdir) -i -- "$(gap_sh_path)" "\$@"
+        exec $(join(Base.julia_cmd().exec, " ")) --startup-file=\$READ_STARTUP_FILE --project=\$(dirname \"\$0\") -i -- \"\$0\" "\$@"
         =#
 
         # pass command line arguments to GAP.jl via a small hack
