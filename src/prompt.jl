@@ -33,6 +33,18 @@ function prompt()
     return # explicit return to avoid returning some random value   
 end
 
+# helper function to start a Julia prompt from GAP,
+# gets called from juliainterface's `JuliaPrompt` function
+function julia_prompt()
+    adapt_handlers_gap_to_julia()
+    opts = Base.JLOptions()
+    try
+        Base.run_main_repl(true, (opts.quiet != 0), :no , (opts.historyfile != 0))
+    finally
+        adapt_handlers_julia_to_gap()
+    end
+end
+
 @enum ReplProvider begin
     REPL_JULIA
     REPL_GAP

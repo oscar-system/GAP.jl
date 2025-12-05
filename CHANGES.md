@@ -2,6 +2,7 @@
 
 ## Version 0.16.3 (released 2025-XX-XX)
 
+- Add a gap function `JuliaPrompt` as inverse to `GAP.prompt()`
 - `create_gap_sh` now accepts an optional second argument
   to specify the name of the created script (defaulting to `gap.sh`).
 
