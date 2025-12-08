@@ -4,6 +4,7 @@
 
 - `create_gap_sh` now accepts an optional second argument
   to specify the name of the created script (defaulting to `gap.sh`).
+- Update the "CrystCat" GAP package from 1.1.10 to 1.1.11
 
 ## Version 0.16.2 (released 2025-12-02)
 

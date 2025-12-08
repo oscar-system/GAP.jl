@@ -259,14 +259,14 @@ git-tree-sha1 = "38e6deb181507eea47e7cc87e25b4930d82966dc"
     url = "https://files.gap-system.org/pkg/cryst-4.1.30.tar.gz"
 
 [GAP_pkg_crystcat]
-git-tree-sha1 = "7711ad19e53a49cebbf6ab62b64229302d20fdb1"
+git-tree-sha1 = "7d42547962b43cd29866279d66a75d2a2f440356"
 
     [[GAP_pkg_crystcat.download]]
-    sha256 = "0e2e568ed054c83312e56b52da26955742034814c85609eb69524a1154d8f2bc"
-    url = "https://www.math.uni-bielefeld.de/~gaehler/gap/CrystCat/crystcat-1.1.10.tar.gz"
+    sha256 = "643c6c350b58880a64bbbee16520378c564441f453223b0703eda1c210d6e096"
+    url = "https://www.math.uni-bielefeld.de/~gaehler/gap/CrystCat/crystcat-1.1.11.tar.gz"
     [[GAP_pkg_crystcat.download]]
-    sha256 = "0e2e568ed054c83312e56b52da26955742034814c85609eb69524a1154d8f2bc"
-    url = "https://files.gap-system.org/pkg/crystcat-1.1.10.tar.gz"
+    sha256 = "643c6c350b58880a64bbbee16520378c564441f453223b0703eda1c210d6e096"
+    url = "https://files.gap-system.org/pkg/crystcat-1.1.11.tar.gz"
 
 [GAP_pkg_ctbllib]
 git-tree-sha1 = "cb516145247151b1246058cd5f4c4e5ae5e9ff38"
