@@ -1589,14 +1589,14 @@ git-tree-sha1 = "9b84b65e31ef4f3b64f1dfb98f90bd1381df5853"
     url = "https://files.gap-system.org/pkg/walrus-0.9991.tar.gz"
 
 [GAP_pkg_wedderga]
-git-tree-sha1 = "cb1616af93fd89c11ad7cd2b925b02658a973d5e"
+git-tree-sha1 = "07fc5d0b1ffebf368f0df06b04c48c3309677d06"
 
     [[GAP_pkg_wedderga.download]]
-    sha256 = "2ff72e51aad3eccbcaa58a11235c39812d6bc8fceec9e879f75c19d18ada222b"
-    url = "https://github.com/gap-packages/wedderga/releases/download/v4.11.1/wedderga-4.11.1.tar.gz"
+    sha256 = "bd356d6728388bd00d1d2e7474b8bf5cdf88530124c9b0a6b0dc70bddd1085e9"
+    url = "https://github.com/gap-packages/wedderga/releases/download/v4.11.2/wedderga-4.11.2.tar.gz"
     [[GAP_pkg_wedderga.download]]
-    sha256 = "2ff72e51aad3eccbcaa58a11235c39812d6bc8fceec9e879f75c19d18ada222b"
-    url = "https://files.gap-system.org/pkg/wedderga-4.11.1.tar.gz"
+    sha256 = "bd356d6728388bd00d1d2e7474b8bf5cdf88530124c9b0a6b0dc70bddd1085e9"
+    url = "https://files.gap-system.org/pkg/wedderga-4.11.2.tar.gz"
 
 [GAP_pkg_wpe]
 git-tree-sha1 = "180255d50cf2971014006fe2179a9489da1f87d6"
