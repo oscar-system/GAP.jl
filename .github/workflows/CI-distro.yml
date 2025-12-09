@@ -59,7 +59,6 @@ jobs:
         exclude:
           - gap-package: 'atlasrep'                   # random gc-related segfaults during testing
           - gap-package: 'autodoc'                    # tries and fails to build its own documentation, inside the (partially write protected) artifacts dir
-          - gap-package: 'crystcat'                   # known test failures, will be fixed by https://github.com/gap-packages/crystcat/pull/14
           - gap-package: 'ctbllib'                    # random gc-related segfaults during testing
           - gap-package: 'example'                    # no jll
           - gap-package: 'examplesforhomalg'          # `Error, found no GAP executable in PATH`
@@ -75,7 +74,6 @@ jobs:
           - gap-package: 'profiling'                  # segfaults during testing
           - gap-package: 'ringsforhomalg'             # `Error, found no GAP executable in PATH`
           - gap-package: 'semigroups'                 # `Segmentation fault (Invalid permissions for mapped object)` after passing all tests
-          - gap-package: 'wedderga'                   # known test failures, will be fixed by https://github.com/gap-packages/wedderga/pull/110
           - gap-package: 'xgap'                       # no jll
           - gap-package: 'xmod'                       # `Segmentation fault (Invalid permissions for mapped object)` after passing all tests
 
