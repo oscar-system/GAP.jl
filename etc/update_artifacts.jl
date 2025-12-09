@@ -2,11 +2,19 @@
 # This script is used to update Artifacts.toml
 #
 # Usage variants:
-#   julia --project=etc etc/update_artifacts.jl 4.14.0
-#   julia --project=etc etc/update_artifacts.jl https://.../package-infos.json
-#   julia --project=etc etc/update_artifacts.jl https://.../package-infos.json.gz
-#   julia --project=etc etc/update_artifacts.jl local/path/package-infos.json
-#   julia --project=etc etc/update_artifacts.jl local/path/package-infos.json.gz
+# 1. Specify `packages-infos.json` to update all packages. This removes all
+#    artifacts for packages not contained in that file.
+#
+#     julia --project=etc etc/update_artifacts.jl 4.14.0
+#     julia --project=etc etc/update_artifacts.jl https://.../package-infos.json
+#     julia --project=etc etc/update_artifacts.jl https://.../package-infos.json.gz
+#     julia --project=etc etc/update_artifacts.jl local/path/package-infos.json
+#     julia --project=etc etc/update_artifacts.jl local/path/package-infos.json.gz
+#
+# 2. Specify `meta.json` to update a single package.
+#
+#     julia --project=etc etc/update_artifacts.jl https://.../meta.json
+#     julia --project=etc etc/update_artifacts.jl local/path/meta.json
 #
 
 using Downloads: download
@@ -30,23 +38,23 @@ function add_artifacts_for_packages(; pkginfos_path::String = "package-infos.jso
     pkgs = GZip.open(JSON.parse, pkginfos_path, "r")
     artifacts = TOML.parsefile(artifacts_toml)
 
-    for name in sort(collect(keys(pkgs)))
-        print("Processing '$name' ")
-        pkginfo = pkgs[name]
+    if haskey(pkgs, "PackageName")  # meta.json for a single package
+        print("Processing '$(pkgs["PackageName"])' ")
+        pkginfo = pkgs
         add_artifacts_for_package(pkginfo, artifacts)
-
-        # write it all out again
-        open(artifacts_toml, "w") do io
-            TOML.print(io, artifacts; sorted=true)
+    else                            # package-infos.json for all packages
+        for name in sort(collect(keys(pkgs)))
+            print("Processing '$(name)' ")
+            pkginfo = pkgs[name]
+            add_artifacts_for_package(pkginfo, artifacts)
         end
 
-    end
-    
-    # delete artifacts for any packages that are no longer distributed with GAP
-    pkg_names = ["GAP_pkg_"*lowercase(pkginfo["PackageName"]) for (name, pkginfo) in pkgs]
-    to_be_removed = setdiff(keys(artifacts), pkg_names)
-    for name in to_be_removed
-        delete!(artifacts, name)
+        # delete artifacts for any packages that are no longer distributed with GAP
+        pkg_names = ["GAP_pkg_"*lowercase(pkginfo["PackageName"]) for (name, pkginfo) in pkgs]
+        to_be_removed = setdiff(keys(artifacts), pkg_names)
+        for name in to_be_removed
+            delete!(artifacts, name)
+        end
     end
 
     # write it all out again
