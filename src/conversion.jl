@@ -80,7 +80,7 @@ const RecDict_g = IdDict{Any,Any}
 const GapCacheDict = Union{Nothing,RecDict_g}
 
 # helper functions for recursion (conversion from Julia to GAP)
-function recursion_info_g(::Type{T}, obj, ret_val, recursive::Bool, recursion_dict::GapCacheDict) where {T}
+function recursion_info_g(::Type{T}, obj, ret_val, ::Val{recursive}, recursion_dict::GapCacheDict) where {T, recursive}
     rec = recursive && _needs_tracking_julia_to_gap(T)
     if rec && recursion_dict === nothing
         rec_dict = RecDict_g()
