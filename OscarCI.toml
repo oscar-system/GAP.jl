@@ -17,4 +17,4 @@ title = "metadata for oscar CI run"
   Oscar = "master"
   Hecke = "release"
   julia-version = "1.10"
-  os = "ubuntu-latest"
+  os = ["Linux", "RPTU", "normal-memory"]
