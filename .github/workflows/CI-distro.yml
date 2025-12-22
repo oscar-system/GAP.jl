@@ -63,8 +63,6 @@ jobs:
           - gap-package: 'example'                    # no jll
           - gap-package: 'examplesforhomalg'          # `Error, found no GAP executable in PATH`
           - gap-package: 'groupoids'                  # `Segmentation fault (Invalid permissions for mapped object)` after passing all tests
-          - gap-package: 'hap'                        # `polymake command not found. Please set POLYMAKE_COMMAND by hand`
-          - gap-package: 'hapcryst'                   # `polymake command not found. Please set POLYMAKE_COMMAND by hand`
           - gap-package: 'help'                       # test failure in HeLP-4.0/tst/yes_4ti2.tst:39
           - gap-package: 'io'                         # segfaults, most likely due to child process handling
           - gap-package: 'itc'                        # dependency `xgap` has no jll
