@@ -4,10 +4,11 @@
 
 - `create_gap_sh` now accepts an optional second argument
   to specify the name of the created script (defaulting to `gap.sh`).
-- Update the "CrystCat" GAP package from 1.1.10 to 1.1.11
-- Update the "Wedderga" GAP package from 4.11.1 to 4.11.2
+- Update the `CrystCat` GAP package from 1.1.10 to 1.1.11
+- Update the `Wedderga` GAP package from 4.11.1 to 4.11.2
+- Update the `hap` GAP package from 1.70 to 1.72
 - Add dependency on `polymake_jll` to provide a `polymake` executable
-  for use by the `polymaking` GAP package
+  for use by the `polymaking`, `hap`, and `hapcryst` GAP packages
 - Fix `GAP.versioninfo` to correctly report all precompiled binaries
   of GAP packages that are available
 
@@ -140,8 +141,8 @@
 
 ## Version 0.13.1 (released 2025-02-07)
 
-- Add precompiled binaries for the "semigroups" GAP package
-- Update the "PackageManager" GAP package from 1.6.0 to 1.6.1
+- Add precompiled binaries for the `semigroups` GAP package
+- Update the `PackageManager` GAP package from 1.6.0 to 1.6.1
 - Fix compatibility issues with upcoming Julia 1.12
 - Add initial support for Julia 1.13
 - Introduce a global variable `GAP_jl` on the GAP side, which points to the
