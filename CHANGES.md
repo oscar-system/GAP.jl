@@ -6,7 +6,7 @@
   to specify the name of the created script (defaulting to `gap.sh`).
 - Update the `CrystCat` GAP package from 1.1.10 to 1.1.11
 - Update the `Wedderga` GAP package from 4.11.1 to 4.11.2
-- Update the `hap` GAP package from 1.70 to 1.72
+- Update the `hap` GAP package from 1.70 to 1.73
 - Add dependency on `polymake_jll` to provide a `polymake` executable
   for use by the `polymaking`, `hap`, and `hapcryst` GAP packages
 - Fix `GAP.versioninfo` to correctly report all precompiled binaries
