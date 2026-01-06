@@ -74,6 +74,7 @@ function setup_overrides()
     for pkg in gap_pkg_jll_names
         jll = getproperty(GAP, Symbol(pkg))
         @assert jll isa Module
+        push!(gap_pkg_jlls, jll)
         pkg = pkg[9:end-4]
 
         # Crude heuristic: if the JLL has a `bin` directory then we assume it
