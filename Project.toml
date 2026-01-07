@@ -61,7 +61,7 @@ NemoExt = "Nemo"
 [compat]
 AbstractAlgebra = "0.41.11, 0.42.1, 0.43, 0.44, 0.45, 0.46, 0.47"
 Artifacts = "1.10"
-BinaryWrappers = "0.1.4"
+BinaryWrappers = "0.2.0"
 Downloads = "1.4.3"
 FileWatching = "1.10"
 GAP_jll = "~400.1500.100"
