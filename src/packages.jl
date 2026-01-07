@@ -82,6 +82,19 @@ function init_packagemanager()
     end)
 end
 
+# helper for temporarily setting the info levels
+function with_info_level(f, infoclass, infolevel)
+    infolevel === nothing && return f()
+
+    old_level = Wrappers.InfoLevel(infoclass)
+    Wrappers.SetInfoLevel(infoclass, infolevel)
+    try
+        f()
+    finally
+        Wrappers.SetInfoLevel(infoclass, old_level)
+    end
+end
+
 """
     load(spec::String, version::String = "";
              install::Union{Bool, String} = false,
@@ -130,12 +143,13 @@ function load(spec::String, version::String = ""; install::Union{Bool, String} =
       # If there is no package `gspec` and if the info level of
       # `GAP.Globals.InfoWarning` is at least 1 then GAP prints a warning.
       # Avoid this warning.
-      warning_level_orig = Wrappers.InfoLevel(Globals.InfoWarning)
-      Wrappers.SetInfoLevel(Globals.InfoWarning, 0)
+      lvl = 0
+    else
+      # otherwise leave the info level untouched
+      lvl = nothing
     end
-    loaded = Wrappers.LoadPackage(gspec, gversion, !quiet)
-    if spec_is_path
-      Wrappers.SetInfoLevel(Globals.InfoWarning, warning_level_orig)
+    loaded = with_info_level(Globals.InfoWarning, lvl) do
+      Wrappers.LoadPackage(gspec, gversion, !quiet)
     end
 
     loaded == true && return true
@@ -264,13 +278,10 @@ function install(spec::String, version::String = "";
     # pidlock timeout: 300 seconds = 5 minutes should suffice; about the
     # slowest packages to install are Semigroups and NormalizInterface.
     Pidfile.mkpidlock("$pkgdir.lock"; stale_age=300) do
-      if quiet || debug
-        oldlevel = Wrappers.InfoLevel(Globals.InfoPackageManager)
-        Wrappers.SetInfoLevel(Globals.InfoPackageManager, quiet ? 0 : 3)
-      end
-      if version == ""
-        res = Globals.InstallPackage(GapObj(spec), interactive; debug)
-      else
+      with_info_level(Globals.InfoPackageManager, quiet ? 0 : debug ? 3 : nothing) do
+        if version == ""
+          return Globals.InstallPackage(GapObj(spec), interactive; keepDirectory=debug))
+        end
         # We assume that `spec` is a package name.
         # If the required version is already installed and can be loaded
         # then do not ask for installing it again.
@@ -293,12 +304,8 @@ function install(spec::String, version::String = "";
           res = Globals.TestPackageAvailability(GapObj(spec), GapObj(version))
           res !== Globals.fail && return true
         end
-        res = Globals.InstallPackage(GapObj(spec), GapObj(version), interactive; debug)
+        return Globals.InstallPackage(GapObj(spec), GapObj(version), interactive; keepDirectory=debug))
       end
-      if quiet || debug
-        Wrappers.SetInfoLevel(Globals.InfoPackageManager, oldlevel)
-      end
-      return res
     end
 end
 
@@ -331,14 +338,8 @@ function update(spec::String; interactive::Bool = true, quiet::Bool = false,
     Globals.PKGMAN_CustomPackageDir = GapObj(pkgdir)
     mkpath(pkgdir)
 
-    if quiet || debug
-      oldlevel = Wrappers.InfoLevel(Globals.InfoPackageManager)
-      Wrappers.SetInfoLevel(Globals.InfoPackageManager, quiet ? 0 : 3)
-      res = Globals.UpdatePackage(GapObj(spec), interactive; debug)
-      Wrappers.SetInfoLevel(Globals.InfoPackageManager, oldlevel)
-      return res
-    else
-      return Globals.UpdatePackage(GapObj(spec), interactive)
+    with_info_level(Globals.InfoPackageManager, quiet ? 0 : debug ? 3 : nothing) do
+      return Globals.UpdatePackage(GapObj(spec), interactive; keepDirectory=debug))
     end
 end
 # note that the updated version cannot be used in the current GAP session,
@@ -370,14 +371,8 @@ function remove(spec::String; interactive::Bool = true, quiet::Bool = false,
     Globals.PKGMAN_CustomPackageDir = GapObj(pkgdir)
     mkpath(pkgdir)
 
-    if quiet || debug
-      oldlevel = Wrappers.InfoLevel(Globals.InfoPackageManager)
-      Wrappers.SetInfoLevel(Globals.InfoPackageManager, quiet ? 0 : 3)
-      res = Globals.RemovePackage(GapObj(spec), interactive; debug)
-      Wrappers.SetInfoLevel(Globals.InfoPackageManager, oldlevel)
-      return res
-    else
-      return Globals.RemovePackage(GapObj(spec), interactive)
+    with_info_level(Globals.InfoPackageManager, quiet ? 0 : debug ? 3 : nothing) do
+      return Globals.RemovePackage(GapObj(spec), interactive; keepDirectory=debug))
     end
 end
 
@@ -426,16 +421,10 @@ function build(name::String; quiet::Bool = false,
     newpath = joinpath(pkgdir, name * "-" * String(info.Version))
     cp(oldpath, newpath)
   end
-  if quiet || debug
-    oldlevel = Wrappers.InfoLevel(Globals.InfoPackageManager)
-    Wrappers.SetInfoLevel(Globals.InfoPackageManager, quiet ? 0 : 3)
+  with_info_level(Globals.InfoPackageManager, quiet ? 0 : debug ? 3 : nothing) do
+    Globals.PKGMAN_RefreshPackageInfo()
+    return Globals.CompilePackage(gname)
   end
-  Globals.PKGMAN_RefreshPackageInfo()
-  res = Globals.CompilePackage(gname)
-  if quiet || debug
-    Wrappers.SetInfoLevel(Globals.InfoPackageManager, oldlevel)
-  end
-  return res
 end
 
 """
