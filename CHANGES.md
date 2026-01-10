@@ -2,6 +2,7 @@
 
 ## Version 0.16.3-DEV (released 2025-MM-DD)
 
+- Add a gap function `JuliaPrompt` as inverse to `GAP.prompt()`
 - `create_gap_sh` now accepts an optional second argument
   to specify the name of the created script (defaulting to `gap.sh`).
 - Update the `CrystCat` GAP package from 1.1.10 to 1.1.11
