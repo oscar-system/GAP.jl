@@ -629,14 +629,14 @@ git-tree-sha1 = "1a54c9820d5b814418020102bfd7d17f3fe305a9"
     url = "https://files.gap-system.org/pkg/guava-3.20.tar.gz"
 
 [GAP_pkg_hap]
-git-tree-sha1 = "03fb28fa7c2374da1e0d72826f6df2b276a5b509"
+git-tree-sha1 = "672342988314d3f24bfe9192bf1c9352a2d66e40"
 
     [[GAP_pkg_hap.download]]
-    sha256 = "47bf17458da4176bc68b10fcabbd15510213f9304ec2496eb0d5ae5528c38aa8"
-    url = "https://github.com/gap-packages/hap/releases/download/v1.73/hap-1.73.tar.gz"
+    sha256 = "357f720914ce8e148afe3d0fdd6dde1b6bbb3f071d9f32d912d8179e1271374c"
+    url = "https://github.com/gap-packages/hap/releases/download/v1.74/hap-1.74.tar.gz"
     [[GAP_pkg_hap.download]]
-    sha256 = "47bf17458da4176bc68b10fcabbd15510213f9304ec2496eb0d5ae5528c38aa8"
-    url = "https://files.gap-system.org/pkg/hap-1.73.tar.gz"
+    sha256 = "357f720914ce8e148afe3d0fdd6dde1b6bbb3f071d9f32d912d8179e1271374c"
+    url = "https://files.gap-system.org/pkg/hap-1.74.tar.gz"
 
 [GAP_pkg_hapcryst]
 git-tree-sha1 = "1c94fdb42a4b1584fc8abf8a4559054a1b73d88b"
