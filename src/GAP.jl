@@ -255,12 +255,16 @@ function __init__()
     push!(pkgdirs, abspath(@__DIR__, "..", "pkg", "JuliaExperimental"))
     push!(cmdline_options, "--packagedirs", join(pkgdirs, ';'))
 
+    # If we were started via gap.sh, leave it to `Main.__GAP_ARGS__`
+    # whether a GAP banner gets printed.
+    # Otherwise we ask GAP not to print the banner,
+    # instead we will call the relevant functions ourselves if appropriate.
     if isdefined(Main, :__GAP_ARGS__)
         # we were started via gap.sh, handle user command line arguments
         append!(cmdline_options, Main.__GAP_ARGS__)
     else
         # started regularly
-        append!(cmdline_options, ["--nointeract"])
+        append!(cmdline_options, ["-b", "--nointeract"])
     end
 
     # ensure GAP exit handler is run when we exit
@@ -273,30 +277,33 @@ function __init__()
         end
     end
 
-    show_banner = AbstractAlgebra.should_show_banner() &&
-                 get(ENV, "GAP_PRINT_BANNER", "true") != "false"
-
-    if !show_banner
-        # Do not show the main GAP banner by default.
-        push!(cmdline_options, "-b")
-    end
-
     if haskey(ENV, "GAP_BARE_DEPS")
         push!(cmdline_options, "-A")
     end
 
+    # Start GAP.
     initialize(cmdline_options)
 
-    if !show_banner
-        # Leave it to GAP's `LoadPackage` whether package banners are shown.
+    if !isdefined(Main, :__GAP_ARGS__)
+        # We had started GAP with the `-b` option.
+        # Reset this option in order to leave it to GAP's `LoadPackage`
+        # whether package banners are shown.
         # Note that a second argument `false` of this function suppresses the
         # package banner,
         # but no package banners can be shown if the `-b` option is `true`.
         evalstr_ex("""
             GAPInfo.CommandLineOptions := ShallowCopy(GAPInfo.CommandLineOptions);
-            GAPInfo.CommandLineOptions.b = false;
+            GAPInfo.CommandLineOptions.b := false;
             MakeImmutable(GAPInfo.CommandLineOptions);
         """)
+
+        show_banner = AbstractAlgebra.should_show_banner() &&
+                     get(ENV, "GAP_PRINT_BANNER", "true") != "false"
+
+        if show_banner
+            Globals.ShowKernelInformation();
+            Globals.GAPInfo.ShowPackageInformation();
+        end
     end
 
     Packages.init_packagemanager()
