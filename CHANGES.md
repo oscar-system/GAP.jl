@@ -11,6 +11,8 @@
   for use by the `polymaking`, `hap`, and `hapcryst` GAP packages
 - Fix `GAP.versioninfo` to correctly report all precompiled binaries
   of GAP packages that are available
+- Declare compatibility with AbstractAlgebra 0.48
+- Declare compatibility with Nemo 0.54
 
 ## Version 0.16.2 (released 2025-12-02)
 
