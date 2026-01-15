@@ -1,6 +1,6 @@
 # Changes in GAP.jl
 
-## Version 0.16.3-DEV (released 2025-MM-DD)
+## Version 0.16.3 (released 2026-01-15)
 
 - `create_gap_sh` now accepts an optional second argument
   to specify the name of the created script (defaulting to `gap.sh`).
