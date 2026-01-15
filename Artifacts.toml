@@ -659,14 +659,14 @@ git-tree-sha1 = "eed5d374e2fcaedc449507e6c6b777c473c1a75a"
     url = "https://files.gap-system.org/pkg/hecke-1.5.4.tar.gz"
 
 [GAP_pkg_help]
-git-tree-sha1 = "1898d1b37724af94042eed1b62e69614e2fe333b"
+git-tree-sha1 = "717b3ddc81f1aa6021d9cc2950b60fdaa4714ddf"
 
     [[GAP_pkg_help.download]]
-    sha256 = "49a8533b98030a1feea6c8e02601e5219a51a37c85bebd06d3cdd2ca951b7f86"
-    url = "https://github.com/gap-packages/HeLP/releases/download/v4.0/HeLP-4.0.tar.gz"
+    sha256 = "9fe8a7c6efaaaaa16860e4656e341db856ef4489350a64cdc2435494133746f3"
+    url = "https://github.com/gap-packages/HeLP/releases/download/v4.1/HeLP-4.1.tar.gz"
     [[GAP_pkg_help.download]]
-    sha256 = "49a8533b98030a1feea6c8e02601e5219a51a37c85bebd06d3cdd2ca951b7f86"
-    url = "https://files.gap-system.org/pkg/HeLP-4.0.tar.gz"
+    sha256 = "9fe8a7c6efaaaaa16860e4656e341db856ef4489350a64cdc2435494133746f3"
+    url = "https://files.gap-system.org/pkg/HeLP-4.1.tar.gz"
 
 [GAP_pkg_homalg]
 git-tree-sha1 = "2881b49ed9fc87cd0040df78e3c9bde8f5151f13"

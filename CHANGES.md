@@ -1,5 +1,9 @@
 # Changes in GAP.jl
 
+## Version 0.16.4-DEV (released 2026-MM-DD)
+
+- Update the `HeLP` GAP package from 4.0 to 4.1
+
 ## Version 0.16.3 (released 2026-01-15)
 
 - `create_gap_sh` now accepts an optional second argument
