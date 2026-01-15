@@ -56,4 +56,26 @@ end);
         Unbind( GAPInfo.InitFiles_GAPjl );
         VALUE_GLOBAL("ProcessInitFiles")(GAPInfo.InitFiles);
     end;
+
+    # Provide a GAP function that prints part of the GAP banner,
+    # but without the line about the GAP help system.
+#TODO: Simplify this code as soon as the GAP functions in question admit this.
+    GAPInfo.ShowPackageInformation:= function()
+      local packagenames, list, name, str;
+
+      # For each loaded package, print name and version number.
+      packagenames:= REC_NAMES( GAPInfo.PackagesLoaded );
+      SORT_LIST( packagenames );
+      if LEN_LIST( packagenames ) <> 0 then
+        list:= [];
+        for name in packagenames do
+          str:= "";
+          APPEND_LIST( str, GAPInfo.PackagesLoaded.( name )[3] );
+          APPEND_LIST( str, " " );
+          APPEND_LIST( str, GAPInfo.PackagesLoaded.( name )[2] );
+          ADD_LIST( list, str );
+        od;
+        VALUE_GLOBAL( "_PrintInfo" )( " Packages:   ", list, "\n" );
+      fi;
+    end;
     end)();
