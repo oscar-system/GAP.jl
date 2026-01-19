@@ -188,7 +188,7 @@ function GapObj_internal(
     len = length(obj)
     ret_val = NewPlist(len)
 
-    recursion_dict = recursion_info_g(T, obj, ret_val, recursive, recursion_dict)
+    recursion_dict = recursion_info_g(T, obj, ret_val, GAP.BoolVal(recursive), recursion_dict)
 
     # Set the subobjects.
     for i = 1:len
@@ -214,7 +214,7 @@ function GapObj_internal(
 
     ret_val = NewPlist(length(obj))
 
-    recursion_dict = recursion_info_g(T, obj, ret_val, recursive, recursion_dict)
+    recursion_dict = recursion_info_g(T, obj, ret_val, GAP.BoolVal(recursive), recursion_dict)
 
     for x in obj
         res = recursive ? GapObj_internal(x, recursion_dict, Val(true)) : x
@@ -238,9 +238,10 @@ function GapObj_internal(
     rows = size(obj, 1)
     ret_val = NewPlist(rows)
 
-    recursion_dict = recursion_info_g(T, obj, ret_val, recursive, recursion_dict)
+    recursion_dict = recursion_info_g(T, obj, ret_val, GAP.BoolVal(recursive), recursion_dict)
 
     for i = 1:rows
+    # TODO: don't work rowwise?!?
         ret_val[i] = GapObj_internal(obj[i, :], recursion_dict, BoolVal(recursive))
     end
     return ret_val
@@ -274,7 +275,7 @@ function GapObj_internal(
 
     ret_val = NewPrecord(0)
 
-    recursion_dict = recursion_info_g(T, obj, ret_val, recursive, recursion_dict)
+    recursion_dict = recursion_info_g(T, obj, ret_val, GAP.BoolVal(recursive), recursion_dict)
 
     for (x, y) in obj
         x = Wrappers.RNamObj(MakeString(string(x)))

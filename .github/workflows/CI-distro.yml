@@ -62,16 +62,13 @@ jobs:
           - gap-package: 'ctbllib'                    # random gc-related segfaults during testing
           - gap-package: 'example'                    # no jll
           - gap-package: 'examplesforhomalg'          # `Error, found no GAP executable in PATH`
-          - gap-package: 'groupoids'                  # `Segmentation fault (Invalid permissions for mapped object)` after passing all tests
           - gap-package: 'io'                         # segfaults, most likely due to child process handling
           - gap-package: 'itc'                        # dependency `xgap` has no jll
           - gap-package: 'localizeringforhomalg'      # `Error, found no GAP executable in PATH`
           - gap-package: 'packagemanager'             # many "#I  No sysinfo.gap found" warnings
           - gap-package: 'profiling'                  # segfaults during testing
           - gap-package: 'ringsforhomalg'             # `Error, found no GAP executable in PATH`
-          - gap-package: 'semigroups'                 # `Segmentation fault (Invalid permissions for mapped object)` after passing all tests
           - gap-package: 'xgap'                       # no jll
-          - gap-package: 'xmod'                       # `Segmentation fault (Invalid permissions for mapped object)` after passing all tests
 
     steps:
       - uses: actions/checkout@v6
