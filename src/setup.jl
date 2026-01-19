@@ -264,6 +264,9 @@ end
 Given a directory path, create three files in that directory:
 - a shell script named `dstname` which acts like the `gap.sh` shipped with a
   regular GAP installation, but which behind the scenes launches GAP via Julia.
+  Setting the environment variable `JULIA_STARTUP_FILE_IN_GAP` to `yes` will
+  include the user's Julia startup file from `~/.julia/config/startup.jl` when
+  running this script. Otherwise, the loading of the startup file is suppressed.
 - two TOML files, `Manifest.toml` and `Project.toml`, which are required by
   the script to function (they record the precise versions of GAP.jl and other
   Julia packages involved)
