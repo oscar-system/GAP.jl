@@ -174,7 +174,7 @@ gap> GAPToJulia( Z(3) );
 Z(3)
 gap> x := GAPToJulia( Z(3), false );
 Z(3)
-gap> JuliaToGAP(IsBool, x) = Z(3);
+gap> JuliaToGAP(IsFFE, x) = Z(3);
 true
 
 ###
@@ -281,6 +281,10 @@ gap> JuliaToGAP( IsString, emptystring );
 gap> GAP_jl.Obj( emptystring );
 ""
 
+# test input validation
+gap> JuliaToGAP(IsString, Julia.Float64(1));
+Error, <obj> must be a Julia string or symbol
+
 ###
 ### Lists
 ###
@@ -300,6 +304,10 @@ gap> JuliaToGAP( IsList, emptylist );
 [  ]
 gap> GAP_jl.Obj( emptylist );
 [  ]
+
+# test input validation
+gap> JuliaToGAP(IsList, Julia.Float64(1));
+Error, <obj> must be a Julia array or tuple or range
 
 ###
 ### Ranges
@@ -335,6 +343,32 @@ Error, <obj> must be a Julia range
 gap> JuliaToGAP( IsRange, JuliaEvalString( "[ 1, 2, 4 ]" ) );
 Error, <obj> must be a Julia range
 
+# test input validation
+gap> JuliaToGAP(IsRange, Julia.Float64(1));
+Error, <obj> must be a Julia range
+
+###
+### Boolean Lists
+###
+
+#
+gap> x := JuliaEvalString( "[true, false]" );;
+gap> typeof(x);
+<Julia: Vector{Bool}>
+gap> JuliaToGAP(IsBlist, x);
+[ true, false ]
+
+#
+gap> x := JuliaEvalString( "BitVector((true,false))" );;
+gap> typeof(x);
+<Julia: BitVector>
+gap> JuliaToGAP(IsBlist, x);
+[ true, false ]
+
+# test input validation
+gap> JuliaToGAP(IsBlist, Julia.Float64(1));
+Error, <obj> must be a Julia Vector{Bool} or BitVector
+
 ###
 ### Functions
 ###
@@ -361,6 +395,10 @@ gap> JuliaToGAP( IsRecord, dict );
 rec(  )
 gap> GAP_jl.Obj( dict );
 rec(  )
+
+# test input validation
+gap> JuliaToGAP(IsRecord, Julia.Float64(1));
+Error, <obj> must be a Julia Dict{Symbol} or Dict{AbstractString}
 
 ##  nested record: non-recursive vs. recursive
 gap> dict:= GAPToJulia( rec( bool:= true,

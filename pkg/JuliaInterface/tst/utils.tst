@@ -77,13 +77,21 @@ gap> IsDirectoryPath( path );
 true
 
 # Julia modules should not get cached, see #1044
-gap> JuliaEvalString("module foo  x = 1 end");
+gap> foo := JuliaEvalString("baremodule foo  x = 1 end");
 <Julia module Main.foo>
+gap> Intersection(["x","y"],RecNames(foo));
+[ "x" ]
+gap> foo = Julia.foo;
+true
 gap> Julia.foo.x;
 1
-gap> JuliaEvalString("module foo  x = 2 end");
+gap> foo := JuliaEvalString("module foo  y = 2 end");
 <Julia module Main.foo>
-gap> Julia.foo.x;
+gap> foo = Julia.foo;
+true
+gap> Intersection(["x","y"],RecNames(foo));
+[ "y" ]
+gap> Julia.foo.y;
 2
 
 ##
