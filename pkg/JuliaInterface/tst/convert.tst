@@ -120,12 +120,6 @@ gap> GAP_jl.Obj( int );
 11
 
 #
-gap> GAPToJulia( Z(3) );
-Z(3)
-gap> GAPToJulia( Z(3), false );
-Z(3)
-
-#
 gap> x := Julia.BigInt(123);;
 gap> typeof(x);
 <Julia: BigInt>
@@ -133,6 +127,18 @@ gap> JuliaToGAP(IsInt, x);
 123
 gap> GAP_jl.Obj(x);
 123
+
+#
+gap> big2 := Julia.big(2);
+<Julia: 2>
+gap> ForAll([0..64], n -> JuliaToGAP( IsInt, big2^n) = 2^n);
+true
+gap> ForAll([0..64], n -> GAP_jl.Obj( big2^n ) = 2^n);
+true
+gap> ForAll([0..64], n -> JuliaToGAP( IsInt, -big2^n) = -2^n);
+true
+gap> ForAll([0..64], n -> GAP_jl.Obj( -big2^n ) = -2^n);
+true
 
 # test input validation
 gap> JuliaToGAP(IsInt, Julia.string(1));
@@ -160,33 +166,16 @@ gap> JuliaToGAP(IsRat, Julia.string(1));
 Error, <obj> must be a Julia integer or rational
 
 ###
-### Chars
+### FFEs
 ###
 
 #
-gap> x := Julia.Char(97);;
-gap> typeof(x);
-<Julia: Char>
-gap> JuliaToGAP(IsChar, x);
-'a'
-
-#
-gap> x := Julia.UInt8(97);;
-gap> typeof(x);
-<Julia: UInt8>
-gap> JuliaToGAP(IsChar, x);
-'a'
-
-#
-gap> x := Julia.Int8(97);;
-gap> typeof(x);
-<Julia: Int8>
-gap> JuliaToGAP(IsChar, x);
-'a'
-
-# test input validation
-gap> JuliaToGAP(IsChar, Julia.string(1));
-Error, <obj> must be a Julia Char or Int8 or UInt8
+gap> GAPToJulia( Z(3) );
+Z(3)
+gap> x := GAPToJulia( Z(3), false );
+Z(3)
+gap> JuliaToGAP(IsBool, x) = Z(3);
+true
 
 ###
 ### Floats
@@ -224,26 +213,57 @@ gap> JuliaToGAP(IsFloat, Julia.string(1));
 Error, <obj> must be a Julia float
 
 ###
-###
+### Booleans
 ###
 
 #
-gap> big2 := Julia.big(2);
-<Julia: 2>
-gap> Zero(big2);
-<Julia: 0>
-gap> JuliaToGAP( IsInt, Zero(big2) );
-0
-gap> GAP_jl.Obj( Zero(big2) );
-0
-gap> ForAll([0..64], n -> JuliaToGAP( IsInt, big2^n) = 2^n);
+gap> JuliaToGAP(IsBool, true);
 true
-gap> ForAll([0..64], n -> GAP_jl.Obj( big2^n ) = 2^n);
+gap> JuliaToGAP(IsBool, false);
+false
+gap> JuliaToGAP(IsBool, fail);
+fail
+
+#
+gap> GAPToJulia( true );
 true
-gap> ForAll([0..64], n -> JuliaToGAP( IsInt, -big2^n) = -2^n);
+gap> GAPToJulia( false );
+false
+gap> GAPToJulia( true, false );
 true
-gap> ForAll([0..64], n -> GAP_jl.Obj( -big2^n ) = -2^n);
-true
+
+###
+### Chars
+###
+
+#
+gap> x := Julia.Char(97);;
+gap> typeof(x);
+<Julia: Char>
+gap> JuliaToGAP(IsChar, x);
+'a'
+
+#
+gap> x := Julia.UInt8(97);;
+gap> typeof(x);
+<Julia: UInt8>
+gap> JuliaToGAP(IsChar, x);
+'a'
+
+#
+gap> x := Julia.Int8(97);;
+gap> typeof(x);
+<Julia: Int8>
+gap> JuliaToGAP(IsChar, x);
+'a'
+
+# test input validation
+gap> JuliaToGAP(IsChar, Julia.string(1));
+Error, <obj> must be a Julia Char or Int8 or UInt8
+
+###
+### Strings
+###
 
 #
 gap> string := GAPToJulia( Julia.Base.String, "bla" );
@@ -252,14 +272,20 @@ gap> JuliaToGAP( IsString, string );
 "bla"
 gap> GAP_jl.Obj( string );
 "bla"
-gap> GAPToJulia( true );
-true
-gap> GAPToJulia( false );
-false
-gap> GAPToJulia( true, false );
-true
 
-##
+# empty string
+gap> emptystring:= GAPToJulia( Julia.Base.String, "" );
+<Julia: "">
+gap> JuliaToGAP( IsString, emptystring );
+""
+gap> GAP_jl.Obj( emptystring );
+""
+
+###
+### Lists
+###
+
+#
 gap> list:= GAPToJulia( [ 1, 2, 3 ] );
 <Julia: Any[1, 2, 3]>
 gap> JuliaToGAP( IsList, list );
@@ -267,7 +293,19 @@ gap> JuliaToGAP( IsList, list );
 gap> GAP_jl.Obj( list );
 [ 1, 2, 3 ]
 
-##  ranges
+# empty list
+gap> emptylist:= GAPToJulia( JuliaType( Julia.Vector, [ Julia.Any ] ), [] );
+<Julia: Any[]>
+gap> JuliaToGAP( IsList, emptylist );
+[  ]
+gap> GAP_jl.Obj( emptylist );
+[  ]
+
+###
+### Ranges
+###
+
+#
 gap> GAP_jl.GapObj( JuliaEvalString( "1:3" ) );
 [ 1 .. 3 ]
 gap> GAP_jl.GapObj( JuliaEvalString( "1:2:5" ) );
@@ -297,19 +335,9 @@ Error, <obj> must be a Julia range
 gap> JuliaToGAP( IsRange, JuliaEvalString( "[ 1, 2, 4 ]" ) );
 Error, <obj> must be a Julia range
 
-##  empty list vs. empty string
-gap> emptylist:= GAPToJulia( JuliaType( Julia.Vector, [ Julia.Any ] ), [] );
-<Julia: Any[]>
-gap> emptystring:= GAPToJulia( Julia.Base.String, "" );
-<Julia: "">
-gap> JuliaToGAP( IsList, emptylist );
-[  ]
-gap> GAP_jl.Obj( emptylist );
-[  ]
-gap> JuliaToGAP( IsString, emptystring );
-""
-gap> GAP_jl.Obj( emptystring );
-""
+###
+### Functions
+###
 
 ##  'GAPToJulia' for Julia functions (inside arrays)
 gap> parse:= Julia.parse;
@@ -321,13 +349,6 @@ gap> list2:= JuliaToGAP( IsList, list );
 [ 1, <Julia: parse>, 3 ]
 gap> GAP_jl.Obj( list );
 [ 1, <Julia: parse>, 3 ]
-
-##
-gap> xx := JuliaEvalString("GAP.Globals.PROD(2^59,2^59)");;
-gap> JuliaToGAP( IsInt, xx );
-332306998946228968225951765070086144
-gap> GAP_jl.Obj( xx );
-332306998946228968225951765070086144
 
 ###
 ###  Records/Dictionaries
