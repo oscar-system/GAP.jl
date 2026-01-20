@@ -128,7 +128,32 @@ end
     @test GAP.Globals.Length(GAP.Globals.OptionsStack) == 0
     @test_throws ErrorException GAP.Globals.Error(onlyone = true)
     @test GAP.Globals.Length(GAP.Globals.OptionsStack) == 0
+end
 
+@testset "gapcalls non-function" begin
+    # test overloading CallFuncList
+    GAP.evalstr_ex("""
+    fam := NewFamily("CustomFunctionFamily");;
+    cat := NewCategory("IsCustomFunction", IsFunction);;
+    type := NewType(fam, cat and IsAttributeStoringRep);;
+    result := fail;;
+    InstallMethod(CallFuncList,[cat,IsList],function(func,args) result:=args; return args; end);
+    InstallMethod(NameFunction, [cat], f -> "myName");
+    InstallMethod(NamesLocalVariablesFunction, [cat], f -> ["arg"]);
+    InstallMethod(NumberArgumentsFunction, [cat], f -> -1);
+    obj := Objectify(type, rec());;
+    """)
+
+    f = GAP.Globals.obj
+
+    @test GapObj([]) == f()
+    @test GapObj([1]) == f(1)
+    @test GapObj([1, 2]) == f(1, 2)
+    @test GapObj([1, 2, 3]) == f(1, 2, 3)
+    @test GapObj([1, 2, 3, 4]) == f(1, 2, 3, 4)
+    @test GapObj([1, 2, 3, 4, 5]) == f(1, 2, 3, 4, 5)
+    @test GapObj([1, 2, 3, 4, 5, 6]) == f(1, 2, 3, 4, 5, 6)
+    @test GapObj([1, 2, 3, 4, 5, 6, 7]) == f(1, 2, 3, 4, 5, 6, 7)
 end
 
 @testset "bugfixes" begin
