@@ -1,5 +1,5 @@
 # The code in this file is taken from Pkg.GitTools
-# <https://github.com/JuliaLang/Pkg.jl/blob/a84228360d6cff568a55911733e830cdf1c492da/src/GitTools.jl#L201-L344>
+# <https://github.com/JuliaLang/Pkg.jl/blob/841395ebb16b23fde2ba9a010ccdce85f904abdf/src/GitTools.jl#L267-L410>
 #
 #  As such the following licensing terms apply:
 #
@@ -146,7 +146,7 @@ function tree_hash(::Type{HashType}, root::AbstractString; debug_out::Union{IO, 
             if debug_out !== nothing
                 indent_str = "| "^indent
                 println(debug_out, "$(indent_str)+ [D] $(basename(filepath)) - $(bytes2hex(hash))")
-                print(debug_out, String(take!(child_stream)))
+                print(debug_out, String(take!(child_stream::IOBuffer)))
                 println(debug_out, indent_str)
             end
         else
