@@ -18,3 +18,14 @@
     @test typeof(x) === GAP.FFE
     @test characteristic(x) == 2
 end
+
+@testset "round trip conversion" begin
+    v = [ZZ(3)^100, QQ(5,3)^100, matrix(ZZ, [1 2; 3 4]), matrix(QQ, [5 6; 7 8])]
+
+    w = GapObj(v; recursive=true)
+    @test w isa GapObj
+    @test typeof.(w) == [GapObj, GapObj, GapObj, GapObj]
+
+    t = Tuple{ZZRingElem, QQFieldElem, ZZMatrix, QQMatrix}(w)
+    @test collect(t) == v
+end
