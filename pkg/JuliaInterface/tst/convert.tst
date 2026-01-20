@@ -20,7 +20,7 @@ gap> typeof := Julia.Base.typeof;;
 ###
 
 #
-gap> x := JuliaEvalString("Int128(123)");;
+gap> x := Julia.Int128(123);;
 gap> typeof(x);
 <Julia: Int128>
 gap> JuliaToGAP(IsInt, x);
@@ -29,7 +29,7 @@ gap> GAP_jl.Obj(x);
 123
 
 #
-gap> x := JuliaEvalString("Int64(123)");;
+gap> x := Julia.Int64(123);;
 gap> typeof(x);
 <Julia: Int64>
 gap> JuliaToGAP(IsInt, x);
@@ -38,7 +38,7 @@ gap> GAP_jl.Obj(x);
 123
 
 #
-gap> x := JuliaEvalString("Int32(123)");;
+gap> x := Julia.Int32(123);;
 gap> typeof(x);
 <Julia: Int32>
 gap> JuliaToGAP(IsInt, x);
@@ -47,7 +47,7 @@ gap> GAP_jl.Obj(x);
 123
 
 #
-gap> x := JuliaEvalString("Int16(123)");;
+gap> x := Julia.Int16(123);;
 gap> typeof(x);
 <Julia: Int16>
 gap> JuliaToGAP(IsInt, x);
@@ -56,7 +56,7 @@ gap> GAP_jl.Obj(x);
 123
 
 #
-gap> x := JuliaEvalString("Int8(123)");;
+gap> x := Julia.Int8(123);;
 gap> typeof(x);
 <Julia: Int8>
 gap> JuliaToGAP(IsInt, x);
@@ -65,7 +65,7 @@ gap> GAP_jl.Obj(x);
 123
 
 #
-gap> x := JuliaEvalString("UInt128(123)");;
+gap> x := Julia.UInt128(123);;
 gap> typeof(x);
 <Julia: UInt128>
 gap> JuliaToGAP(IsInt, x);
@@ -74,7 +74,7 @@ gap> GAP_jl.Obj(x);
 123
 
 #
-gap> x := JuliaEvalString("UInt64(123)");;
+gap> x := Julia.UInt64(123);;
 gap> typeof(x);
 <Julia: UInt64>
 gap> JuliaToGAP(IsInt, x);
@@ -83,7 +83,7 @@ gap> GAP_jl.Obj(x);
 123
 
 #
-gap> x := JuliaEvalString("UInt32(123)");;
+gap> x := Julia.UInt32(123);;
 gap> typeof(x);
 <Julia: UInt32>
 gap> JuliaToGAP(IsInt, x);
@@ -92,7 +92,7 @@ gap> GAP_jl.Obj(x);
 123
 
 #
-gap> x := JuliaEvalString("UInt16(123)");;
+gap> x := Julia.UInt16(123);;
 gap> typeof(x);
 <Julia: UInt16>
 gap> JuliaToGAP(IsInt, x);
@@ -101,7 +101,7 @@ gap> GAP_jl.Obj(x);
 123
 
 #
-gap> x := JuliaEvalString("UInt8(123)");;
+gap> x := Julia.UInt8(123);;
 gap> typeof(x);
 <Julia: UInt8>
 gap> JuliaToGAP(IsInt, x);
@@ -126,7 +126,7 @@ gap> GAPToJulia( Z(3), false );
 Z(3)
 
 #
-gap> x := JuliaEvalString("BigInt(123)");;
+gap> x := Julia.BigInt(123);;
 gap> typeof(x);
 <Julia: BigInt>
 gap> JuliaToGAP(IsInt, x);
@@ -139,7 +139,7 @@ gap> GAP_jl.Obj(x);
 ###
 
 #
-gap> x := JuliaEvalString("Float64(1.0)");;
+gap> x := Julia.Float64(1);;
 gap> typeof(x);
 <Julia: Float64>
 gap> JuliaToGAP(IsFloat, x);
@@ -148,7 +148,7 @@ gap> GAP_jl.Obj(x);
 1.
 
 #
-gap> x := JuliaEvalString("Float32(1.0)");;
+gap> x := Julia.Float32(1);;
 gap> typeof(x);
 <Julia: Float32>
 gap> JuliaToGAP(IsFloat, x);
@@ -157,7 +157,7 @@ gap> GAP_jl.Obj(x);
 1.
 
 #
-gap> x := JuliaEvalString("Float16(1.0)");;
+gap> x := Julia.Float16(1);;
 gap> typeof(x);
 <Julia: Float16>
 gap> JuliaToGAP(IsFloat, x);
@@ -170,7 +170,7 @@ gap> GAP_jl.Obj(x);
 ###
 
 #
-gap> big2 := JuliaEvalString("big(2)");
+gap> big2 := Julia.big(2);
 <Julia: 2>
 gap> Zero(big2);
 <Julia: 0>
