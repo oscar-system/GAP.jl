@@ -134,6 +134,60 @@ gap> JuliaToGAP(IsInt, x);
 gap> GAP_jl.Obj(x);
 123
 
+# test input validation
+gap> JuliaToGAP(IsInt, Julia.string(1));
+Error, <obj> must be a Julia integer
+
+###
+### Rationals
+###
+
+#
+gap> x := Julia.Rational(3,5);;
+gap> typeof(x);
+<Julia: Rational{Int64}>
+gap> JuliaToGAP(IsRat, x);
+3/5
+gap> GAP_jl.Obj(x);
+3/5
+
+#
+gap> JuliaToGAP(IsRat, 5);
+5
+
+# test input validation
+gap> JuliaToGAP(IsRat, Julia.string(1));
+Error, <obj> must be a Julia integer or rational
+
+###
+### Chars
+###
+
+#
+gap> x := Julia.Char(97);;
+gap> typeof(x);
+<Julia: Char>
+gap> JuliaToGAP(IsChar, x);
+'a'
+
+#
+gap> x := Julia.UInt8(97);;
+gap> typeof(x);
+<Julia: UInt8>
+gap> JuliaToGAP(IsChar, x);
+'a'
+
+#
+gap> x := Julia.Int8(97);;
+gap> typeof(x);
+<Julia: Int8>
+gap> JuliaToGAP(IsChar, x);
+'a'
+
+# test input validation
+gap> JuliaToGAP(IsChar, Julia.string(1));
+Error, <obj> must be a Julia Char or Int8 or UInt8
+
 ###
 ### Floats
 ###
@@ -164,6 +218,10 @@ gap> JuliaToGAP(IsFloat, x);
 1.
 gap> GAP_jl.Obj(x);
 1.
+
+# test input validation
+gap> JuliaToGAP(IsFloat, Julia.string(1));
+Error, <obj> must be a Julia float
 
 ###
 ###

@@ -161,6 +161,7 @@ end
     l = GAP.evalstr("[1,~,3]")
     @test l[2] === l
     @test String(GAP.Globals.StringViewObj(l)) == "[ 1, ~, 3 ]"
+    @test String(GAP.Globals.StringDisplayObj(l)) == "[ 1, ~, 3 ]\n"
 
     # from issue #1058:
     c = IOCapture.capture() do
