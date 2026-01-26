@@ -410,7 +410,7 @@ function build(name::String; quiet::Bool = false,
   # inject our custom sysinfo.gap into the package manager
   Globals.PKGMAN_Sysinfo = GapObj(joinpath(gaproot_for_building(), "sysinfo.gap"))
 
-  allinfo = collect(GapObj, Globals.PackageInfo(gname)::GapObj)
+  allinfo = Vector{GapObj}(Globals.PackageInfo(gname)::GapObj)
   userinfo = filter(info -> startswith(String(info.InstallationPath), pkgdir), allinfo)
   isempty(allinfo) && error("package '$name' not found")
   length(userinfo) > 1 && error("multiple installations of package '$name' found in pkgdir")
