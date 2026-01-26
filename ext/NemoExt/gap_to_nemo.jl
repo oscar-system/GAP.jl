@@ -104,4 +104,4 @@ function matrix(R::Ring, obj::GapObj)
 end
 
 # also allow map_entries to make Claus happy ;-)
-map_entries(R::Ring, obj::GapObj) = matrix(R, obj)
+Nemo.map_entries(R::Ring, obj::GapObj) = matrix(R, obj)

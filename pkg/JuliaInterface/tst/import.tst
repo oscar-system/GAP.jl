@@ -26,6 +26,8 @@ gap> Julia;
 <Julia module Main>
 gap> Julia.Base;
 <Julia module Base>
+gap> ViewString(Julia.Base);
+"<Julia module Base>"
 
 #
 gap> IsBound( Julia.Base );
@@ -50,6 +52,10 @@ gap> IsBound( Julia.Base.C_NULL );
 true
 gap> Unbind( Julia.Base.C_NULL );
 Error, cannot unbind Julia variables
+
+##
+gap> JuliaIncludeFile("a", 2, 3);
+Error, usage: JuliaIncludeFile( <filename>[, <module_name>] ) where <module_name>, if given, must be a string
 
 ##
 gap> STOP_TEST( "import.tst" );

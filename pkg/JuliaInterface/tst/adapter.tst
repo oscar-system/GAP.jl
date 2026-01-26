@@ -13,15 +13,15 @@
 gap> START_TEST( "adapter.tst" );
 
 #
-gap> N := JuliaEvalString("big(2)^100");
+gap> N := Julia.big(2)^100;
 <Julia: 1267650600228229401496703205376>
-gap> N_p1 := JuliaEvalString("big(2)^100 + 1");
+gap> N_p1 := Julia.big(2)^100 + 1;
 <Julia: 1267650600228229401496703205377>
-gap> N_m1 := JuliaEvalString("big(2)^100 - 1");
+gap> N_m1 := Julia.big(2)^100 - 1;
 <Julia: 1267650600228229401496703205375>
-gap> N_squared := JuliaEvalString("big(2)^200");
+gap> N_squared := Julia.big(2)^200;
 <Julia: 1606938044258990275541962092341162602522202993782792835301376>
-gap> N_t2 := JuliaEvalString("big(2)^101");
+gap> N_t2 := Julia.big(2)^101;
 <Julia: 2535301200456458802993406410752>
 
 #
