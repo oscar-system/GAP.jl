@@ -136,8 +136,7 @@ end
     fam := NewFamily("CustomFunctionFamily");;
     cat := NewCategory("IsCustomFunction", IsFunction);;
     type := NewType(fam, cat and IsAttributeStoringRep);;
-    result := fail;;
-    InstallMethod(CallFuncList,[cat,IsList],function(func,args) result:=args; return args; end);
+    InstallMethod(CallFuncList, [cat,IsList], {func,args} -> args);
     InstallMethod(NameFunction, [cat], f -> "myName");
     InstallMethod(NamesLocalVariablesFunction, [cat], f -> ["arg"]);
     InstallMethod(NumberArgumentsFunction, [cat], f -> -1);
