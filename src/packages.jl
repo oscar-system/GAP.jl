@@ -410,20 +410,21 @@ function build(name::String; quiet::Bool = false,
   # inject our custom sysinfo.gap into the package manager
   Globals.PKGMAN_Sysinfo = GapObj(joinpath(gaproot_for_building(), "sysinfo.gap"))
 
-  allinfo = collect(Globals.PackageInfo(gname))
+  allinfo = Vector{GapObj}(Globals.PackageInfo(gname)::GapObj)
   userinfo = filter(info -> startswith(String(info.InstallationPath), pkgdir), allinfo)
-  isempty(allinfo) && error("package not found")
-  length(userinfo) > 1 && error("multiple installations of package found in pkgdir")
+  isempty(allinfo) && error("package '$name' not found")
+  length(userinfo) > 1 && error("multiple installations of package '$name' found in pkgdir")
   if isempty(userinfo)
-    length(allinfo) > 1 && error("multiple installations of package found")
+    length(allinfo) > 1 && error("multiple installations of package '$name' found")
     info = only(allinfo)
-    oldpath = String(info.InstallationPath)
-    newpath = joinpath(pkgdir, name * "-" * String(info.Version))
+    oldpath = String(info.InstallationPath::GapObj)
+    version = String(info.Version::GapObj)
+    newpath = joinpath(pkgdir, string(name, '-', version))
     cp(oldpath, newpath)
   end
   with_info_level(Globals.InfoPackageManager, quiet ? 0 : debug ? 3 : nothing) do
     Globals.PKGMAN_RefreshPackageInfo()
-    return Globals.CompilePackage(gname)
+    return Globals.CompilePackage(gname)::Bool
   end
 end
 
