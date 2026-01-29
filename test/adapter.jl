@@ -42,6 +42,9 @@
     @test xs == map(x -> x, s)
     l = GAP.evalstr("[1, 2,,,, 6]")
     @test collect(l) == [1, 2, 6]
+
+    # some things cannot be iterated over
+    @test_throws ArgumentError collect(GAP.Globals.GAPInfo)
 end
 
 @testset "deepcopy" begin

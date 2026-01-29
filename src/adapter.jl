@@ -493,7 +493,7 @@ function Base.iterate(obj::GapObj)
             iterate(obj, (1, len::Int))
         else
             # we won't be able to iterate over this many elements anyway, but
-            # we can still allow iteration util some large bound
+            # we can still allow iteration until some large bound
             iterate(obj, (1, typemax(Int)))
         end
     elseif Wrappers.IsIterator(obj)

@@ -83,10 +83,8 @@ end
     @test !([ 5 6 ] in gaplist)
 end
 
-@testset "object_access" begin
+@testset "list access" begin
     list = GAP.evalstr("[1,2,3]")
-    matrix = GAP.evalstr("[[1,2],[3,4]]")
-    record = GAP.evalstr("rec( one := 1 )")
 
     @test length(list) == 3
     @test list[1] == 1
@@ -114,19 +112,46 @@ end
     @test list[Int[]] == GAP.evalstr("[]")
     list[Int[]] = []
     @test list[Int[]] == GAP.evalstr("[]")
+end
+
+@testset "matrix access" begin
+    matrix = GAP.evalstr("[[1,2],[3,4]]")
 
     @test matrix[1, 1] == 1
     @test matrix[2, 1] == 3
     matrix[1, 2] = 5
     @test matrix[1, 2] == 5
+end
+
+@testset "record access" begin
+    record = GAP.evalstr("""rec( one := 1, 3 := "three" )""")
 
     @test record.one == 1
+    @test issetequal(propertynames(record), [:one, Symbol("3")])
+    @test hasproperty(record, "one")
+    @test !hasproperty(record, "two")
+    @test hasproperty(record, 3)
+    @test !hasproperty(record, 4)
+    @test getproperty(record, "one") == 1
+    @test getproperty(record, 3) == GapObj("three")
+
     record.two = 2
     @test record.two == 2
+    setproperty!(record, 4, "four")
+    @test issetequal(propertynames(record), [:one, :two, Symbol("3"), Symbol("4")])
+    @test hasproperty(record, "one")
+    @test hasproperty(record, "two")
+    @test hasproperty(record, 3)
+    @test hasproperty(record, 4)
+    @test getproperty(record, "one") == 1
+    @test getproperty(record, "two") == 2
+    @test getproperty(record, 3) == GapObj("three")
+    @test getproperty(record, 4) == "four"
 
     sym5 = GAP.Globals.SymmetricGroup(5)
     @test sym5.:1 === GAP.Globals.GeneratorsOfGroup(sym5)[1]
     @test sym5.:1 === sym5."1"
+    @test sym5.:1 === getproperty(sym5, 1)
 end
 
 @testset "create_type" begin
