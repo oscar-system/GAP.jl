@@ -141,6 +141,9 @@ function initialize(argv::Vector{String})
         handle_signals::Cuint,
     )::Cvoid
 
+    global _GAP_True[] = unsafe_load(cglobal((:GAP_True, libgap), Ptr{Cvoid}))
+    global _GAP_False[] = unsafe_load(cglobal((:GAP_False, libgap), Ptr{Cvoid}))
+
     ## At this point, the GAP module has not been completely initialized, and
     ## hence is not yet available under the global binding "GAP"; but
     ## JuliaInterface needs to access it. To make that possible, we dlopen
@@ -223,6 +226,9 @@ end
 function exit_code()
     return (@ccall libgap.GAP_CallFuncArray(_ValueGlobalVariable("GapExitCode")::Ptr{Cvoid}, 0::Culonglong, C_NULL::Ptr{Cvoid})::Int) >> 2
 end
+
+const _GAP_True = Ref(Ptr{Nothing}(0))
+const _GAP_False = Ref(Ptr{Nothing}(0))
 
 function __init__()
     # error message at runtime

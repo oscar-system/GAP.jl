@@ -27,8 +27,8 @@ Base.@assume_effects :foldable !:consistent function _GAP_TO_JULIA(ptr::Ptr{Cvoi
     tnum = TNUM_OBJ(ptr)
     if tnum < FIRST_EXTERNAL_TNUM
         if tnum == T_BOOL
-            ptr == unsafe_load(cglobal((:GAP_True, libgap), Ptr{Cvoid})) && return true
-            ptr == unsafe_load(cglobal((:GAP_False, libgap), Ptr{Cvoid})) && return false
+            ptr == _GAP_True[] && return true
+            ptr == _GAP_False[] && return false
         end
         return unsafe_pointer_to_objref(ptr)
     end
