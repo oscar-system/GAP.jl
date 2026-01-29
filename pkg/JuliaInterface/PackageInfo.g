@@ -154,7 +154,7 @@ AutoDoc := rec(
       "<P/>\n"
     ),
     Copyright := """
-      &copyright; 2017-2025 The OSCAR team<P/>
+      &copyright; 2017-2026 The OSCAR team<P/>
 
       <Package>JuliaInterface</Package> and <Package>GAP.jl</Package> are free
       software: you can redistribute them and/or modify them under the terms
