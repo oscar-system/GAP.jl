@@ -24,6 +24,7 @@ include("constructors.jl")
 include("macros.jl")
 include("packages.jl")
 include("help.jl")
+include("rand.jl")
 
 @static if Base.JLOptions().code_coverage == 0
   # REPL completion doesn't work in Julia >= 1.10 when code coverage
