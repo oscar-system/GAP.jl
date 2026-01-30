@@ -17,9 +17,12 @@
     x = GAP.evalstr("2^100")
     @test (@inferred GapObj(x)) == x
     @test GAP.Obj(true) == true
+
     x = GAP.evalstr("Z(3)")
     @test GAP.Obj(x) == x
     @test GAP.Obj(0) == 0
+    @test GapObj(x) == x
+    @test GapObj(0) == 0
 
     # recursive conversion of nested objects
     m = [[1, 2], [3, 4]]
