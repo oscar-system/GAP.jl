@@ -72,8 +72,11 @@
 
   @testset "Chars" begin
     x = GAP.evalstr("'x'")
+    @test (@inferred Char(x)) == Char('x')
     @test (@inferred Cuchar(x)) == Cuchar('x')
+
     x = GAP.evalstr("(1,2,3)")
+    @test_throws GAP.ConversionError Char(x)
     @test_throws GAP.ConversionError Cuchar(x)
   end
 

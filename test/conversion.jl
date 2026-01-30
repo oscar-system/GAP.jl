@@ -87,10 +87,12 @@
 
   @testset "Chars" begin
     x = GAP.evalstr("'x'")
+    @test (@inferred GAP.gap_to_julia(Char, x)) == Char('x')
     @test (@inferred GAP.gap_to_julia(Cuchar, x)) == Cuchar('x')
     @test GAP.gap_to_julia(x) == Cuchar('x')
-    @test GAP.gap_to_julia(Char, x) == Char('x')
+
     x = GAP.evalstr("(1,2,3)")
+    @test_throws GAP.ConversionError GAP.gap_to_julia(Char, x)
     @test_throws GAP.ConversionError GAP.gap_to_julia(Cuchar, x)
   end
 
