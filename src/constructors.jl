@@ -193,6 +193,7 @@ julia> Cuchar(val)
 """
 function Base.Cuchar(obj::GapObj)
     GAP_IS_CHAR(obj) && return trunc(Cuchar, Wrappers.INT_CHAR(obj))
+    GAP_IS_INT(obj) && return throw(InexactError(nameof(Cuchar), Cuchar, obj))
     throw(ConversionError(obj, Cuchar))
 end
 

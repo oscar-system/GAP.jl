@@ -35,6 +35,19 @@
     @test c[1] isa GapObj
   end
 
+  @testset "Integers" for T in (Int8, Int16, Int32, Int64, Int128, UInt8, UInt16, UInt32, UInt64, UInt128)
+    for y in (typemin(T), typemax(T)), d in (0, 1, -1)
+      x = GAP.evalstr("$d + $y")
+      if (y <= 0 && d < 0) || (y > 0 && d > 0)
+        @test_throws InexactError T(x)
+      else
+        @test (@inferred T(x)) isa T
+        @test T(x) == d + y
+        @test x == GapObj(d + y)
+      end
+    end
+  end
+
   @testset "Border cases" begin
     x = GAP.evalstr("2^100")
     @test_throws InexactError Int64(x)
