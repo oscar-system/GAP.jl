@@ -68,6 +68,8 @@
     # such that one is a needed package of the other.
     pkgs = map(name -> Dict{Symbol, Any}(:name => name), ["orb", "genss"])
     for pkg in pkgs
+      # Make sure that GAP stores package information.
+      @test GAP.Packages.load(pkg[:name])
       # Manipulate GAP's global information such that
       # `GAP.Globals.TestPackageAvailability` believes
       # the package is not yet loaded.
