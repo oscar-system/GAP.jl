@@ -62,8 +62,9 @@ end
     @test str == "0123456789@ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz"
 
     @test GAP.CanAssignGlobalVariable("Read") == false
-    @test GAP.CanAssignGlobalVariable("foobar")
+    @test_throws ErrorException GAP.AssignGlobalVariable("Read", 42)
 
+    @test GAP.CanAssignGlobalVariable("foobar")
     GAP.AssignGlobalVariable("foobar", 42)
 
     @test GAP.ValueGlobalVariable("foobar") == 42
