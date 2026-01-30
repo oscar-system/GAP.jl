@@ -85,12 +85,12 @@ julia> m[2,1]
 """
 Base.getindex(x::GapObj, i::Int64) = Wrappers.ELM_LIST(x, i)
 Base.getindex(x::GapObj, l::Union{Vector{T},AbstractRange{T}}) where {T<:Integer} =
-    Globals.ELMS_LIST(x, GapObj(l))
+    Wrappers.ELMS_LIST(x, GapObj(l))
 # The following would make sense but could not be installed just for the case
 # that the second argument is a positions list;
 # also large integers (element access) or strings (component access) would have
 # to be handled.
-# Base.getindex(x::GapObj, l::GapObj) = Globals.ELMS_LIST(x, l)
+# Base.getindex(x::GapObj, l::GapObj) = Wrappers.ELMS_LIST(x, l)
 
 """
     setindex!(x::GapObj, v::Any, i::Int64)
