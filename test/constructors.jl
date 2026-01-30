@@ -194,10 +194,18 @@
     x = GapObj([1, 2, 3])
     @test (@inferred Tuple{Int64,Int16,Int32}(x)) == (1, 2, 3)
     @test Tuple{Int64,Any,Int32}(x) == (1, 2, 3)
+    @test_throws ArgumentError Tuple{}(x)  # hits a special case
     @test_throws ArgumentError Tuple{Any,Any}(x)
     @test_throws ArgumentError Tuple{Any,Any,Any,Any}(x)
+
+    x = GapObj([])
+    @test Tuple(x) == ()
+    @test Tuple{}(x) == ()  # hits a special case
+    @test_throws ArgumentError Tuple{Any}(x)
+
     n = GapObj(big(2)^100)
     @test_throws GAP.ConversionError Tuple{Int64,Any,Int32}(n)
+
     x = GAP.evalstr("[ [ 1, 2 ], [ 3, [ 4, 5 ] ] ]")
     y = Tuple{GAP.Obj,Any}(x; recursive = true)
     @test isa(y, Tuple)
@@ -209,6 +217,10 @@
     @test isa(y[1], GAP.Obj)
 #   @test isa(y[2], Array)
     @test isa(y[2][2], GAP.Obj)
+
+    l = GAP.evalstr("[\"test\", ~[1]]")
+    @test Tuple{Vector{Char}, NTuple{4,Char}}(l) ==
+    (['t', 'e', 's', 't'], ('t', 'e', 's', 't'))
   end
 
   @testset "Ranges" begin

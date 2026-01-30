@@ -261,10 +261,18 @@
     @test GAP.gap_to_julia(Tuple{Int64,Vararg{Int16}}, x) == (1, 2, 3)
     @test (@inferred GAP.gap_to_julia(Tuple{Int64,Vararg{Int16,2}}, x)) == (1, 2, 3)
     @test_throws ArgumentError GAP.gap_to_julia(Tuple{Int64,Vararg{Int16,1}}, x)
+    @test_throws ArgumentError GAP.gap_to_julia(Tuple{}, x)  # hits a special case
     @test_throws ArgumentError GAP.gap_to_julia(Tuple{Any,Any}, x)
     @test_throws ArgumentError GAP.gap_to_julia(Tuple{Any,Any,Any,Any}, x)
+
+    x = GapObj([])
+    @test GAP.gap_to_julia(Tuple, x) == ()
+    @test GAP.gap_to_julia(Tuple{}, x) == ()  # hits a special case
+    @test_throws ArgumentError GAP.gap_to_julia(Tuple{Any}, x)
+
     n = GapObj(big(2)^100)
     @test_throws GAP.ConversionError GAP.gap_to_julia(Tuple{Int64,Any,Int32}, n)
+
     x = GAP.evalstr("[ [ 1, 2 ], [ 3, [ 4, 5 ] ] ]")
     y = GAP.gap_to_julia(Tuple{GAP.Obj,Any}, x; recursive = true)
     @test isa(y, Tuple)
