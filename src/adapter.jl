@@ -16,11 +16,10 @@ import Base: length
 
 export getbangindex, hasbangindex, setbangindex!, getbangproperty, hasbangproperty, setbangproperty!
 
-function show_string(io::IO, obj::Union{GapObj,FFE})
+function show_string(obj::Union{GapObj,FFE}, rows::Int)
     str = Wrappers.StringViewObj(obj)
     stri = CSTR_STRING(str)
     lines = split(stri, "\n")
-    rows = displaysize(io)[1]::Int - 3  # the maximum number of lines to show
     if length(lines) > rows
       # For objects that do not fit on the screen,
       # show only the first and the last lines.
@@ -32,8 +31,9 @@ function show_string(io::IO, obj::Union{GapObj,FFE})
 end
 
 function Base.show(io::IO, obj::Union{GapObj,FFE})
-    stri = show_string(io, obj)
-    print(AbstractAlgebra.pretty(io), AbstractAlgebra.LowercaseOff(), "GAP: $stri")
+    rows = displaysize(io)[1]::Int - 3  # the maximum number of lines to show
+    str = show_string(obj, rows)
+    print(AbstractAlgebra.pretty(io), AbstractAlgebra.LowercaseOff(), "GAP: ", str)
 end
 
 function Base.string(obj::Union{GapObj,FFE})
