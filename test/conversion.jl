@@ -117,11 +117,17 @@
   @testset "Symbols" begin
     x = GAP.evalstr("\"foo\"")
     @test (@inferred GAP.gap_to_julia(Symbol, x)) == :foo
+    x = GAP.evalstr("['f','o','o']")
+    @test (@inferred GAP.gap_to_julia(Symbol, x)) == :foo
     x = GAP.evalstr("(1,2,3)")
-    @test_throws GAP.ConversionError GAP.gap_to_julia(String, x)
+    @test_throws GAP.ConversionError GAP.gap_to_julia(Symbol, x)
+  end
 
+  @testset "Vector{UInt8}" begin
     # Convert GAP string to Vector{UInt8} (==Vector{UInt8})
     x = GAP.evalstr("\"foo\"")
+    @test (@inferred GAP.gap_to_julia(Vector{UInt8}, x)) == UInt8[0x66, 0x6f, 0x6f]
+    x = GAP.evalstr("['f','o','o']")
     @test (@inferred GAP.gap_to_julia(Vector{UInt8}, x)) == UInt8[0x66, 0x6f, 0x6f]
     x = GAP.evalstr("[1,2,3]")
     @test (@inferred GAP.gap_to_julia(Vector{UInt8}, x)) == UInt8[1, 2, 3]

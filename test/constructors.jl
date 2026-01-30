@@ -96,14 +96,22 @@
   @testset "Symbols" begin
     x = GAP.evalstr("\"foo\"")
     @test (@inferred Symbol(x)) == :foo
+    x = GAP.evalstr("['f','o','o']")
+    @test (@inferred Symbol(x)) == :foo
     x = GAP.evalstr("(1,2,3)")
-    @test_throws GAP.ConversionError String(x)
+    @test_throws GAP.ConversionError Symbol(x)
+  end
 
+  @testset "Vector{UInt8}" begin
     # Convert GAP string to Vector{UInt8} (==Vector{UInt8})
     x = GAP.evalstr("\"foo\"")
     @test (@inferred Vector{UInt8}(x)) == UInt8[0x66, 0x6f, 0x6f]
+    x = GAP.evalstr("['f','o','o']")
+    @test (@inferred Vector{UInt8}(x)) == UInt8[0x66, 0x6f, 0x6f]
     x = GAP.evalstr("[1,2,3]")
     @test (@inferred Vector{UInt8}(x)) == UInt8[1, 2, 3]
+    x = GAP.evalstr("(1,2,3)")
+    @test_throws GAP.ConversionError Vector{UInt8}(x)
   end
 
   @testset "BitVectors" begin
