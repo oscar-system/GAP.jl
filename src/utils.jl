@@ -130,10 +130,6 @@ create_type(T::Type, paras::Vector) = T{paras...}
 
 ## convenience function
 
-function Display(x::GapObj)
-    print(String(Wrappers.StringDisplayObj(x)))
-end
-
 function Base.functionloc(f::GapObj)
     GAP.Globals.IsFunction(f) || throw(ArgumentError("`f` must be GAP function"))
     file = GAP.Globals.FilenameFunc(f)::GapObj
