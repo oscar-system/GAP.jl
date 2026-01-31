@@ -39,7 +39,7 @@ InstallGlobalFunction( CallJuliaFunctionWithCatch,
       kwargs := GAPToJulia( _JL_Dict_Any, kwargs[1], false );
       res:= GAP_jl.call_with_catch( julia_obj, args, kwargs );
     else
-      Error( "usage: CallJuliaFunctionWithCatch( <julia_obj>, <args>[, <kwargs>]" );
+      Error( "usage: CallJuliaFunctionWithCatch( <julia_obj>, <args>[, <kwargs>] )" );
     fi;
     if res[1] then
       return rec( ok:= true, value:= res[2] );
