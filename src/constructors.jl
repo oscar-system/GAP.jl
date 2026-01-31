@@ -193,6 +193,7 @@ julia> Cuchar(val)
 """
 function Base.Cuchar(obj::GapObj)
     GAP_IS_CHAR(obj) && return trunc(Cuchar, Wrappers.INT_CHAR(obj))
+    GAP_IS_INT(obj) && return throw(InexactError(nameof(Cuchar), Cuchar, obj))
     throw(ConversionError(obj, Cuchar))
 end
 
@@ -223,7 +224,7 @@ julia> String(val)   # an empty GAP list is a string
 """
 function Core.String(obj::GapObj)
     Wrappers.IsStringRep(obj) && return CSTR_STRING(obj)
-    Wrappers.IsString(obj) && return CSTR_STRING(Wrappers.CopyToStringRep(obj)::GapObj)
+    Wrappers.IsString(obj) && return CSTR_STRING(Wrappers.CopyToStringRep(obj))
     throw(ConversionError(obj, String))
 end
 
@@ -244,11 +245,14 @@ julia> Symbol(str)
 ```
 """
 function Core.Symbol(obj::GapObj)
-    if Wrappers.IsStringRep(obj)
-      s, len = UNSAFE_CSTR_STRING(obj)
-      return @ccall jl_symbol_n(s::Ptr{UInt8}, len::Int)::Ref{Symbol}
+    if Wrappers.IsString(obj)
+        if !Wrappers.IsStringRep(obj)
+            obj = Wrappers.CopyToStringRep(obj)
+        end
+        s, len = UNSAFE_CSTR_STRING(obj)
+        return @ccall jl_symbol_n(s::Ptr{UInt8}, len::Int)::Ref{Symbol}
     end
-    return Symbol(String(obj))
+    throw(ConversionError(obj, Symbol))
 end
 
 @doc """

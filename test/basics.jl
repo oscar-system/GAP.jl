@@ -9,6 +9,8 @@
 ##  SPDX-License-Identifier: LGPL-3.0-or-later
 ##
 
+using IOCapture
+
 @testset "basics" begin
     @test GAP.CSTR_STRING(GAP.Globals.String(GAP.Globals.PROD(2^59, 2^59))) ==
           "332306998946228968225951765070086144"
@@ -60,8 +62,9 @@ end
     @test str == "0123456789@ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz"
 
     @test GAP.CanAssignGlobalVariable("Read") == false
-    @test GAP.CanAssignGlobalVariable("foobar")
+    @test_throws ErrorException GAP.AssignGlobalVariable("Read", 42)
 
+    @test GAP.CanAssignGlobalVariable("foobar")
     GAP.AssignGlobalVariable("foobar", 42)
 
     @test GAP.ValueGlobalVariable("foobar") == 42
