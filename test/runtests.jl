@@ -34,7 +34,9 @@ if Base.JLOptions().code_coverage == 0
   include("replcompletions.jl")
 else
   # If Julia tracks coverage, then let GAP also track coverage
-  GAP.Globals.CoverageLineByLine(GapObj(joinpath(@__DIR__, "..", "coverage", "GAP.jl.coverage")))
+  @show covdir = absdir(@__DIR__, "..", "coverage")
+  Base.mkpath(covdir)
+  GAP.Globals.CoverageLineByLine(GapObj(joinpath(covdir, "GAP.jl.coverage")))
 end
 
 @testset "manual examples" begin
@@ -55,3 +57,7 @@ using Nemo
 include("NemoExt/misc.jl")
 include("NemoExt/gap_to_nemo.jl")
 include("NemoExt/nemo_to_gap.jl")
+
+if Base.JLOptions().code_coverage != 0
+  GAP.Globals.UncoverageLineByLine()
+end
