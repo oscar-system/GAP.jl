@@ -20,6 +20,8 @@ gap> StartsWith( res.value, "DomainError" );
 true
 gap> CallJuliaFunctionWithCatch( Julia.Base.sqrt, [ 4 ], rec() );
 rec( ok := true, value := <Julia: 2.0> )
+gap> CallJuliaFunctionWithCatch( Julia.Base.sqrt, [ 4 ], fail );
+Error, usage: CallJuliaFunctionWithCatch( <julia_obj>, <args>[, <kwargs>] )
 
 ##
 gap> JuliaEvalString(fail);
