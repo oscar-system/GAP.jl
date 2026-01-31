@@ -232,12 +232,6 @@ function locate_JuliaInterface_so()
             return path
         end
 
-        # tree hashes of bundled C sources and GAP_pkg_juliainterface_jll match -> use JuliaInterface.so from the JLL
-        if jll_hash == bundled_hash
-            @debug "Use JuliaInterface.so from GAP_pkg_juliainterface_jll"
-            return joinpath(jll, "lib", "gap")
-        end
-
         # tree hashes of bundled C sources and previously compiled version match -> use that
         prev_hash_file = normpath(joinpath(bundled, "bin", GAP.sysinfo["GAParch"], ".src_tree_hash"))
         if isfile(prev_hash_file)
@@ -247,6 +241,12 @@ function locate_JuliaInterface_so()
                 @debug "Use previously compiled JuliaInterface.so from $(path)"
                 return path
             end
+        end
+
+        # tree hashes of bundled C sources and GAP_pkg_juliainterface_jll match -> use JuliaInterface.so from the JLL
+        if jll_hash == bundled_hash
+            @debug "Use JuliaInterface.so from GAP_pkg_juliainterface_jll"
+            return joinpath(jll, "lib", "gap")
         end
 
         # fall-back case -> re-compile
