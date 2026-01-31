@@ -36,7 +36,10 @@ else
   # If Julia tracks coverage, then let GAP also track coverage
   @show covdir = abspath(@__DIR__, "..", "coverage")
   Base.mkpath(covdir)
-  GAP.Globals.CoverageLineByLine(GapObj(joinpath(covdir, "GAP.jl.coverage")))
+  covfile = GapObj(joinpath(covdir, "GAP.jl.coverage"))
+  # HACK: workaround bug in CoverageLineByLine
+  #GAP.Globals.CoverageLineByLine(covfile)
+  GAP.Globals.ProfileLineByLine(covfile, rec(coverage := true, recordMem := true));
 end
 
 @testset "manual examples" begin
