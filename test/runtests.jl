@@ -39,7 +39,7 @@ else
   covfile = GapObj(joinpath(covdir, "GAP.jl.coverage"))
   # HACK: workaround bug in CoverageLineByLine
   #GAP.Globals.CoverageLineByLine(covfile)
-  GAP.Globals.ProfileLineByLine(covfile, rec(coverage := true, recordMem := true));
+  GAP.Globals.ProfileLineByLine(covfile, GapObj(Dict(:coverage=>true, :recordMem=>true)))
 end
 
 @testset "manual examples" begin
