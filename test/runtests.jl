@@ -34,7 +34,7 @@ if Base.JLOptions().code_coverage == 0
   include("replcompletions.jl")
 else
   # If Julia tracks coverage, then let GAP also track coverage
-  @show covdir = absdir(@__DIR__, "..", "coverage")
+  @show covdir = abspath(@__DIR__, "..", "coverage")
   Base.mkpath(covdir)
   GAP.Globals.CoverageLineByLine(GapObj(joinpath(covdir, "GAP.jl.coverage")))
 end
