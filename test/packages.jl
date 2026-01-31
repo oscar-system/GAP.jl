@@ -69,7 +69,7 @@
     pkgs = map(name -> Dict{Symbol, Any}(:name => name), ["orb", "genss"])
     for pkg in pkgs
       # Make sure that GAP stores package information.
-      GAP.with_info_level(GAP.Globals.InfoPackageLoading, 4) do
+      GAP.Packages.with_info_level(GAP.Globals.InfoPackageLoading, 4) do
         @test GAP.Packages.load(pkg[:name]; quiet=false)
       end
       # Manipulate GAP's global information such that
