@@ -37,7 +37,8 @@ else
   @show covdir = abspath(@__DIR__, "..", "coverage")
   Base.mkpath(covdir)
   covfile = GapObj(joinpath(covdir, "GAP.jl.coverage"))
-  # HACK: workaround bug in CoverageLineByLine
+  # HACK: workaround bug in CoverageLineByLine, see
+  # <https://github.com/gap-system/gap/pull/6218>
   #GAP.Globals.CoverageLineByLine(covfile)
   GAP.Globals.ProfileLineByLine(covfile, GapObj(Dict(:coverage=>true, :recordMem=>true)))
 end
