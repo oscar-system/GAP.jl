@@ -69,7 +69,9 @@
     pkgs = map(name -> Dict{Symbol, Any}(:name => name), ["orb", "genss"])
     for pkg in pkgs
       # Make sure that GAP stores package information.
-      @test GAP.Packages.load(pkg[:name])
+     with_info_level(Globals.InfoPackageLoading, 4) do
+      @test GAP.Packages.load(pkg[:name]; quiet=false)
+     end
       # Manipulate GAP's global information such that
       # `GAP.Globals.TestPackageAvailability` believes
       # the package is not yet loaded.
