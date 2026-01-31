@@ -49,6 +49,8 @@ jobs:
           depwarn: error
         env:
           FORCE_JULIAINTERFACE_COMPILATION: "true"
+          CFLAGS: "--coverage"
+          LDFLAGS: "--coverage"
       - name: "Process code coverage"
         uses: julia-actions/julia-processcoverage@v1
       - name: "Upload coverage data to Codecov"
