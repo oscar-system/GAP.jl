@@ -26,12 +26,15 @@ include("packages.jl")
 include("help.jl")
 include("rand.jl")
 
-@static if Base.JLOptions().code_coverage == 0
+if Base.JLOptions().code_coverage == 0
   # REPL completion doesn't work in Julia >= 1.10 when code coverage
   # tracking is active. For more details see the discussions at
   # <https://github.com/oscar-system/GAP.jl/pull/914> and
   # <https://github.com/JuliaLang/julia/issues/49978>.
   include("replcompletions.jl")
+else
+  # If Julia tracks coverage, then let GAP also track coverage
+  GAP.Globals.CoverageLineByLine(GapObj(joinpath(@__DIR__, "..", "coverage", "GAP.jl.coverage")))
 end
 
 @testset "manual examples" begin
