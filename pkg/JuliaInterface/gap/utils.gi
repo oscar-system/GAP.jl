@@ -88,7 +88,9 @@ BindGlobal( "MatchURLs", function(str, prefix...)
 
   # we check if `book' MATCH_BEGINs some of the available books
   books := Filtered(HELP_KNOWN_BOOKS[1], bn-> MATCH_BEGIN(bn, book));
-  if Length(books) = 0 then return []; fi;
+  if Length(books) = 0 then
+      return [];
+  fi;
 
   # matches[1] are exact matches, and matches[2] further ones
   if Length(str) > 0 and str[1] = '?' then

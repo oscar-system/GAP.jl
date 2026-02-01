@@ -97,4 +97,19 @@ gap> Julia.foo.y;
 2
 
 ##
+gap> MatchURLs("Ref:Sortex", "https://docs.gap-system.org/");
+[ [ "Reference", "Sortex", 
+      "https://docs.gap-system.org/doc/ref/chap21.html#X87287FCA81E2B06A" ] ]
+gap> MatchURLs("Sortex", "https://docs.gap-system.org/");
+[ [ "Reference", "Sortex", 
+      "https://docs.gap-system.org/doc/ref/chap21.html#X87287FCA81E2B06A" ] ]
+gap> MatchURLs("?Sortex", "https://docs.gap-system.org/");
+[ [ "Reference", "Sortex", 
+      "https://docs.gap-system.org/doc/ref/chap21.html#X87287FCA81E2B06A" ] ]
+gap> MatchURLs("BadBook:Sortex", "https://docs.gap-system.org/");
+[  ]
+gap> MatchURLs("This does not exist");
+[  ]
+
+##
 gap> STOP_TEST( "utils.tst" );
