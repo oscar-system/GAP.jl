@@ -30,20 +30,5 @@ function NestedArrayFromMatrix( mat )
     return map( i -> mat[i,:], 1:size(mat,1) )
 end
 
-
-"""
-    JuliaSourceFile( func, types )
-> Return the tuple `( filename, startline )`
-> such that the source code of the method `func`
-> that expects arguments of the types given in the tuple `types`
-> can be found in the file `filename`, starting at line `startline`.
-"""
-function JuliaSourceFile( func, types )
-    local meth::Method
-
-    meth = which( func, types )
-    return ( string( meth.file ), meth.line )
-end
-
 end
 
