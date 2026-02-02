@@ -89,7 +89,6 @@ import GAP: @wrap
 @wrap ShallowCopy(x::Any)::Any
 @wrap Sort(x::GapObj)::Nothing
 @wrap String(x::Any)::Any
-@wrap StringDisplayObj(x::Any)::GapObj
 @wrap StringViewObj(x::Any)::GapObj
 @wrap StructuralCopy(x::Any)::Any
 @wrap SUM(x::Any, y::Any)::Any
