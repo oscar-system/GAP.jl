@@ -26,12 +26,21 @@ include("packages.jl")
 include("help.jl")
 include("rand.jl")
 
-@static if Base.JLOptions().code_coverage == 0
+if Base.JLOptions().code_coverage == 0
   # REPL completion doesn't work in Julia >= 1.10 when code coverage
   # tracking is active. For more details see the discussions at
   # <https://github.com/oscar-system/GAP.jl/pull/914> and
   # <https://github.com/JuliaLang/julia/issues/49978>.
   include("replcompletions.jl")
+else
+  # If Julia tracks coverage, then let GAP also track coverage
+  @show covdir = abspath(@__DIR__, "..", "coverage")
+  Base.mkpath(covdir)
+  covfile = GapObj(joinpath(covdir, "GAP.jl.coverage"))
+  # HACK: workaround bug in CoverageLineByLine, see
+  # <https://github.com/gap-system/gap/pull/6218>
+  #GAP.Globals.CoverageLineByLine(covfile)
+  GAP.Globals.ProfileLineByLine(covfile, GapObj(Dict(:coverage=>true, :recordMem=>true)))
 end
 
 @testset "manual examples" begin
@@ -52,3 +61,7 @@ using Nemo
 include("NemoExt/misc.jl")
 include("NemoExt/gap_to_nemo.jl")
 include("NemoExt/nemo_to_gap.jl")
+
+if Base.JLOptions().code_coverage != 0
+  GAP.Globals.UncoverageLineByLine()
+end
