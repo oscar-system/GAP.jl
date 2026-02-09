@@ -12,7 +12,7 @@ pwd
 # Force recompilation of JuliaInterface with coverage instrumentation
 CFLAGS="--coverage" LDFLAGS="--coverage" FORCE_JULIAINTERFACE_COMPILATION=true ${GAP} --nointeract
 ${GAP} makedoc.g
-${GAP} --cover ../../coverage/JuliaInterface.coverage tst/testall.g || AnyFailures=Yes
+${GAP} --cover ../../coverage/JuliaInterface.coverage -r tst/testall.g || AnyFailures=Yes
 gcov -o gen/src/ src/*.c*
 # We should delete the coverage instrumentation in JuliaInterface now
 # by calling `make clean`. However, this does not work because the
@@ -27,7 +27,7 @@ cd ../..
 cd pkg/JuliaExperimental
 pwd
 ${GAP} makedoc.g
-${GAP} --cover ../../coverage/JuliaExperimental.coverage tst/testall.g || AnyFailures=Yes
+${GAP} --cover ../../coverage/JuliaExperimental.coverage -r tst/testall.g || AnyFailures=Yes
 cd ../..
 
 if [ ${AnyFailures} = Yes ]
