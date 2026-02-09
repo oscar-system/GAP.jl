@@ -712,7 +712,7 @@ row = M[ii]
     x2 = map( v -> map( y -> y^2, v ), x )
 
     # Store the scalar product of x_i and x_j w.r.t. 'Ainv' in 'phi[i][j]'.
-    phi = Array{Rational{Int}}( m, m )
+    phi = Array{Rational{Int}}( undef, m, m )
     for i = 1:m
        prod = AinvI * x[i]
        for j = 1:i-1
@@ -761,7 +761,7 @@ row = M[ii]
         # Compute the maximal multiplicities of x_l, x_{l+1}, ...,
         # assuming that only one of these vectors occurs,
         # and store the contributions to the trace in 'sumh'.
-        sumh = zeros( sumh )
+        sumh = zero( sumh )
         i = l
         while i <= m && ( ( ! checkdim ) || ( s <= maxdim ) )
           if mult[i] * norms[i] < denom
