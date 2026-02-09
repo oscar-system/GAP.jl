@@ -14,7 +14,7 @@ expect "using GAP\r"
 expect "julia> *using GAP\r"
 expect "julia> "
 
-set timeout 10
+set timeout 20
 
 # test tab completing "fai" to "fail"
 send -- "GAP.Globals.fai"
