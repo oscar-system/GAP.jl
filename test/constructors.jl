@@ -17,9 +17,12 @@
     x = GAP.evalstr("2^100")
     @test (@inferred GapObj(x)) == x
     @test GAP.Obj(true) == true
+
     x = GAP.evalstr("Z(3)")
     @test GAP.Obj(x) == x
     @test GAP.Obj(0) == 0
+    @test GapObj(x) == x
+    @test GapObj(0) == 0
 
     # recursive conversion of nested objects
     m = [[1, 2], [3, 4]]
@@ -33,6 +36,19 @@
     @test c == GapObj(m, false)
     c = GapObj(m, true)
     @test c[1] isa GapObj
+  end
+
+  @testset "Integers" for T in (Int8, Int16, Int32, Int64, Int128, UInt8, UInt16, UInt32, UInt64, UInt128)
+    for y in (typemin(T), typemax(T)), d in (0, 1, -1)
+      x = GAP.evalstr("$d + $y")
+      if (y <= 0 && d < 0) || (y > 0 && d > 0)
+        @test_throws InexactError T(x)
+      else
+        @test (@inferred T(x)) isa T
+        @test T(x) == d + y
+        @test x == GapObj(d + y)
+      end
+    end
   end
 
   @testset "Border cases" begin
@@ -72,8 +88,11 @@
 
   @testset "Chars" begin
     x = GAP.evalstr("'x'")
+    @test (@inferred Char(x)) == Char('x')
     @test (@inferred Cuchar(x)) == Cuchar('x')
+
     x = GAP.evalstr("(1,2,3)")
+    @test_throws GAP.ConversionError Char(x)
     @test_throws GAP.ConversionError Cuchar(x)
   end
 
@@ -93,14 +112,22 @@
   @testset "Symbols" begin
     x = GAP.evalstr("\"foo\"")
     @test (@inferred Symbol(x)) == :foo
+    x = GAP.evalstr("['f','o','o']")
+    @test (@inferred Symbol(x)) == :foo
     x = GAP.evalstr("(1,2,3)")
-    @test_throws GAP.ConversionError String(x)
+    @test_throws GAP.ConversionError Symbol(x)
+  end
 
+  @testset "Vector{UInt8}" begin
     # Convert GAP string to Vector{UInt8} (==Vector{UInt8})
     x = GAP.evalstr("\"foo\"")
     @test (@inferred Vector{UInt8}(x)) == UInt8[0x66, 0x6f, 0x6f]
+    x = GAP.evalstr("['f','o','o']")
+    @test (@inferred Vector{UInt8}(x)) == UInt8[0x66, 0x6f, 0x6f]
     x = GAP.evalstr("[1,2,3]")
     @test (@inferred Vector{UInt8}(x)) == UInt8[1, 2, 3]
+    x = GAP.evalstr("(1,2,3)")
+    @test_throws GAP.ConversionError Vector{UInt8}(x)
   end
 
   @testset "BitVectors" begin
@@ -167,10 +194,18 @@
     x = GapObj([1, 2, 3])
     @test (@inferred Tuple{Int64,Int16,Int32}(x)) == (1, 2, 3)
     @test Tuple{Int64,Any,Int32}(x) == (1, 2, 3)
+    @test_throws ArgumentError Tuple{}(x)  # hits a special case
     @test_throws ArgumentError Tuple{Any,Any}(x)
     @test_throws ArgumentError Tuple{Any,Any,Any,Any}(x)
+
+    x = GapObj([])
+    @test Tuple(x) == ()
+    @test Tuple{}(x) == ()  # hits a special case
+    @test_throws ArgumentError Tuple{Any}(x)
+
     n = GapObj(big(2)^100)
     @test_throws GAP.ConversionError Tuple{Int64,Any,Int32}(n)
+
     x = GAP.evalstr("[ [ 1, 2 ], [ 3, [ 4, 5 ] ] ]")
     y = Tuple{GAP.Obj,Any}(x; recursive = true)
     @test isa(y, Tuple)
@@ -182,6 +217,10 @@
     @test isa(y[1], GAP.Obj)
 #   @test isa(y[2], Array)
     @test isa(y[2][2], GAP.Obj)
+
+    l = GAP.evalstr("[\"test\", ~[1]]")
+    @test Tuple{Vector{Char}, NTuple{4,Char}}(l) ==
+    (['t', 'e', 's', 't'], ('t', 'e', 's', 't'))
   end
 
   @testset "Ranges" begin
