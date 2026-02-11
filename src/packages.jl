@@ -497,26 +497,26 @@ function test(name::String)
     end
   end
 
-  error_occurred = false
-  called_QuitGap = false
+  error_occurred = Ref(false)
+  called_QuitGap = Ref(false)
   function fake_QuitGap(code)
-    called_QuitGap && return # only do something on the first call
-    called_QuitGap = true
+    called_QuitGap[] && return # only do something on the first call
+    called_QuitGap[] = true
     if (code isa Bool && !code) || (code isa Int && code % 256 != 0)
-      error_occurred = true
+      error_occurred[] = true
     end
     return
   end
 
   disable_error_handler[] = true
-  result = false
+  result = Ref{Union{Bool,GapObj}}(false)
   try
     with_gap_var(:ERROR_OUTPUT, Globals._JULIAINTERFACE_ORIGINAL_ERROR_OUTPUT) do
       with_gap_var(:QuitGap, fake_QuitGap) do
         with_gap_var(:QUIT_GAP, fake_QuitGap) do
           with_gap_var(:ForceQuitGap, fake_QuitGap) do
             with_gap_var(:FORCE_QUIT_GAP, fake_QuitGap) do
-              result = Globals.TestPackage(GapObj(name))
+              result[] = Globals.TestPackage(GapObj(name))
             end
           end
         end
@@ -529,7 +529,7 @@ function test(name::String)
   # Due to the hack above, we run into an error in TestPackage that is usually unreachable.
   # In the case of a `QuitGap` call, we thus don't check for `result == true`.
   # Note: `result` may be `fail`, so it is not always booleany.
-  return !error_occurred && (called_QuitGap || result == true)
+  return !error_occurred[] && (called_QuitGap[] || result[] == true)
 end
 
 """
