@@ -221,7 +221,7 @@ function locate_JuliaInterface_so()
     jll = GAP_pkg_juliainterface_jll.find_artifact_dir()
     jll_hash = TreeHash.tree_hash(joinpath(jll, "src"))
     bundled = joinpath(@__DIR__, "..", "pkg", "JuliaInterface")
-    path = Pidfile.mkpidlock("$bundled.lock"; stale_age=300) do
+    path_ = Pidfile.mkpidlock("$bundled.lock"; stale_age=300) do
         bundled_hash = TreeHash.tree_hash(joinpath(bundled, "src"))
 
         # requested re-compilation via ENV -> re-compile
@@ -255,7 +255,7 @@ function locate_JuliaInterface_so()
         @debug "Use JuliaInterface.so from $(path)"
         return path
     end
-    return joinpath(path, "JuliaInterface.so")
+    return joinpath(path_, "JuliaInterface.so")
 end
 
 """
