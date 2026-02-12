@@ -509,14 +509,15 @@ function test(name::String)
   end
 
   disable_error_handler[] = true
-  result = Ref{Union{Bool,GapObj}}(false)
   try
     with_gap_var(:ERROR_OUTPUT, Globals._JULIAINTERFACE_ORIGINAL_ERROR_OUTPUT) do
       with_gap_var(:QuitGap, fake_QuitGap) do
         with_gap_var(:QUIT_GAP, fake_QuitGap) do
           with_gap_var(:ForceQuitGap, fake_QuitGap) do
             with_gap_var(:FORCE_QUIT_GAP, fake_QuitGap) do
-              result[] = Globals.TestPackage(GapObj(name))
+              result = Globals.TestPackage(GapObj(name))
+              # Note: `result` may be `fail`, so it is not always booleany.
+              return result == true
             end
           end
         end
@@ -528,8 +529,7 @@ function test(name::String)
 
   # Due to the hack above, we run into an error in TestPackage that is usually unreachable.
   # In the case of a `QuitGap` call, we thus don't check for `result == true`.
-  # Note: `result` may be `fail`, so it is not always booleany.
-  return !error_occurred[] && (called_QuitGap[] || result[] == true)
+  return !error_occurred[] && called_QuitGap[]
 end
 
 """
