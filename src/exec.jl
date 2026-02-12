@@ -21,29 +21,25 @@ end
 function GAP_ExecuteProcess(dir::String, prg::String, fin::Int, fout::Int, args::Vector{String})
     # Note: the GAP kernel function `ExecuteProcess` also handles so-called
     # "window mode", for use in xgap and Gap.app -- we do not emulate this here.
-    if fin < 0
-        fin = Base.devnull
+    fin_fd = if fin < 0
+        Base.devnull
     else
         fin = @ccall libgap.SyBufFileno(fin::Culong)::Int
-        if fin == -1
-            error("fin invalid")
-        end
-        fin = RawFD(fin)
+        fin < 0 && error("fin invalid")
+        RawFD(fin)
     end
 
-    if fout < 0
-        fout = Base.devnull
+    fout_fd = if fout < 0
+        Base.devnull
     else
         fout = @ccall libgap.SyBufFileno(fout::Culong)::Int
-        if fout == -1
-            error("fout invalid")
-        end
-        fout = RawFD(fout)
+        fout < 0 && error("fout invalid")
+        RawFD(fout)
     end
 
     # TODO: verify `dir` is a valid dir?
     cd(dir) do
-        res = run(pipeline(ignorestatus(`$prg $args`), stdin=fin, stdout=fout))
+        res = run(pipeline(ignorestatus(`$prg $args`), stdin=fin_fd, stdout=fout_fd))
         return res.exitcode == 255 ? GAP.Globals.Fail : res.exitcode
     end
 end
