@@ -67,9 +67,10 @@
     # For that, we choose two packages with kernel extensions,
     # such that one is a needed package of the other.
     pkgs = map(name -> Dict{Symbol, Any}(:name => name), ["orb", "genss"])
-    # make sure the io package is built (as orb depends on it)
-    @test GAP.Packages.build("io")
     for pkg in pkgs
+      # build the package and its dependencies (may do nothing
+      # if they already are built)
+      @test GAP.Packages.build_recursive(pkg[:name])
       # Make sure that GAP stores package information.
       GAP.Packages.with_info_level(GAP.Globals.InfoPackageLoading, 4) do
         @test GAP.Packages.load(pkg[:name]; quiet=false)
@@ -86,7 +87,7 @@
         r.AvailabilityTest = GAP.Globals.ReturnFalse
       end
 
-      # Run the test.
+      # Build the packages again, this time for sure.
       @test GAP.Packages.build_recursive(pkg[:name])
 
       # Reinstall the GAP information.
