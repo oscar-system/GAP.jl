@@ -481,7 +481,9 @@ they succeeded (`true`) or not.
 
 It is intended to be used with the `@test` macro from the `Test` package.
 
-The function uses [the GAP function `TestPackage`](GAP_ref(ref:TestPackage)).
+The function uses [the GAP function `TestPackage`](GAP_ref(ref:TestPackage));
+if this function notices technical problems (the package cannot be loaded,
+its testfile cannot be read) then `test` throws an exception.
 """
 function test(name::String)
   global disable_error_handler
@@ -528,8 +530,11 @@ function test(name::String)
 
   # Due to the hack above, we run into an error in TestPackage that is usually unreachable.
   # In the case of a `QuitGap` call, we thus don't check for `result == true`.
-  # Note: `result` may be `fail`, so it is not always booleany.
-  return !error_occurred && (called_QuitGap || result == true)
+  if result == Globals.fail
+    called_QuitGap || throw(ArgumentError("GAP's TestPackage failed"))
+    result = true
+  end
+  return !error_occurred && result
 end
 
 """
