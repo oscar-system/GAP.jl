@@ -517,7 +517,7 @@ function test(name::String)
             with_gap_var(:FORCE_QUIT_GAP, fake_QuitGap) do
               result = Globals.TestPackage(GapObj(name))
               # Note: `result` may be `fail`, so it is not always booleany.
-              return result == true
+              return !error_occurred && (called_QuitGap || result == true)
             end
           end
         end
