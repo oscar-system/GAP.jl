@@ -67,6 +67,8 @@
     # For that, we choose two packages with kernel extensions,
     # such that one is a needed package of the other.
     pkgs = map(name -> Dict{Symbol, Any}(:name => name), ["orb", "genss"])
+    # make sure the io package is built (as orb depends on it)
+    @test GAP.Packages.build("io")
     for pkg in pkgs
       # Make sure that GAP stores package information.
       GAP.Packages.with_info_level(GAP.Globals.InfoPackageLoading, 4) do
