@@ -49,4 +49,58 @@
     # - a nonexisting path
     path = path * "xxx"
     @test ! GAP.Packages.load(path)
+
+    # Run package tests.
+    @test ! GAP.Packages.test("no_such_package")
+    @test GAP.Packages.test("fga")
+
+    # Test updating a package.
+    # - a package that is not installed in the user package directory
+    @test ! GAP.Packages.update("fga"; interactive = false)
+
+    # - a package that is installed in the user package directory
+    @test GAP.Packages.install("fga", interactive = false)
+    @test GAP.Packages.update("fga", interactive = false)
+    @test GAP.Packages.remove("fga", interactive = false)
+
+    # Test building a package.
+    # For that, we choose two packages with kernel extensions,
+    # such that one is a needed package of the other.
+    pkgs = map(name -> Dict{Symbol, Any}(:name => name), ["orb", "genss"])
+    for pkg in pkgs
+      # build the package and its dependencies (may do nothing
+      # if they already are built)
+      @test GAP.Packages.build_recursive(pkg[:name])
+      # `GAP.Packages.build` shall try to build the package.
+      # For that, the package must be regarded as
+      # - not yet loaded (stored in `GAP.Globals.GAPInfo.PackagesLoaded`
+      # - and not available (according to the `AvailabilityTest` function
+      #   in the `GAP.Globals.PackageInfo` records for the package).
+      # First we load the package, then we need not distinguish later
+      # whether the package was loaded or not.
+      GAP.Packages.with_info_level(GAP.Globals.InfoPackageLoading, 4) do
+        @test GAP.Packages.load(pkg[:name]; quiet=false)
+      end
+      # Manipulate GAP's global information such that
+      # `GAP.Globals.TestPackageAvailability` believes
+      # the package is not yet loaded and not available.
+      pkg[:pkgloaded] = getproperty(GAP.Globals.GAPInfo.PackagesLoaded, pkg[:name])
+      GAP.Wrappers.UNB_REC(GAP.Globals.GAPInfo.PackagesLoaded, GAP.RNamObj(String(pkg[:name])))
+      pkg[:pkginfo] = collect(GAP.Globals.PackageInfo(GapObj(pkg[:name])))
+      pkg[:avail_test] = [x.AvailabilityTest for x in pkg[:pkginfo]]
+      for r in pkg[:pkginfo]
+        r.AvailabilityTest = GAP.Globals.ReturnFalse
+      end
+
+      # Build the packages again, this time for sure.
+      @test GAP.Packages.build_recursive(pkg[:name])
+
+      # Reinstall the GAP information.
+      setproperty!(GAP.Globals.GAPInfo.PackagesLoaded, pkg[:name], pkg[:pkgloaded])
+      for i in 1:length(pkg[:pkginfo])
+        pkg[:pkginfo][i].AvailabilityTest = pkg[:avail_test][i]
+      end
+    end
+    @test GAP.Packages.remove("orb", interactive = false)
+    @test GAP.Packages.remove("genss", interactive = false)
 end
