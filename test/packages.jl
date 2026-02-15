@@ -71,14 +71,19 @@
       # build the package and its dependencies (may do nothing
       # if they already are built)
       @test GAP.Packages.build_recursive(pkg[:name])
-      # Make sure that GAP stores package information.
+      # `GAP.Packages.build` shall try to build the package.
+      # For that, the package must be regarded as
+      # - not yet loaded (stored in `GAP.Globals.GAPInfo.PackagesLoaded`
+      # - and not available (according to the `AvailabilityTest` function
+      #   in the `GAP.Globals.PackageInfo` records for the package).
+      # First we load the package, then we need not distinguish later
+      # whether the package was loaded or not.
       GAP.Packages.with_info_level(GAP.Globals.InfoPackageLoading, 4) do
         @test GAP.Packages.load(pkg[:name]; quiet=false)
       end
       # Manipulate GAP's global information such that
       # `GAP.Globals.TestPackageAvailability` believes
-      # the package is not yet loaded.
-      # (Otherwise `GAP.Packages.build` would do nothing.)
+      # the package is not yet loaded and not available.
       pkg[:pkgloaded] = getproperty(GAP.Globals.GAPInfo.PackagesLoaded, pkg[:name])
       GAP.Wrappers.UNB_REC(GAP.Globals.GAPInfo.PackagesLoaded, GAP.RNamObj(String(pkg[:name])))
       pkg[:pkginfo] = collect(GAP.Globals.PackageInfo(GapObj(pkg[:name])))
