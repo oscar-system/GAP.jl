@@ -51,7 +51,7 @@
     @test ! GAP.Packages.load(path)
 
     # Run package tests.
-    @test ! GAP.Packages.test("no_such_package")
+    @test_throws ArgumentError GAP.Packages.test("no_such_package")
     @test GAP.Packages.test("fga")
 
     # Test updating a package.
