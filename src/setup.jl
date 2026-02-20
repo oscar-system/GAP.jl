@@ -221,23 +221,29 @@ function locate_JuliaInterface_so()
     jll = GAP_pkg_juliainterface_jll.find_artifact_dir()
     jll_hash = TreeHash.tree_hash(joinpath(jll, "src"))
     bundled = joinpath(@__DIR__, "..", "pkg", "JuliaInterface")
-    path = Pidfile.mkpidlock("$bundled.lock"; stale_age=300) do
-        bundled_hash = TreeHash.tree_hash(joinpath(bundled, "src"))
+    bundled_hash = TreeHash.tree_hash(joinpath(bundled, "src"))
+    bundled_lock = joinpath(bundled, "JuliaInterface.lock")
 
-        # requested re-compilation via ENV -> re-compile
-        if get(ENV, "FORCE_JULIAINTERFACE_COMPILATION", "false") == "true"
-            @debug "FORCE_JULIAINTERFACE_COMPILATION is set -> recompile JuliaInterface"
-            path = build_JuliaInterface()
-            @debug "Use JuliaInterface.so from $(path)"
-            return path
-        end
+    # requested re-compilation via ENV -> re-compile
+    if get(ENV, "FORCE_JULIAINTERFACE_COMPILATION", "false") == "true"
+        @debug "FORCE_JULIAINTERFACE_COMPILATION is set"
+        path = Pidfile.mkpidlock(build_JuliaInterface, bundled_lock; stale_age=300)
+        write(joinpath(path, ".src_tree_hash"), bundled_hash)
+        @debug "Use JuliaInterface.so from $(path)"
+        return joinpath(path, "JuliaInterface.so")
+    end
+    
+    # tree hashes of bundled C sources and GAP_pkg_juliainterface_jll match -> use JuliaInterface.so from the JLL
+    if jll_hash == bundled_hash
+        @debug "Use JuliaInterface.so from GAP_pkg_juliainterface_jll"
+        return joinpath(jll, "lib", "gap", "JuliaInterface.so")
+    end
 
-        # tree hashes of bundled C sources and GAP_pkg_juliainterface_jll match -> use JuliaInterface.so from the JLL
-        if jll_hash == bundled_hash
-            @debug "Use JuliaInterface.so from GAP_pkg_juliainterface_jll"
-            return joinpath(jll, "lib", "gap")
-        end
-
+    # Take a pidlock before compiling to avoid a race condition if multiple
+    # Julia processes simultaneously load GAP.jl. Moreover each time we
+    # compile JuliaInterface, we store the treehash for the compiled sources
+    # and can use this to avoid unnecessary re-compilation
+    path = Pidfile.mkpidlock(bundled_lock; stale_age=300) do
         # tree hashes of bundled C sources and previously compiled version match -> use that
         prev_hash_file = normpath(joinpath(bundled, "bin", GAP.sysinfo["GAParch"], ".src_tree_hash"))
         if isfile(prev_hash_file)
