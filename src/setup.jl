@@ -224,21 +224,18 @@ function locate_JuliaInterface_so()
     bundled = joinpath(@__DIR__, "..", "pkg", "JuliaInterface")
     bundled_hash = TreeHash.tree_hash(joinpath(bundled, "src"))
 
-    # requested re-compilation via ENV -> re-compile
     if get(ENV, "FORCE_JULIAINTERFACE_COMPILATION", "false") == "true"
+        # requested re-compilation via ENV -> re-compile
         @debug "FORCE_JULIAINTERFACE_COMPILATION is set"
         path = build_JuliaInterface()
-        @debug "Use JuliaInterface.so from $(path)"
-        return joinpath(path, "JuliaInterface.so")
-    end
-    # tree hashes of bundled C sources and GAP_pkg_juliainterface_jll match -> use JuliaInterface.so from the JLL
-    if jll_hash == bundled_hash
+    elseif jll_hash == bundled_hash
+        # tree hashes of bundled C sources and GAP_pkg_juliainterface_jll match -> use JuliaInterface.so from the JLL
         @debug "Use JuliaInterface.so from GAP_pkg_juliainterface_jll"
-        return joinpath(jll, "lib", "gap", "JuliaInterface.so")
+        path = joinpath(jll, "lib", "gap")
+    else
+        # fall-back case -> re-compile
+        path = build_JuliaInterface()
     end
-
-    # fall-back case -> re-compile
-    path = build_JuliaInterface()
     @debug "Use JuliaInterface.so from $(path)"
     return joinpath(path, "JuliaInterface.so")
 end
