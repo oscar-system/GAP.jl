@@ -233,7 +233,11 @@ function locate_JuliaInterface_so()
             mkpath(builddir)
         end
         @debug "FORCE_JULIAINTERFACE_COMPILATION is set -> compile in $(builddir)"
-        path = build_JuliaInterface(builddir)
+        # take a pidlock to protect users who call FORCE_JULIAINTERFACE_COMPILATION with
+        # the same fixed path from multiple concurrent processes
+        path = Pidfile.mkpidlock(joinpath(builddir, "JuliaInterface.lock"); stale_age=300) do
+            build_JuliaInterface(builddir)
+        end
     elseif jll_hash == bundled_hash
         # tree hashes of bundled C sources and GAP_pkg_juliainterface_jll match -> use JuliaInterface.so from the JLL
         @debug "Use JuliaInterface.so from GAP_pkg_juliainterface_jll"
