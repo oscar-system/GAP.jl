@@ -202,7 +202,7 @@ function build_JuliaInterface(builddir::String)
     JULIA_LDFLAGS = filter(c -> c != '\'', ldflags())
     JULIA_LIBS = filter(c -> c != '\'', ldlibs())
 
-    jipath = normpath(joinpath(@__DIR__, "..", "pkg", "JuliaInterface"))
+    jipath = joinpath(@__DIR__, "..", "pkg", "JuliaInterface")
     gaproot = gaproot_for_building()
     cd(builddir) do
         withenv("CFLAGS" => JULIA_CFLAGS,
