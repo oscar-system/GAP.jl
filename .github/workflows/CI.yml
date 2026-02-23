@@ -70,6 +70,8 @@ jobs:
       - name: "Add optional Julia dependencies for GAP tests"
         run: julia --color=yes -e 'using Pkg ; Pkg.add(["Singular", "Nemo"]) ; using Singular, Nemo'
       - name: "GAP tests"
+        env:
+          JULIA_DEBUG: "GAP"
         run: |
           julia --project=. --depwarn=error -e 'import GAP; GAP.create_gap_sh("/tmp")'
           export GAP="/tmp/gap.sh -A --quitonbreak --norepl"
