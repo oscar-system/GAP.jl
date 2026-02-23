@@ -66,7 +66,8 @@ jobs:
         with:
           depwarn: error
       - name: "Test REPL integration"
-        run: etc/expect.sh --project=@.
+        if: matrix.julia-version != '1.10'
+        run: etc/expect.sh --project=@. --code-coverage
       - name: "Add optional Julia dependencies for GAP tests"
         run: julia --color=yes -e 'using Pkg ; Pkg.add(["Singular", "Nemo"]) ; using Singular, Nemo'
       - name: "GAP tests"
