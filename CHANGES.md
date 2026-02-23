@@ -1,6 +1,6 @@
 # Changes in GAP.jl
 
-## Version 0.16.4-DEV (released 2026-MM-DD)
+## Version 0.16.4 (released 2026-02-23)
 
 - Change `GAP.Packages.test` to throw an exception in case of technical
   problems (the package cannot be loaded, its testfile cannot be read)
