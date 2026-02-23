@@ -189,7 +189,7 @@ function create_sysinfo_gap_and_gac(dir::String)
     return sysinfo
 end
 
-function build_JuliaInterface()
+function build_JuliaInterface(builddir::Union{Nothing,String}=nothing)
     @info "Compiling JuliaInterface ..."
 
     # run code in julia-config.jl to determine compiler and linker flags for Julia;
@@ -203,7 +203,12 @@ function build_JuliaInterface()
     JULIA_LIBS = filter(c -> c != '\'', ldlibs())
 
     jipath = normpath(joinpath(@__DIR__, "..", "pkg", "JuliaInterface"))
-    builddir = mktempdir()
+    if builddir === nothing
+        builddir = mktempdir()
+    else
+        builddir = abspath(builddir)
+        mkpath(builddir)
+    end
     gaproot = gaproot_for_building()
     cd(builddir) do
         withenv("CFLAGS" => JULIA_CFLAGS,
@@ -224,10 +229,27 @@ function locate_JuliaInterface_so()
     bundled = joinpath(@__DIR__, "..", "pkg", "JuliaInterface")
     bundled_hash = TreeHash.tree_hash(joinpath(bundled, "src"))
 
-    if get(ENV, "FORCE_JULIAINTERFACE_COMPILATION", "false") == "true"
+    if haskey(ENV, "FORCE_JULIAINTERFACE_COMPILATION")
         # requested re-compilation via ENV -> re-compile
-        @debug "FORCE_JULIAINTERFACE_COMPILATION is set"
-        path = build_JuliaInterface()
+        forcedir = ENV["FORCE_JULIAINTERFACE_COMPILATION"]
+        if isempty(forcedir) || forcedir == "true"
+            @debug "FORCE_JULIAINTERFACE_COMPILATION is set -> compile in temp build dir"
+            path = build_JuliaInterface()
+        else
+            # Resolve relative paths against bundled JuliaInterface.
+            objdir = isabspath(forcedir) ? forcedir : joinpath(bundled, forcedir)
+            objdir = abspath(objdir)
+            # If the user passes a gen/src path, interpret that as the
+            # requested object directory and derive the corresponding build dir.
+            if basename(objdir) == "src" && basename(dirname(objdir)) == "gen"
+                builddir = normpath(joinpath(objdir, "..", ".."))
+                @debug "FORCE_JULIAINTERFACE_COMPILATION=$(forcedir) -> compile with object dir $(objdir)"
+            else
+                builddir = objdir
+                @debug "FORCE_JULIAINTERFACE_COMPILATION=$(forcedir) -> compile in explicit build dir"
+            end
+            path = build_JuliaInterface(builddir)
+        end
     elseif jll_hash == bundled_hash
         # tree hashes of bundled C sources and GAP_pkg_juliainterface_jll match -> use JuliaInterface.so from the JLL
         @debug "Use JuliaInterface.so from GAP_pkg_juliainterface_jll"
