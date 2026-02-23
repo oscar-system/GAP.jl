@@ -48,7 +48,7 @@ jobs:
         with:
           depwarn: error
         env:
-          FORCE_JULIAINTERFACE_COMPILATION: "out-of-tree"
+          FORCE_JULIAINTERFACE_COMPILATION: "true"
       - name: "Process code coverage"
         uses: julia-actions/julia-processcoverage@v1
       - name: "Upload coverage data to Codecov"
