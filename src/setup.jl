@@ -223,6 +223,14 @@ function locate_JuliaInterface_so()
     bundled = joinpath(@__DIR__, "..", "pkg", "JuliaInterface")
     bundled_hash = TreeHash.tree_hash(joinpath(bundled, "src"))
 
+    # If FORCE_JULIAINTERFACE_COMPILATION then we always compile JuliaInterface.
+    # This is useful for debugging or for code coverage tracking. If the variable
+    # is set but empty, or set to "true", then we compile into a tempdir. Otherwise,
+    # its value is assumed to be a path in which we perform an "out-of-tree" build
+    # of JuliaInterface. That is, its build system reads files from its source dir,
+    # but writes .o files etc. into the builddir or subdirectories (that is, it
+    # writes .o files into the `gen/src` subdir, and the kernel extension ends up
+    # as `bin/ARCH/JuliaInterface.so`.
     if haskey(ENV, "FORCE_JULIAINTERFACE_COMPILATION")
         # requested re-compilation via ENV -> re-compile
         forcedir = ENV["FORCE_JULIAINTERFACE_COMPILATION"]
