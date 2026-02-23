@@ -2,7 +2,14 @@
 
 ## Version 0.16.4-DEV (released 2026-MM-DD)
 
+- Change `GAP.Packages.test` to throw an exception in case of technical
+  problems (the package cannot be loaded, its testfile cannot be read)
 - Update the `HeLP` GAP package from 4.0 to 4.1
+- Optimize conversion of GAP strings to Julia symbols
+- Optimize conversion of `ZZRingElem` and `QQFieldElem` to GAP objects
+- Optimize conversion of `MatElem` to GAP matrices in general, and even
+  more so for `ZZMatrix`, `QQMatrix`
+- Fix loading GAP.jl when its package directory is read-only
 
 ## Version 0.16.3 (released 2026-01-15)
 
