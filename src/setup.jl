@@ -284,7 +284,7 @@ function create_gap_sh(dstdir::String, dstname::String="gap.sh"; use_active_proj
                 Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
                 """)
         run(`$(Base.julia_cmd()) --startup-file=no --project=$(projectdir) -e "using Pkg; Pkg.develop(PackageSpec(path=\"$(gaproot_gapjl)\"))"`)
-        
+
         @info "Generating gap.sh ..."
     end
 
