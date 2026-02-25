@@ -54,7 +54,7 @@ jobs:
       - name: "Run gcov"
         run: |
           find . -name foobar
-          for d in $(find . -name foobar) ;
+          for d in $(find . -name foobar) ; do
             pushd $d
             ls -R
             gcov -o gen/src/ src/*.c*
