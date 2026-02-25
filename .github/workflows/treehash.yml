@@ -54,9 +54,12 @@ jobs:
       - name: "Run gcov"
         run: |
           find . -name foobar
-          cd $(find . -name foobar)
-          pwd
-          gcov -o gen/src/ src/*.c*
+          for d in $(find . -name foobar) ;
+            pushd $d
+            ls -R
+            gcov -o gen/src/ src/*.c*
+            popd
+          od
 
       - name: "Process code coverage"
         uses: julia-actions/julia-processcoverage@v1
