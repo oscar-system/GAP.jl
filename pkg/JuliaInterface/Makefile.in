@@ -2,8 +2,13 @@
 # Makefile rules for the JuliaInterface package
 #
 KEXT_NAME = JuliaInterface
+SRCDIR = @SRCDIR@
+VPATH += $(SRCDIR)
 KEXT_SOURCES = src/JuliaInterface.c src/calls.c src/convert.c src/sync.c
 
 # include shared GAP package build system
 GAPPATH = @GAPPATH@
-include Makefile.gappkg
+include $(SRCDIR)/Makefile.gappkg
+
+# In out-of-tree builds, re-run configure from the source directory.
+KEXT_RECONF = $(SRCDIR)/configure "$(GAPPATH)"

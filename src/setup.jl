@@ -189,7 +189,7 @@ function create_sysinfo_gap_and_gac(dir::String)
     return sysinfo
 end
 
-function build_JuliaInterface()
+function build_JuliaInterface(builddir::String)
     @info "Compiling JuliaInterface ..."
 
     # run code in julia-config.jl to determine compiler and linker flags for Julia;
@@ -204,15 +204,15 @@ function build_JuliaInterface()
 
     jipath = joinpath(@__DIR__, "..", "pkg", "JuliaInterface")
     gaproot = gaproot_for_building()
-    cd(jipath) do
+    cd(builddir) do
         withenv("CFLAGS" => JULIA_CFLAGS,
                 "LDFLAGS" => JULIA_LDFLAGS * " " * JULIA_LIBS) do
-            run(pipeline(`./configure $(gaproot)`, stdout="build.log"))
+            run(pipeline(`$(joinpath(jipath, "configure")) $(gaproot)`, stdout="build.log"))
             run(pipeline(`make V=1 -j$(Sys.CPU_THREADS)`, stdout="build.log", append=true))
         end
     end
 
-    return normpath(joinpath(jipath, "bin", GAP.sysinfo["GAParch"]))
+    return normpath(joinpath(builddir, "bin", GAP.sysinfo["GAParch"]))
 end
 
 function locate_JuliaInterface_so()
@@ -222,45 +222,39 @@ function locate_JuliaInterface_so()
     jll_hash = TreeHash.tree_hash(joinpath(jll, "src"))
     bundled = joinpath(@__DIR__, "..", "pkg", "JuliaInterface")
     bundled_hash = TreeHash.tree_hash(joinpath(bundled, "src"))
-    bundled_lock = joinpath(bundled, "JuliaInterface.lock")
 
-    # requested re-compilation via ENV -> re-compile
-    if get(ENV, "FORCE_JULIAINTERFACE_COMPILATION", "false") == "true"
-        @debug "FORCE_JULIAINTERFACE_COMPILATION is set"
-        path = Pidfile.mkpidlock(build_JuliaInterface, bundled_lock; stale_age=300)
-        write(joinpath(path, ".src_tree_hash"), bundled_hash)
-        @debug "Use JuliaInterface.so from $(path)"
-        return joinpath(path, "JuliaInterface.so")
-    end
-    
-    # tree hashes of bundled C sources and GAP_pkg_juliainterface_jll match -> use JuliaInterface.so from the JLL
-    if jll_hash == bundled_hash
-        @debug "Use JuliaInterface.so from GAP_pkg_juliainterface_jll"
-        return joinpath(jll, "lib", "gap", "JuliaInterface.so")
-    end
-
-    # Take a pidlock before compiling to avoid a race condition if multiple
-    # Julia processes simultaneously load GAP.jl. Moreover each time we
-    # compile JuliaInterface, we store the treehash for the compiled sources
-    # and can use this to avoid unnecessary re-compilation
-    path = Pidfile.mkpidlock(bundled_lock; stale_age=300) do
-        # tree hashes of bundled C sources and previously compiled version match -> use that
-        prev_hash_file = normpath(joinpath(bundled, "bin", GAP.sysinfo["GAParch"], ".src_tree_hash"))
-        if isfile(prev_hash_file)
-            prev_hash = read(prev_hash_file)
-            if prev_hash == bundled_hash
-                path = dirname(prev_hash_file)
-                @debug "Use previously compiled JuliaInterface.so from $(path)"
-                return path
-            end
+    # If FORCE_JULIAINTERFACE_COMPILATION then we always compile JuliaInterface.
+    # This is useful for debugging or for code coverage tracking. If the variable
+    # is set but empty, or set to "true", then we compile into a tempdir. Otherwise,
+    # its value is assumed to be a path in which we perform an "out-of-tree" build
+    # of JuliaInterface. That is, its build system reads files from its source dir,
+    # but writes .o files etc. into the builddir or subdirectories (that is, it
+    # writes .o files into the `gen/src` subdir, and the kernel extension ends up
+    # as `bin/ARCH/JuliaInterface.so`.
+    if haskey(ENV, "FORCE_JULIAINTERFACE_COMPILATION")
+        # requested re-compilation via ENV -> re-compile
+        forcedir = ENV["FORCE_JULIAINTERFACE_COMPILATION"]
+        if isempty(forcedir) || forcedir == "true"
+            builddir = mktempdir()
+        else
+            builddir = abspath(forcedir)
+            mkpath(builddir)
         end
-
+        @debug "FORCE_JULIAINTERFACE_COMPILATION is set -> compile in $(builddir)"
+        # take a pidlock to protect users who call FORCE_JULIAINTERFACE_COMPILATION with
+        # the same fixed path from multiple concurrent processes
+        path = Pidfile.mkpidlock(joinpath(builddir, "JuliaInterface.lock"); stale_age=300) do
+            build_JuliaInterface(builddir)
+        end
+    elseif jll_hash == bundled_hash
+        # tree hashes of bundled C sources and GAP_pkg_juliainterface_jll match -> use JuliaInterface.so from the JLL
+        @debug "Use JuliaInterface.so from GAP_pkg_juliainterface_jll"
+        path = joinpath(jll, "lib", "gap")
+    else
         # fall-back case -> re-compile
-        path = build_JuliaInterface()
-        write(joinpath(path, ".src_tree_hash"), bundled_hash)
-        @debug "Use JuliaInterface.so from $(path)"
-        return path
+        path = build_JuliaInterface(mktempdir())
     end
+    @debug "Use JuliaInterface.so from $(path)"
     return joinpath(path, "JuliaInterface.so")
 end
 
@@ -302,7 +296,7 @@ function create_gap_sh(dstdir::String, dstname::String="gap.sh"; use_active_proj
                 Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
                 """)
         run(`$(Base.julia_cmd()) --startup-file=no --project=$(projectdir) -e "using Pkg; Pkg.develop(PackageSpec(path=\"$(gaproot_gapjl)\"))"`)
-        
+
         @info "Generating gap.sh ..."
     end
 

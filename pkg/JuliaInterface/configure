@@ -4,6 +4,8 @@
 
 set -e
 
+SRCDIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+
 GAPPATH=../..
 while test "$#" -ge 1 ; do
   option="$1" ; shift
@@ -18,7 +20,7 @@ if test ! -r "$GAPPATH/sysinfo.gap" ; then
     echo
     echo "No file $GAPPATH/sysinfo.gap found."
     echo
-    echo "Usage: ./configure [GAPPATH]"
+    echo "Usage: $SRCDIR/configure [GAPPATH]"
     echo "       where GAPPATH is a path to your GAP installation"
     echo "       (The default for GAPPATH is \"../..\")"
     echo
@@ -31,4 +33,6 @@ if test ! -r "$GAPPATH/sysinfo.gap" ; then
 fi
 
 echo "Using settings from $GAPPATH/sysinfo.gap"
-sed -e "s;@GAPPATH@;$GAPPATH;g" Makefile.in > Makefile
+sed -e "s;@GAPPATH@;$GAPPATH;g" \
+    -e "s;@SRCDIR@;$SRCDIR;g" \
+    "$SRCDIR/Makefile.in" > Makefile
