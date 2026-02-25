@@ -112,7 +112,7 @@ end
 @info "Building GAP in $(build_dir)"
 
 # first build the version of GAP without gac generated code
-run(`make -j$(Sys.CPU_THREADS) build/gap-nocomp $(verbose ? "V=1" : "")`)
+run(`make -j$(Sys.CPU_THREADS) build/gap-nocomp $(verbose ? "V=1" : [])`)
 
 # cheating: the following assumes that GAP in gap_prefix was already compiled...
 # we copy some generated files, so that we don't have to re-generate them,
@@ -123,7 +123,7 @@ for f in ["c_oper1.c", "c_type1.c"]
 end
 
 # complete the build
-run(`make -j$(Sys.CPU_THREADS) $(verbose ? "V=1" : "")`)
+run(`make -j$(Sys.CPU_THREADS) $(verbose ? "V=1" : [])`)
 
 
 @info "Installing GAP to $(prefix)"
