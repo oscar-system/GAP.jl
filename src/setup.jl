@@ -207,8 +207,8 @@ function build_JuliaInterface(builddir::String)
     cd(builddir) do
         withenv("CFLAGS" => JULIA_CFLAGS,
                 "LDFLAGS" => JULIA_LDFLAGS * " " * JULIA_LIBS) do
-            run(pipeline(`$(joinpath(jipath, "configure")) $(gaproot)`, stdout="build.log"))
-            run(pipeline(`make V=1 -j$(Sys.CPU_THREADS)`, stdout="build.log", append=true))
+            run(pipeline(`$(joinpath(jipath, "configure")) $(gaproot)`))
+            run(pipeline(`make V=1 -j$(Sys.CPU_THREADS)`))
         end
     end
 
