@@ -1,4 +1,65 @@
-# Directions for updating GAP.jl
+# Maintainer README
+
+Some information for maintainers of the GAP.jl packages
+
+## Making releases
+
+1. Switch to the `master` branch and `cd` into the root directory of the git repository.
+   Create a new branch for the version bump and switch to it.
+
+2. Update the version of the Julia and GAP packages by invoking the script
+   `etc/update_version.sh` with the new version as argument. Example:
+   `etc/update_version.sh 0.3.0` (by the way, this is shell script which calls
+   `perl` right now; it would make sense to rewrite it as a Julia script to avoid
+   the need for perl).
+
+3. Check that the `CHANGES.md` file is up to date; update it if necessary.
+
+4. Push the new branch to GitHub and create a pull request for it. Wait for CI to pass and merge it.
+
+5. Comment on the commit on GitHub with the message `@JuliaRegistrator register`
+   ([see here for an example](https://github.com/oscar-system/GAP.jl/commit/159c6fd580e9d9cfbc1877a0856c4a5f9ecaba4d)).
+
+The latter works because we have set up a GitHub Action for
+[Julia TagBot](https://github.com/marketplace/actions/julia-tagbot) to tag and
+make the release automatically.
+
+
+## Using GAP.jl with a different version of GAP than what `GAP_jll` provides
+
+This can be useful for various reasons e.g.,
+
+- you need to test GAP.jl with a newer GAP version, perhaps even its master branch,
+- you need to test with a newer Julia version that breaks binary compatibility,
+- you need to test with a Julia debug build.
+
+For this to work, follow these instructions:
+
+1. Obtain a copy of the GAP sources, probably from a clone of the GAP git repository.
+   Let's say this is in directory `GAPROOT`.
+
+2. Compiled GAP inside GAPROOT once (this is to ensure `build/c_oper1.c` and
+  `build/c_type1.c` are present).
+
+3. Build GAP with the Julia version of your choice by executing the `etc/setup_override_dir.jl`
+   script. It takes as first argument the GAPROOT, and as second argument the places where
+   the result shall be installed. I recommend to execute this in a separate
+   environment, as it may need to install a few things.
+
+   To give a concrete example you could invoke
+
+        julia --proj=override etc/setup_override_dir.jl $GAPROOT /tmp/gap_jll_override
+
+4. Use the `etc/run_with_override.jl` script with the exact same Julia executable
+   and the override environment we just prepared.
+
+        julia --proj=override etc/run_with_override.jl /tmp/gap_jll_override
+
+5. This opens a Julia session with the override in effect. You can now e.g. load GAP.jl
+   via `using GAP`, or install other packages (such as Oscar) and test with them.
+
+
+## Directions for updating GAP.jl
 
 `GAP.jl` depends on the GAP kernel, the GAP library,
 and some glue code in the `JuliaInterface` GAP package,
@@ -20,7 +81,7 @@ The build recipes for these JLL packages can be found here:
 - <https://github.com/JuliaPackaging/Yggdrasil/blob/master/G/GAP_pkg/GAP_pkg_juliainterface/build_tarballs.jl>
 - <https://github.com/JuliaPackaging/Yggdrasil/tree/master/G/GAP_pkg>
 
-## Updating the glue code in `juliainterface`
+### Updating the glue code in `juliainterface`
 
 Suppose just the code in `juliainterface` was updated, without any changes to GAP itself.
 Then `GAP_pkg_juliainterface_jll` needs to be rebuilt before the next GAP.jl release.
@@ -42,11 +103,10 @@ repository fails in a PR.
    In this PR, the `treehash` CI job should succeed.
    > ex: <https://github.com/oscar-system/GAP.jl/pull/1200>
 
-5. (Optional) Release a new `GAP.jl`. This is done by pinging JuliaRegistrator in the comments of a commit.
-   > ex: <https://github.com/oscar-system/GAP.jl/commit/21d5dd6b4ff8457649a922f0d5ba4a4414502f27#commitcomment-161267536>
+5. (Optional) Release a new `GAP.jl` (see above).
 
 
-## Build against a new `libjulia` version
+### Build against a new `libjulia` version
 
 This needs to be done regularly, or as soon as some weird crashes start
 happening on a new julia release or on julia nightly.
@@ -79,7 +139,7 @@ happening on a new julia release or on julia nightly.
    You can find the new version numbers in the registry PRs from steps 3 and 5.
    > ex: TODO add link for an example PR
 
-## Updating GAP
+### Updating GAP
 
 After a new GAP version is released, the following steps are necessary to update
 all of the JLL packages that depend on GAP.
@@ -136,8 +196,7 @@ all of the JLL packages that depend on GAP.
    > ex: <https://github.com/oscar-system/GAP.jl/pull/1244> for a non-ABI-compatible GAP update. Note
      that the version of `GAP.jl` was not updated here, since this was already done in a previous PR.
 
-8. (Optional) Release a new `GAP.jl`. This is done by pinging JuliaRegistrator in the comments of a commit.
-   > ex: <https://github.com/oscar-system/GAP.jl/commit/21d5dd6b4ff8457649a922f0d5ba4a4414502f27#commitcomment-161267536>
+8. (Optional) Release a new `GAP.jl` (see above).
 
 
 # TODOs for this document:
