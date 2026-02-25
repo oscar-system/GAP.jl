@@ -17,7 +17,7 @@ pwd
 export FORCE_JULIAINTERFACE_COMPILATION=tmp
 ${GAP} --cover ../../coverage/JuliaInterface.coverage -r makedoc.g tst/testall.g || AnyFailures=Yes
 gcov -o tmp/gen/src/ src/*.c*
-rm -rf tmp # Delete the coverage instrumentation in JuliaInterface again
+#rm -rf tmp # Delete the coverage instrumentation in JuliaInterface again
 cd ../..
 
 #
