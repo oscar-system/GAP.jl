@@ -17,8 +17,8 @@ Some information for maintainers of the GAP.jl packages
 
 4. Push the new branch to GitHub and create a pull request for it. Wait for CI to pass and merge it.
 
-5. Comment on the commit on GitHub with the message `@JuliaRegistrator
-   register` ([see here for an example](https://github.com/oscar-system/GAP.jl/commit/159c6fd580e9d9cfbc1877a0856c4a5f9ecaba4d)).
+5. Comment on the commit on GitHub with the message `@JuliaRegistrator register`
+   ([see here for an example](https://github.com/oscar-system/GAP.jl/commit/159c6fd580e9d9cfbc1877a0856c4a5f9ecaba4d)).
 
 The latter works because we have set up a GitHub Action for
 [Julia TagBot](https://github.com/marketplace/actions/julia-tagbot) to tag and
@@ -29,9 +29,9 @@ make the release automatically.
 
 This can be useful for various reasons e.g.,
 
-- you need to test GAP.jl with a newer GAP version, perhaps even its master branch
-- you need to test with a newer Julia version that breaks binary compatibility
-- you need to test with a Julia debug build
+- you need to test GAP.jl with a newer GAP version, perhaps even its master branch,
+- you need to test with a newer Julia version that breaks binary compatibility,
+- you need to test with a Julia debug build.
 
 For this to work, follow these instructions:
 
