@@ -11,11 +11,11 @@ cd pkg/JuliaInterface
 pwd
 # Force recompilation of JuliaInterface with coverage instrumentation.
 # Use a fixed build directory so that gcov can find .gcno/.gcda files.
-CFLAGS="--coverage" LDFLAGS="--coverage" FORCE_JULIAINTERFACE_COMPILATION=. ${GAP} --nointeract
+CFLAGS="--coverage" LDFLAGS="--coverage" FORCE_JULIAINTERFACE_COMPILATION=tmp ${GAP} --nointeract
 ${GAP} makedoc.g
 ${GAP} --cover ../../coverage/JuliaInterface.coverage -r tst/testall.g || AnyFailures=Yes
-gcov -o gen/src/ src/*.c*
-rm -rf gen # Delete the coverage instrumentation in JuliaInterface again
+gcov -o tmp/gen/src/ src/*.c*
+rm -rf tmp # Delete the coverage instrumentation in JuliaInterface again
 cd ../..
 
 #
