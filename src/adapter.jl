@@ -420,7 +420,7 @@ Base.hash(::FFE, h::UInt) = error("hash for GAP objects is not implemented")
 
 ### RNGs
 
-using Random: Random, AbstractRNG, rand
+using Random: Random, AbstractRNG
 
 abstract type AbstractGAPRNG <: AbstractRNG end
 
@@ -458,9 +458,9 @@ Base.copy(rng::MersenneTwister) = MersenneTwister(state=MersenneTwisterState(Glo
 
 ## rand methods
 
-Random.rand(rng::AbstractGAPRNG, x::Random.SamplerTrivial{<:Obj}) = Globals.Random(rng.ptr, x[])
+Base.rand(rng::AbstractGAPRNG, x::Random.SamplerTrivial{<:Obj}) = Globals.Random(rng.ptr, x[])
 
-Random.rand(rng::AbstractGAPRNG, x::Random.SamplerTrivial{<:AbstractUnitRange}) =
+Base.rand(rng::AbstractGAPRNG, x::Random.SamplerTrivial{<:AbstractUnitRange}) =
     Globals.Random(rng.ptr, GapObj(first(x[])), GapObj(last(x[])))
 
 Random.Sampler(::Type{<:AbstractGAPRNG}, x::AbstractUnitRange, ::Random.Repetition) =
