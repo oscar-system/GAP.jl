@@ -61,13 +61,13 @@ end
     @test x == GAP.evalstr("[1,2,3]")
     x = @gap(SymmetricGroup)(3)
     @test GAP.Globals.Size(x) == 6
-    @test_throws ErrorException @gap (1,2)(3,4)
+    @test_throws GAP.GAPError @gap (1,2)(3,4)
 
     x = GAP.g"foo"
     @test x == GapObj("foo")
     x = GAP.g"1:\n, 2:\", 3:\\, 4:\b, 5:\r, 6:\c, 7:\001"
     @test x == GapObj("1:\n, 2:\", 3:\\, 4:\b, 5:\r, 6:\003, 7:\001")
-    @test_throws ErrorException g"\\"
+    @test_throws GAP.GAPError g"\\"
 
 end
 
