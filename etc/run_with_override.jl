@@ -12,7 +12,7 @@ gapoverride = abspath(gapoverride)
 #
 @info "Install needed packages"
 using Pkg
-Pkg.develop(path=dirname(dirname(@__FILE__)))
+Pkg.develop(path=dirname(@__DIR__))
 Pkg.add(["GAP_jll", "GAP_lib_jll"])
 Pkg.instantiate()
 
@@ -48,7 +48,7 @@ add_jll_override(tmpdepot, "GAP_lib", gapoverride)
 run(`ln -sf $(abspath(GAP_lib_jll.find_artifact_dir(), "share", "gap", "doc")) $(abspath(gapoverride, "share", "gap", "doc"))`)
 
 # prepend our temporary depot to the depot list...
-withenv("JULIA_DEPOT_PATH"=>tmpdepot*":", "FORCE_JULIAINTERFACE_COMPILATION" => "true") do
+withenv("JULIA_DEPOT_PATH"=>tmpdepot*":"*join(DEPOT_PATH, ":"), "FORCE_JULIAINTERFACE_COMPILATION" => "true") do
 
     # ... and start Julia, by default with the same project environment
     run(`$(Base.julia_cmd()) --project=$(Base.active_project()) $(ARGS)`)
