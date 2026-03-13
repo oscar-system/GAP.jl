@@ -64,23 +64,190 @@ macro include(path)
     return :(Wrappers.Read(GapObj(normpath(@__DIR__, $path))))
 end
 
-const last_error = Ref{String}("")
+struct GAPStackFrame
+    function_label::String
+    file::Union{Nothing,String}
+    line::Union{Nothing,Int}
+end
+
+struct GAPError <: Exception
+    message::String
+    gap_frames::Vector{GAPStackFrame}
+    raw_text::String
+    julia_stacktrace::Vector{Tuple{Base.StackTraces.StackFrame,Int}}
+end
+
+GAPError(message::String, gap_frames::Vector{GAPStackFrame}, raw_text::String) =
+    GAPError(message, gap_frames, raw_text, Tuple{Base.StackTraces.StackFrame,Int}[])
+
+const last_error_snapshot = Ref{Union{Nothing,GAPError}}(nothing)
 
 const disable_error_handler = Ref{Bool}(false)
+
+function Base.showerror(io::IO, err::GAPError)
+    show_gap_error(io, err)
+end
+
+function Base.showerror(io::IO, err::GAPError, bt; backtrace=true)
+    show_gap_error(io, err)
+    if backtrace && !isempty(err.julia_stacktrace)
+        show_julia_backtrace(io, err.julia_stacktrace)
+    end
+end
+
+function show_gap_error(io::IO, err::GAPError)
+    print(io, "Error thrown by GAP")
+    if !isempty(err.message)
+        print(io, ": ", err.message)
+    end
+
+    if !isempty(err.gap_frames)
+        print(io, "\nGAP stacktrace:")
+        for (i, frame) in pairs(err.gap_frames)
+            print(io, "\n [", i, "] ")
+            printstyled(io, frame.function_label; bold=true)
+            if frame.file !== nothing
+                print(io, " @ ", Base.contractuser(frame.file))
+                if frame.line !== nothing
+                    print(io, ":", frame.line)
+                end
+            elseif frame.line !== nothing
+                print(io, " @ line ", frame.line)
+            end
+        end
+    elseif !isempty(err.raw_text)
+        print(io, "\n", chomp(err.raw_text))
+    end
+end
+
+function show_julia_backtrace(io::IO, trace::Vector{Tuple{Base.StackTraces.StackFrame,Int}})
+    isempty(trace) && return
+
+    ndigits_max = ndigits(length(trace))
+    println(io, "\nJulia stacktrace:")
+    for (i, (frame, n)) in enumerate(trace)
+        Base.print_stackframe(
+            io,
+            i,
+            frame,
+            n,
+            ndigits_max,
+            Base.STACKTRACE_FIXEDCOLORS,
+            Base.STACKTRACE_MODULECOLORS,
+        )
+        if i < length(trace)
+            println(io)
+            Base.stacktrace_linebreaks() && println(io)
+        end
+    end
+end
+
+function capture_current_julia_backtrace()
+    trace = Tuple{Base.StackTraces.StackFrame,Int}[
+        (frame, 1) for frame in Base.stacktrace(true)
+        if frame.func ∉ (
+            :capture_current_julia_backtrace,
+            :copy_gap_error_to_julia,
+            :throw_gap_error,
+            :ThrowObserver,
+        )
+    ]
+    trace = Base._simplify_include_frames(trace)
+    trace = Base._collapse_repeated_frames(trace)
+    trace = filter(frame -> !is_internal_julia_error_frame(frame[1]), trace)
+    trace = trim_julia_backtrace_at_toplevel(trace)
+    return trace
+end
+
+function is_internal_julia_error_frame(frame::Base.StackTraces.StackFrame)
+    mod = Base.parentmodule(frame)
+    mod === GAP && return true
+
+    file = String(frame.file)
+    file == abspath(@__DIR__, "ccalls.jl") && return true
+    file == abspath(@__DIR__, "GAP.jl") && return true
+    endswith(file, ".dylib") && return true
+    endswith(file, ".so") && return true
+    endswith(file, ".dll") && return true
+    endswith(file, ".c") && return true
+    endswith(file, ".h") && return true
+    file == ":-1" && return true
+    frame.line <= 0 && return true
+    return false
+end
+
+function trim_julia_backtrace_at_toplevel(trace::Vector{Tuple{Base.StackTraces.StackFrame,Int}})
+    for (i, (frame, _)) in pairs(trace)
+        if Base.StackTraces.is_top_level_frame(frame)
+            resize!(trace, i)
+            break
+        end
+    end
+    return trace
+end
+
+function capture_gap_error_frames()
+    frames = GAPStackFrame[]
+    if !hasproperty(Globals, :_JULIAINTERFACE_ERROR_STACK)
+        return frames
+    end
+
+    raw_frames = Globals._JULIAINTERFACE_ERROR_STACK
+    for raw_frame in raw_frames
+        label = String(raw_frame[1])
+        file = raw_frame[2] == Globals.fail ? nothing : String(raw_frame[2])
+        line = raw_frame[3] == Globals.fail ? nothing : Int(raw_frame[3])
+        push!(frames, GAPStackFrame(label, file, line))
+    end
+    return frames
+end
+
+function clear_gap_error_frames()
+    hasproperty(Globals, :_JULIAINTERFACE_CLEAR_ERROR_STACK) || return
+    Globals._JULIAINTERFACE_CLEAR_ERROR_STACK()
+end
+
+function gap_error_message(raw_text::String)
+    isempty(raw_text) && return ""
+
+    first_line = split(chomp(raw_text), '\n'; limit=2)[1]
+    startswith(first_line, "Error, ") && (first_line = first_line[8:end])
+    endswith(first_line, " called from") &&
+        (first_line = first_line[1:end-length(" called from")])
+    return strip(first_line)
+end
 
 function copy_gap_error_to_julia()
     global disable_error_handler
     if disable_error_handler[]
         return
     end
-    last_error[] = String(Globals._JULIAINTERFACE_ERROR_BUFFER::GapObj)
+
+    raw_text = String(Globals._JULIAINTERFACE_ERROR_BUFFER::GapObj)
+    isempty(raw_text) && return
+
+    frames = capture_gap_error_frames()
+    last_error_snapshot[] = GAPError(
+        gap_error_message(raw_text),
+        frames,
+        raw_text,
+        capture_current_julia_backtrace(),
+    )
     @ccall libgap.SET_LEN_STRING(Globals._JULIAINTERFACE_ERROR_BUFFER::GapObj, 0::Cuint)::Cvoid
+    clear_gap_error_frames()
 end
 
-function get_and_clear_last_error()
-    err = last_error[]
-    last_error[] = ""
-    return err
+function take_gap_error_snapshot()
+    snapshot = last_error_snapshot[]
+    last_error_snapshot[] = nothing
+    return snapshot
+end
+
+function throw_gap_error(snapshot::Union{Nothing,GAPError})
+    if snapshot === nothing
+        throw(GAPError("", GAPStackFrame[], ""))
+    end
+    throw(snapshot)
 end
 
 function ThrowObserver(depth::Cint)
@@ -96,7 +263,7 @@ function ThrowObserver(depth::Cint)
     # at the top of GAP's exception handler chain, turn the GAP exception
     # into a Julia exception
     if depth <= 0
-        error("Error thrown by GAP: $(get_and_clear_last_error())")
+        throw_gap_error(take_gap_error_snapshot())
     end
 end
 
