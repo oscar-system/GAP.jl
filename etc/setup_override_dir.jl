@@ -92,15 +92,25 @@ else
 end
 push!(extraargs, "CPPFLAGS=-DUSE_GAP_INSIDE_JULIA=1")
 
+env = Dict(
+    "CC" => "gcc",
+    "CXX" => "g++",
+)
+
 # TODO: redirect the output of configure into a log file
-@show run(`$(gap_prefix)/configure
-    --prefix=$(prefix)
-    --with-gmp=$(gmp_prefix)
-    --with-gc=julia
-    --with-julia=$(juliabin)
-    $(extraargs)
-    $(ARGS)
-    `)
+@show run(
+    addenv(
+        `$(gap_prefix)/configure
+        --prefix=$(prefix)
+        --with-gmp=$(gmp_prefix)
+        --with-gc=julia
+        --with-julia=$(juliabin)
+        $(extraargs)
+        $(ARGS)
+        `,
+        env
+    )
+)
 
 @info "Building GAP in $(tmp_gap_build_dir)"
 
