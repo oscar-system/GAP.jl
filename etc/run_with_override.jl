@@ -12,7 +12,7 @@ gapoverride = abspath(gapoverride)
 #
 @info "Install needed packages"
 using Pkg
-Pkg.develop(path=dirname(dirname(@__FILE__)))
+Pkg.develop(path=dirname(@__DIR__))
 Pkg.add(["GAP_jll", "GAP_lib_jll"])
 Pkg.instantiate()
 
