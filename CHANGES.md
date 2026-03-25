@@ -1,5 +1,9 @@
 # Changes in GAP.jl
 
+## Version 0.17.0-DEV (released YYYY-MM-DD)
+
+- Improve GAP-originated exceptions to include structured GAP stack traces
+
 ## Version 0.16.4 (released 2026-02-23)
 
 - Change `GAP.Packages.test` to throw an exception in case of technical
@@ -571,4 +575,3 @@ Other changes:
 
 
 ## Version 0.3.5 (released 2020-03-22)
-
