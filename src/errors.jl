@@ -26,14 +26,23 @@ GAPError(message::String, gap_frames::Vector{GAPStackFrame}, raw_text::String) =
     GAPError(message, gap_frames, raw_text, Tuple{Base.StackTraces.StackFrame,Int}[])
 
 # Error handling spans GAP and Julia:
-# - GAP prints error text into _JULIAINTERFACE_ERROR_BUFFER
-# - gap/err.g captures GAP stack frames into _JULIAINTERFACE_ERROR_STACK
-# - copy_gap_error_to_julia() snapshots both into last_error_snapshot
-# - ThrowObserver later consumes that snapshot and throws a Julia GAPError
+# - gap/err.g replaces GAP's ErrorInner; that replacement stores a lightweight
+#   GAP stack trace in _JULIAINTERFACE_ERROR_STACK while the original error
+#   context is still available there
+# - GAP's ordinary error printing still writes to ERROR_OUTPUT; gap/err.g points
+#   ERROR_OUTPUT at _JULIAINTERFACE_ERROR_OUTPUT, an OutputTextString stream
+#   backed by _JULIAINTERFACE_ERROR_BUFFER
+# - during GAP_Initialize we register copy_gap_error_to_julia as libgap's
+#   JumpToCatchCallback; GAP calls that callback from FuncJUMP_TO_CATCH in
+#   src/error.c just before it longjmps out of the failing GAP evaluation
+# - copy_gap_error_to_julia snapshots the current GAP-side text/frames together
+#   with a filtered Julia backtrace into last_error_snapshot
+# - GAP_THROW then triggers our ThrowObserver callback, which consumes that
+#   snapshot and throws a Julia GAPError
 #
-# Some paths, especially parse-time failures in evalstr, can reach ThrowObserver
-# without a prior snapshot callback. For those, throw_gap_error falls back to
-# reading the current GAP runtime state directly.
+# Some paths, especially parse-time failures in evalstr, do not go through that
+# JumpToCatchCallback route. For those, throw_gap_error falls back to reading
+# the current GAP runtime state directly.
 const last_error_snapshot = Ref{Union{Nothing,GAPError}}(nothing)
 
 const disable_error_handler = Ref{Bool}(false)
@@ -101,6 +110,19 @@ function capture_current_julia_backtrace()
     return collapse_repeated_julia_frames(trace)
 end
 
+# Base.stacktrace(true) includes a mix of user frames, GAP.jl plumbing frames,
+# and native frames encountered while crossing the Julia <-> GAP boundary. We
+# keep only frames useful to GAP.jl users. The conditions below come from the
+# stack traces we actually see around GAP errors on supported platforms:
+# - ccalls.jl / GAP.jl are GAP.jl's own dispatch and initialization plumbing
+# - .dylib / .so / .dll frames are native library frames (libjulia, libgap,
+#   JuliaInterface, etc.)
+# - .c / .h frames are native source locations that may appear when unwinding
+#   through GAP or libjulia internals
+# - file == ":-1" and line <= 0 are synthetic / locationless frames that do not
+#   point at useful source code
+# This filter is intentionally conservative: if a frame already has a clear
+# Julia source location outside GAP.jl internals, keep it.
 function is_internal_julia_error_frame(frame::Base.StackTraces.StackFrame)
     file = String(frame.file)
     file == abspath(@__DIR__, "ccalls.jl") && return true
@@ -115,6 +137,9 @@ function is_internal_julia_error_frame(frame::Base.StackTraces.StackFrame)
     return false
 end
 
+# Keep the top-level Julia frame, but drop everything above it. Those outer
+# frames are typically REPL / include / test harness machinery and make the
+# rendered backtrace noisier without helping to locate the user call site.
 function trim_julia_backtrace_at_toplevel(trace::Vector{Tuple{Base.StackTraces.StackFrame,Int}})
     for (i, (frame, _)) in pairs(trace)
         if Base.StackTraces.is_top_level_frame(frame)
@@ -125,6 +150,8 @@ function trim_julia_backtrace_at_toplevel(trace::Vector{Tuple{Base.StackTraces.S
     return trace
 end
 
+# Base.show_backtrace expects repetition counts; collapse adjacent identical
+# file/line entries so recursive or repeated trampoline frames render compactly.
 function collapse_repeated_julia_frames(trace::Vector{Tuple{Base.StackTraces.StackFrame,Int}})
     collapsed = Tuple{Base.StackTraces.StackFrame,Int}[]
     for (frame, n) in trace
@@ -140,6 +167,9 @@ function collapse_repeated_julia_frames(trace::Vector{Tuple{Base.StackTraces.Sta
     return collapsed
 end
 
+# Convert the GAP-side stack representation produced by gap/err.g into Julia
+# structs. The hasproperty check matters during startup and error paths before
+# gap/err.g has run: errors.jl is loaded before those GAP globals exist.
 function capture_gap_error_frames()
     frames = GAPStackFrame[]
     if !hasproperty(Globals, :_JULIAINTERFACE_ERROR_STACK)
@@ -162,6 +192,9 @@ function clear_gap_error_frames()
     Globals._JULIAINTERFACE_CLEAR_ERROR_STACK()
 end
 
+# Truncate the GAP string object used as the shared error buffer. The
+# hasproperty check is needed for the same reason as in capture_gap_error_frames:
+# this helper may be reached before gap/err.g created the GAP-side buffer.
 function clear_gap_error_buffer()
     hasproperty(Globals, :_JULIAINTERFACE_ERROR_BUFFER) || return
     # Keep the original GAP string object and only truncate it. Rebinding the
@@ -169,6 +202,9 @@ function clear_gap_error_buffer()
     @ccall libgap.SET_LEN_STRING(Globals._JULIAINTERFACE_ERROR_BUFFER::GapObj, 0::Cuint)::Cvoid
 end
 
+# Clear both pieces of GAP-side error state. The lower-level helpers stay
+# separate because the frame stack and text buffer are maintained differently,
+# and some tests / debugging paths need to manipulate just one side.
 function clear_gap_error()
     clear_gap_error_frames()
     clear_gap_error_buffer()
@@ -202,9 +238,10 @@ function copy_gap_error_to_julia()
         return
     end
 
-    # This is the normal callback path: GAP has already written its error text
-    # and stack into the global buffer/stack, so snapshot them now before the
-    # next GAP command can overwrite that state.
+    # This is the normal libgap callback path described above. GAP is still in
+    # the middle of unwinding, but ErrorInner has already filled the stack
+    # cache and GAP's error printing has already populated the shared buffer.
+    # Snapshot both now, before the next GAP command can overwrite them.
     raw_text = String(Globals._JULIAINTERFACE_ERROR_BUFFER::GapObj)
     isempty(raw_text) && return
 
@@ -219,8 +256,10 @@ function copy_gap_error_to_julia()
 end
 
 function capture_gap_error_snapshot_from_runtime()
-    # Fallback for code paths where ThrowObserver fires without a prior Julia
-    # callback snapshot, for example some evalstr parse errors.
+    # Fallback for code paths where ThrowObserver fires without a prior
+    # copy_gap_error_to_julia callback, most notably some evalstr parse errors.
+    # In that situation we construct the snapshot directly from the current
+    # GAP-side globals instead of from last_error_snapshot.
     raw_text = hasproperty(Globals, :_JULIAINTERFACE_ERROR_BUFFER) ?
         String(Globals._JULIAINTERFACE_ERROR_BUFFER::GapObj) : ""
     frames = capture_gap_error_frames()
