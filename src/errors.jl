@@ -172,9 +172,7 @@ end
 # gap/err.g has run: errors.jl is loaded before those GAP globals exist.
 function capture_gap_error_frames()
     frames = GAPStackFrame[]
-    if !hasproperty(Globals, :_JULIAINTERFACE_ERROR_STACK)
-        return frames
-    end
+    hasproperty(Globals, :_JULIAINTERFACE_ERROR_STACK) || return frames
 
     # GAP stores frames as [label, file-or-fail, line-or-fail].
     raw_frames = Globals._JULIAINTERFACE_ERROR_STACK

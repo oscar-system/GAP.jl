@@ -42,10 +42,6 @@ BindGlobal("_JULIAINTERFACE_CAPTURE_STACK", function(context)
     local frames, bottom, vars, func, label, loc, file, line;
 
     frames := [];
-    if context = fail then
-        return frames;
-    fi;
-
     bottom := GetBottomLVars();
     while context <> fail and context <> bottom do
         vars := ContentsLVars(context);
