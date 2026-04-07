@@ -124,7 +124,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           notify_on_changed_status: true
       - name: Send slack notification
-        uses: act10ns/slack@d96404edccc6d6467fc7f8134a420c851b1e9054
+        uses: act10ns/slack@d96404edccc6d6467fc7f8134a420c851b1e9054 # 2.2.0
         if: ${{ steps.should_notify.outputs.should_send_message == 'yes' }}
         with:
           status: ${{ steps.should_notify.outputs.current_status }}
