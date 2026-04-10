@@ -1,5 +1,9 @@
 # Changes in GAP.jl
 
+## Version 0.16.5-DEV (released 2026-XX-XX)
+
+- Update the `AtlasRep` GAP package from 2.1.9 to 2.1.10
+
 ## Version 0.16.4 (released 2026-02-23)
 
 - Change `GAP.Packages.test` to throw an exception in case of technical
