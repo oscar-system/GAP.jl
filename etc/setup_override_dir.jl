@@ -127,7 +127,7 @@ run(`make -j$(Sys.CPU_THREADS) build/gap-nocomp $(verbose ? "V=1" : [])`)
 # which involves launching GAP, which requires libgmp from GMP_jll, which requires
 # fiddling with DYLD_FALLBACK_LIBRARY_PATH / LD_LIBRARY_PATH ....
 for f in ["c_oper1.c", "c_type1.c"]
-    cp(joinpath(gap_prefix, "build", f), joinpath("build", f))
+    cp(joinpath(gap_prefix, "build", f), joinpath("build", f); force=true)
 end
 
 # complete the build
