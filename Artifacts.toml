@@ -1289,14 +1289,14 @@ git-tree-sha1 = "664a27cd7bad381ae9913e5c778ead30e92059c2"
     url = "https://files.gap-system.org/pkg/SCSCP-2.4.4.tar.gz"
 
 [GAP_pkg_semigroups]
-git-tree-sha1 = "b9a06a044c016aa160b83a33e5b05433ced4cde5"
+git-tree-sha1 = "86eaa78315fa3608b6623a2c6fb1e6ddc5c81f38"
 
     [[GAP_pkg_semigroups.download]]
-    sha256 = "df0488b14af106338009c0ae7dc8b7def9052fb3619a6ba53c31f60cc0731353"
-    url = "https://github.com/semigroups/Semigroups/releases/download/v5.5.4/semigroups-5.5.4.tar.gz"
+    sha256 = "92123474c067710219f7813c0511fb418338a04e493d0d2dbfb0a88ad5c6dc9d"
+    url = "https://github.com/semigroups/Semigroups/releases/download/v5.6.1/semigroups-5.6.1.tar.gz"
     [[GAP_pkg_semigroups.download]]
-    sha256 = "df0488b14af106338009c0ae7dc8b7def9052fb3619a6ba53c31f60cc0731353"
-    url = "https://files.gap-system.org/pkg/semigroups-5.5.4.tar.gz"
+    sha256 = "92123474c067710219f7813c0511fb418338a04e493d0d2dbfb0a88ad5c6dc9d"
+    url = "https://files.gap-system.org/pkg/semigroups-5.6.1.tar.gz"
 
 [GAP_pkg_sglppow]
 git-tree-sha1 = "d8117da4d48ea5676110e84bfdc759cdbe5737fa"
