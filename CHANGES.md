@@ -1,6 +1,6 @@
 # Changes in GAP.jl
 
-## Version 0.16.5-DEV (released 2026-XX-XX)
+## Version 0.16.5 (released 2026-04-23)
 
 - Update the `AtlasRep` GAP package from 2.1.9 to 2.1.10
 
