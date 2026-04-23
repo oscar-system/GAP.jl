@@ -1,5 +1,9 @@
 # Changes in GAP.jl
 
+## Version 0.17.0-DEV (released YYYY-MM-DD)
+
+- Improve GAP-originated exceptions to include structured GAP stack traces
+
 ## Version 0.16.5-DEV (released 2026-XX-XX)
 
 - Update the `AtlasRep` GAP package from 2.1.9 to 2.1.10
@@ -575,4 +579,3 @@ Other changes:
 
 
 ## Version 0.3.5 (released 2020-03-22)
-

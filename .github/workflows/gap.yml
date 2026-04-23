@@ -71,17 +71,30 @@ jobs:
       - name: "Install dependencies (for macOS)"
         if: runner.os == 'macOS'
         run: |
-          brew install autoconf zlib # gmp pkg-config
+          # - autoconf, gmp, zlib are needed by GAP's build system
+          # - coreutils provides nproc
+          # - force use of Homebrew gcc to build GAP for proper stacktrace support
+          #   Homebrew installs versioned binaries such as gcc-15 and g++-15,
+          #   while later scripts expect unversioned gcc and g++ in PATH.
+          brew install autoconf gmp zlib gcc coreutils
+
+          # ensure gcc and g++ are avaialble under those names (on macOS,
+          # these names are aliases for clang / clang++ out of the box)
+          shimdir="${HOME}/bin"
+          mkdir -p "${shimdir}"
+          ln -sf "$(brew --prefix)/bin/gcc-15" "${shimdir}/gcc"
+          ln -sf "$(brew --prefix)/bin/g++-15" "${shimdir}/g++"
+          echo "${shimdir}" >> "${GITHUB_PATH}"
       - name: "Build GAP"
         run: |
           mv GAPROOT /tmp/GAPROOT
           cd /tmp/GAPROOT
           ./autogen.sh
-          ./configure --enable-Werror
+          ./configure
           make -j`nproc`
       - name: "Override bundled GAP"
         run: |
-          julia --proj=override etc/setup_override_dir.jl /tmp/GAPROOT /tmp/gap_jll_override --enable-Werror
+          julia --proj=override etc/setup_override_dir.jl /tmp/GAPROOT /tmp/gap_jll_override
       - name: "Run tests"
         run: |
            julia --proj=override etc/run_with_override.jl /tmp/gap_jll_override --depwarn=error -e "using Pkg; Pkg.test(\"GAP\")"

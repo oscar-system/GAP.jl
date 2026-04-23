@@ -74,6 +74,7 @@ function initialize(argv::Vector{String})
     @ccall libgap.GAP_InitJuliaMemoryInterface((@__MODULE__)::Any, C_NULL::Ptr{Nothing})::Nothing
 
     handle_signals = isdefined(Main, :__GAP_ARGS__)  # a bit of a hack...
+    disable_error_handler[] = handle_signals
     error_handler_func = handle_signals ? C_NULL : @cfunction(copy_gap_error_to_julia, Cvoid, ())
 
     # Tell GAP to read a file during startup (after its `lib/system.g`),
@@ -254,7 +255,9 @@ function __init__()
     # Start GAP.
     initialize(cmdline_options)
 
-    if !isdefined(Main, :__GAP_ARGS__)
+    if isdefined(Main, :__GAP_ARGS__)
+        set_error_handler_disabled(true)
+    else
         # We had started GAP with the `-b` option.
         # Reset this option in order to leave it to GAP's `LoadPackage`
         # whether package banners are shown.
