@@ -1,12 +1,12 @@
 [GAP_pkg_4ti2interface]
-git-tree-sha1 = "0cfc2ae54301261dad1f4fa233047ded8e719cfc"
+git-tree-sha1 = "9cdb952f0e6b06936ee63209f6773418eb2bc410"
 
     [[GAP_pkg_4ti2interface.download]]
-    sha256 = "6716431f63a5b29e20333b2bc4b432198528e9b50c28dea988658962857659e7"
-    url = "https://github.com/homalg-project/homalg_project/releases/download/4ti2Interface-2024.11-01/4ti2Interface-2024.11-01.tar.gz"
+    sha256 = "14004024e413453150cd32e07e1529caeb36d4384890e2a5bfc15e53e778192d"
+    url = "https://github.com/homalg-project/homalg_project/releases/download/4ti2Interface-2025.12-01/4ti2Interface-2025.12-01.tar.gz"
     [[GAP_pkg_4ti2interface.download]]
-    sha256 = "6716431f63a5b29e20333b2bc4b432198528e9b50c28dea988658962857659e7"
-    url = "https://files.gap-system.org/pkg/4ti2Interface-2024.11-01.tar.gz"
+    sha256 = "14004024e413453150cd32e07e1529caeb36d4384890e2a5bfc15e53e778192d"
+    url = "https://files.gap-system.org/pkg/4ti2Interface-2025.12-01.tar.gz"
 
 [GAP_pkg_ace]
 git-tree-sha1 = "cba87cfa8295d898925c0e5e1d77ab820a4b2d6c"
@@ -59,14 +59,14 @@ git-tree-sha1 = "af2c63bce5c78d0f874f545750f5e309e09cd66b"
     url = "https://files.gap-system.org/pkg/alnuth-3.2.1.tar.gz"
 
 [GAP_pkg_anupq]
-git-tree-sha1 = "072c7f80bd5209fef3c8e87840e532bbc1731c34"
+git-tree-sha1 = "19d8742f55126ea3c6684857f02f61a39fe01378"
 
     [[GAP_pkg_anupq.download]]
-    sha256 = "2ee92fc2314ad139cc6800a8a21e5dfbde04a6182f4867dc32c20024b2ac3bca"
-    url = "https://github.com/gap-packages/anupq/releases/download/v3.3.2/anupq-3.3.2.tar.gz"
+    sha256 = "6a1b25ddcdb05abd933911f8e0e718b195d24b502e5d098d4b431db5f371ffc2"
+    url = "https://github.com/gap-packages/anupq/releases/download/v3.3.3/anupq-3.3.3.tar.gz"
     [[GAP_pkg_anupq.download]]
-    sha256 = "2ee92fc2314ad139cc6800a8a21e5dfbde04a6182f4867dc32c20024b2ac3bca"
-    url = "https://files.gap-system.org/pkg/anupq-3.3.2.tar.gz"
+    sha256 = "6a1b25ddcdb05abd933911f8e0e718b195d24b502e5d098d4b431db5f371ffc2"
+    url = "https://files.gap-system.org/pkg/anupq-3.3.3.tar.gz"
 
 [GAP_pkg_atlasrep]
 git-tree-sha1 = "7a7f79df4b04003f4ddfb6568d10f4d08eb54f02"
@@ -79,14 +79,14 @@ git-tree-sha1 = "7a7f79df4b04003f4ddfb6568d10f4d08eb54f02"
     url = "https://files.gap-system.org/pkg/atlasrep-2.1.10.tar.gz"
 
 [GAP_pkg_autodoc]
-git-tree-sha1 = "e0578e2b9f89482796d54ea6d29919e81879c964"
+git-tree-sha1 = "448211ccd423f4ce4233f67c808bee37b2371e90"
 
     [[GAP_pkg_autodoc.download]]
-    sha256 = "4b72c71f6bf0972102c296a4e761fcb9803fe9a7d2b5b6c4d83efef3c12bf43d"
-    url = "https://github.com/gap-packages/AutoDoc/releases/download/v2025.10.16/AutoDoc-2025.10.16.tar.gz"
+    sha256 = "1800d4d87e418ede2679e53f6d03389d0bc286bd83cb8bcada2c4c31a5bb7e61"
+    url = "https://github.com/gap-packages/AutoDoc/releases/download/v2026.03.18/AutoDoc-2026.03.18.tar.gz"
     [[GAP_pkg_autodoc.download]]
-    sha256 = "4b72c71f6bf0972102c296a4e761fcb9803fe9a7d2b5b6c4d83efef3c12bf43d"
-    url = "https://files.gap-system.org/pkg/AutoDoc-2025.10.16.tar.gz"
+    sha256 = "1800d4d87e418ede2679e53f6d03389d0bc286bd83cb8bcada2c4c31a5bb7e61"
+    url = "https://files.gap-system.org/pkg/AutoDoc-2026.03.18.tar.gz"
 
 [GAP_pkg_automata]
 git-tree-sha1 = "1e143aba0160ae0739082546a43987203571fe14"
@@ -119,24 +119,24 @@ git-tree-sha1 = "038e90fce94e4e95387796cd3a1a1b2b26e2d7c6"
     url = "https://files.gap-system.org/pkg/autpgrp-1.11.1.tar.gz"
 
 [GAP_pkg_browse]
-git-tree-sha1 = "840bdaf8beee5364eca5594b6d85d2f8dd8596bc"
+git-tree-sha1 = "eadf6b3d3655ba9bd89084bbe9300095c2c0b1c8"
 
     [[GAP_pkg_browse.download]]
-    sha256 = "3305f92e78598b1ffeef373c707921c32f8250858108c248caeef4b8fc874960"
-    url = "https://www.math.rwth-aachen.de/~Browse/Browse-1.8.21.tar.bz2"
+    sha256 = "4ff36bb787f7da968a920d657a615d601615a3dc0780d31f7bbdb3ff995748ae"
+    url = "https://www.math.rwth-aachen.de/~Browse/Browse-1.8.22.tar.bz2"
     [[GAP_pkg_browse.download]]
-    sha256 = "3305f92e78598b1ffeef373c707921c32f8250858108c248caeef4b8fc874960"
-    url = "https://files.gap-system.org/pkg/Browse-1.8.21.tar.bz2"
+    sha256 = "4ff36bb787f7da968a920d657a615d601615a3dc0780d31f7bbdb3ff995748ae"
+    url = "https://files.gap-system.org/pkg/Browse-1.8.22.tar.bz2"
 
 [GAP_pkg_cap]
-git-tree-sha1 = "4d27b16174335aab785018de5d7b2219b30cde31"
+git-tree-sha1 = "37ed4bcd7b9995e0996738e1b1c3d71b6b18d7b1"
 
     [[GAP_pkg_cap.download]]
-    sha256 = "4c821391b4f3c661e881c47b616f764aa84ae72ad933d6d920f6cd924e0d07b1"
-    url = "https://github.com/homalg-project/CAP_project/releases/download/CAP-2025.09-04/CAP-2025.09-04.tar.gz"
+    sha256 = "351b5dfeb4fe694a0d1ada208ef8020f5eca83d49a8af3f80881672c4ee6c227"
+    url = "https://github.com/homalg-project/CAP_project/releases/download/CAP-2026.04-02/CAP-2026.04-02.tar.gz"
     [[GAP_pkg_cap.download]]
-    sha256 = "4c821391b4f3c661e881c47b616f764aa84ae72ad933d6d920f6cd924e0d07b1"
-    url = "https://files.gap-system.org/pkg/CAP-2025.09-04.tar.gz"
+    sha256 = "351b5dfeb4fe694a0d1ada208ef8020f5eca83d49a8af3f80881672c4ee6c227"
+    url = "https://files.gap-system.org/pkg/CAP-2026.04-02.tar.gz"
 
 [GAP_pkg_caratinterface]
 git-tree-sha1 = "13ed4fe718f84009ff04e3bdfcf6ed472254e285"
@@ -149,14 +149,14 @@ git-tree-sha1 = "13ed4fe718f84009ff04e3bdfcf6ed472254e285"
     url = "https://files.gap-system.org/pkg/CaratInterface-2.3.7.tar.gz"
 
 [GAP_pkg_cddinterface]
-git-tree-sha1 = "3d7d0d4377ba3a6c8aae64f58d7d77954f80fed2"
+git-tree-sha1 = "e24d541fcf5a7aefdcc77380580af3318ec48dd2"
 
     [[GAP_pkg_cddinterface.download]]
-    sha256 = "fc3f4ae2b4cb27152bf82d3a64a3aec63be283c83090e586204540a12b0d4883"
-    url = "https://github.com/homalg-project/CddInterface/releases/download/v2025.06.24/CddInterface-2025.06.24.tar.gz"
+    sha256 = "e425b0e87667df3f6e4c33cd2656bfc53602297620c91f60e322b29478954a2b"
+    url = "https://github.com/homalg-project/CddInterface/releases/download/v2026.03.02/CddInterface-2026.03.02.tar.gz"
     [[GAP_pkg_cddinterface.download]]
-    sha256 = "fc3f4ae2b4cb27152bf82d3a64a3aec63be283c83090e586204540a12b0d4883"
-    url = "https://files.gap-system.org/pkg/CddInterface-2025.06.24.tar.gz"
+    sha256 = "e425b0e87667df3f6e4c33cd2656bfc53602297620c91f60e322b29478954a2b"
+    url = "https://files.gap-system.org/pkg/CddInterface-2026.03.02.tar.gz"
 
 [GAP_pkg_circle]
 git-tree-sha1 = "30d2e49b40b9f067b3c38896286054d4e93dc4be"
@@ -289,14 +289,14 @@ git-tree-sha1 = "b88a0fadda0f2bc4c1b739278d5c11e76c070653"
     url = "https://files.gap-system.org/pkg/cubefree-1.21.tar.gz"
 
 [GAP_pkg_curlinterface]
-git-tree-sha1 = "75348fa671509949dadb02417ef4c7f3e0687d13"
+git-tree-sha1 = "42307dbbf1a33576df6caa8196c53dde1ca7b322"
 
     [[GAP_pkg_curlinterface.download]]
-    sha256 = "973d4b518bb25295fa36e367c54fd257adb7af4723634f039f53dae507855756"
-    url = "https://github.com/gap-packages/curlInterface/releases/download/v2.4.2/curlInterface-2.4.2.tar.gz"
+    sha256 = "bba4ac8190eb9f51a5b645d09aaea7a60e9af949b37e6c8ff8f1d2ce5f4df587"
+    url = "https://github.com/gap-packages/curlInterface/releases/download/v2.4.3/curlInterface-2.4.3.tar.gz"
     [[GAP_pkg_curlinterface.download]]
-    sha256 = "973d4b518bb25295fa36e367c54fd257adb7af4723634f039f53dae507855756"
-    url = "https://files.gap-system.org/pkg/curlInterface-2.4.2.tar.gz"
+    sha256 = "bba4ac8190eb9f51a5b645d09aaea7a60e9af949b37e6c8ff8f1d2ce5f4df587"
+    url = "https://files.gap-system.org/pkg/curlInterface-2.4.3.tar.gz"
 
 [GAP_pkg_cvec]
 git-tree-sha1 = "5cefed391d884e00e1a17919043e6c90ea1ecc22"
@@ -309,14 +309,14 @@ git-tree-sha1 = "5cefed391d884e00e1a17919043e6c90ea1ecc22"
     url = "https://files.gap-system.org/pkg/cvec-2.8.4.tar.gz"
 
 [GAP_pkg_datastructures]
-git-tree-sha1 = "e4c8ae1767d68207259ab6a98bf4d5b147af9d6f"
+git-tree-sha1 = "70ec25695c320b5335dadebf29362e76503667be"
 
     [[GAP_pkg_datastructures.download]]
-    sha256 = "c6ba1b9a43973e085b9f2b6bc70c216b1b297957cf59bde904e98387acf2cb3f"
-    url = "https://github.com/gap-packages/datastructures/releases/download/v0.4.0/datastructures-0.4.0.tar.gz"
+    sha256 = "e30ca878e42021ec51f317496a330f8ff345f12c5c14de4c9c87670e64c8aba6"
+    url = "https://github.com/gap-packages/datastructures/releases/download/v0.4.1/datastructures-0.4.1.tar.gz"
     [[GAP_pkg_datastructures.download]]
-    sha256 = "c6ba1b9a43973e085b9f2b6bc70c216b1b297957cf59bde904e98387acf2cb3f"
-    url = "https://files.gap-system.org/pkg/datastructures-0.4.0.tar.gz"
+    sha256 = "e30ca878e42021ec51f317496a330f8ff345f12c5c14de4c9c87670e64c8aba6"
+    url = "https://files.gap-system.org/pkg/datastructures-0.4.1.tar.gz"
 
 [GAP_pkg_deepthought]
 git-tree-sha1 = "7412e2db01e12d02ffd7c69639bb325a7ebdcfa9"
@@ -349,14 +349,14 @@ git-tree-sha1 = "17db1566d589e68dc79cc0bb003b04af8da9da8f"
     url = "https://files.gap-system.org/pkg/difsets-2.3.1.tar.gz"
 
 [GAP_pkg_digraphs]
-git-tree-sha1 = "9892498a9fbbb30ba582ad50de8c15cf9a218f00"
+git-tree-sha1 = "fdd696985ff727b7bc6ecd6291463b4b15754112"
 
     [[GAP_pkg_digraphs.download]]
-    sha256 = "b965094b187b448c36edac9eb8400809adcd3045df7067aea47ba3dd5fec7396"
-    url = "https://github.com/digraphs/Digraphs/releases/download/v1.13.1/digraphs-1.13.1.tar.gz"
+    sha256 = "2ae9c1691fe46950a44e2614ed4dcfe5dbb418c13cf3ebb4515f6aa59990ea9f"
+    url = "https://github.com/digraphs/Digraphs/releases/download/v1.14.0/digraphs-1.14.0.tar.gz"
     [[GAP_pkg_digraphs.download]]
-    sha256 = "b965094b187b448c36edac9eb8400809adcd3045df7067aea47ba3dd5fec7396"
-    url = "https://files.gap-system.org/pkg/digraphs-1.13.1.tar.gz"
+    sha256 = "2ae9c1691fe46950a44e2614ed4dcfe5dbb418c13cf3ebb4515f6aa59990ea9f"
+    url = "https://files.gap-system.org/pkg/digraphs-1.14.0.tar.gz"
 
 [GAP_pkg_edim]
 git-tree-sha1 = "af19036c239a2d3e28884dd13ea7a02d1e8adf89"
@@ -379,14 +379,14 @@ git-tree-sha1 = "7c67faf302e60dd420fa359cc15f7a5fcf214464"
     url = "https://files.gap-system.org/pkg/Example-4.4.1.tar.gz"
 
 [GAP_pkg_examplesforhomalg]
-git-tree-sha1 = "71a13987025460a1c7aa6ce3c8e46fe55005f2c7"
+git-tree-sha1 = "403990162609fdbf0281d798b777f1c68ec92300"
 
     [[GAP_pkg_examplesforhomalg.download]]
-    sha256 = "a0e2898b9fd8df8bd3597574eba31d7eec9d38b41d0579dfce778d311903d764"
-    url = "https://github.com/homalg-project/homalg_project/releases/download/ExamplesForHomalg-2023.10-01/ExamplesForHomalg-2023.10-01.tar.gz"
+    sha256 = "1ada9e4bfce1f6ffde7e707af2f2a7483a0feab6e603148f1403f6febb5183d6"
+    url = "https://github.com/homalg-project/homalg_project/releases/download/ExamplesForHomalg-2025.12-01/ExamplesForHomalg-2025.12-01.tar.gz"
     [[GAP_pkg_examplesforhomalg.download]]
-    sha256 = "a0e2898b9fd8df8bd3597574eba31d7eec9d38b41d0579dfce778d311903d764"
-    url = "https://files.gap-system.org/pkg/ExamplesForHomalg-2023.10-01.tar.gz"
+    sha256 = "1ada9e4bfce1f6ffde7e707af2f2a7483a0feab6e603148f1403f6febb5183d6"
+    url = "https://files.gap-system.org/pkg/ExamplesForHomalg-2025.12-01.tar.gz"
 
 [GAP_pkg_factint]
 git-tree-sha1 = "9c82af735bb10e5af6b015935065f58b47ac2174"
@@ -399,14 +399,14 @@ git-tree-sha1 = "9c82af735bb10e5af6b015935065f58b47ac2174"
     url = "https://files.gap-system.org/pkg/FactInt-1.6.3.tar.gz"
 
 [GAP_pkg_ferret]
-git-tree-sha1 = "e70e9347752a57cf92b8a276c59e947dc7868c2b"
+git-tree-sha1 = "c8b4c7111a20258a222f381461a1a4d32b398fbf"
 
     [[GAP_pkg_ferret.download]]
-    sha256 = "2850f3c13114cb4c05f8da16104d63db94452fe2c7fb642caa7a7ad863e802a0"
-    url = "https://github.com/gap-packages/ferret/releases/download/v1.0.15/ferret-1.0.15.tar.gz"
+    sha256 = "f444ac13a96c3f7f78757c6d5bfefe0e5385baabc1983599cb4d4b3b35882686"
+    url = "https://github.com/gap-packages/ferret/releases/download/v1.0.16/ferret-1.0.16.tar.gz"
     [[GAP_pkg_ferret.download]]
-    sha256 = "2850f3c13114cb4c05f8da16104d63db94452fe2c7fb642caa7a7ad863e802a0"
-    url = "https://files.gap-system.org/pkg/ferret-1.0.15.tar.gz"
+    sha256 = "f444ac13a96c3f7f78757c6d5bfefe0e5385baabc1983599cb4d4b3b35882686"
+    url = "https://files.gap-system.org/pkg/ferret-1.0.16.tar.gz"
 
 [GAP_pkg_fga]
 git-tree-sha1 = "cd44c5b7f477ac3969607e5ae9ed051020c5647c"
@@ -439,34 +439,34 @@ git-tree-sha1 = "dd4690a5b70e06b793e405bf4960a1bd5cee3e1b"
     url = "https://files.gap-system.org/pkg/float-1.0.9.tar.gz"
 
 [GAP_pkg_format]
-git-tree-sha1 = "67b8015b0365a7cb76c9d2a9fa4112d213dd11e0"
+git-tree-sha1 = "b76ddb78eeb85ec2ecc3b2e58298068f18f10ef3"
 
     [[GAP_pkg_format.download]]
-    sha256 = "443804dc4cb11c23f496508378bce4940a9b748812e62c03ecacdc538afca477"
-    url = "https://github.com/gap-packages/format/releases/download/v1.4.4/format-1.4.4.tar.gz"
+    sha256 = "fcf01313854d2d6cb2c4cb92e104bdd33ac6f852642e215df68b589dd4fef0d2"
+    url = "https://github.com/gap-packages/format/releases/download/v1.4.5/format-1.4.5.tar.gz"
     [[GAP_pkg_format.download]]
-    sha256 = "443804dc4cb11c23f496508378bce4940a9b748812e62c03ecacdc538afca477"
-    url = "https://files.gap-system.org/pkg/format-1.4.4.tar.gz"
+    sha256 = "fcf01313854d2d6cb2c4cb92e104bdd33ac6f852642e215df68b589dd4fef0d2"
+    url = "https://files.gap-system.org/pkg/format-1.4.5.tar.gz"
 
 [GAP_pkg_forms]
-git-tree-sha1 = "9d95645c998357a8fe8a4f2ff836b3ca396ad81b"
+git-tree-sha1 = "d00e655c4259925e4d7cde654b5458e5b4b3ab4b"
 
     [[GAP_pkg_forms.download]]
-    sha256 = "0b389987b9dd19e66fa01944f9de41bb508acb4f6f6c3118d005420754fcbd39"
-    url = "https://github.com/gap-packages/forms/releases/download/v1.2.13/forms-1.2.13.tar.gz"
+    sha256 = "9415c1626c646f6569332cc1e4d844911e8f7de5272238cbe3affb5c0c74cc87"
+    url = "https://github.com/gap-packages/forms/releases/download/v1.2.14/forms-1.2.14.tar.gz"
     [[GAP_pkg_forms.download]]
-    sha256 = "0b389987b9dd19e66fa01944f9de41bb508acb4f6f6c3118d005420754fcbd39"
-    url = "https://files.gap-system.org/pkg/forms-1.2.13.tar.gz"
+    sha256 = "9415c1626c646f6569332cc1e4d844911e8f7de5272238cbe3affb5c0c74cc87"
+    url = "https://files.gap-system.org/pkg/forms-1.2.14.tar.gz"
 
 [GAP_pkg_fplsa]
-git-tree-sha1 = "153a6957fd15e1788af9bb2db31b77b8f80d6c7d"
+git-tree-sha1 = "ec51ce34ee07b5e4dbb82104734e820b7060a9c8"
 
     [[GAP_pkg_fplsa.download]]
-    sha256 = "eb3400869479a547c80f7b461ce0dceec5d480fa7042f2abffc2fd8d3df05fc3"
-    url = "https://github.com/gap-packages/FPLSA/releases/download/v1.2.7/FPLSA-1.2.7.tar.gz"
+    sha256 = "cb2fd23861df583259ec6677119080ca958caa13405834365163e7c2b0441952"
+    url = "https://github.com/gap-packages/FPLSA/releases/download/v1.2.8/FPLSA-1.2.8.tar.gz"
     [[GAP_pkg_fplsa.download]]
-    sha256 = "eb3400869479a547c80f7b461ce0dceec5d480fa7042f2abffc2fd8d3df05fc3"
-    url = "https://files.gap-system.org/pkg/FPLSA-1.2.7.tar.gz"
+    sha256 = "cb2fd23861df583259ec6677119080ca958caa13405834365163e7c2b0441952"
+    url = "https://files.gap-system.org/pkg/FPLSA-1.2.8.tar.gz"
 
 [GAP_pkg_fr]
 git-tree-sha1 = "010eefd229a50c10f468be2df812320add0713b6"
@@ -509,24 +509,24 @@ git-tree-sha1 = "4713f023634252427f78f9bc1551a3c6ccc735cf"
     url = "https://files.gap-system.org/pkg/GAPDoc-1.6.7.tar.bz2"
 
 [GAP_pkg_gauss]
-git-tree-sha1 = "90174e5556ef97ab1b9e8d4245ba155b6cb1ae5a"
+git-tree-sha1 = "419a0430d13b945f7a1d00cfaaf9078ddcfc5831"
 
     [[GAP_pkg_gauss.download]]
-    sha256 = "67b0e5d72395036a79630f959a8ab06cd19ac1c58569fee241d1790be8c0689f"
-    url = "https://github.com/homalg-project/homalg_project/releases/download/Gauss-2024.11-01/Gauss-2024.11-01.tar.gz"
+    sha256 = "f13701e6d9a5585eb8be795349c880176bbc2b925d9f827790c607040c03207a"
+    url = "https://github.com/homalg-project/homalg_project/releases/download/Gauss-2025.12-01/Gauss-2025.12-01.tar.gz"
     [[GAP_pkg_gauss.download]]
-    sha256 = "67b0e5d72395036a79630f959a8ab06cd19ac1c58569fee241d1790be8c0689f"
-    url = "https://files.gap-system.org/pkg/Gauss-2024.11-01.tar.gz"
+    sha256 = "f13701e6d9a5585eb8be795349c880176bbc2b925d9f827790c607040c03207a"
+    url = "https://files.gap-system.org/pkg/Gauss-2025.12-01.tar.gz"
 
 [GAP_pkg_gaussforhomalg]
-git-tree-sha1 = "cb03dee6fd645cc006076a03ca5dab5943335ccd"
+git-tree-sha1 = "f5d88a99af9d95dedf77e6246aa25c54f9104cb4"
 
     [[GAP_pkg_gaussforhomalg.download]]
-    sha256 = "4ab05eb6d92e88cdf53296826f8df1aaf575a0e3349b298341bd0a30bd1c3979"
-    url = "https://github.com/homalg-project/homalg_project/releases/download/GaussForHomalg-2024.08-01/GaussForHomalg-2024.08-01.tar.gz"
+    sha256 = "5c1d8f495f6e3bf51892b8d87587cd110e513901fbac8e0a20e87f0a1cf4d608"
+    url = "https://github.com/homalg-project/homalg_project/releases/download/GaussForHomalg-2026.04-01/GaussForHomalg-2026.04-01.tar.gz"
     [[GAP_pkg_gaussforhomalg.download]]
-    sha256 = "4ab05eb6d92e88cdf53296826f8df1aaf575a0e3349b298341bd0a30bd1c3979"
-    url = "https://files.gap-system.org/pkg/GaussForHomalg-2024.08-01.tar.gz"
+    sha256 = "5c1d8f495f6e3bf51892b8d87587cd110e513901fbac8e0a20e87f0a1cf4d608"
+    url = "https://files.gap-system.org/pkg/GaussForHomalg-2026.04-01.tar.gz"
 
 [GAP_pkg_gbnp]
 git-tree-sha1 = "52bd959fce1fc3c83ef346a6549001122519753e"
@@ -539,14 +539,14 @@ git-tree-sha1 = "52bd959fce1fc3c83ef346a6549001122519753e"
     url = "https://files.gap-system.org/pkg/gbnp-1.1.0.tar.gz"
 
 [GAP_pkg_generalizedmorphismsforcap]
-git-tree-sha1 = "ba3f9c3b81d0cf53f3ac623c085ba01c8f4bda63"
+git-tree-sha1 = "9ff63e10494f1bd9b72d9b3499e28ef204049053"
 
     [[GAP_pkg_generalizedmorphismsforcap.download]]
-    sha256 = "ebe915f6bb2ff8528aef6f3c313e8996c0f1ff320ddd54777aadd44f16fca068"
-    url = "https://github.com/homalg-project/CAP_project/releases/download/GeneralizedMorphismsForCAP-2025.08-01/GeneralizedMorphismsForCAP-2025.08-01.tar.gz"
+    sha256 = "fb04dcf117ef2e9c04a625b4f5c602055cbaf12d480aafa2e8038f74c21041c1"
+    url = "https://github.com/homalg-project/CAP_project/releases/download/GeneralizedMorphismsForCAP-2025.12-01/GeneralizedMorphismsForCAP-2025.12-01.tar.gz"
     [[GAP_pkg_generalizedmorphismsforcap.download]]
-    sha256 = "ebe915f6bb2ff8528aef6f3c313e8996c0f1ff320ddd54777aadd44f16fca068"
-    url = "https://files.gap-system.org/pkg/GeneralizedMorphismsForCAP-2025.08-01.tar.gz"
+    sha256 = "fb04dcf117ef2e9c04a625b4f5c602055cbaf12d480aafa2e8038f74c21041c1"
+    url = "https://files.gap-system.org/pkg/GeneralizedMorphismsForCAP-2025.12-01.tar.gz"
 
 [GAP_pkg_genss]
 git-tree-sha1 = "3bd5aa8803ed3ecf4febde53e2c27a242d2631e1"
@@ -559,24 +559,24 @@ git-tree-sha1 = "3bd5aa8803ed3ecf4febde53e2c27a242d2631e1"
     url = "https://files.gap-system.org/pkg/genss-1.6.9.tar.gz"
 
 [GAP_pkg_gradedmodules]
-git-tree-sha1 = "9dc9776a6e9704fdc9dc526779405d268cb8eb20"
+git-tree-sha1 = "f0f6ea44501ec433a3c57d8d9d65912e90e55f96"
 
     [[GAP_pkg_gradedmodules.download]]
-    sha256 = "da32a22d7f31e14665541a4ae234b2d922020e3e71be13aeaafa6d925bbc4b3e"
-    url = "https://github.com/homalg-project/homalg_project/releases/download/GradedModules-2024.12-01/GradedModules-2024.12-01.tar.gz"
+    sha256 = "436542af5e6b8e8844a5e6c6118dd826ecb8ee8861a1f9d18d1d519e8d8949c9"
+    url = "https://github.com/homalg-project/homalg_project/releases/download/GradedModules-2026.04-01/GradedModules-2026.04-01.tar.gz"
     [[GAP_pkg_gradedmodules.download]]
-    sha256 = "da32a22d7f31e14665541a4ae234b2d922020e3e71be13aeaafa6d925bbc4b3e"
-    url = "https://files.gap-system.org/pkg/GradedModules-2024.12-01.tar.gz"
+    sha256 = "436542af5e6b8e8844a5e6c6118dd826ecb8ee8861a1f9d18d1d519e8d8949c9"
+    url = "https://files.gap-system.org/pkg/GradedModules-2026.04-01.tar.gz"
 
 [GAP_pkg_gradedringforhomalg]
-git-tree-sha1 = "20105a8eaef7978225b3f57ea77984793c961faa"
+git-tree-sha1 = "44b7ff08811c39d21b94aed14af4109d602b7a66"
 
     [[GAP_pkg_gradedringforhomalg.download]]
-    sha256 = "e5de3cfbe00921ab6d2a62c42185f68719a19029b081a0323cfbe24f7a505f64"
-    url = "https://github.com/homalg-project/homalg_project/releases/download/GradedRingForHomalg-2024.07-01/GradedRingForHomalg-2024.07-01.tar.gz"
+    sha256 = "8f8bc8465b934531209b20f4f68a346b29efb4f5d2ca76ce5cfa92737d2b5b99"
+    url = "https://github.com/homalg-project/homalg_project/releases/download/GradedRingForHomalg-2026.04-01/GradedRingForHomalg-2026.04-01.tar.gz"
     [[GAP_pkg_gradedringforhomalg.download]]
-    sha256 = "e5de3cfbe00921ab6d2a62c42185f68719a19029b081a0323cfbe24f7a505f64"
-    url = "https://files.gap-system.org/pkg/GradedRingForHomalg-2024.07-01.tar.gz"
+    sha256 = "8f8bc8465b934531209b20f4f68a346b29efb4f5d2ca76ce5cfa92737d2b5b99"
+    url = "https://files.gap-system.org/pkg/GradedRingForHomalg-2026.04-01.tar.gz"
 
 [GAP_pkg_grape]
 git-tree-sha1 = "0a3a3c9045d93a83ad43e43fbb259595267fb5bf"
@@ -589,14 +589,14 @@ git-tree-sha1 = "0a3a3c9045d93a83ad43e43fbb259595267fb5bf"
     url = "https://files.gap-system.org/pkg/grape-4.9.3.tar.gz"
 
 [GAP_pkg_groupoids]
-git-tree-sha1 = "e01543ff1347622851da1e1eb82e0d5bb2981577"
+git-tree-sha1 = "7278ed527e02edc9c8ade301fa7873a53062b7b8"
 
     [[GAP_pkg_groupoids.download]]
-    sha256 = "3730662c0aa6001cc0a6b4e935af4f04734e4ea20dc315fad9db64fc2ae025b1"
-    url = "https://github.com/gap-packages/groupoids/releases/download/v1.79/groupoids-1.79.tar.gz"
+    sha256 = "5483075441fca6d5d86b1b09db35840688eb3f0c7e15fbadec6bffcf0f0dd363"
+    url = "https://github.com/gap-packages/groupoids/releases/download/v1.81/groupoids-1.81.tar.gz"
     [[GAP_pkg_groupoids.download]]
-    sha256 = "3730662c0aa6001cc0a6b4e935af4f04734e4ea20dc315fad9db64fc2ae025b1"
-    url = "https://files.gap-system.org/pkg/groupoids-1.79.tar.gz"
+    sha256 = "5483075441fca6d5d86b1b09db35840688eb3f0c7e15fbadec6bffcf0f0dd363"
+    url = "https://files.gap-system.org/pkg/groupoids-1.81.tar.gz"
 
 [GAP_pkg_grpconst]
 git-tree-sha1 = "09996118aac9e5ae8b612cdb35028626d596c7de"
@@ -619,34 +619,34 @@ git-tree-sha1 = "e16a454c20f6e33ef785702b51225f594faeb17d"
     url = "https://files.gap-system.org/pkg/guarana-0.96.3.tar.gz"
 
 [GAP_pkg_guava]
-git-tree-sha1 = "1a54c9820d5b814418020102bfd7d17f3fe305a9"
+git-tree-sha1 = "a56495c36355f2a9c3a5740f10d9d86f02adc875"
 
     [[GAP_pkg_guava.download]]
-    sha256 = "a6a19aae3dc8d32569d2c98715c3de84df88e65819ce70bdb7595850de5cbe56"
-    url = "https://github.com/gap-packages/guava/releases/download/v3.20/guava-3.20.tar.gz"
+    sha256 = "00c27b50a0969cc6f93db314009e67ae6e205d51a33e6864097dba5a65482fa3"
+    url = "https://github.com/gap-packages/guava/releases/download/v3.21/guava-3.21.tar.gz"
     [[GAP_pkg_guava.download]]
-    sha256 = "a6a19aae3dc8d32569d2c98715c3de84df88e65819ce70bdb7595850de5cbe56"
-    url = "https://files.gap-system.org/pkg/guava-3.20.tar.gz"
+    sha256 = "00c27b50a0969cc6f93db314009e67ae6e205d51a33e6864097dba5a65482fa3"
+    url = "https://files.gap-system.org/pkg/guava-3.21.tar.gz"
 
 [GAP_pkg_hap]
-git-tree-sha1 = "672342988314d3f24bfe9192bf1c9352a2d66e40"
+git-tree-sha1 = "489e48a4c8236779dbdd4d1b54eb6ff87e6b39a9"
 
     [[GAP_pkg_hap.download]]
-    sha256 = "357f720914ce8e148afe3d0fdd6dde1b6bbb3f071d9f32d912d8179e1271374c"
-    url = "https://github.com/gap-packages/hap/releases/download/v1.74/hap-1.74.tar.gz"
+    sha256 = "1b385df3e5104d933fe5383a218e6c9433b5ecea060625b3c2e911bff8dcf071"
+    url = "https://github.com/gap-packages/hap/releases/download/v1.75/hap-1.75.tar.gz"
     [[GAP_pkg_hap.download]]
-    sha256 = "357f720914ce8e148afe3d0fdd6dde1b6bbb3f071d9f32d912d8179e1271374c"
-    url = "https://files.gap-system.org/pkg/hap-1.74.tar.gz"
+    sha256 = "1b385df3e5104d933fe5383a218e6c9433b5ecea060625b3c2e911bff8dcf071"
+    url = "https://files.gap-system.org/pkg/hap-1.75.tar.gz"
 
 [GAP_pkg_hapcryst]
-git-tree-sha1 = "1c94fdb42a4b1584fc8abf8a4559054a1b73d88b"
+git-tree-sha1 = "a2939efc323c44129b1ef8e5e8bfa1ebcced5504"
 
     [[GAP_pkg_hapcryst.download]]
-    sha256 = "dda392457ecc9fcffd7d86b3633da455e9fe65118d7bcf4039cc5d4d05edfc94"
-    url = "https://github.com/gap-packages/hapcryst/releases/download/v0.1.15/hapcryst-0.1.15.tar.gz"
+    sha256 = "e61eb1e74f6332377ce26b2ca826a28568f4b3b0c6f091fd7abbdb50301358f0"
+    url = "https://github.com/gap-packages/hapcryst/releases/download/v0.2.0/hapcryst-0.2.0.tar.gz"
     [[GAP_pkg_hapcryst.download]]
-    sha256 = "dda392457ecc9fcffd7d86b3633da455e9fe65118d7bcf4039cc5d4d05edfc94"
-    url = "https://files.gap-system.org/pkg/hapcryst-0.1.15.tar.gz"
+    sha256 = "e61eb1e74f6332377ce26b2ca826a28568f4b3b0c6f091fd7abbdb50301358f0"
+    url = "https://files.gap-system.org/pkg/hapcryst-0.2.0.tar.gz"
 
 [GAP_pkg_hecke]
 git-tree-sha1 = "eed5d374e2fcaedc449507e6c6b777c473c1a75a"
@@ -669,34 +669,34 @@ git-tree-sha1 = "717b3ddc81f1aa6021d9cc2950b60fdaa4714ddf"
     url = "https://files.gap-system.org/pkg/HeLP-4.1.tar.gz"
 
 [GAP_pkg_homalg]
-git-tree-sha1 = "2881b49ed9fc87cd0040df78e3c9bde8f5151f13"
+git-tree-sha1 = "36720b4c0270564a74f5fe2862cc5ab31e86bd12"
 
     [[GAP_pkg_homalg.download]]
-    sha256 = "3fa61d0ae9df0eaeed8547aa292609ebda217271c2823b4b8652cd7f779d674c"
-    url = "https://github.com/homalg-project/homalg_project/releases/download/homalg-2024.01-01/homalg-2024.01-01.tar.gz"
+    sha256 = "b9a49b459ca3c4c7044dfd85373ad53586770f0a5ec5776bc702b1d97d80f1c1"
+    url = "https://github.com/homalg-project/homalg_project/releases/download/homalg-2025.12-01/homalg-2025.12-01.tar.gz"
     [[GAP_pkg_homalg.download]]
-    sha256 = "3fa61d0ae9df0eaeed8547aa292609ebda217271c2823b4b8652cd7f779d674c"
-    url = "https://files.gap-system.org/pkg/homalg-2024.01-01.tar.gz"
+    sha256 = "b9a49b459ca3c4c7044dfd85373ad53586770f0a5ec5776bc702b1d97d80f1c1"
+    url = "https://files.gap-system.org/pkg/homalg-2025.12-01.tar.gz"
 
 [GAP_pkg_homalgtocas]
-git-tree-sha1 = "a728560071af84a492062e9016d2e284361aaee9"
+git-tree-sha1 = "3d5a10b2810ab719945e6bc62806595d7b9325ed"
 
     [[GAP_pkg_homalgtocas.download]]
-    sha256 = "5fbd98b9a95f905675f64cac04713ed05ea432bbcc25c252eefe834d752bc4fd"
-    url = "https://github.com/homalg-project/homalg_project/releases/download/HomalgToCAS-2025.08-01/HomalgToCAS-2025.08-01.tar.gz"
+    sha256 = "f228884acc2b0f0c18f0b6ac6b41bc4f8606c3108af989b7e8bcbef8ba52420a"
+    url = "https://github.com/homalg-project/homalg_project/releases/download/HomalgToCAS-2026.04-01/HomalgToCAS-2026.04-01.tar.gz"
     [[GAP_pkg_homalgtocas.download]]
-    sha256 = "5fbd98b9a95f905675f64cac04713ed05ea432bbcc25c252eefe834d752bc4fd"
-    url = "https://files.gap-system.org/pkg/HomalgToCAS-2025.08-01.tar.gz"
+    sha256 = "f228884acc2b0f0c18f0b6ac6b41bc4f8606c3108af989b7e8bcbef8ba52420a"
+    url = "https://files.gap-system.org/pkg/HomalgToCAS-2026.04-01.tar.gz"
 
 [GAP_pkg_ibnp]
-git-tree-sha1 = "f38e827eef37f53c22704f6f681009ad231b8260"
+git-tree-sha1 = "07b1238b7d576e208b1155f63d357ce15a012fdb"
 
     [[GAP_pkg_ibnp.download]]
-    sha256 = "80d771733f828dac9a831950b323ad61123fa5a1759a90722c6c9f99abb0793e"
-    url = "https://github.com/gap-packages/ibnp/releases/download/v0.17/IBNP-0.17.tar.gz"
+    sha256 = "b874110657e633cb468ec74bfd9492d0e070d5e2063a19156a8781f9da6d56a5"
+    url = "https://github.com/gap-packages/ibnp/releases/download/v0.18/IBNP-0.18.tar.gz"
     [[GAP_pkg_ibnp.download]]
-    sha256 = "80d771733f828dac9a831950b323ad61123fa5a1759a90722c6c9f99abb0793e"
-    url = "https://files.gap-system.org/pkg/IBNP-0.17.tar.gz"
+    sha256 = "b874110657e633cb468ec74bfd9492d0e070d5e2063a19156a8781f9da6d56a5"
+    url = "https://files.gap-system.org/pkg/IBNP-0.18.tar.gz"
 
 [GAP_pkg_idrel]
 git-tree-sha1 = "cb8ba4f2f3c9da404a074625185d014edf2b4f59"
@@ -749,14 +749,14 @@ git-tree-sha1 = "663e891b34cd1e089d9d61fef0b9458b1c9d1052"
     url = "https://files.gap-system.org/pkg/io-4.9.3.tar.gz"
 
 [GAP_pkg_io_forhomalg]
-git-tree-sha1 = "58894f1b9f692c1f94e1a837631859eb9b73d2a6"
+git-tree-sha1 = "bb744cc593f062ee26032830a4a08377d71e3954"
 
     [[GAP_pkg_io_forhomalg.download]]
-    sha256 = "aeadb504b3b9347f53c6c9e344a49a2c4380424a1b4a540da4002f98a55645b3"
-    url = "https://github.com/homalg-project/homalg_project/releases/download/IO_ForHomalg-2023.02-04/IO_ForHomalg-2023.02-04.tar.gz"
+    sha256 = "5d233f8f11dc65d694616808b29a988da818058eab70ecf63bd08d4b5b539c71"
+    url = "https://github.com/homalg-project/homalg_project/releases/download/IO_ForHomalg-2025.12-01/IO_ForHomalg-2025.12-01.tar.gz"
     [[GAP_pkg_io_forhomalg.download]]
-    sha256 = "aeadb504b3b9347f53c6c9e344a49a2c4380424a1b4a540da4002f98a55645b3"
-    url = "https://files.gap-system.org/pkg/IO_ForHomalg-2023.02-04.tar.gz"
+    sha256 = "5d233f8f11dc65d694616808b29a988da818058eab70ecf63bd08d4b5b539c71"
+    url = "https://files.gap-system.org/pkg/IO_ForHomalg-2025.12-01.tar.gz"
 
 [GAP_pkg_irredsol]
 git-tree-sha1 = "a9f1d456b752a9af625cc9765a08533f394efab9"
@@ -869,14 +869,14 @@ git-tree-sha1 = "56034fd3340466c0a8c79f472b52f463757c1cdb"
     url = "https://files.gap-system.org/pkg/liering-2.4.2.tar.gz"
 
 [GAP_pkg_linearalgebraforcap]
-git-tree-sha1 = "27deb13186340bda870c323a6892d064ccbcd26e"
+git-tree-sha1 = "1475e0bb8c141e43b337504c6128bff19e0e3f9a"
 
     [[GAP_pkg_linearalgebraforcap.download]]
-    sha256 = "00a5979a751bd9afc19203fd4263b4ddc93e54270f8dca1e2659f1db17a45ab1"
-    url = "https://github.com/homalg-project/CAP_project/releases/download/LinearAlgebraForCAP-2025.09-01/LinearAlgebraForCAP-2025.09-01.tar.gz"
+    sha256 = "6acf678ba6e4eac304b3663adc75858f2fd28bdc9ac6f515a5ceadda0c3afbc7"
+    url = "https://github.com/homalg-project/CAP_project/releases/download/LinearAlgebraForCAP-2026.04-03/LinearAlgebraForCAP-2026.04-03.tar.gz"
     [[GAP_pkg_linearalgebraforcap.download]]
-    sha256 = "00a5979a751bd9afc19203fd4263b4ddc93e54270f8dca1e2659f1db17a45ab1"
-    url = "https://files.gap-system.org/pkg/LinearAlgebraForCAP-2025.09-01.tar.gz"
+    sha256 = "6acf678ba6e4eac304b3663adc75858f2fd28bdc9ac6f515a5ceadda0c3afbc7"
+    url = "https://files.gap-system.org/pkg/LinearAlgebraForCAP-2026.04-03.tar.gz"
 
 [GAP_pkg_lins]
 git-tree-sha1 = "ecf184ab819e5666ea9c8c6158d0961d38835fbb"
@@ -889,14 +889,14 @@ git-tree-sha1 = "ecf184ab819e5666ea9c8c6158d0961d38835fbb"
     url = "https://files.gap-system.org/pkg/LINS-0.9.tar.gz"
 
 [GAP_pkg_localizeringforhomalg]
-git-tree-sha1 = "b57f2abf1316847574d127a274634c9e863c7ed6"
+git-tree-sha1 = "6966ed78fc0137ff56b27201b9b3aa00360afd73"
 
     [[GAP_pkg_localizeringforhomalg.download]]
-    sha256 = "26a040a56df49f2a4d4b068ae1ae006f5b359379d9575f4a08c002bb1ccf95ad"
-    url = "https://github.com/homalg-project/homalg_project/releases/download/LocalizeRingForHomalg-2023.10-01/LocalizeRingForHomalg-2023.10-01.tar.gz"
+    sha256 = "262ce8365a15db0c6897a93b8c7d3ec8ae7b1ab8dbede4213e566b66c46246b1"
+    url = "https://github.com/homalg-project/homalg_project/releases/download/LocalizeRingForHomalg-2026.04-01/LocalizeRingForHomalg-2026.04-01.tar.gz"
     [[GAP_pkg_localizeringforhomalg.download]]
-    sha256 = "26a040a56df49f2a4d4b068ae1ae006f5b359379d9575f4a08c002bb1ccf95ad"
-    url = "https://files.gap-system.org/pkg/LocalizeRingForHomalg-2023.10-01.tar.gz"
+    sha256 = "262ce8365a15db0c6897a93b8c7d3ec8ae7b1ab8dbede4213e566b66c46246b1"
+    url = "https://files.gap-system.org/pkg/LocalizeRingForHomalg-2026.04-01.tar.gz"
 
 [GAP_pkg_loops]
 git-tree-sha1 = "e250cbdfbe5355e0ec462a42f83e3e2f3b296495"
@@ -949,64 +949,64 @@ git-tree-sha1 = "efdfba3710a60187ccb7ce80e5b5c8a53bd9d1f0"
     url = "https://files.gap-system.org/pkg/matgrp0.72.tar.gz"
 
 [GAP_pkg_matricesforhomalg]
-git-tree-sha1 = "dd3ae658d457726ddb350f94e94850ae1498ff9c"
+git-tree-sha1 = "1bac92e7b821596aa4911e91a5374f7647f2afe7"
 
     [[GAP_pkg_matricesforhomalg.download]]
-    sha256 = "1aafe264b171d989991c9ca3701d1fce9fe702a6636ad35f68a43e02faf27301"
-    url = "https://github.com/homalg-project/homalg_project/releases/download/MatricesForHomalg-2025.09-01/MatricesForHomalg-2025.09-01.tar.gz"
+    sha256 = "8ede2a108990f7861de1097df8ffd41162dec00d18a4d01f5421abd462e7de5d"
+    url = "https://github.com/homalg-project/homalg_project/releases/download/MatricesForHomalg-2026.04-01/MatricesForHomalg-2026.04-01.tar.gz"
     [[GAP_pkg_matricesforhomalg.download]]
-    sha256 = "1aafe264b171d989991c9ca3701d1fce9fe702a6636ad35f68a43e02faf27301"
-    url = "https://files.gap-system.org/pkg/MatricesForHomalg-2025.09-01.tar.gz"
+    sha256 = "8ede2a108990f7861de1097df8ffd41162dec00d18a4d01f5421abd462e7de5d"
+    url = "https://files.gap-system.org/pkg/MatricesForHomalg-2026.04-01.tar.gz"
 
 [GAP_pkg_modisom]
-git-tree-sha1 = "f9382593f4e30cacf8e7156ebd5e291c51667fde"
+git-tree-sha1 = "ccef96bdcea3c8e036dc8d5edae1bc82a2bee7cb"
 
     [[GAP_pkg_modisom.download]]
-    sha256 = "e97fb7337d9422c7b5c838dea0870398bedee7c2f77f4b8f4e8923973e58436b"
-    url = "https://github.com/gap-packages/modisom/releases/download/v3.0.0/modisom-3.0.0.tar.gz"
+    sha256 = "02456f9e8a51f0f1c01ab5aa9b835b9f8fb63211e8135d167ce2461a23fa3351"
+    url = "https://github.com/gap-packages/modisom/releases/download/v3.1.0/modisom-3.1.0.tar.gz"
     [[GAP_pkg_modisom.download]]
-    sha256 = "e97fb7337d9422c7b5c838dea0870398bedee7c2f77f4b8f4e8923973e58436b"
-    url = "https://files.gap-system.org/pkg/modisom-3.0.0.tar.gz"
+    sha256 = "02456f9e8a51f0f1c01ab5aa9b835b9f8fb63211e8135d167ce2461a23fa3351"
+    url = "https://files.gap-system.org/pkg/modisom-3.1.0.tar.gz"
 
 [GAP_pkg_modulepresentationsforcap]
-git-tree-sha1 = "db610dff81560af62346be4bcf981a00d0a9cfef"
+git-tree-sha1 = "5e59fe32d4f6ed68a48e9e77abcef93bb9489f89"
 
     [[GAP_pkg_modulepresentationsforcap.download]]
-    sha256 = "006b1c230d08e0ee2e712ff2bee720244836fa4d1b6821e186f02c6d8c13632e"
-    url = "https://github.com/homalg-project/CAP_project/releases/download/ModulePresentationsForCAP-2025.09-01/ModulePresentationsForCAP-2025.09-01.tar.gz"
+    sha256 = "eaa98a5a5a6cf8338c257bc14478665949b02c03b7bbb0cfdac1a70b1dd2200d"
+    url = "https://github.com/homalg-project/CAP_project/releases/download/ModulePresentationsForCAP-2026.04-01/ModulePresentationsForCAP-2026.04-01.tar.gz"
     [[GAP_pkg_modulepresentationsforcap.download]]
-    sha256 = "006b1c230d08e0ee2e712ff2bee720244836fa4d1b6821e186f02c6d8c13632e"
-    url = "https://files.gap-system.org/pkg/ModulePresentationsForCAP-2025.09-01.tar.gz"
+    sha256 = "eaa98a5a5a6cf8338c257bc14478665949b02c03b7bbb0cfdac1a70b1dd2200d"
+    url = "https://files.gap-system.org/pkg/ModulePresentationsForCAP-2026.04-01.tar.gz"
 
 [GAP_pkg_modules]
-git-tree-sha1 = "76d1251a251a51e4e3f4a071fb9ee190fe10171b"
+git-tree-sha1 = "2d2706108f2a2e82d4640006debdfa2cdea36073"
 
     [[GAP_pkg_modules.download]]
-    sha256 = "1a2acdd673ad06c43ab54513d5523d0b5ff31b9904a3d25567a27f964017d6b6"
-    url = "https://github.com/homalg-project/homalg_project/releases/download/Modules-2024.12-01/Modules-2024.12-01.tar.gz"
+    sha256 = "0499a1b1eb98db2b994997de303af0077b29399026c208ed3425bd750d747a10"
+    url = "https://github.com/homalg-project/homalg_project/releases/download/Modules-2026.04-01/Modules-2026.04-01.tar.gz"
     [[GAP_pkg_modules.download]]
-    sha256 = "1a2acdd673ad06c43ab54513d5523d0b5ff31b9904a3d25567a27f964017d6b6"
-    url = "https://files.gap-system.org/pkg/Modules-2024.12-01.tar.gz"
+    sha256 = "0499a1b1eb98db2b994997de303af0077b29399026c208ed3425bd750d747a10"
+    url = "https://files.gap-system.org/pkg/Modules-2026.04-01.tar.gz"
 
 [GAP_pkg_monoidalcategories]
-git-tree-sha1 = "6b8513b6cb3b4de7792c870bad84e6197c5a5444"
+git-tree-sha1 = "accb4738120e419b08f7ac1f115687dcf918b662"
 
     [[GAP_pkg_monoidalcategories.download]]
-    sha256 = "8b5b704030176a0fde43d82380c262102460f1402e389e4e0a13b74c0e73b93e"
-    url = "https://github.com/homalg-project/CAP_project/releases/download/MonoidalCategories-2025.08-02/MonoidalCategories-2025.08-02.tar.gz"
+    sha256 = "ccd98cc5c64dc8f334f8d94648302fa3f139b975d92da4224f18f1f1512c36be"
+    url = "https://github.com/homalg-project/CAP_project/releases/download/MonoidalCategories-2025.12-01/MonoidalCategories-2025.12-01.tar.gz"
     [[GAP_pkg_monoidalcategories.download]]
-    sha256 = "8b5b704030176a0fde43d82380c262102460f1402e389e4e0a13b74c0e73b93e"
-    url = "https://files.gap-system.org/pkg/MonoidalCategories-2025.08-02.tar.gz"
+    sha256 = "ccd98cc5c64dc8f334f8d94648302fa3f139b975d92da4224f18f1f1512c36be"
+    url = "https://files.gap-system.org/pkg/MonoidalCategories-2025.12-01.tar.gz"
 
 [GAP_pkg_nconvex]
-git-tree-sha1 = "4e1ce0398fce917bd57c3dc6d21f69f9280f8ae5"
+git-tree-sha1 = "47cb351b2d037803e455eff5224f9fb1bcb30421"
 
     [[GAP_pkg_nconvex.download]]
-    sha256 = "d8396d9de36a0df3047f0389f3f25a08b97349f525ebf1c5fd45372e00c24d0f"
-    url = "https://github.com/homalg-project/NConvex/releases/download/v2024.12-01/NConvex-2024.12-01.tar.gz"
+    sha256 = "9ea9b78b8cc917e8f1c81c06689b31acf6adf054483ba37d6d6ef48ed92197b5"
+    url = "https://github.com/homalg-project/NConvex/releases/download/v2025.12-02/NConvex-2025.12-02.tar.gz"
     [[GAP_pkg_nconvex.download]]
-    sha256 = "d8396d9de36a0df3047f0389f3f25a08b97349f525ebf1c5fd45372e00c24d0f"
-    url = "https://files.gap-system.org/pkg/NConvex-2024.12-01.tar.gz"
+    sha256 = "9ea9b78b8cc917e8f1c81c06689b31acf6adf054483ba37d6d6ef48ed92197b5"
+    url = "https://files.gap-system.org/pkg/NConvex-2025.12-02.tar.gz"
 
 [GAP_pkg_nilmat]
 git-tree-sha1 = "a6b95173e0e503d4fde5fd64a48e33e8dfa5207d"
@@ -1029,14 +1029,14 @@ git-tree-sha1 = "3aa9a1de3583e4dd185087801cc15dbc071a7a89"
     url = "https://files.gap-system.org/pkg/NoCK-1.5.tar.gz"
 
 [GAP_pkg_normalizinterface]
-git-tree-sha1 = "712b10895b5355425747ca13ad82f443c7d21c99"
+git-tree-sha1 = "c9df8094dc9785da6147f7f0077b99e06f636ac1"
 
     [[GAP_pkg_normalizinterface.download]]
-    sha256 = "b186c1719f9110bbf96600283a7ab201851ab46571c00487be004a264063b572"
-    url = "https://github.com/gap-packages/NormalizInterface/releases/download/v1.4.1/NormalizInterface-1.4.1.tar.gz"
+    sha256 = "33855f339114d1c31f5c8b006c66e2878da2254b3a09301aaa5b91ca8244f8ca"
+    url = "https://github.com/gap-packages/NormalizInterface/releases/download/v1.5.0/NormalizInterface-1.5.0.tar.gz"
     [[GAP_pkg_normalizinterface.download]]
-    sha256 = "b186c1719f9110bbf96600283a7ab201851ab46571c00487be004a264063b572"
-    url = "https://files.gap-system.org/pkg/NormalizInterface-1.4.1.tar.gz"
+    sha256 = "33855f339114d1c31f5c8b006c66e2878da2254b3a09301aaa5b91ca8244f8ca"
+    url = "https://files.gap-system.org/pkg/NormalizInterface-1.5.0.tar.gz"
 
 [GAP_pkg_nq]
 git-tree-sha1 = "224c55c065fa3ecfc9c8159a44c1c20a02a29952"
@@ -1069,14 +1069,24 @@ git-tree-sha1 = "72892451740a1640e9145e7223fbbb9ea05f73cb"
     url = "https://files.gap-system.org/pkg/OpenMath-11.5.3.tar.gz"
 
 [GAP_pkg_orb]
-git-tree-sha1 = "d28264305e79c9a262056fe687c0563c9b887037"
+git-tree-sha1 = "4bdb5dd85e10481f8d0e6f54f751df536c150240"
 
     [[GAP_pkg_orb.download]]
-    sha256 = "3f8430f5ba49bab1ce69d13894fff30bc1dd04bbf371e4a872740c93c51fd246"
-    url = "https://github.com/gap-packages/orb/releases/download/v5.0.1/orb-5.0.1.tar.gz"
+    sha256 = "73911bab4b31ae0f1771e76c1e3b9389100c6ede4ad27f27724cd4dc1239cb28"
+    url = "https://github.com/gap-packages/orb/releases/download/v5.1.0/orb-5.1.0.tar.gz"
     [[GAP_pkg_orb.download]]
-    sha256 = "3f8430f5ba49bab1ce69d13894fff30bc1dd04bbf371e4a872740c93c51fd246"
-    url = "https://files.gap-system.org/pkg/orb-5.0.1.tar.gz"
+    sha256 = "73911bab4b31ae0f1771e76c1e3b9389100c6ede4ad27f27724cd4dc1239cb28"
+    url = "https://files.gap-system.org/pkg/orb-5.1.0.tar.gz"
+
+[GAP_pkg_packagemaker]
+git-tree-sha1 = "2eade3642f9756704238eac827a6165b82ab4d6f"
+
+    [[GAP_pkg_packagemaker.download]]
+    sha256 = "0e71c5a0a211b7f8f8ea2d738ce04bbbb20f9443a0d1a5ccef5a902b5d86d802"
+    url = "https://github.com/gap-packages/PackageMaker/releases/download/v1.0.0/PackageMaker-1.0.0.tar.gz"
+    [[GAP_pkg_packagemaker.download]]
+    sha256 = "0e71c5a0a211b7f8f8ea2d738ce04bbbb20f9443a0d1a5ccef5a902b5d86d802"
+    url = "https://files.gap-system.org/pkg/PackageMaker-1.0.0.tar.gz"
 
 [GAP_pkg_packagemanager]
 git-tree-sha1 = "cdcec7e7f3639bc47c6029c31f0094e875d0d33a"
@@ -1119,34 +1129,34 @@ git-tree-sha1 = "3cd9bfa2fecf4ef32613f461ac7400de59d5e3ea"
     url = "https://files.gap-system.org/pkg/polenta-1.3.11.tar.gz"
 
 [GAP_pkg_polycyclic]
-git-tree-sha1 = "f418e0ac1519fa4a960111464ab62ae529cc3a59"
+git-tree-sha1 = "3ae0f278e7d000d631d7b4477002b619e067de2f"
 
     [[GAP_pkg_polycyclic.download]]
-    sha256 = "0d82a709155db7a0d3db7dd7ce96a50c7e7f4bd07dd0085eb0009de01f1e2ca1"
-    url = "https://github.com/gap-packages/polycyclic/releases/download/v2.17/polycyclic-2.17.tar.gz"
+    sha256 = "334416c8aeb8bcd0a2b58b16cba590ea26fa8d54d275a0bdcf5999b889c13317"
+    url = "https://github.com/gap-packages/polycyclic/releases/download/v2.18/polycyclic-2.18.tar.gz"
     [[GAP_pkg_polycyclic.download]]
-    sha256 = "0d82a709155db7a0d3db7dd7ce96a50c7e7f4bd07dd0085eb0009de01f1e2ca1"
-    url = "https://files.gap-system.org/pkg/polycyclic-2.17.tar.gz"
+    sha256 = "334416c8aeb8bcd0a2b58b16cba590ea26fa8d54d275a0bdcf5999b889c13317"
+    url = "https://files.gap-system.org/pkg/polycyclic-2.18.tar.gz"
 
 [GAP_pkg_polymaking]
-git-tree-sha1 = "87a1302e830d9cc9a0c39b3eb58a2508db038e2d"
+git-tree-sha1 = "afb0d5d4bc214b8d2775100b22769a34ff0d5f44"
 
     [[GAP_pkg_polymaking.download]]
-    sha256 = "8975c1f08fe4362c946de4775dfd37a566b4607b6e697d94666dfea9d552eee6"
-    url = "https://github.com/gap-packages/polymaking/releases/download/v0.8.7/polymaking-0.8.7.tar.gz"
+    sha256 = "2f006c427a9443b58c16a8441405261a86b951a7e2e5854ea4fa348946342604"
+    url = "https://github.com/gap-packages/polymaking/releases/download/v0.8.9/polymaking-0.8.9.tar.gz"
     [[GAP_pkg_polymaking.download]]
-    sha256 = "8975c1f08fe4362c946de4775dfd37a566b4607b6e697d94666dfea9d552eee6"
-    url = "https://files.gap-system.org/pkg/polymaking-0.8.7.tar.gz"
+    sha256 = "2f006c427a9443b58c16a8441405261a86b951a7e2e5854ea4fa348946342604"
+    url = "https://files.gap-system.org/pkg/polymaking-0.8.9.tar.gz"
 
 [GAP_pkg_primgrp]
-git-tree-sha1 = "4562d518b9621c9b6bcc05b4d25a456acb1716fc"
+git-tree-sha1 = "b6c0b129bdb7056f36c45b2408e88eb83bdef5db"
 
     [[GAP_pkg_primgrp.download]]
-    sha256 = "1e5edb01f2d71bcb4e32afaf9342e779b407db6c9f1b9d7b309e26d62f78bc02"
-    url = "https://github.com/gap-packages/primgrp/releases/download/v4.0.1/primgrp-4.0.1.tar.gz"
+    sha256 = "8920965473a74800237c7d57bcc7b52f1af118c5ef438b064d04ca333ac28827"
+    url = "https://github.com/gap-packages/primgrp/releases/download/v4.0.2/primgrp-4.0.2.tar.gz"
     [[GAP_pkg_primgrp.download]]
-    sha256 = "1e5edb01f2d71bcb4e32afaf9342e779b407db6c9f1b9d7b309e26d62f78bc02"
-    url = "https://files.gap-system.org/pkg/primgrp-4.0.1.tar.gz"
+    sha256 = "8920965473a74800237c7d57bcc7b52f1af118c5ef438b064d04ca333ac28827"
+    url = "https://files.gap-system.org/pkg/primgrp-4.0.2.tar.gz"
 
 [GAP_pkg_profiling]
 git-tree-sha1 = "e979d62f0bcce6f3d639459ff255d9168f20c535"
@@ -1259,24 +1269,24 @@ git-tree-sha1 = "a2a0964cb90c1f783fcf2a665a487a2611c587f4"
     url = "https://files.gap-system.org/pkg/resclasses-4.7.4.tar.gz"
 
 [GAP_pkg_ringsforhomalg]
-git-tree-sha1 = "63bf4621f553288a025543761edf07cf7efffeab"
+git-tree-sha1 = "d436574a550758e6e707345ed6b6863f8273a219"
 
     [[GAP_pkg_ringsforhomalg.download]]
-    sha256 = "acfbbb152b48629988232748e2936e35fa65e5bdccaee21e21b18683ccfd11ca"
-    url = "https://github.com/homalg-project/homalg_project/releases/download/RingsForHomalg-2024.11-02/RingsForHomalg-2024.11-02.tar.gz"
+    sha256 = "acb28c65f49d6d9e1487fc00ef88b091c23f050e1c8f004d27e2542cdfeefebf"
+    url = "https://github.com/homalg-project/homalg_project/releases/download/RingsForHomalg-2025.12-01/RingsForHomalg-2025.12-01.tar.gz"
     [[GAP_pkg_ringsforhomalg.download]]
-    sha256 = "acfbbb152b48629988232748e2936e35fa65e5bdccaee21e21b18683ccfd11ca"
-    url = "https://files.gap-system.org/pkg/RingsForHomalg-2024.11-02.tar.gz"
+    sha256 = "acb28c65f49d6d9e1487fc00ef88b091c23f050e1c8f004d27e2542cdfeefebf"
+    url = "https://files.gap-system.org/pkg/RingsForHomalg-2025.12-01.tar.gz"
 
 [GAP_pkg_sco]
-git-tree-sha1 = "4f674d0790d80affb12a9359d202dd60c27c4650"
+git-tree-sha1 = "a915ce6ab4a6010dd641e0c98412456b0a8821cd"
 
     [[GAP_pkg_sco.download]]
-    sha256 = "de53510b5da781c86d1bfa63517e9ce7939561fe0fa7043eaa58115888c06fa7"
-    url = "https://github.com/homalg-project/homalg_project/releases/download/SCO-2023.08-01/SCO-2023.08-01.tar.gz"
+    sha256 = "1244638595e8fd012fab1cf9f53d29da135467177e21933dcc9cab57f4bcaaa3"
+    url = "https://github.com/homalg-project/homalg_project/releases/download/SCO-2025.12-01/SCO-2025.12-01.tar.gz"
     [[GAP_pkg_sco.download]]
-    sha256 = "de53510b5da781c86d1bfa63517e9ce7939561fe0fa7043eaa58115888c06fa7"
-    url = "https://files.gap-system.org/pkg/SCO-2023.08-01.tar.gz"
+    sha256 = "1244638595e8fd012fab1cf9f53d29da135467177e21933dcc9cab57f4bcaaa3"
+    url = "https://files.gap-system.org/pkg/SCO-2025.12-01.tar.gz"
 
 [GAP_pkg_scscp]
 git-tree-sha1 = "664a27cd7bad381ae9913e5c778ead30e92059c2"
@@ -1289,14 +1299,14 @@ git-tree-sha1 = "664a27cd7bad381ae9913e5c778ead30e92059c2"
     url = "https://files.gap-system.org/pkg/SCSCP-2.4.4.tar.gz"
 
 [GAP_pkg_semigroups]
-git-tree-sha1 = "b9a06a044c016aa160b83a33e5b05433ced4cde5"
+git-tree-sha1 = "df0ab2155e03fda7bb9b6f4079b097fd60a95353"
 
     [[GAP_pkg_semigroups.download]]
-    sha256 = "df0488b14af106338009c0ae7dc8b7def9052fb3619a6ba53c31f60cc0731353"
-    url = "https://github.com/semigroups/Semigroups/releases/download/v5.5.4/semigroups-5.5.4.tar.gz"
+    sha256 = "9af736a281f45e5ea03f71d3f1d70a344c233c940ed7ad86d58a0db52badb3bc"
+    url = "https://github.com/semigroups/Semigroups/releases/download/v5.6.2/semigroups-5.6.2.tar.gz"
     [[GAP_pkg_semigroups.download]]
-    sha256 = "df0488b14af106338009c0ae7dc8b7def9052fb3619a6ba53c31f60cc0731353"
-    url = "https://files.gap-system.org/pkg/semigroups-5.5.4.tar.gz"
+    sha256 = "9af736a281f45e5ea03f71d3f1d70a344c233c940ed7ad86d58a0db52badb3bc"
+    url = "https://files.gap-system.org/pkg/semigroups-5.6.2.tar.gz"
 
 [GAP_pkg_sglppow]
 git-tree-sha1 = "d8117da4d48ea5676110e84bfdc759cdbe5737fa"
@@ -1329,14 +1339,14 @@ git-tree-sha1 = "ca5936133ce557706cfe69817878f7ee44456e3c"
     url = "https://files.gap-system.org/pkg/simpcomp-2.1.14.tar.gz"
 
 [GAP_pkg_singular]
-git-tree-sha1 = "08afeb849d63450cda3ad76e7259f1af039d87fc"
+git-tree-sha1 = "214debdb4827bf2b3a9c93363b716eecc216063b"
 
     [[GAP_pkg_singular.download]]
-    sha256 = "11456e65b805d094147f92158222dce98f26fd74f2f1c85595c13fab7dfa8685"
-    url = "https://github.com/gap-packages/singular/releases/download/v2025.08.26/singular-2025.08.26.tar.gz"
+    sha256 = "5d2cf2f6dc528cab43da10501302f199e5d53adb0b34b37097c0bf627461e932"
+    url = "https://github.com/gap-packages/singular/releases/download/v2026.04.09/singular-2026.04.09.tar.gz"
     [[GAP_pkg_singular.download]]
-    sha256 = "11456e65b805d094147f92158222dce98f26fd74f2f1c85595c13fab7dfa8685"
-    url = "https://files.gap-system.org/pkg/singular-2025.08.26.tar.gz"
+    sha256 = "5d2cf2f6dc528cab43da10501302f199e5d53adb0b34b37097c0bf627461e932"
+    url = "https://files.gap-system.org/pkg/singular-2026.04.09.tar.gz"
 
 [GAP_pkg_sl2reps]
 git-tree-sha1 = "7a42c929d2a89852337574d13f2f17f09538c167"
@@ -1369,14 +1379,14 @@ git-tree-sha1 = "f0d4ea2b0382e314ad41a3be2ad5a5ef0972c460"
     url = "https://files.gap-system.org/pkg/smallantimagmas-v0.5.1.tar.gz"
 
 [GAP_pkg_smallclassnr]
-git-tree-sha1 = "8e6cb9c64a406e3fe0d612675f1333b0fb97b116"
+git-tree-sha1 = "d5517af1f80a7e27da6ff4bc7eb26b57b9fd064f"
 
     [[GAP_pkg_smallclassnr.download]]
-    sha256 = "3d5df691937400ff89eb88832e0e408b6e0f743f127348f311bdbabfcd9ea7fd"
-    url = "https://github.com/stertooy/SmallClassNr/releases/download/v1.4.2/SmallClassNr-1.4.2.tar.gz"
+    sha256 = "d026c0a58c0e3d3bd4498aad39b19f4c254291c7c9cf25dff3fc929c51e343c5"
+    url = "https://github.com/stertooy/SmallClassNr/releases/download/v1.5.0/SmallClassNr-1.5.0.tar.gz"
     [[GAP_pkg_smallclassnr.download]]
-    sha256 = "3d5df691937400ff89eb88832e0e408b6e0f743f127348f311bdbabfcd9ea7fd"
-    url = "https://files.gap-system.org/pkg/SmallClassNr-1.4.2.tar.gz"
+    sha256 = "d026c0a58c0e3d3bd4498aad39b19f4c254291c7c9cf25dff3fc929c51e343c5"
+    url = "https://files.gap-system.org/pkg/SmallClassNr-1.5.0.tar.gz"
 
 [GAP_pkg_smallgrp]
 git-tree-sha1 = "051592b40f95a6f5d5b80d6d417f6c442b446de1"
@@ -1479,14 +1489,14 @@ git-tree-sha1 = "5cbbd05262ac4bbc21775ab7e7d1d75dce610920"
     url = "https://files.gap-system.org/pkg/tomlib-1.2.11.tar.gz"
 
 [GAP_pkg_toolsforhomalg]
-git-tree-sha1 = "05dc4a58be7de630e34ce280ac0bdd3fcee86c7b"
+git-tree-sha1 = "bd5c2c4a9e30d00974ce5b30fda75131aca38c00"
 
     [[GAP_pkg_toolsforhomalg.download]]
-    sha256 = "1c42f29895ad509a4b01ef57d98f3b5eaecb33f2b635107ae43256734f7911b5"
-    url = "https://github.com/homalg-project/homalg_project/releases/download/ToolsForHomalg-2025.05-01/ToolsForHomalg-2025.05-01.tar.gz"
+    sha256 = "2c6d40f6f2f5cd41b2aceb0174c25f7e5a0bddb27c70eab227ee418f2b33fa7f"
+    url = "https://github.com/homalg-project/homalg_project/releases/download/ToolsForHomalg-2026.04-01/ToolsForHomalg-2026.04-01.tar.gz"
     [[GAP_pkg_toolsforhomalg.download]]
-    sha256 = "1c42f29895ad509a4b01ef57d98f3b5eaecb33f2b635107ae43256734f7911b5"
-    url = "https://files.gap-system.org/pkg/ToolsForHomalg-2025.05-01.tar.gz"
+    sha256 = "2c6d40f6f2f5cd41b2aceb0174c25f7e5a0bddb27c70eab227ee418f2b33fa7f"
+    url = "https://files.gap-system.org/pkg/ToolsForHomalg-2026.04-01.tar.gz"
 
 [GAP_pkg_toric]
 git-tree-sha1 = "eeeb3a5a147b0417f4b9e053ba4521ccfe264bea"
@@ -1509,24 +1519,24 @@ git-tree-sha1 = "0308e773edbd0fa6000220e96226e6aa5aaad28d"
     url = "https://files.gap-system.org/pkg/transgrp3.6.5.tar.gz"
 
 [GAP_pkg_twistedconjugacy]
-git-tree-sha1 = "e5b3315cfb46ea1144d581fbb5022c14e9e3a73f"
+git-tree-sha1 = "1ce4a7b4f93b17631ea37980ecae4868eddb99d6"
 
     [[GAP_pkg_twistedconjugacy.download]]
-    sha256 = "6433ebd7885adeed035d52e0383649da31a28d10e5059ed17102b52a313303c1"
-    url = "https://github.com/stertooy/TwistedConjugacy/releases/download/v3.1.1/TwistedConjugacy-3.1.1.tar.gz"
+    sha256 = "24890506c0005ebf8a15511f0aa75a013dec19a09369aeb43638032c4353906e"
+    url = "https://github.com/stertooy/TwistedConjugacy/releases/download/v3.3.0/TwistedConjugacy-3.3.0.tar.gz"
     [[GAP_pkg_twistedconjugacy.download]]
-    sha256 = "6433ebd7885adeed035d52e0383649da31a28d10e5059ed17102b52a313303c1"
-    url = "https://files.gap-system.org/pkg/TwistedConjugacy-3.1.1.tar.gz"
+    sha256 = "24890506c0005ebf8a15511f0aa75a013dec19a09369aeb43638032c4353906e"
+    url = "https://files.gap-system.org/pkg/TwistedConjugacy-3.3.0.tar.gz"
 
 [GAP_pkg_typeset]
-git-tree-sha1 = "9a7588f6f5218ecaf3b963702ebe5139186a0bc8"
+git-tree-sha1 = "99472abb6c0d6000f70de922198d741ebd115300"
 
     [[GAP_pkg_typeset.download]]
-    sha256 = "c113c5df2119ddf41a38a26db435c63f3224cc2b50b5b1313c4791a085da33ad"
-    url = "https://github.com/gap-packages/typeset/releases/download/v1.2.3/typeset-1.2.3.tar.gz"
+    sha256 = "d1c3785859aaad302fbe1b6403c4f204ed6577291058830703266d939bb8db4b"
+    url = "https://github.com/gap-packages/typeset/releases/download/v1.2.4/typeset-1.2.4.tar.gz"
     [[GAP_pkg_typeset.download]]
-    sha256 = "c113c5df2119ddf41a38a26db435c63f3224cc2b50b5b1313c4791a085da33ad"
-    url = "https://files.gap-system.org/pkg/typeset-1.2.3.tar.gz"
+    sha256 = "d1c3785859aaad302fbe1b6403c4f204ed6577291058830703266d939bb8db4b"
+    url = "https://files.gap-system.org/pkg/typeset-1.2.4.tar.gz"
 
 [GAP_pkg_ugaly]
 git-tree-sha1 = "daf67e20d61675da2ab86e4900c78a8c82eaa2c8"
@@ -1559,14 +1569,14 @@ git-tree-sha1 = "3663e12e725eb2a92bf75f3c21125c743d11908e"
     url = "https://files.gap-system.org/pkg/unitlib-5.0.0.tar.gz"
 
 [GAP_pkg_utils]
-git-tree-sha1 = "8d3a8532df7d51311ac9a19fffb88b3141c36230"
+git-tree-sha1 = "0aec6b5f48c1fffac2c866dba63e364f7c7be252"
 
     [[GAP_pkg_utils.download]]
-    sha256 = "f2dad4d922eaa1aa535f3e76fa5e858f97ce829cc4fd7a4dc1a314d814b9a53b"
-    url = "https://github.com/gap-packages/utils/releases/download/v0.92/utils-0.92.tar.gz"
+    sha256 = "6b043741a1d8ec5897d674afa9fe37dcce808415f72a4c23f9ae6ace14ce3f61"
+    url = "https://github.com/gap-packages/utils/releases/download/v0.93/utils-0.93.tar.gz"
     [[GAP_pkg_utils.download]]
-    sha256 = "f2dad4d922eaa1aa535f3e76fa5e858f97ce829cc4fd7a4dc1a314d814b9a53b"
-    url = "https://files.gap-system.org/pkg/utils-0.92.tar.gz"
+    sha256 = "6b043741a1d8ec5897d674afa9fe37dcce808415f72a4c23f9ae6ace14ce3f61"
+    url = "https://files.gap-system.org/pkg/utils-0.93.tar.gz"
 
 [GAP_pkg_uuid]
 git-tree-sha1 = "3edf3e902bac4378d681b3e6fb298d11e65618fd"
@@ -1589,14 +1599,14 @@ git-tree-sha1 = "9b84b65e31ef4f3b64f1dfb98f90bd1381df5853"
     url = "https://files.gap-system.org/pkg/walrus-0.9991.tar.gz"
 
 [GAP_pkg_wedderga]
-git-tree-sha1 = "07fc5d0b1ffebf368f0df06b04c48c3309677d06"
+git-tree-sha1 = "69a4145583a84eb239cd65f8c10e291e903d02c1"
 
     [[GAP_pkg_wedderga.download]]
-    sha256 = "bd356d6728388bd00d1d2e7474b8bf5cdf88530124c9b0a6b0dc70bddd1085e9"
-    url = "https://github.com/gap-packages/wedderga/releases/download/v4.11.2/wedderga-4.11.2.tar.gz"
+    sha256 = "243f418c57d99c507e3833e58b06b1feceed953c8ae119de01feeda4f974aa2b"
+    url = "https://github.com/gap-packages/wedderga/releases/download/v4.11.3/wedderga-4.11.3.tar.gz"
     [[GAP_pkg_wedderga.download]]
-    sha256 = "bd356d6728388bd00d1d2e7474b8bf5cdf88530124c9b0a6b0dc70bddd1085e9"
-    url = "https://files.gap-system.org/pkg/wedderga-4.11.2.tar.gz"
+    sha256 = "243f418c57d99c507e3833e58b06b1feceed953c8ae119de01feeda4f974aa2b"
+    url = "https://files.gap-system.org/pkg/wedderga-4.11.3.tar.gz"
 
 [GAP_pkg_wpe]
 git-tree-sha1 = "180255d50cf2971014006fe2179a9489da1f87d6"
@@ -1619,14 +1629,14 @@ git-tree-sha1 = "aade97aed2acd1688c4eefcc9d99a2aa1705a52f"
     url = "https://files.gap-system.org/pkg/xgap-4.33.tar.gz"
 
 [GAP_pkg_xmod]
-git-tree-sha1 = "5cd48260cefd89a450e86489d2311bd3596967ce"
+git-tree-sha1 = "5e1a6265cb998618e0cfcce3b002909c5097e7ae"
 
     [[GAP_pkg_xmod.download]]
-    sha256 = "02f718567710e36d99764b45cd5cc828ec17e628e3d869c410cef417a801a5ef"
-    url = "https://github.com/gap-packages/xmod/releases/download/v2.95/XMod-2.95.tar.gz"
+    sha256 = "d6bfae0d62ccace262f8efccd39e9fc000b44745ee8a4dac83a4adab3b152804"
+    url = "https://github.com/gap-packages/xmod/releases/download/v2.98/XMod-2.98.tar.gz"
     [[GAP_pkg_xmod.download]]
-    sha256 = "02f718567710e36d99764b45cd5cc828ec17e628e3d869c410cef417a801a5ef"
-    url = "https://files.gap-system.org/pkg/XMod-2.95.tar.gz"
+    sha256 = "d6bfae0d62ccace262f8efccd39e9fc000b44745ee8a4dac83a4adab3b152804"
+    url = "https://files.gap-system.org/pkg/XMod-2.98.tar.gz"
 
 [GAP_pkg_xmodalg]
 git-tree-sha1 = "eebbc7f71bc46a624f7d641d088e2bcc13561b73"
@@ -1649,11 +1659,11 @@ git-tree-sha1 = "15406fea74155163dab9ac973890a8b230b17a8d"
     url = "https://files.gap-system.org/pkg/YangBaxter-0.10.7.tar.gz"
 
 [GAP_pkg_zeromqinterface]
-git-tree-sha1 = "d041ee8aac8515f14d43aede4c857a50248f5fb9"
+git-tree-sha1 = "8b164d5c75628823ae45a854e778dcb6923df2b4"
 
     [[GAP_pkg_zeromqinterface.download]]
-    sha256 = "d77e979dc3a0b18e95fe2b61f45e5a765cb5661d52507019cf307929f50f65a9"
-    url = "https://github.com/gap-packages/ZeroMQInterface/releases/download/v0.17/ZeroMQInterface-0.17.tar.gz"
+    sha256 = "252d660f037dffc58edc80d452698a534ec91fb6a83c5416eabc8969a87a4b00"
+    url = "https://github.com/gap-packages/ZeroMQInterface/releases/download/v0.18/ZeroMQInterface-0.18.tar.gz"
     [[GAP_pkg_zeromqinterface.download]]
-    sha256 = "d77e979dc3a0b18e95fe2b61f45e5a765cb5661d52507019cf307929f50f65a9"
-    url = "https://files.gap-system.org/pkg/ZeroMQInterface-0.17.tar.gz"
+    sha256 = "252d660f037dffc58edc80d452698a534ec91fb6a83c5416eabc8969a87a4b00"
+    url = "https://files.gap-system.org/pkg/ZeroMQInterface-0.18.tar.gz"
