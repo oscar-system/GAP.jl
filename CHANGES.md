@@ -1,6 +1,6 @@
 # Changes in GAP.jl
 
-## Version 0.16.6-DEV (released 2026-XX-XX)
+## Version 0.16.6 (released 2026-04-30)
 
 - Declare compatibility with AbstractAlgebra 0.49
 - Declare compatibility with Nemo 0.55
