@@ -1,5 +1,10 @@
 # Changes in GAP.jl
 
+## Version 0.16.6-DEV (released 2026-XX-XX)
+
+- Declare compatibility with AbstractAlgebra 0.49
+- Declare compatibility with Nemo 0.55
+
 ## Version 0.16.5 (released 2026-04-23)
 
 - Update the `AtlasRep` GAP package from 2.1.9 to 2.1.10
