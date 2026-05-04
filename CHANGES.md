@@ -2,6 +2,8 @@
 
 ## Version 0.17.0-DEV (released YYYY-MM-DD)
 
+- **Breaking:** Update to GAP 4.16.0.
+
 ## Version 0.16.7-DEV (released 2026-XX-XX)
 
 - Set a timeout of 30 seconds for GAP's `Download` function,
