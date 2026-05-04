@@ -1,5 +1,7 @@
 # Changes in GAP.jl
 
+## Version 0.17.0-DEV (released YYYY-MM-DD)
+
 ## Version 0.16.6 (released 2026-04-30)
 
 - Declare compatibility with AbstractAlgebra 0.49
