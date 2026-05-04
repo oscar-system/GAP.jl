@@ -2,6 +2,8 @@
 
 ## Version 0.17.0-DEV (released YYYY-MM-DD)
 
+- **Breaking:** Update to GAP 4.16.0.
+
 ## Version 0.16.6 (released 2026-04-30)
 
 - Declare compatibility with AbstractAlgebra 0.49
