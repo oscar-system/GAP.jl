@@ -510,6 +510,11 @@ function test(name::String)
     return
   end
 
+  # Set a timeout of 30 seconds for web downloads.
+  # This affects functions that use the AtlasRep package if it is available.
+  orig_timeout = Globals.UserPreference(GapObj("utils"), GapObj("DownloadMaxTime"))
+  Globals.SetUserPreference(GapObj("utils"), GapObj("DownloadMaxTime"), 30)
+
   disable_error_handler[] = true
   result = false
   try
@@ -534,6 +539,9 @@ function test(name::String)
     called_QuitGap || throw(ArgumentError("GAP's TestPackage failed"))
     result = true
   end
+
+  Globals.SetUserPreference(GapObj("utils"), GapObj("DownloadMaxTime"), orig_timeout)
+
   return !error_occurred && result
 end
 
