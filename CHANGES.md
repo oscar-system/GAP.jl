@@ -580,4 +580,3 @@ Other changes:
 
 
 ## Version 0.3.5 (released 2020-03-22)
-

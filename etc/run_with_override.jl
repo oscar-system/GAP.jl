@@ -10,12 +10,9 @@ gapoverride = abspath(gapoverride)
 #
 #
 #
-@info "Install needed packages"
+@info "Using existing package environment at $(Base.active_project())"
 using Pkg
-Pkg.develop(path=dirname(@__DIR__))
-Pkg.add(["GAP_jll", "GAP_lib_jll"])
 Pkg.instantiate()
-
 import GAP_lib_jll
 
 #
@@ -50,6 +47,8 @@ run(`ln -sf $(abspath(GAP_lib_jll.find_artifact_dir(), "share", "gap", "doc")) $
 # prepend our temporary depot to the depot list...
 withenv("JULIA_DEPOT_PATH"=>tmpdepot*":", "FORCE_JULIAINTERFACE_COMPILATION" => "true") do
 
+    # ... make sure all dependencies are installed ...
+    run(`$(Base.julia_cmd()) --project=$(Base.active_project()) -e "using Pkg; Pkg.instantiate()"`)
     # ... and start Julia, by default with the same project environment
     run(`$(Base.julia_cmd()) --project=$(Base.active_project()) $(ARGS)`)
 end

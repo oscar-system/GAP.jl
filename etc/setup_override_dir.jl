@@ -66,6 +66,9 @@ build_dir = abspath(build_dir)
 @info "Install needed packages"
 using Pkg
 using Artifacts
+
+tmpenv = mktempdir(; cleanup=true)
+Pkg.activate(tmpenv)
 Pkg.add(["JLLPrefixes"])
 Pkg.instantiate()
 
