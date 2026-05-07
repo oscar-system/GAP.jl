@@ -119,26 +119,31 @@ end
 
 # Base.stacktrace(true) includes a mix of user frames, GAP.jl plumbing frames,
 # and native frames encountered while crossing the Julia <-> GAP boundary. We
-# keep only frames useful to GAP.jl users. The conditions below come from the
-# stack traces we actually see around GAP errors on supported platforms:
-# - ccalls.jl / GAP.jl are GAP.jl's own dispatch and initialization plumbing
-# - .dylib / .so / .dll frames are native library frames (libjulia, libgap,
-#   JuliaInterface, etc.)
-# - .c / .h frames are native source locations that may appear when unwinding
-#   through GAP or libjulia internals
-# - file == ":-1" and line <= 0 are synthetic / locationless frames that do not
-#   point at useful source code
-# This filter is intentionally conservative: if a frame already has a clear
-# Julia source location outside GAP.jl internals, keep it.
+# aim to keep only frames useful to GAP.jl users.
+#
+# This filter is based on the frame shapes currently observed around GAP errors
+# on supported platforms. If a frame already has a clear Julia source location
+# outside GAP.jl internals, keep it.
 function is_internal_julia_error_frame(frame::Base.StackTraces.StackFrame)
     file = String(frame.file)
+
+    # ccalls.jl / GAP.jl are GAP.jl's own dispatch and initialization plumbing
     file == abspath(@__DIR__, "ccalls.jl") && return true
     file == abspath(@__DIR__, "GAP.jl") && return true
+
+    # .dylib / .so / .dll frames are native library frames (libjulia, libgap,
+    # JuliaInterface, etc.)
     endswith(file, ".dylib") && return true
     endswith(file, ".so") && return true
     endswith(file, ".dll") && return true
+
+    # .c / .h frames are native source locations that may appear when
+    # unwinding through GAP or libjulia internals
     endswith(file, ".c") && return true
     endswith(file, ".h") && return true
+
+    # file == ":-1" and line <= 0 are synthetic / locationless frames that do
+    # not point at useful source code
     file == ":-1" && return true
     frame.line <= 0 && return true
     return false
