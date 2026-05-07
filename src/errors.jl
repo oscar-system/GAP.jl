@@ -88,6 +88,9 @@ function show_gap_error(io::IO, err::GAPError)
             end
         end
     elseif !isempty(err.raw_text)
+        # Fallback when structured GAP frames are unavailable. GAP's buffer
+        # typically ends in a newline already, so chomp it to avoid printing an
+        # extra blank line here.
         print(io, "\n", chomp(err.raw_text))
     end
 end
