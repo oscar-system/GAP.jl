@@ -168,8 +168,9 @@ function collapse_repeated_julia_frames(trace::Vector{Tuple{Base.StackTraces.Sta
 end
 
 # Convert the GAP-side stack representation produced by gap/err.g into Julia
-# structs. The hasproperty check matters during startup and error paths before
-# gap/err.g has run: errors.jl is loaded before those GAP globals exist.
+# structs. These guards are needed both during startup and in standalone mode:
+# errors.jl is loaded before gap/err.g runs, and standalone initialization
+# skips gap/err.g entirely.
 function capture_gap_error_frames()
     frames = GAPStackFrame[]
     hasproperty(Globals, :_JULIAINTERFACE_ERROR_STACK) || return frames
@@ -186,13 +187,16 @@ function capture_gap_error_frames()
 end
 
 function clear_gap_error_frames()
+    # See capture_gap_error_frames: this global may not exist yet, or at all in
+    # standalone mode where GAP startup skips gap/err.g.
     hasproperty(Globals, :_JULIAINTERFACE_CLEAR_ERROR_STACK) || return
     Globals._JULIAINTERFACE_CLEAR_ERROR_STACK()
 end
 
 # Truncate the GAP string object used as the shared error buffer. The
-# hasproperty check is needed for the same reason as in capture_gap_error_frames:
-# this helper may be reached before gap/err.g created the GAP-side buffer.
+# hasproperty check is needed for the same reason as in
+# capture_gap_error_frames: this helper may run before gap/err.g created the
+# GAP-side buffer, or in standalone mode where that file is never loaded.
 function clear_gap_error_buffer()
     hasproperty(Globals, :_JULIAINTERFACE_ERROR_BUFFER) || return
     # Keep the original GAP string object and only truncate it. Rebinding the
@@ -257,7 +261,8 @@ function capture_gap_error_snapshot_from_runtime()
     # Fallback for code paths where ThrowObserver fires without a prior
     # copy_gap_error_to_julia callback, most notably some evalstr parse errors.
     # In that situation we construct the snapshot directly from the current
-    # GAP-side globals instead of from last_error_snapshot.
+    # GAP-side globals instead of from last_error_snapshot. The error buffer may
+    # be absent for the same startup / standalone-mode reasons as above.
     raw_text = hasproperty(Globals, :_JULIAINTERFACE_ERROR_BUFFER) ?
         String(Globals._JULIAINTERFACE_ERROR_BUFFER::GapObj) : ""
     frames = capture_gap_error_frames()
