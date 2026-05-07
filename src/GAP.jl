@@ -255,9 +255,7 @@ function __init__()
     # Start GAP.
     initialize(cmdline_options)
 
-    if isdefined(Main, :__GAP_ARGS__)
-        set_error_handler_disabled(true)
-    else
+    if !isdefined(Main, :__GAP_ARGS__)
         # We had started GAP with the `-b` option.
         # Reset this option in order to leave it to GAP's `LoadPackage`
         # whether package banners are shown.

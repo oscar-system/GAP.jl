@@ -100,7 +100,8 @@ GAP: [  ]
 ```
 """
 function evalstr_ex(cmd::String)
-    return @ccall libgap.GAP_EvalString(cmd::Cstring)::GapObj
+    res = @ccall libgap.GAP_EvalString(cmd::Cstring)::GapObj
+    return res
 end
 
 """
@@ -153,18 +154,15 @@ function evalstr(cmd::String)
 
     res = evalstr_ex(cmd * ";")
 
-    snapshot = take_gap_error_snapshot()
+    snapshot = take_or_capture_gap_error_snapshot()
     if any(x::GapObj->x[1] === false, res)
-      snapshot === nothing && copy_gap_error_to_julia()
-      snapshot === nothing && (snapshot = take_gap_error_snapshot())
       throw_gap_error(snapshot)
     end
 
     # If there is a warning string on the GAP side, copy it into a snapshot.
     # We do this only if no error snapshot has been captured already, to avoid
     # clobbering the callback-based data used above.
-    snapshot === nothing && copy_gap_error_to_julia()
-    snapshot === nothing && (snapshot = take_gap_error_snapshot())
+    snapshot === nothing && (snapshot = take_or_capture_gap_error_snapshot())
     if snapshot !== nothing && !isempty(snapshot.raw_text)
       # Syntax warnings may be printed here
       print(snapshot.raw_text)

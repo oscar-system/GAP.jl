@@ -86,12 +86,12 @@ ReplaceBinding("ErrorInner", function(options, earlyMessage)
 
     # In standalone mode / gap.sh, GAP.jl deliberately disables all custom
     # Julia-side error handling and lets GAP behave natively.
-    if not Julia.GAP.is_error_handler_disabled() then
+    if not GAP_jl.is_error_handler_disabled() then
         MakeReadWriteGlobal("_JULIAINTERFACE_ERROR_STACK");
         _JULIAINTERFACE_ERROR_STACK := _JULIAINTERFACE_CAPTURE_STACK(options.context);
         MakeReadOnlyGlobal("_JULIAINTERFACE_ERROR_STACK");
     fi;
 
-    orig := VALUE_GLOBAL("_ORIG_ErrorInner");
+    orig := VALUE_GLOBAL(ReplaceBindingOrigName("ErrorInner"));
     return orig(options, earlyMessage);
 end);

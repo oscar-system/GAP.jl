@@ -32,7 +32,7 @@ using IOCapture
     @test x.a == 1
 
     xx = GapObj([1, 2, 3])
-    @test_throws GAP.GAPError xx[4]
+    @test_throws GAPError xx[4]
 
     @test string(GapObj("x")) == "x"
 

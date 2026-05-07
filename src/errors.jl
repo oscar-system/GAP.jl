@@ -22,6 +22,8 @@ struct GAPError <: Exception
     julia_stacktrace::Vector{Tuple{Base.StackTraces.StackFrame,Int}}
 end
 
+export GAPError
+
 GAPError(message::String, gap_frames::Vector{GAPStackFrame}, raw_text::String) =
     GAPError(message, gap_frames, raw_text, Tuple{Base.StackTraces.StackFrame,Int}[])
 
@@ -49,6 +51,11 @@ const disable_error_handler = Ref{Bool}(false)
 
 is_error_handler_disabled() = disable_error_handler[]
 
+# gap/err.g installs the GAP-side error buffer and stack helpers during regular
+# startup. They are absent before that point and in standalone mode, where
+# initialization returns before gap/err.g is loaded.
+has_gap_error_state() = hasproperty(Globals, :_JULIAINTERFACE_CLEAR_ERROR_STACK)
+
 function Base.showerror(io::IO, err::GAPError)
     show_gap_error(io, err)
 end
@@ -68,7 +75,7 @@ function show_gap_error(io::IO, err::GAPError)
 
     if !isempty(err.gap_frames)
         print(io, "\nGAP stacktrace:")
-        for (i, frame) in pairs(err.gap_frames)
+        for (i, frame) in enumerate(err.gap_frames)
             print(io, "\n [", i, "] ")
             printstyled(io, frame.function_label; bold=true)
             if frame.file !== nothing
@@ -141,7 +148,7 @@ end
 # frames are typically REPL / include / test harness machinery and make the
 # rendered backtrace noisier without helping to locate the user call site.
 function trim_julia_backtrace_at_toplevel(trace::Vector{Tuple{Base.StackTraces.StackFrame,Int}})
-    for (i, (frame, _)) in pairs(trace)
+    for (i, (frame, _)) in enumerate(trace)
         if Base.StackTraces.is_top_level_frame(frame)
             resize!(trace, i)
             break
@@ -168,12 +175,10 @@ function collapse_repeated_julia_frames(trace::Vector{Tuple{Base.StackTraces.Sta
 end
 
 # Convert the GAP-side stack representation produced by gap/err.g into Julia
-# structs. These guards are needed both during startup and in standalone mode:
-# errors.jl is loaded before gap/err.g runs, and standalone initialization
-# skips gap/err.g entirely.
+# structs.
 function capture_gap_error_frames()
     frames = GAPStackFrame[]
-    hasproperty(Globals, :_JULIAINTERFACE_ERROR_STACK) || return frames
+    has_gap_error_state() || return frames
 
     # GAP stores frames as [label, file-or-fail, line-or-fail].
     raw_frames = Globals._JULIAINTERFACE_ERROR_STACK
@@ -187,18 +192,14 @@ function capture_gap_error_frames()
 end
 
 function clear_gap_error_frames()
-    # See capture_gap_error_frames: this global may not exist yet, or at all in
-    # standalone mode where GAP startup skips gap/err.g.
-    hasproperty(Globals, :_JULIAINTERFACE_CLEAR_ERROR_STACK) || return
+    has_gap_error_state() || return
     Globals._JULIAINTERFACE_CLEAR_ERROR_STACK()
 end
 
 # Truncate the GAP string object used as the shared error buffer. The
-# hasproperty check is needed for the same reason as in
-# capture_gap_error_frames: this helper may run before gap/err.g created the
-# GAP-side buffer, or in standalone mode where that file is never loaded.
+# guard is needed for the same reason as in capture_gap_error_frames.
 function clear_gap_error_buffer()
-    hasproperty(Globals, :_JULIAINTERFACE_ERROR_BUFFER) || return
+    has_gap_error_state() || return
     # Keep the original GAP string object and only truncate it. Rebinding the
     # global would break the OutputTextString stream created in gap/err.g.
     @ccall libgap.SET_LEN_STRING(Globals._JULIAINTERFACE_ERROR_BUFFER::GapObj, 0::Cuint)::Cvoid
@@ -234,37 +235,8 @@ function gap_error_message(raw_text::String)
     return strip(first_line)
 end
 
-function copy_gap_error_to_julia()
-    global disable_error_handler
-    if disable_error_handler[]
-        return
-    end
-
-    # This is the normal libgap callback path described above. GAP is still in
-    # the middle of unwinding, but ErrorInner has already filled the stack
-    # cache and GAP's error printing has already populated the shared buffer.
-    # Snapshot both now, before the next GAP command can overwrite them.
-    raw_text = String(Globals._JULIAINTERFACE_ERROR_BUFFER::GapObj)
-    isempty(raw_text) && return
-
-    frames = capture_gap_error_frames()
-    last_error_snapshot[] = GAPError(
-        gap_error_message(raw_text),
-        frames,
-        raw_text,
-        capture_current_julia_backtrace(),
-    )
-    clear_gap_error()
-end
-
-function capture_gap_error_snapshot_from_runtime()
-    # Fallback for code paths where ThrowObserver fires without a prior
-    # copy_gap_error_to_julia callback, most notably some evalstr parse errors.
-    # In that situation we construct the snapshot directly from the current
-    # GAP-side globals instead of from last_error_snapshot. The error buffer may
-    # be absent for the same startup / standalone-mode reasons as above.
-    raw_text = hasproperty(Globals, :_JULIAINTERFACE_ERROR_BUFFER) ?
-        String(Globals._JULIAINTERFACE_ERROR_BUFFER::GapObj) : ""
+function capture_gap_error_snapshot()
+    raw_text = has_gap_error_state() ? String(Globals._JULIAINTERFACE_ERROR_BUFFER::GapObj) : ""
     frames = capture_gap_error_frames()
     if isempty(raw_text) && isempty(frames)
         return nothing
@@ -278,6 +250,35 @@ function capture_gap_error_snapshot_from_runtime()
     )
 end
 
+function copy_gap_error_to_julia()
+    global disable_error_handler
+    if disable_error_handler[]
+        return nothing
+    end
+
+    # This is the normal libgap callback path described above. GAP is still in
+    # the middle of unwinding, but ErrorInner has already filled the stack
+    # cache and GAP's error printing has already populated the shared buffer.
+    # Snapshot both now, before the next GAP command can overwrite them.
+    snapshot = capture_gap_error_snapshot()
+    snapshot === nothing && return nothing
+
+    last_error_snapshot[] = snapshot
+    clear_gap_error()
+    return nothing
+end
+
+function capture_gap_error_snapshot_from_runtime()
+    # Fallback for code paths where ThrowObserver fires without a prior
+    # copy_gap_error_to_julia callback, most notably some evalstr parse errors.
+    # In that situation we construct the snapshot directly from the current
+    # GAP-side globals instead of from last_error_snapshot.
+    snapshot = capture_gap_error_snapshot()
+    snapshot === nothing && return nothing
+    clear_gap_error()
+    return snapshot
+end
+
 function take_gap_error_snapshot()
     snapshot = last_error_snapshot[]
     # Snapshots are single-use. Once a GAP error has been consumed, later calls
@@ -286,11 +287,14 @@ function take_gap_error_snapshot()
     return snapshot
 end
 
+function take_or_capture_gap_error_snapshot()
+    snapshot = take_gap_error_snapshot()
+    snapshot !== nothing && return snapshot
+    copy_gap_error_to_julia()
+    return take_gap_error_snapshot()
+end
+
 function throw_gap_error(snapshot::Union{Nothing,GAPError})
-    if snapshot === nothing
-        snapshot = capture_gap_error_snapshot_from_runtime()
-        snapshot === nothing || clear_gap_error()
-    end
     if snapshot === nothing
         snapshot = GAPError("", GAPStackFrame[], "")
     end
@@ -309,6 +313,8 @@ function ThrowObserver(depth::Cint)
     @ccall libgap.SWITCH_TO_BOTTOM_LVARS()::Cvoid
     # Only the outermost observer turns the GAP failure into a Julia exception.
     if depth <= 0
-        throw_gap_error(take_gap_error_snapshot())
+        snapshot = take_gap_error_snapshot()
+        snapshot === nothing && (snapshot = capture_gap_error_snapshot_from_runtime())
+        throw_gap_error(snapshot)
     end
 end

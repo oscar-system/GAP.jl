@@ -20,15 +20,8 @@ function capture_exception(f)
     end
 end
 
-gap_error_type() = isdefined(GAP, :GAPError) ? getfield(GAP, :GAPError) : Exception
-gap_frame_type() = isdefined(GAP, :GAPStackFrame) ? getfield(GAP, :GAPStackFrame) : Any
-
-message_of(err) = hasproperty(err, :message) ? getproperty(err, :message) : ""
-gap_frames_of(err) = hasproperty(err, :gap_frames) ? getproperty(err, :gap_frames) : Any[]
-
-frame_label(frame) = getproperty(frame, :function_label)
-frame_file(frame) = getproperty(frame, :file)
-frame_line(frame) = getproperty(frame, :line)
+message_of(err) = hasproperty(err, :message) ? err.message : ""
+gap_frames_of(err) = hasproperty(err, :gap_frames) ? err.gap_frames : Any[]
 
 @testset "error backtraces" begin
     @testset "pure GAP helper captures stack shape" begin
@@ -65,8 +58,7 @@ frame_line(frame) = getproperty(frame, :line)
         end
 
         @test err !== nothing
-        @test isdefined(GAP, :GAPError)
-        @test err isa gap_error_type()
+        @test err isa GAPError
         @test hasproperty(err, :message)
         @test occursin("boom", message_of(err))
         @test hasproperty(err, :gap_frames)
@@ -74,13 +66,13 @@ frame_line(frame) = getproperty(frame, :line)
         frames = gap_frames_of(err)
         @test frames isa Vector
         @test !isempty(frames)
-        @test all(frame -> frame isa gap_frame_type(), frames)
+        @test all(frame -> frame isa GAP.GAPStackFrame, frames)
 
-        labels = [frame_label(frame) for frame in frames]
+        labels = [frame.function_label for frame in frames]
         @test "gapjl_traceback_inner" in labels
         @test "gapjl_traceback_outer" in labels
-        @test any(frame -> frame_file(frame) !== nothing, frames)
-        @test any(frame -> frame_line(frame) !== nothing, frames)
+        @test any(frame -> frame.file !== nothing, frames)
+        @test any(frame -> frame.line !== nothing, frames)
 
         shown = sprint(showerror, err)
         @test occursin("GAP stacktrace", shown)
@@ -101,13 +93,12 @@ frame_line(frame) = getproperty(frame, :line)
         end
 
         @test err !== nothing
-        @test isdefined(GAP, :GAPError)
-        @test err isa gap_error_type()
+        @test err isa GAPError
         @test !isempty(strip(message_of(err)))
         @test occursin("evalstr boom", message_of(err))
 
         frames = gap_frames_of(err)
-        labels = [frame_label(frame) for frame in frames]
+        labels = [frame.function_label for frame in frames]
         @test "gapjl_evalstr_inner" in labels
         @test "gapjl_evalstr_outer" in labels
     end
@@ -119,7 +110,7 @@ frame_line(frame) = getproperty(frame, :line)
             julia_evalstr_wrapper()
         end
 
-        @test err isa gap_error_type()
+        @test err isa GAPError
 
         shown = try
             throw(err)
@@ -150,11 +141,10 @@ frame_line(frame) = getproperty(frame, :line)
         end
 
         @test err !== nothing
-        @test isdefined(GAP, :GAPError)
-        @test err isa gap_error_type()
+        @test err isa GAPError
 
         frames = gap_frames_of(err)
-        labels = [frame_label(frame) for frame in frames]
+        labels = [frame.function_label for frame in frames]
         @test any(label -> occursin("unknown", label) || occursin("anonymous", label), labels)
 
         shown = sprint(showerror, err)
@@ -182,7 +172,7 @@ frame_line(frame) = getproperty(frame, :line)
             julia_gap_traceback_outer()
         end
 
-        @test err isa gap_error_type()
+        @test err isa GAPError
 
         shown = try
             throw(err)
@@ -201,17 +191,17 @@ frame_line(frame) = getproperty(frame, :line)
     end
 
     @testset "disabling custom error handling clears stale state" begin
-        @test GAP.evalstr("Julia.GAP.is_error_handler_disabled()") === false
+        @test GAP.is_error_handler_disabled() === false
 
         err = capture_exception() do
             GAP.Globals.gapjl_traceback_outer()
         end
-        @test err isa gap_error_type()
+        @test err isa GAPError
         @test !isempty(gap_frames_of(err))
 
         GAP.set_error_handler_disabled(true)
         try
-            @test GAP.evalstr("Julia.GAP.is_error_handler_disabled()") === true
+            @test GAP.is_error_handler_disabled() === true
             @test GAP.take_gap_error_snapshot() === nothing
             @test isempty(GAP.capture_gap_error_frames())
             @test length(GAP.Globals._JULIAINTERFACE_ERROR_STACK) == 0
@@ -220,7 +210,7 @@ frame_line(frame) = getproperty(frame, :line)
             GAP.set_error_handler_disabled(false)
         end
 
-        @test GAP.evalstr("Julia.GAP.is_error_handler_disabled()") === false
+        @test GAP.is_error_handler_disabled() === false
     end
 
     @testset "evalstr clears stale GAP error text before running" begin

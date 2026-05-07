@@ -45,7 +45,8 @@ function prompt()
     # restore signal handler
     @ccall signal(Base.SIGINT::Cint, old_sigint::Ptr{Cvoid})::Ptr{Cvoid}
 
-    # restore GAP.jl error handler
+    # Leaving the GAP prompt returns control to ordinary Julia code, so turn
+    # GAP.jl's custom error capture back on for subsequent Julia -> GAP calls.
     set_error_handler_disabled(false)
     replace_global!(:ERROR_OUTPUT, Globals._JULIAINTERFACE_ERROR_OUTPUT)
 end
