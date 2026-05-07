@@ -53,11 +53,6 @@ end
 
 # helper function for `gap.sh` scripts created by create_gap_sh()
 function run_session()
-    original_error_output = ValueGlobalVariable("_JULIAINTERFACE_ORIGINAL_ERROR_OUTPUT")
-    if original_error_output !== nothing
-        replace_global!(:ERROR_OUTPUT, original_error_output)
-    end
-
     # Read the files from the GAP command line.
     @ccall libgap.Call0ArgsInNewReader(Globals.GAPInfo.LoadInitFiles_GAP_JL::Any)::Cvoid
 
