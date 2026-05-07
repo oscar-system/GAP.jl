@@ -64,7 +64,7 @@ jobs:
           patchdir=.github/workflows/GAP_patches/${{ matrix.gap-version }}
           if [ -d $patchdir ]; then
             for f in $patchdir/*.patch; do
-              echo "Applying path ${f}"
+              echo "Applying patch ${f}"
               patch -p1 -d GAPROOT < ${f}
             done
           fi
