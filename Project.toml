@@ -1,6 +1,6 @@
 name = "GAP"
 uuid = "c863536a-3901-11e9-33e7-d5cd0df7b904"
-version = "0.16.6"
+version = "0.17.0-DEV"
 
 [deps]
 AbstractAlgebra = "c3fe647b-3220-5bb0-a1ea-a7954cac585d"
@@ -64,37 +64,37 @@ Artifacts = "1.10"
 BinaryWrappers = "0.2.0"
 Downloads = "1.4.3"
 FileWatching = "1.10"
-GAP_jll = "~400.1500.100"
-GAP_lib_jll = "~400.1500.100"
+GAP_jll = "~400.1591.0"
+GAP_lib_jll = "~400.1591.0"
 GAP_pkg_ace_jll = "~501.70000.0"
-GAP_pkg_anupq_jll = "~301.30200.0"
-GAP_pkg_browse_jll = "~101.82100.1"
+GAP_pkg_anupq_jll = "~301.30300.0"
+GAP_pkg_browse_jll = "~101.82200.0"
 GAP_pkg_caratinterface_jll = "~201.30700.0"
-GAP_pkg_cddinterface_jll = "~202501.62400.0"
+GAP_pkg_cddinterface_jll = "~202600.30200.0"
 GAP_pkg_cohomolo_jll = "~101.61200.0"
-GAP_pkg_crypting_jll = "~1.100600.0"
-GAP_pkg_curlinterface_jll = "~201.40200.0"
-GAP_pkg_cvec_jll = "~201.80400.0"
-GAP_pkg_datastructures_jll = "~1.40000.0"
-GAP_pkg_deepthought_jll = "~101.900.0"
-GAP_pkg_digraphs_jll = "~101.130100.0"
-GAP_pkg_edim_jll = "~101.30800.0"
-GAP_pkg_ferret_jll = "~101.1500.0"
-GAP_pkg_float_jll = "~101.900.0"
-GAP_pkg_fplsa_jll = "~101.20700.0"
-GAP_pkg_gauss_jll = "~202401.110100.0"
-GAP_pkg_guava_jll = "~301.200000.0"
-GAP_pkg_io_jll = "~401.90300.0"
-GAP_pkg_json_jll = "~201.20300.0"
-GAP_pkg_juliainterface_jll = "=0.160000.0"
+GAP_pkg_crypting_jll = "~1.100600.1"
+GAP_pkg_curlinterface_jll = "~201.40300.0"
+GAP_pkg_cvec_jll = "~201.80400.1"
+GAP_pkg_datastructures_jll = "~1.40100.0"
+GAP_pkg_deepthought_jll = "~101.900.1"
+GAP_pkg_digraphs_jll = "~101.140000.0"
+GAP_pkg_edim_jll = "~101.30800.1"
+GAP_pkg_ferret_jll = "~101.1600.0"
+GAP_pkg_float_jll = "~101.900.1"
+GAP_pkg_fplsa_jll = "~101.20800.0"
+GAP_pkg_gauss_jll = "~202500.120100.0"
+GAP_pkg_guava_jll = "~301.210000.0"
+GAP_pkg_io_jll = "~401.90300.1"
+GAP_pkg_json_jll = "~201.20300.1"
+GAP_pkg_juliainterface_jll = "=0.160000.1"
 GAP_pkg_kbmag_jll = "~101.51100.0"
-GAP_pkg_normalizinterface_jll = "~101.40100.0"
+GAP_pkg_normalizinterface_jll = "~101.50000.0"
 GAP_pkg_nq_jll = "~201.51100.0"
-GAP_pkg_orb_jll = "~501.100.0"
-GAP_pkg_profiling_jll = "~201.60200.0"
-GAP_pkg_semigroups_jll = "~501.50400.0"
+GAP_pkg_orb_jll = "~501.10000.0"
+GAP_pkg_profiling_jll = "~201.60200.1"
+GAP_pkg_semigroups_jll = "~501.60200.0"
 GAP_pkg_simpcomp_jll = "~201.11400.0"
-GAP_pkg_zeromqinterface_jll = "~1.170000.0"
+GAP_pkg_zeromqinterface_jll = "~1.180000.0"
 InteractiveUtils = "1.10"
 Libdl = "1.10"
 MacroTools = "0.5.13"
@@ -109,3 +109,30 @@ julia = "1.10"
 lib4ti2_jll = "1.6.10"
 nauty_jll = "2.6.13"
 polymake_jll = "400.1500.1"
+
+[sources]
+GAP_jll = {url = "https://github.com/lgoettgens/GAP_jll.jl", rev = "GAP-v400.1591.0+0"}
+GAP_lib_jll = {url = "https://github.com/lgoettgens/GAP_lib_jll.jl", rev = "GAP_lib-v400.1591.0+0"}
+GAP_pkg_anupq_jll = {url = "https://github.com/lgoettgens/GAP_pkg_anupq_jll.jl", rev = "GAP_pkg_anupq-v301.30300.0+0"}
+GAP_pkg_browse_jll = {url = "https://github.com/lgoettgens/GAP_pkg_browse_jll.jl", rev = "GAP_pkg_browse-v101.82200.0+0"}
+GAP_pkg_cddinterface_jll = {url = "https://github.com/lgoettgens/GAP_pkg_cddinterface_jll.jl", rev = "GAP_pkg_cddinterface-v202600.30200.0+0"}
+GAP_pkg_crypting_jll = {url = "https://github.com/lgoettgens/GAP_pkg_crypting_jll.jl", rev = "GAP_pkg_crypting-v1.100600.1+0"}
+GAP_pkg_curlinterface_jll = {url = "https://github.com/lgoettgens/GAP_pkg_curlinterface_jll.jl", rev = "GAP_pkg_curlinterface-v201.40300.0+0"}
+GAP_pkg_cvec_jll = {url = "https://github.com/lgoettgens/GAP_pkg_cvec_jll.jl", rev = "GAP_pkg_cvec-v201.80400.1+0"}
+GAP_pkg_datastructures_jll = {url = "https://github.com/lgoettgens/GAP_pkg_datastructures_jll.jl", rev = "GAP_pkg_datastructures-v1.40100.0+0"}
+GAP_pkg_deepthought_jll = {url = "https://github.com/lgoettgens/GAP_pkg_deepthought_jll.jl", rev = "GAP_pkg_deepthought-v101.900.1+0"}
+GAP_pkg_digraphs_jll = {url = "https://github.com/lgoettgens/GAP_pkg_digraphs_jll.jl", rev = "GAP_pkg_digraphs-v101.140000.0+0"}
+GAP_pkg_edim_jll = {url = "https://github.com/lgoettgens/GAP_pkg_edim_jll.jl", rev = "GAP_pkg_edim-v101.30800.1+0"}
+GAP_pkg_ferret_jll = {url = "https://github.com/lgoettgens/GAP_pkg_ferret_jll.jl", rev = "GAP_pkg_ferret-v101.1600.0+0"}
+GAP_pkg_float_jll = {url = "https://github.com/lgoettgens/GAP_pkg_float_jll.jl", rev = "GAP_pkg_float-v101.900.1+0"}
+GAP_pkg_fplsa_jll = {url = "https://github.com/lgoettgens/GAP_pkg_fplsa_jll.jl", rev = "GAP_pkg_fplsa-v101.20800.0+0"}
+GAP_pkg_gauss_jll = {url = "https://github.com/lgoettgens/GAP_pkg_gauss_jll.jl", rev = "GAP_pkg_gauss-v202500.120100.0+0"}
+GAP_pkg_guava_jll = {url = "https://github.com/lgoettgens/GAP_pkg_guava_jll.jl", rev = "GAP_pkg_guava-v301.210000.0+0"}
+GAP_pkg_io_jll = {url = "https://github.com/lgoettgens/GAP_pkg_io_jll.jl", rev = "GAP_pkg_io-v401.90300.1+0"}
+GAP_pkg_json_jll = {url = "https://github.com/lgoettgens/GAP_pkg_json_jll.jl", rev = "GAP_pkg_json-v201.20300.1+0"}
+GAP_pkg_juliainterface_jll = {url = "https://github.com/lgoettgens/GAP_pkg_juliainterface_jll.jl", rev = "GAP_pkg_juliainterface-v0.160000.1+0"}
+GAP_pkg_normalizinterface_jll = {url = "https://github.com/lgoettgens/GAP_pkg_normalizinterface_jll.jl", rev = "GAP_pkg_normalizinterface-v101.50000.0+0"}
+GAP_pkg_orb_jll = {url = "https://github.com/lgoettgens/GAP_pkg_orb_jll.jl", rev = "GAP_pkg_orb-v501.10000.0+0"}
+GAP_pkg_profiling_jll = {url = "https://github.com/lgoettgens/GAP_pkg_profiling_jll.jl", rev = "GAP_pkg_profiling-v201.60200.1+0"}
+GAP_pkg_semigroups_jll = {url = "https://github.com/lgoettgens/GAP_pkg_semigroups_jll.jl", rev = "GAP_pkg_semigroups-v501.60200.0+0"}
+GAP_pkg_zeromqinterface_jll = {url = "https://github.com/lgoettgens/GAP_pkg_zeromqinterface_jll.jl", rev = "GAP_pkg_zeromqinterface-v1.180000.0+0"}
