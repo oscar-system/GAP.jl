@@ -161,7 +161,7 @@ gap_frames_of(err) = hasproperty(err, :gap_frames) ? err.gap_frames : Any[]
 
         shown = sprint(showerror, err)
         @test occursin("Error thrown by GAP: format boom", shown)
-        @test occursin("\n [1] framefunc @ ~/tmp/frame.g:12", shown)
+        @test occursin("\n [1] framefunc\n     @ ~/tmp/frame.g:12", shown)
     end
 
     @testset "showerror prints the captured Julia stacktrace" begin

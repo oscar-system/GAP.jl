@@ -79,12 +79,12 @@ function show_gap_error(io::IO, err::GAPError)
             print(io, "\n [", i, "] ")
             printstyled(io, frame.function_label; bold=true)
             if frame.file !== nothing
-                print(io, " @ ", Base.contractuser(frame.file))
+                print(io, "\n     @ ", Base.contractuser(frame.file))
                 if frame.line !== nothing
                     print(io, ":", frame.line)
                 end
             elseif frame.line !== nothing
-                print(io, " @ line ", frame.line)
+                print(io, "\n     @ line ", frame.line)
             end
         end
     elseif !isempty(err.raw_text)
