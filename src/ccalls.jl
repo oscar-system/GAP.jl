@@ -147,19 +147,25 @@ i.e., it can be accessed as `GAP.Globals.x` after the call of `GAP.evalstr`,
 whereas `x` in the latter example lives in the Julia session.
 """
 function evalstr(cmd::String)
+    # Start from a clean error state so stale GAP-side diagnostics from an
+    # earlier failure cannot leak into this evalstr call.
+    take_gap_error_snapshot()
+    clear_gap_error()
+
     res = evalstr_ex(cmd * ";")
 
-    # If there is an error string on the GAP side, copy it into `last_error`.
-    # We do this even if there is no error indicated via `res`, to be able to
-    # handle syntax warnings
-    copy_gap_error_to_julia()
-
-    msg = get_and_clear_last_error()
+    snapshot = take_or_capture_gap_error_snapshot()
     if any(x::GapObj->x[1] === false, res)
-      error("Error thrown by GAP: $msg")
-    elseif !isempty(msg)
+      throw_gap_error(snapshot)
+    end
+
+    # If there is a warning string on the GAP side, copy it into a snapshot.
+    # We do this only if no error snapshot has been captured already, to avoid
+    # clobbering the callback-based data used above.
+    snapshot === nothing && (snapshot = take_or_capture_gap_error_snapshot())
+    if snapshot !== nothing && !isempty(snapshot.raw_text)
       # Syntax warnings may be printed here
-      print(msg)
+      print(snapshot.raw_text)
     end
     res = res[end]::GapObj
     if Wrappers.ISB_LIST(res, 2)

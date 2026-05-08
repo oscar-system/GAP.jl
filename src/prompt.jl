@@ -20,8 +20,6 @@ This GAP prompt allows to quickly switch between writing Julia and GAP code in
 a session where all data is shared.
 """
 function prompt()
-    global disable_error_handler
-
     # save the current SIGINT handler
     # (we pass NULL as signal handler; strictly speaking, we should be passing `SIG_DFL`
     # but it's not clearly how to access this from here, and anyway on the list
@@ -32,7 +30,7 @@ function prompt()
     @ccall libgap.SyInstallAnswerIntr()::Cvoid
 
     # restore GAP's error output
-    disable_error_handler[] = true
+    set_error_handler_disabled(true)
     replace_global!(:ERROR_OUTPUT, Globals._JULIAINTERFACE_ORIGINAL_ERROR_OUTPUT)
 
     # enable break loop
@@ -47,14 +45,14 @@ function prompt()
     # restore signal handler
     @ccall signal(Base.SIGINT::Cint, old_sigint::Ptr{Cvoid})::Ptr{Cvoid}
 
-    # restore GAP.jl error handler
-    disable_error_handler[] = false
+    # Leaving the GAP prompt returns control to ordinary Julia code, so turn
+    # GAP.jl's custom error capture back on for subsequent Julia -> GAP calls.
+    set_error_handler_disabled(false)
     replace_global!(:ERROR_OUTPUT, Globals._JULIAINTERFACE_ERROR_OUTPUT)
 end
 
 # helper function for `gap.sh` scripts created by create_gap_sh()
 function run_session()
-
     # Read the files from the GAP command line.
     @ccall libgap.Call0ArgsInNewReader(Globals.GAPInfo.LoadInitFiles_GAP_JL::Any)::Cvoid
 
