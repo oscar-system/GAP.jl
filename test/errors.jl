@@ -57,16 +57,14 @@ gap_frames_of(err) = hasproperty(err, :gap_frames) ? err.gap_frames : Any[]
             GAP.Globals.gapjl_traceback_outer()
         end
 
-        @test err !== nothing
         @test err isa GAPError
         @test hasproperty(err, :message)
         @test occursin("boom", message_of(err))
         @test hasproperty(err, :gap_frames)
 
         frames = gap_frames_of(err)
-        @test frames isa Vector
+        @test frames isa Vector{GAP.GAPStackFrame}
         @test !isempty(frames)
-        @test all(frame -> frame isa GAP.GAPStackFrame, frames)
 
         labels = [frame.function_label for frame in frames]
         @test "gapjl_traceback_inner" in labels

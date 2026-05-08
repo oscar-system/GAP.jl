@@ -78,7 +78,7 @@ jobs:
           #   while later scripts expect unversioned gcc and g++ in PATH.
           brew install autoconf gmp zlib gcc coreutils
 
-          # ensure gcc and g++ are avaialble under those names (on macOS,
+          # ensure gcc and g++ are available under those names (on macOS,
           # these names are aliases for clang / clang++ out of the box)
           shimdir="${HOME}/bin"
           mkdir -p "${shimdir}"

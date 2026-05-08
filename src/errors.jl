@@ -267,8 +267,7 @@ function capture_gap_error_and_clear()
 end
 
 function copy_gap_error_to_julia()
-    global disable_error_handler
-    if disable_error_handler[]
+    if is_error_handler_disabled()
         return nothing
     end
 
