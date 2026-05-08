@@ -20,8 +20,8 @@ function capture_exception(f)
     end
 end
 
-message_of(err) = hasproperty(err, :message) ? err.message : ""
-gap_frames_of(err) = hasproperty(err, :gap_frames) ? err.gap_frames : Any[]
+message_of(err) = err.message
+gap_frames_of(err) = err.gap_frames
 
 @testset "error backtraces" begin
     @testset "pure GAP helper captures stack shape" begin
@@ -58,9 +58,7 @@ gap_frames_of(err) = hasproperty(err, :gap_frames) ? err.gap_frames : Any[]
         end
 
         @test err isa GAPError
-        @test hasproperty(err, :message)
         @test occursin("boom", message_of(err))
-        @test hasproperty(err, :gap_frames)
 
         frames = gap_frames_of(err)
         @test frames isa Vector{GAP.GAPStackFrame}

@@ -242,7 +242,7 @@ function gap_error_message(raw_text::String)
 
     # `chomp` strips one trailing newline from GAP's buffer before we take the
     # first line, so a final blank line does not turn into an empty summary.
-    first_line = split(chomp(raw_text), '\n'; limit=2)[1]
+    first_line = first(split(raw_text, '\n'; limit=2))
     startswith(first_line, "Error, ") && (first_line = first_line[8:end])
     endswith(first_line, " called from") &&
         (first_line = first_line[1:end-length(" called from")])
