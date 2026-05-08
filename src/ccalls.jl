@@ -159,10 +159,9 @@ function evalstr(cmd::String)
       throw_gap_error(snapshot)
     end
 
-    # If there is a warning string on the GAP side, copy it into a snapshot.
-    # We do this only if no error snapshot has been captured already, to avoid
-    # clobbering the callback-based data used above.
-    snapshot === nothing && (snapshot = take_or_capture_gap_error_snapshot())
+    # Successful evalstr calls can still leave warning text in GAP's error
+    # buffer, e.g. "Syntax warning: Unbound global variable in stream:1".
+    # The snapshot above already captures that warning text if it exists.
     if snapshot !== nothing && !isempty(snapshot.raw_text)
       # Syntax warnings may be printed here
       print(snapshot.raw_text)
