@@ -267,9 +267,7 @@ function capture_gap_error_and_clear()
 end
 
 function copy_gap_error_to_julia()
-    if is_error_handler_disabled()
-        return nothing
-    end
+    is_error_handler_disabled() && return nothing
 
     # This is the normal libgap callback path described above. GAP is still in
     # the middle of unwinding, but ErrorInner has already filled the stack
@@ -304,10 +302,7 @@ function throw_gap_error(snapshot::Union{Nothing,GAPError})
 end
 
 function ThrowObserver(depth::Cint)
-    global disable_error_handler
-    if disable_error_handler[]
-        return
-    end
+    is_error_handler_disabled() && return nothing
 
     # Tell GAP that the error was handled on the Julia side, then restore GAP's
     # interpreter state before throwing back into Julia.
