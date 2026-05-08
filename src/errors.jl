@@ -204,6 +204,10 @@ function clear_gap_error_frames()
     Globals._JULIAINTERFACE_CLEAR_ERROR_STACK()
 end
 
+function capture_gap_error_buffer()
+    return has_gap_error_state() ? String(Globals._JULIAINTERFACE_ERROR_BUFFER::GapObj) : ""
+end
+
 # Truncate the GAP string object used as the shared error buffer. The
 # guard is needed for the same reason as in capture_gap_error_frames.
 function clear_gap_error_buffer()
@@ -245,12 +249,14 @@ function gap_error_message(raw_text::String)
     return strip(first_line)
 end
 
-function capture_gap_error_snapshot()
-    raw_text = has_gap_error_state() ? String(Globals._JULIAINTERFACE_ERROR_BUFFER::GapObj) : ""
+function capture_gap_error_and_clear()
+    raw_text = capture_gap_error_buffer()
     frames = capture_gap_error_frames()
     if isempty(raw_text) && isempty(frames)
         return nothing
     end
+
+    clear_gap_error()
 
     return GAPError(
         gap_error_message(raw_text),
@@ -270,23 +276,11 @@ function copy_gap_error_to_julia()
     # the middle of unwinding, but ErrorInner has already filled the stack
     # cache and GAP's error printing has already populated the shared buffer.
     # Snapshot both now, before the next GAP command can overwrite them.
-    snapshot = capture_gap_error_snapshot()
+    snapshot = capture_gap_error_and_clear()
     snapshot === nothing && return nothing
 
     last_error_snapshot[] = snapshot
-    clear_gap_error()
     return nothing
-end
-
-function capture_gap_error_snapshot_from_runtime()
-    # Fallback for code paths where ThrowObserver fires without a prior
-    # copy_gap_error_to_julia callback, most notably some evalstr parse errors.
-    # In that situation we construct the snapshot directly from the current
-    # GAP-side globals instead of from last_error_snapshot.
-    snapshot = capture_gap_error_snapshot()
-    snapshot === nothing && return nothing
-    clear_gap_error()
-    return snapshot
 end
 
 function take_gap_error_snapshot()
@@ -300,8 +294,7 @@ end
 function take_or_capture_gap_error_snapshot()
     snapshot = take_gap_error_snapshot()
     snapshot !== nothing && return snapshot
-    copy_gap_error_to_julia()
-    return take_gap_error_snapshot()
+    return capture_gap_error_and_clear()
 end
 
 function throw_gap_error(snapshot::Union{Nothing,GAPError})
@@ -324,7 +317,7 @@ function ThrowObserver(depth::Cint)
     # Only the outermost observer turns the GAP failure into a Julia exception.
     if depth <= 0
         snapshot = take_gap_error_snapshot()
-        snapshot === nothing && (snapshot = capture_gap_error_snapshot_from_runtime())
+        snapshot === nothing && (snapshot = capture_gap_error_and_clear())
         throw_gap_error(snapshot)
     end
 end
