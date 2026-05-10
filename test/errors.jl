@@ -112,8 +112,7 @@ end
             sprint(showerror, thrown, catch_backtrace())
         end
         @test occursin("Julia stacktrace", shown)
-        @test occursin("julia_evalstr_wrapper", shown)
-        @test occursin("top-level scope", shown)
+        @test occursin("[1] julia_evalstr_wrapper", shown)
         top_level = findfirst("top-level scope", shown)
         @test top_level !== nothing
         @test !occursin("eval(m::Module", shown[first(top_level):end])
@@ -173,11 +172,10 @@ end
             sprint(showerror, thrown, catch_backtrace())
         end
         @test occursin("Julia stacktrace", shown)
-        @test occursin("julia_gap_traceback_inner", shown)
-        @test occursin("julia_gap_traceback_outer", shown)
+        @test occursin("[1] julia_gap_traceback_inner", shown)
+        @test occursin("[2] julia_gap_traceback_outer", shown)
         @test !occursin("throw_gap_error", shown)
         @test !occursin("call_gap_func_nokw", shown)
-        @test occursin("top-level scope", shown)
         top_level = findfirst("top-level scope", shown)
         @test top_level !== nothing
         @test !occursin("eval(m::Module", shown[first(top_level):end])
