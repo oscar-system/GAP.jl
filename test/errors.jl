@@ -198,7 +198,7 @@ gap_frames_of(err) = err.gap_frames
         GAP.set_error_handler_disabled(true)
         try
             @test GAP.is_error_handler_disabled() === true
-            @test GAP.take_gap_error_snapshot() === nothing
+            @test GAP.last_error_snapshot[] === nothing
             @test isempty(GAP.capture_gap_error_frames())
             @test length(GAP.Globals._JULIAINTERFACE_ERROR_STACK) == 0
             @test isempty(String(GAP.Globals._JULIAINTERFACE_ERROR_BUFFER))
@@ -227,7 +227,7 @@ gap_frames_of(err) = err.gap_frames
 
         @test occursin("GapObj", captured.output)
         @test !occursin("stale GAP error text", captured.output)
-        @test GAP.take_gap_error_snapshot() === nothing
+        @test GAP.last_error_snapshot[] === nothing
         @test isempty(String(GAP.Globals._JULIAINTERFACE_ERROR_BUFFER))
         @test isempty(GAP.capture_gap_error_frames())
     end

@@ -221,6 +221,7 @@ end
 # separate because the frame stack and text buffer are maintained differently,
 # and some tests / debugging paths need to manipulate just one side.
 function clear_gap_error()
+    last_error_snapshot[] = nothing
     clear_gap_error_frames()
     clear_gap_error_buffer()
 end
@@ -229,7 +230,6 @@ function set_error_handler_disabled(flag::Bool)
     disable_error_handler[] = flag
     # Switching modes must also drop any buffered error state so later calls do
     # not observe snapshots captured under the previous policy.
-    last_error_snapshot[] = nothing
     clear_gap_error()
     return flag
 end
@@ -256,7 +256,8 @@ function capture_gap_error_and_clear()
         return nothing
     end
 
-    clear_gap_error()
+    clear_gap_error_frames()
+    clear_gap_error_buffer()
 
     return GAPError(
         gap_error_message(raw_text),
@@ -266,6 +267,9 @@ function capture_gap_error_and_clear()
     )
 end
 
+# This function is set as libgap's JumpToCatchCallback; GAP calls that
+# callback from FuncJUMP_TO_CATCH in src/error.c just before it longjmps out
+# of the failing GAP evaluation
 function copy_gap_error_to_julia()
     is_error_handler_disabled() && return nothing
 
@@ -274,31 +278,27 @@ function copy_gap_error_to_julia()
     # cache and GAP's error printing has already populated the shared buffer.
     # Snapshot both now, before the next GAP command can overwrite them.
     snapshot = capture_gap_error_and_clear()
-    snapshot === nothing && return nothing
-
-    last_error_snapshot[] = snapshot
+    if snapshot !== nothing
+        last_error_snapshot[] = snapshot
+    end
     return nothing
 end
 
-function take_gap_error_snapshot()
-    snapshot = last_error_snapshot[]
-    # Snapshots are single-use. Once a GAP error has been consumed, later calls
-    # must not see it again.
-    last_error_snapshot[] = nothing
-    return snapshot
-end
-
 function take_or_capture_gap_error_snapshot()
-    snapshot = take_gap_error_snapshot()
-    snapshot !== nothing && return snapshot
-    return capture_gap_error_and_clear()
-end
+    snapshot = last_error_snapshot[]
+    # Snapshots are single-use. Once a GAP error has been consumed, later
+    # calls must not see it again.
+    last_error_snapshot[] = nothing
 
-function throw_gap_error(snapshot::Union{Nothing,GAPError})
+    if snapshot === nothing
+        snapshot = capture_gap_error_and_clear()
+    end
+
     if snapshot === nothing
         snapshot = GAPError("", GAPStackFrame[], "")
     end
-    throw(snapshot)
+
+    return snapshot
 end
 
 function ThrowObserver(depth::Cint)
@@ -310,8 +310,7 @@ function ThrowObserver(depth::Cint)
     @ccall libgap.SWITCH_TO_BOTTOM_LVARS()::Cvoid
     # Only the outermost observer turns the GAP failure into a Julia exception.
     if depth <= 0
-        snapshot = take_gap_error_snapshot()
-        snapshot === nothing && (snapshot = capture_gap_error_and_clear())
-        throw_gap_error(snapshot)
+        snapshot = take_or_capture_gap_error_snapshot()
+        throw(snapshot)
     end
 end

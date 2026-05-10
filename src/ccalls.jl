@@ -149,14 +149,13 @@ whereas `x` in the latter example lives in the Julia session.
 function evalstr(cmd::String)
     # Start from a clean error state so stale GAP-side diagnostics from an
     # earlier failure cannot leak into this evalstr call.
-    take_gap_error_snapshot()
     clear_gap_error()
 
     res = evalstr_ex(cmd * ";")
 
     snapshot = take_or_capture_gap_error_snapshot()
     if any(x::GapObj->x[1] === false, res)
-      throw_gap_error(snapshot)
+      throw(snapshot)
     end
 
     # Successful evalstr calls can still leave warning text in GAP's error
