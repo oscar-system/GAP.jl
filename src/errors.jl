@@ -63,7 +63,8 @@ end
 function Base.showerror(io::IO, err::GAPError, bt; backtrace=true)
     show_gap_error(io, err)
     if backtrace && !isempty(err.julia_stacktrace)
-        show_julia_backtrace(io, err.julia_stacktrace)
+        print(io, "\n\nJulia stacktrace:")
+        Base.show_backtrace(io, Any[err.julia_stacktrace...])
     end
 end
 
@@ -93,13 +94,6 @@ function show_gap_error(io::IO, err::GAPError)
         # extra blank line here.
         print(io, "\n", chomp(err.raw_text))
     end
-end
-
-function show_julia_backtrace(io::IO, trace::Vector{Tuple{Base.StackTraces.StackFrame,Int}})
-    isempty(trace) && return
-
-    println(io, "\nJulia stacktrace:")
-    Base.show_backtrace(io, Any[trace...])
 end
 
 # Capture the Julia stack before ThrowObserver rewrites the control flow through
