@@ -20,9 +20,6 @@ function capture_exception(f)
     end
 end
 
-message_of(err) = err.message
-gap_frames_of(err) = err.gap_frames
-
 @testset "error backtraces" begin
     @testset "pure GAP helper captures stack shape" begin
         GAP.evalstr_ex("""
@@ -35,12 +32,11 @@ gap_frames_of(err) = err.gap_frames
         """)
 
         frames = GAP.Globals.gapjl_stack_helper_outer()
-        @test frames isa GapObj
-        @test length(frames) >= 2
-        @test String(frames[1][1]) == "gapjl_stack_helper_inner"
-        @test String(frames[2][1]) == "gapjl_stack_helper_outer"
-        @test frames[1][2] != GAP.Globals.fail
-        @test frames[1][3] != GAP.Globals.fail
+        @test Vector{Tuple{String,String,Int}}(frames) ==
+                [
+                 ("gapjl_stack_helper_inner", "stream", 2)
+                 ("gapjl_stack_helper_outer", "stream", 5)
+                ]
     end
 
     @testset "direct GAP calls expose structured backtraces" begin
@@ -58,21 +54,24 @@ gap_frames_of(err) = err.gap_frames
         end
 
         @test err isa GAPError
-        @test occursin("boom", message_of(err))
+        @test occursin("boom", err.message)
 
-        frames = gap_frames_of(err)
+        frames = err.gap_frames
         @test frames isa Vector{GAP.GAPStackFrame}
-        @test !isempty(frames)
-
-        labels = [frame.function_label for frame in frames]
-        @test "gapjl_traceback_inner" in labels
-        @test "gapjl_traceback_outer" in labels
-        @test any(frame -> frame.file !== nothing, frames)
-        @test any(frame -> frame.line !== nothing, frames)
+        @test length(frames) == 2
+        @test frames == [ GAP.GAPStackFrame("gapjl_traceback_inner", "stream", 2),
+                          GAP.GAPStackFrame("gapjl_traceback_outer", "stream", 5) ]
 
         shown = sprint(showerror, err)
-        @test occursin("GAP stacktrace", shown)
-        @test occursin("gapjl_traceback_outer", shown)
+        expected_msg = """
+                       Error thrown by GAP: boom at stream:2
+                       GAP stacktrace:
+                        [1] gapjl_traceback_inner
+                            @ stream:2
+                        [2] gapjl_traceback_outer
+                            @ stream:5
+                       """
+        @test shown == chomp(expected_msg)
     end
 
     @testset "evalstr preserves the captured GAP error" begin
@@ -88,15 +87,14 @@ gap_frames_of(err) = err.gap_frames
             """)
         end
 
-        @test err !== nothing
         @test err isa GAPError
-        @test !isempty(strip(message_of(err)))
-        @test occursin("evalstr boom", message_of(err))
+        @test occursin("evalstr boom", err.message)
 
-        frames = gap_frames_of(err)
-        labels = [frame.function_label for frame in frames]
-        @test "gapjl_evalstr_inner" in labels
-        @test "gapjl_evalstr_outer" in labels
+        frames = err.gap_frames
+        @test frames isa Vector{GAP.GAPStackFrame}
+        @test length(frames) == 2
+        @test frames == [ GAP.GAPStackFrame("gapjl_evalstr_inner", "stream", 2),
+                          GAP.GAPStackFrame("gapjl_evalstr_outer", "stream", 5) ]
     end
 
     @testset "showerror prints the captured Julia stacktrace for evalstr" begin
@@ -136,10 +134,9 @@ gap_frames_of(err) = err.gap_frames
             anon()
         end
 
-        @test err !== nothing
         @test err isa GAPError
 
-        frames = gap_frames_of(err)
+        frames = err.gap_frames
         labels = [frame.function_label for frame in frames]
         @test any(label -> occursin("unknown", label) || occursin("anonymous", label), labels)
 
@@ -193,7 +190,7 @@ gap_frames_of(err) = err.gap_frames
             GAP.Globals.gapjl_traceback_outer()
         end
         @test err isa GAPError
-        @test !isempty(gap_frames_of(err))
+        @test !isempty(err.gap_frames)
 
         GAP.set_error_handler_disabled(true)
         try

@@ -110,6 +110,7 @@ function capture_current_julia_backtrace()
         (frame, 1) for frame in Base.stacktrace(true)
         if frame.func ∉ (
             :capture_current_julia_backtrace,
+            :capture_gap_error_and_clear,
             :copy_gap_error_to_julia,
             :throw_gap_error,
             :ThrowObserver,
