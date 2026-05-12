@@ -63,7 +63,6 @@ end
 function Base.showerror(io::IO, err::GAPError, bt; backtrace=true)
     show_gap_error(io, err)
     if backtrace && !isempty(err.julia_stacktrace)
-        print(io, "\n\nJulia stacktrace:")
         Base.show_backtrace(io, Any[err.julia_stacktrace...])
     end
 end

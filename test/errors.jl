@@ -111,7 +111,6 @@ end
         catch thrown
             sprint(showerror, thrown, catch_backtrace())
         end
-        @test occursin("Julia stacktrace", shown)
         @test occursin("[1] julia_evalstr_wrapper", shown)
         top_level = findfirst("top-level scope", shown)
         @test top_level !== nothing
@@ -171,7 +170,6 @@ end
         catch thrown
             sprint(showerror, thrown, catch_backtrace())
         end
-        @test occursin("Julia stacktrace", shown)
         @test occursin(r"\[1\] [^\n]+julia_gap_traceback_inner", shown)
         @test occursin("[2] julia_gap_traceback_outer", shown)
         @test !occursin("throw_gap_error", shown)
