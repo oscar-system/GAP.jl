@@ -4,6 +4,11 @@
 
 - Improve GAP-originated exceptions to include structured GAP stack traces
 
+## Version 0.16.7-DEV (released 2026-XX-XX)
+
+- Set a timeout of 30 seconds for GAP's `Download` function,
+  except if the user's `gap.ini` file defines already a finite timeout value.
+
 ## Version 0.16.6 (released 2026-04-30)
 
 - Declare compatibility with AbstractAlgebra 0.49
