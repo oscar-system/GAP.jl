@@ -117,16 +117,8 @@ end
 # Base.stacktrace(true) includes a mix of user frames, GAP.jl plumbing frames,
 # and native frames encountered while crossing the Julia <-> GAP boundary. We
 # aim to keep only frames useful to GAP.jl users.
-#
-# This filter is based on the frame shapes currently observed around GAP errors
-# on supported platforms. If a frame already has a clear Julia source location
-# outside GAP.jl internals, keep it.
 function is_internal_julia_error_frame(frame::Base.StackTraces.StackFrame)
     file = String(frame.file)
-
-    # ccalls.jl / GAP.jl are GAP.jl's own dispatch and initialization plumbing
-    file == abspath(@__DIR__, "ccalls.jl") && return true
-    file == abspath(@__DIR__, "GAP.jl") && return true
 
     # .dylib / .so / .dll frames are native library frames (libjulia, libgap,
     # JuliaInterface, etc.)
