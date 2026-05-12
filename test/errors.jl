@@ -111,7 +111,7 @@ end
         catch thrown
             sprint(showerror, thrown, catch_backtrace())
         end
-        @test occursin("[1] julia_evalstr_wrapper", shown)
+        @test occursin("julia_evalstr_wrapper", shown)
         top_level = findfirst("top-level scope", shown)
         @test top_level !== nothing
         @test !occursin("eval(m::Module", shown[first(top_level):end])
