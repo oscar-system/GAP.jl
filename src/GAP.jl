@@ -254,6 +254,13 @@ function __init__()
     # Start GAP.
     initialize(cmdline_options)
 
+    timeout = Globals.UserPreference(GapObj("utils"), GapObj("DownloadMaxTime"))
+    if timeout == 0
+      # The user did not set a non-default timeout.
+      # Prescribe a timeout of 30 seconds for `Download` calls.
+      Globals.SetUserPreference(GapObj("utils"), GapObj("DownloadMaxTime"), 30)
+    end
+
     if !isdefined(Main, :__GAP_ARGS__)
         # We had started GAP with the `-b` option.
         # Reset this option in order to leave it to GAP's `LoadPackage`
