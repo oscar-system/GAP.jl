@@ -172,7 +172,7 @@ end
             sprint(showerror, thrown, catch_backtrace())
         end
         @test occursin("Julia stacktrace", shown)
-        @test occursin(r"\[1\] [^\n]+julia_gap_traceback_inner", shown)
+        @test occursin("[1] julia_gap_traceback_inner", shown)
         @test occursin("[2] julia_gap_traceback_outer", shown)
         @test !occursin("throw_gap_error", shown)
         @test !occursin("call_gap_func_nokw", shown)

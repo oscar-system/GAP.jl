@@ -135,8 +135,9 @@ function is_internal_julia_error_frame(frame::Base.StackTraces.StackFrame)
     endswith(file, ".so") && return true
     endswith(file, ".dll") && return true
 
-    # .c / .h frames are native source locations that may appear when
+    # .cc / .c / .h frames are native source locations that may appear when
     # unwinding through GAP or libjulia internals
+    endswith(file, ".cc") && return true
     endswith(file, ".c") && return true
     endswith(file, ".h") && return true
 
