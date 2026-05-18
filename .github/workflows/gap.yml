@@ -49,7 +49,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: "Set up Julia"
-        uses: julia-actions/setup-julia@v2
+        uses: julia-actions/setup-julia@v3
         id: setup-julia
         with:
           version: ${{ matrix.julia-version }}
@@ -81,8 +81,8 @@ jobs:
           make -j`nproc`
       - name: "Override bundled GAP"
         run: |
-          julia --proj=override etc/setup_override_dir.jl /tmp/GAPROOT /tmp/gap_jll_override --enable-Werror
+          julia --project etc/setup_override_dir.jl /tmp/GAPROOT /tmp/gap_jll_override --enable-Werror
       - name: "Run tests"
         run: |
-           julia --proj=override etc/run_with_override.jl /tmp/gap_jll_override --depwarn=error -e "using Pkg; Pkg.test(\"GAP\")"
+           julia --project etc/run_with_override.jl /tmp/gap_jll_override --depwarn=error -e "using Pkg; Pkg.test(\"GAP\")"
 

@@ -1,5 +1,19 @@
 # Changes in GAP.jl
 
+## Version 0.16.7-DEV (released 2026-XX-XX)
+
+- Set a timeout of 30 seconds for GAP's `Download` function,
+  except if the user's `gap.ini` file defines already a finite timeout value.
+
+## Version 0.16.6 (released 2026-04-30)
+
+- Declare compatibility with AbstractAlgebra 0.49
+- Declare compatibility with Nemo 0.55
+
+## Version 0.16.5 (released 2026-04-23)
+
+- Update the `AtlasRep` GAP package from 2.1.9 to 2.1.10
+
 ## Version 0.16.4 (released 2026-02-23)
 
 - Change `GAP.Packages.test` to throw an exception in case of technical
@@ -571,4 +585,3 @@ Other changes:
 
 
 ## Version 0.3.5 (released 2020-03-22)
-

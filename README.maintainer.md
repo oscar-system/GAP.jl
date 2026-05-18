@@ -43,20 +43,18 @@ For this to work, follow these instructions:
 
 3. Build GAP with the Julia version of your choice by executing the `etc/setup_override_dir.jl`
    script. It takes as first argument the GAPROOT, and as second argument the places where
-   the result shall be installed. I recommend to execute this in a separate
-   environment, as it may need to install a few things.
+   the result shall be installed.
 
    To give a concrete example you could invoke
 
-        julia --proj=override etc/setup_override_dir.jl $GAPROOT /tmp/gap_jll_override
+        julia --project etc/setup_override_dir.jl $GAPROOT /tmp/gap_jll_override
 
-4. Use the `etc/run_with_override.jl` script with the exact same Julia executable
-   and the override environment we just prepared.
+4. Use the `etc/run_with_override.jl` script with the exact same Julia executable.
 
-        julia --proj=override etc/run_with_override.jl /tmp/gap_jll_override
+        julia --project etc/run_with_override.jl /tmp/gap_jll_override
 
-5. This opens a Julia session with the override in effect. You can now e.g. load GAP.jl
-   via `using GAP`, or install other packages (such as Oscar) and test with them.
+5. This configures the override in-process; pass code via `-e` or a script file.
+   For example, `-e "using GAP"` loads GAP.jl with the override in effect.
 
 
 ## Directions for updating GAP.jl
