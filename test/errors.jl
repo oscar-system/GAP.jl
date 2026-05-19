@@ -64,14 +64,16 @@ end
 
         shown = sprint(showerror, err)
         expected_msg = """
-                       Error thrown by GAP: boom at stream:2
+                       Error thrown by GAP: boom
                        GAP stacktrace:
                         [1] gapjl_traceback_inner
                             @ stream:2
                         [2] gapjl_traceback_outer
                             @ stream:5
                        """
-        @test shown == chomp(expected_msg)
+        # in GAP <= 4.15.x, the error includes `at stream:2` in the first line;
+        # in GAP >= 4.16.0, this is gone
+        @test replace(shown, " at stream:2" => "") == chomp(expected_msg)
     end
 
     @testset "evalstr preserves the captured GAP error" begin
