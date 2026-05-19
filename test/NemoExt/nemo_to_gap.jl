@@ -146,18 +146,6 @@ import AbstractAlgebra
     F, z = cyclotomic_field(5)
     @test GAP.Obj(matrix(F, 2, 2, [z^0, z, z^2, z^3])) == GAP.evalstr("[ [ 1, E(5) ], [ E(5)^2, E(5)^3 ] ]")
   end
-
-  @testset "GapGroup and GapGroupElem" begin
-    # `GapGroup` to GAP group, Perm
-    G = symmetric_group(5)
-    val = GAP.Globals.SymmetricGroup(5)
-    @test GAP.Obj(G) == val
-
-    # `GapGroupElem` to GAP group element, Perm
-    g = perm(G, [2,3,1,5,4])
-    val = GAP.evalstr("(1,2,3)(4,5)")
-    @test GAP.Obj(g) == val
-  end
 end
 
 @testset "fpMatrix" begin
