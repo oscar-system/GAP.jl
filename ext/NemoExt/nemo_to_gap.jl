@@ -91,11 +91,6 @@ GAP.@install function GapObj(obj::AbsSimpleNumFieldElem)
     return GAPWrap.CycList(GapObj(v; recursive = true))
 end
 
-## `QQAbFieldElem` to GAP cyclotomic
-GAP.@install function GapObj(elm::Nemo.QQAbFieldElem)
-    coeffs = [Nemo.coeff(elm.data, i) for i in 0:(elm.c-1)]  # QQFieldElem
-    return GAPWrap.CycList(GapObj(coeffs; recursive = true))
-end
 
 ## matrix of elements of cyclotomic field to GAP matrix of cyclotomics
 GAP.@install function GapObj(obj::AbstractAlgebra.Generic.MatSpaceElem{AbsSimpleNumFieldElem})
