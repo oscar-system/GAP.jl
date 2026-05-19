@@ -93,7 +93,7 @@ end
 
 
 ## matrix of elements of cyclotomic field to GAP matrix of cyclotomics
-GAP.@install function GapObj(obj::AbstractAlgebra.Generic.MatSpaceElem{AbsSimpleNumFieldElem})
+GAP.@install function GapObj(obj::Nemo.Generic.MatSpaceElem{AbsSimpleNumFieldElem})
     F = base_ring(obj)
     @req Nemo.is_cyclo_type(F) "the matrix entries do not lie in a cyclotomic field"
     mat = [GapObj(obj[i,j]) for i in 1:nrows(obj), j in 1:ncols(obj)]
