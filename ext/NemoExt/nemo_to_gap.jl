@@ -92,7 +92,7 @@ GAP.@install function GapObj(obj::AbsSimpleNumFieldElem)
 end
 
 ## `QQAbFieldElem` to GAP cyclotomic
-GAP.@install function GapObj(elm::QQAbFieldElem)
+GAP.@install function GapObj(elm::Nemo.QQAbFieldElem)
     coeffs = [Nemo.coeff(elm.data, i) for i in 0:(elm.c-1)]  # QQFieldElem
     return GAPWrap.CycList(GapObj(coeffs; recursive = true))
 end
