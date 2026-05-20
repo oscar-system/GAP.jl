@@ -86,7 +86,7 @@ GAP.@install function GapObj(obj::AbsSimpleNumFieldElem)
     @req Nemo.is_cyclo_type(F) "the element does not lie in a cyclotomic field"
     N = get_attribute(F, :cyclo)
     v = zeros(QQFieldElem, N)
-    for i in 1:degree(F)
+    for i in 1:degree(F) # we can use `coefficients(obj)` if this method is eventually migrated from Hecke
         v[i] = coeff(obj, i-1)
     end
     return GAPWrap.CycList(GapObj(v; recursive = true))
