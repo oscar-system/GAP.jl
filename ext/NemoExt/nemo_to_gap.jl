@@ -89,7 +89,7 @@ GAP.@install function GapObj(obj::AbsSimpleNumFieldElem)
     for i in 1:degree(F) # we can use `coefficients(obj)` if this method is eventually migrated from Hecke
         v[i] = coeff(obj, i-1)
     end
-    return GAPWrap.CycList(GapObj(v; recursive = true))
+    return GAP.Wrappers.CycList(GapObj(v; recursive = true))
 end
 
 
