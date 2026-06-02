@@ -264,7 +264,9 @@ function __init__()
     # Load the JuliaInterface manual (from a relative path of the juliainterface.so file)
     juliaInterface_pkginfo = only(GAP.Globals.PackageInfo(GapObj("juliainterface")))
     juliaInterface_pkgdoc = only(juliaInterface_pkginfo.PackageDoc)
-    GAP.Globals.HELP_ADD_BOOK(juliaInterface_pkgdoc.BookName, juliaInterface_pkgdoc.LongTitle, GAP.Globals.Directory(GapObj(abspath(dirname(JuliaInterface_path), "..", "..", "share", "doc", "JuliaInterface", "doc"))))
+    ji_docpath = abspath(dirname(JuliaInterface_path), "..", "..", "share", "doc", "JuliaInterface", "doc")
+    ji_docpath_gap = GAP.Globals.Directory(GapObj(ji_docpath))
+    GAP.Globals.HELP_ADD_BOOK(juliaInterface_pkgdoc.BookName, juliaInterface_pkgdoc.LongTitle, ji_docpath_gap)
 
     if !isdefined(Main, :__GAP_ARGS__)
         # We had started GAP with the `-b` option.
