@@ -23,6 +23,7 @@ include("constructors.jl")
 include("macros.jl")
 include("packages.jl")
 include("help.jl")
+include("setup.jl")
 include("rand.jl")
 
 if !(VERSION.major == 1 && VERSION.minor == 10) || Base.JLOptions().code_coverage == 0
