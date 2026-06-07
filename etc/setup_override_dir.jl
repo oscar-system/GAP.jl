@@ -8,6 +8,8 @@
 #
 length(ARGS) >= 1 || error("must provide path of GAP source directory as first argument")
 length(ARGS) >= 2 || error("must provide path of destination directory as second argument")
+include("override_utils.jl")
+
 gap_prefix = popfirst!(ARGS)
 prefix = popfirst!(ARGS)
 
@@ -139,6 +141,7 @@ run(`make -j$(Sys.CPU_THREADS) $(verbose ? "V=1" : [])`)
 
 @info "Installing GAP to $(prefix)"
 run(`make install-bin install-headers install-libgap install-sysinfo install-gaproot`)
+OverrideUtils.fixup_macos_libgap_install_names(prefix)
 # We deliberately do NOT install the GAP library, documentation, etc. because
 # they are identical across all platforms; instead, we use another platform
 # independent artifact to ship them to the user.
