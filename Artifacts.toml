@@ -1619,14 +1619,14 @@ git-tree-sha1 = "3663e12e725eb2a92bf75f3c21125c743d11908e"
     url = "https://files.gap-system.org/pkg/unitlib-5.0.0.tar.gz"
 
 [GAP_pkg_utils]
-git-tree-sha1 = "ea9c7d0564fd37e834e42f40162477239ebdcd8c"
+git-tree-sha1 = "94e3d716711d95bb9d9e4b6bc97ff855a6eb8899"
 
     [[GAP_pkg_utils.download]]
-    sha256 = "c46b2b7a089f9684fa2062bcdea2068cba4c71539ea35d44b4ddf72afd1a32b1"
-    url = "https://github.com/gap-packages/utils/releases/download/v0.95/utils-0.95.tar.gz"
+    sha256 = "767cf210518e35c2a5457e431aff752ccaf825f013d462bdfb10427f9e9fe224"
+    url = "https://github.com/gap-packages/utils/releases/download/v0.96/utils-0.96.tar.gz"
     [[GAP_pkg_utils.download]]
-    sha256 = "c46b2b7a089f9684fa2062bcdea2068cba4c71539ea35d44b4ddf72afd1a32b1"
-    url = "https://files.gap-system.org/pkg/utils-0.95.tar.gz"
+    sha256 = "767cf210518e35c2a5457e431aff752ccaf825f013d462bdfb10427f9e9fe224"
+    url = "https://files.gap-system.org/pkg/utils-0.96.tar.gz"
 
 [GAP_pkg_uuid]
 git-tree-sha1 = "3edf3e902bac4378d681b3e6fb298d11e65618fd"
