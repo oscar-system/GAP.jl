@@ -23,9 +23,18 @@ function currval(nam) {
   return "";
 }
 
+<!-- load dark appearance either explicitly or via the OS preference -->
+function writeAppearanceStyle(mode) {
+  if (mode == "dark") {
+    document.writeln('<link rel="stylesheet" type="text/css" href="dark.css" />');
+  } else if (mode != "light") {
+    document.writeln('<style type="text/css">@import "dark.css" (prefers-color-scheme: dark);</style>');
+  }
+}
+
 <!-- find style from current values in form -->
 function getstyle() {
-  var choices = ["toggle","colorprompt","tocside","font","justify"]; 
+  var choices = ["toggle","colorprompt","tocside","font","justify","appearance"];
   var style = "";
   for (var i=0; choices.length > i; i++) {
     var a = currval(choices[i]);
@@ -55,17 +64,23 @@ function resetf() {
 <!-- initialize form from GAPDocStyle cookie -->
 function initform() {
   var style = valueString(document.cookie, "GAPDocStyle");
+  if (style == 0 || style == "default")
+    writeAppearanceStyle("");
   if (style != 0 && style.length > 0 && style.length != "default") {
     stlist = style.split(",");
     var chform = document.forms[0].elements;
+    var appearance = "";
     for (var i=0; chform.length > i; i++) {
       if (chform[i].type == "radio") {
         for (var j=0; stlist.length > j; j++) {
-          if (chform[i].value == stlist[j]) 
+          if (stlist[j] == "dark" || stlist[j] == "light")
+            appearance = stlist[j];
+          if (chform[i].value == stlist[j])
             chform[i].checked = true;
         }
       }
     }
+    writeAppearanceStyle(appearance);
   }
 }
 
@@ -118,6 +133,15 @@ onclick="javascript:f()"/> left-right
 justified (default) &nbsp;&nbsp;&nbsp;
 <input type="radio" name="justify" value="ragged"
 onclick="javascript:f()"/> ragged right 
+</p>
+<p>
+Appearance:
+<input type="radio" name="appearance" value=""
+onclick="javascript:f()"/> system (default) &nbsp;&nbsp;&nbsp;
+<input type="radio" name="appearance" value="light" checked="checked"
+onclick="javascript:f()"/> light
+<input type="radio" name="appearance" value="dark"
+onclick="javascript:f()"/> dark
 </p>
 </form>
 <p>

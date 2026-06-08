@@ -477,6 +477,10 @@ span.BibNote {
 span.BibHowpublished {
 }
 
+/* for light and dark mode pictures */
+.only-on-dark {
+  display: none;
+}
 
 
 
