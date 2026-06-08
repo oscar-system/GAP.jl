@@ -8,7 +8,6 @@
 #
 length(ARGS) >= 1 || error("must provide path of GAP source directory as first argument")
 length(ARGS) >= 2 || error("must provide path of destination directory as second argument")
-include("override_utils.jl")
 
 gap_prefix = popfirst!(ARGS)
 prefix = popfirst!(ARGS)
@@ -141,7 +140,26 @@ run(`make -j$(Sys.CPU_THREADS) $(verbose ? "V=1" : [])`)
 
 @info "Installing GAP to $(prefix)"
 run(`make install-bin install-headers install-libgap install-sysinfo install-gaproot`)
-OverrideUtils.fixup_macos_libgap_install_names(prefix)
 # We deliberately do NOT install the GAP library, documentation, etc. because
 # they are identical across all platforms; instead, we use another platform
 # independent artifact to ship them to the user.
+
+# Patch the install names of the libgap dylib on macOS, so that it is accepted by previously compiled kernel extensions.
+# HACK: Furthermore, we patch out any kernel version changes from the dylib, so that we have working tests even after kernel changes in GAP.
+if Sys.isapple()
+   @info "Fixing up install names of libgap dylib on macOS"
+   expected_dylib_name = "libgap.11.dylib" # needs to be kept in sync with the GAP version used in GAP_jll.jl
+   libdir = joinpath(prefix, "lib")
+   if isfile(joinpath(libdir, expected_dylib_name))
+      dylib_name = expected_dylib_name
+   else
+      dylib_name = only(filter(contains(r"^libgap\.[0-9]+\.dylib$"), readdir(libdir)))
+      @info "Patching $(dylib_name) to $(expected_dylib_name)"
+      mv(joinpath(libdir, dylib_name), joinpath(libdir, expected_dylib_name))
+      rm(joinpath(libdir, "libgap.dylib"))
+      symlink(joinpath(libdir, expected_dylib_name), joinpath(libdir, "libgap.dylib"))
+   end
+
+   run(`install_name_tool -id "@rpath/$(expected_dylib_name)" "$(joinpath(libdir, expected_dylib_name))"`)
+
+end
