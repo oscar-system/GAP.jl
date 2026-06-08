@@ -2,12 +2,17 @@
 
 ## Version 0.17.0-DEV (released YYYY-MM-DD)
 
+- **Breaking:** Update to GAP 4.16.0
+- Update the GAP package distribution to 4.16.0
+- Update the `utils` GAP package to 0.96
 - Improve GAP-originated exceptions to include structured GAP stack traces
 
 ## Version 0.16.7-DEV (released 2026-XX-XX)
 
 - Set a timeout of 30 seconds for GAP's `Download` function,
   except if the user's `gap.ini` file defines already a finite timeout value.
+- Make the manual of the `JuliaInterface` GAP package available for interactive
+  access from a GAP session.
 
 ## Version 0.16.6 (released 2026-04-30)
 

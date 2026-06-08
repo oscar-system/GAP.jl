@@ -78,3 +78,9 @@ function GAP.GapObj_internal(obj::Union{ZZMatrix,QQMatrix}, ::GapCacheDict, ::Va
     end
     return ret_val
 end
+
+## matrix of elements of a finite field (of prime order)
+GAP.@install function GapObj(obj::Union{fpMatrix, FpMatrix})
+    e = GAP.Globals.Z(GapObj(characteristic(base_ring(obj))))
+    return GapObj(lift(obj)) * e
+end

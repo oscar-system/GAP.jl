@@ -135,3 +135,15 @@ import AbstractAlgebra
     @test GAP.Obj(x) == val
   end
 end
+
+@testset "fpMatrix" begin
+    F = Native.GF(5)
+    m = matrix(F, 4, 4, 1:16)
+    @test GAP.Obj(m) == GAP.evalstr("[ [ Z(5), Z(5)^2, Z(5)^0, Z(5)^3 ], [ 0*Z(5), Z(5), Z(5)^2, Z(5)^0 ], [ Z(5)^3, 0*Z(5), Z(5), Z(5)^2 ], [ Z(5)^0, Z(5)^3, 0*Z(5), Z(5) ] ]")
+end
+
+@testset "FpMatrix" begin
+    F = Native.GF(ZZ(5))
+    m = matrix(F, 4, 4, 1:16)
+    @test GAP.Obj(m) == GAP.evalstr("[ [ Z(5), Z(5)^2, Z(5)^0, Z(5)^3 ], [ 0*Z(5), Z(5), Z(5)^2, Z(5)^0 ], [ Z(5)^3, 0*Z(5), Z(5), Z(5)^2 ], [ Z(5)^0, Z(5)^3, 0*Z(5), Z(5) ] ]")
+end
