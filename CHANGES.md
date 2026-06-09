@@ -1,6 +1,6 @@
 # Changes in GAP.jl
 
-## Version 0.16.7-DEV (released 2026-XX-XX)
+## Version 0.16.7 (released 2026-06-09)
 
 - Set a timeout of 30 seconds for GAP's `Download` function,
   except if the user's `gap.ini` file defines already a finite timeout value.
