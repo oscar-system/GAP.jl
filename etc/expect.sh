@@ -19,4 +19,7 @@ atreplinit() do repl
   if VERSION >= v\\\"1.11.0-DEV.456\\\" # JuliaLang/julia#51229
     repl.options.hint_tab_completes = false
   end
+  if VERSION >= v\\\"1.13.0-DEV.1328\\\"
+    repl.options.auto_insert_closing_bracket = false
+  end
 end\" -i" etc/julia.expect

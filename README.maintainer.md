@@ -159,7 +159,7 @@ all of the JLL packages that depend on GAP.
    > ex: <https://github.com/JuliaRegistries/General/pull/140790>
 
 5. In Yggdrasil in the file `G/GAP_pkg/update.jl`, update the following variables:
-   - `upstream_version` to the new GAP version.
+   - `gap_upstream_version` to the new GAP version.
    - `gap_version` to the `version` from step 1. If the GAP release is ABI-compatible
      with the previous one, then this can remain unchanged.
    - `gap_lib_version` to the `version` from step 3. If the GAP release is ABI-compatible
@@ -183,12 +183,13 @@ all of the JLL packages that depend on GAP.
         You can find the new version number in the registry PR from step 6.
       - For each other `GAP_pkg_*_jll` package that was updated in step 6, update to the new version
         with a `~` prefix. You can find the new version numbers in the registry PRs from step 6.
-   2. Run `etc/update_artifact.jl` with the new GAP version as argument to the `Artifacts.toml` file.
+   2. Run `julia --project=etc etc/update_artifacts.jl` with the new GAP version as argument to update the `Artifacts.toml` file.
       See the top of that script for instructions.
    3. If the GAP release is not ABI-compatible with the previous one, update the minor part of the version
       of `GAP.jl` in its `Project.toml`
    4. If the GAP release was created from a new release branch (e.g. `stable-4.15` instead of `stable-4.14`),
-      then update occurrences in `.github/workflows/gap.yml` accordingly.
+      then update occurrences in `.github/workflows/gap.yml` accordingly. Furthermore, rename the subfolders
+      of `.github/workflows/GAP_patches/` accordingly.
    Wait for the PR to pass CI (including the `treehash` job) and merge it.
    > ex: <https://github.com/oscar-system/GAP.jl/pull/1274> for an ABI-compatible GAP update.
    > ex: <https://github.com/oscar-system/GAP.jl/pull/1244> for a non-ABI-compatible GAP update. Note
