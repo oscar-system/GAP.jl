@@ -6,6 +6,8 @@
   except if the user's `gap.ini` file defines already a finite timeout value.
 - Make the manual of the `JuliaInterface` GAP package available for interactive
   access from a GAP session.
+- Provide conversion from Nemo types `fpMatrix` and `FpMatrix` to GAP objects
+- Declare compatibility with AbstractAlgebra 0.50
 
 ## Version 0.16.6 (released 2026-04-30)
 
