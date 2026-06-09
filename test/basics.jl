@@ -32,7 +32,7 @@ using IOCapture
     @test x.a == 1
 
     xx = GapObj([1, 2, 3])
-    @test_throws ErrorException xx[4]
+    @test_throws GAPError xx[4]
 
     @test string(GapObj("x")) == "x"
 
@@ -129,7 +129,7 @@ end
     i2 = GAP.Globals.IdealDecompositionsOfPolynomial(f, onlyone = true)
     @test i1 != i2
     @test GAP.Globals.Length(GAP.Globals.OptionsStack) == 0
-    @test_throws ErrorException GAP.Globals.Error(onlyone = true)
+    @test_throws GAP.GAPError GAP.Globals.Error(onlyone = true)
     @test GAP.Globals.Length(GAP.Globals.OptionsStack) == 0
 end
 

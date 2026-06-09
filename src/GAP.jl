@@ -74,6 +74,7 @@ function initialize(argv::Vector{String})
     @ccall libgap.GAP_InitJuliaMemoryInterface((@__MODULE__)::Any, C_NULL::Ptr{Nothing})::Nothing
 
     handle_signals = isdefined(Main, :__GAP_ARGS__)  # a bit of a hack...
+    disable_error_handler[] = handle_signals
     error_handler_func = handle_signals ? C_NULL : @cfunction(copy_gap_error_to_julia, Cvoid, ())
 
     # Tell GAP to read a file during startup (after its `lib/system.g`),

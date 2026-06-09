@@ -15,7 +15,8 @@ module Packages
 import Downloads
 import FileWatching: Pidfile
 import Scratch: @get_scratch!
-import ...GAP: disable_error_handler, Globals, GapObj, replace_global!, RNamObj, Wrappers
+import ...GAP: Globals, GapObj, replace_global!, RNamObj, Wrappers
+import ...GAP: set_error_handler_disabled
 import ...GAP: gap_pkg_jlls, GAP_VERSION, GAP_jll, GAP_lib_jll
 import ...GAP.Setup: gaproot_for_building
 
@@ -486,8 +487,6 @@ if this function notices technical problems (the package cannot be loaded,
 its testfile cannot be read) then `test` throws an exception.
 """
 function test(name::String)
-  global disable_error_handler
-
   function with_gap_var(f, name::Symbol, val)
     gname = GapObj(name)
     old_value = Globals.ValueGlobal(gname)
@@ -510,7 +509,7 @@ function test(name::String)
     return
   end
 
-  disable_error_handler[] = true
+  set_error_handler_disabled(true)
   result = false
   try
     with_gap_var(:ERROR_OUTPUT, Globals._JULIAINTERFACE_ORIGINAL_ERROR_OUTPUT) do
@@ -525,7 +524,7 @@ function test(name::String)
       end
     end
   finally
-    disable_error_handler[] = false
+    set_error_handler_disabled(false)
   end
 
   # Due to the hack above, we run into an error in TestPackage that is usually unreachable.
