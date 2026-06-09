@@ -47,6 +47,20 @@ function valueString(str,nam) {
   return 0;
 }
 
+/* load dark appearance either explicitly or via the OS preference */
+function writeAppearanceStyle(mode) {
+  if (mode == "dark") {
+    document.writeln(
+      '<link rel="stylesheet" type="text/css" href="dark.css" />'
+    );
+  } else if (mode != "light") {
+    document.writeln(
+      '<style type="text/css">@import "dark.css" ' +
+      '(prefers-color-scheme: dark);</style>'
+    );
+  }
+}
+
 /* when a non-default style is chosen via URL or a cookie, then
    the cookie is reset and the styles .js and .css files are read  */
 function overwriteStyle() {
@@ -55,6 +69,8 @@ function overwriteStyle() {
   /* otherwise check cookie */
   if (style == 0)
     style = valueString(document.cookie, "GAPDocStyle");
+  if (style == 0 || style == "default")
+    writeAppearanceStyle("");
   if (style == 0)
     return;
   if (style == "default")
@@ -70,13 +86,19 @@ function overwriteStyle() {
     document.cookie = "GAPDocStyle="+style+";Path="+path;
     /* split into names of style files */
     var stlist = style.split(",");
+    var appearance = "";
     /* read style's css and js files */
     for (var i=0; i < stlist.length; i++) {
-      document.writeln('<link rel="stylesheet" type="text/css" href="'+
-                                                         stlist[i]+'.css" />');
-      document.writeln('<script src="'+stlist[i]+
-                                      '.js" type="text/javascript"></script>');
+      if (stlist[i] == "dark" || stlist[i] == "light") {
+        appearance = stlist[i];
+      } else {
+        document.writeln('<link rel="stylesheet" type="text/css" href="'+
+                                                           stlist[i]+'.css" />');
+        document.writeln('<script src="'+stlist[i]+
+                                        '.js" type="text/javascript"></script>');
+      }
     }
+    writeAppearanceStyle(appearance);
   }
 }
 
@@ -110,4 +132,3 @@ function jscontent () {
   for (var i=0; i < jscontentfuncs.length; i++)
     jscontentfuncs[i]();
 }
-
