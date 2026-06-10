@@ -74,7 +74,7 @@ jobs:
         env:
           JULIA_DEBUG: "GAP"
         run: |
-          julia --project=. --depwarn=error -e 'import GAP; GAP.create_gap_sh("/tmp")'
+          julia --project=. --depwarn=error  --code-coverage -e 'import GAP; GAP.create_gap_sh("/tmp")'
           export GAP="/tmp/gap.sh -A --quitonbreak --norepl"
           etc/ci_test.sh
 
