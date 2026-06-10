@@ -5,7 +5,7 @@
 - **Breaking:** Update to GAP 4.16.0
 - Update the GAP package distribution to 4.16.0
 - Update the `utils` GAP package to 0.96
-- Add conversion for `AbsSimpleNumFieldElem` GAP objects
+- Add conversion from Nemo type `AbsSimpleNumFieldElem` to GAP objects
 
 ## Version 0.16.7-DEV (released 2026-XX-XX)
 
