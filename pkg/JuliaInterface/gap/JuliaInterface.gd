@@ -491,6 +491,20 @@ DeclareGlobalFunction( "CallJuliaFunctionWithKeywordArguments" );
 
 #! @Section Utilities
 
+#! @Arguments ()
+#! @Returns nothing.
+#! @Description
+#!  This function starts a &Julia; REPL in the current &Julia; session,
+#!  which allows one to interactively enter &Julia; commands.
+#!  This prompt can be left as any &Julia; REPL by pressing ctrl-D,
+#!  which returns to the &GAP; prompt.
+#!  Note that entering `exit()` at the &Julia; prompt will terminate
+#!  the entire stack of sessions.
+#!  This function should only be called from the &GAP; prompt. Calling
+#!  it from a Julia REPL may corrupt the session and lead to unexpected
+#!  behavior and crashes.
+DeclareGlobalFunction( "JuliaPrompt" );
+
 #! @Arguments key
 #! @Returns a string
 #! @Description
