@@ -22,24 +22,15 @@
   end
 
   mktempdir() do tmpdir
-    generated = true
-    try
-      GAP.create_gap_sh(tmpdir; use_active_project=true, code_coverage=true)
-    catch err
-      generated = false
-    end
-    @test generated
-
-    if generated
-      gap_sh = read(joinpath(tmpdir, "gap.sh"), String)
-      @test occursin("--code-coverage", gap_sh)
-    end
+    GAP.create_gap_sh(tmpdir; use_active_project=true, code_coverage="user")
+    gap_sh = read(joinpath(tmpdir, "gap.sh"), String)
+    @test occursin("--code-coverage=user", gap_sh)
   end
 
   mktempdir() do tmpdir
-    GAP.create_gap_sh(tmpdir; use_active_project=true, code_coverage=false)
+    GAP.create_gap_sh(tmpdir; use_active_project=true, code_coverage="none")
     gap_sh = read(joinpath(tmpdir, "gap.sh"), String)
-    @test !occursin("--code-coverage", gap_sh)
+    @test occursin("--code-coverage=none", gap_sh)
   end
 end
 

@@ -267,7 +267,7 @@ end
 
 """
     create_gap_sh(dstdir::String, dstname::String="gap.sh";
-                  code_coverage::Bool=Base.JLOptions().code_coverage != 0)
+                  code_coverage::Union{Nothing,String}=nothing)
 
 Given a directory path, create three files in that directory:
 - a shell script named `dstname` which acts like the `gap.sh` shipped with a
@@ -279,12 +279,13 @@ Given a directory path, create three files in that directory:
   the script to function (they record the precise versions of GAP.jl and other
   Julia packages involved)
 
-If `code_coverage` is `true`, the generated script starts Julia with
-`--code-coverage`. By default this follows the current Julia process.
+If `code_coverage` is a string, the generated script appends
+`--code-coverage=\$(code_coverage)` when starting Julia. By default, it
+inherits the flags of the current Julia process.
 """
 function create_gap_sh(dstdir::String, dstname::String="gap.sh";
                        use_active_project::Bool=false,
-                       code_coverage::Bool=Base.JLOptions().code_coverage != 0)
+                       code_coverage::Union{Nothing,String}=nothing)
     dstname == basename(dstname) || error("`dstname` must be a file name, not a path")
 
     dstdir = expanduser(dstdir)
@@ -313,9 +314,9 @@ function create_gap_sh(dstdir::String, dstname::String="gap.sh";
         @info "Generating gap.sh ..."
     end
 
-    julia_cmd = filter(arg -> !startswith(arg, "--code-coverage"), String.(Base.julia_cmd().exec))
-    if code_coverage
-        push!(julia_cmd, "--code-coverage")
+    julia_cmd = String.(Base.julia_cmd().exec)
+    if code_coverage !== nothing
+        push!(julia_cmd, "--code-coverage=$(code_coverage)")
     end
 
     gap_sh_path = joinpath(dstdir, dstname)
