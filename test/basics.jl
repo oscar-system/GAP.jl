@@ -158,6 +158,13 @@ end
     @test GapObj([1, 2, 3, 4, 5, 6, 7]) == f(1, 2, 3, 4, 5, 6, 7)
 end
 
+@testset "gapcalls border cases" begin
+    # check argument validation of internal helprs
+    @test_throws MethodError GAP.slow_call_gap_func_nokw(1,1)
+    @test_throws ErrorException GAP.slow_call_gap_func_nokw(GAP.Globals.SymmetricGroup,1)
+    @test GAP.slow_call_gap_func_nokw(GAP.Globals.SymmetricGroup,(1,)) isa Ptr
+end
+
 @testset "bugfixes" begin
     # from issue #324:
     l = GAP.evalstr("[1,~,3]")
