@@ -1,6 +1,6 @@
 # Changes in GAP.jl
 
-## Version 0.17.0-DEV (released YYYY-MM-DD)
+## Version 0.17.0-DEV (released 2026-MM-DD)
 
 - **Breaking:** Update to GAP 4.16.0
 - Update the GAP package distribution to 4.16.0
