@@ -5,6 +5,7 @@
 - **Breaking:** Update to GAP 4.16.0
 - Update the GAP package distribution to 4.16.0
 - Update the `utils` GAP package to 0.96
+- Add conversion from Nemo type `AbsSimpleNumFieldElem` to GAP objects
 
 ## Version 0.16.7 (released 2026-06-09)
 
@@ -460,7 +461,7 @@
 
 ## Version 0.7.7 (released 2022-02-14)
 
-- Add `quiet` argument to `Packages.load` 
+- Add `quiet` argument to `Packages.load`
 - Fix compatibility with Julia nightly
 - Replace some calls to low-level GAP functions by high-level synonyms,
   for better compatibility with future GAP releases

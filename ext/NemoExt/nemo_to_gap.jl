@@ -79,8 +79,31 @@ function GAP.GapObj_internal(obj::Union{ZZMatrix,QQMatrix}, ::GapCacheDict, ::Va
     return ret_val
 end
 
+
 ## matrix of elements of a finite field (of prime order)
 GAP.@install function GapObj(obj::Union{fpMatrix, FpMatrix})
     e = GAP.Globals.Z(GapObj(characteristic(base_ring(obj))))
     return GapObj(lift(obj)) * e
+end
+
+
+## element of cyclotomic field to GAP cyclotomic
+GAP.@install function GapObj(obj::AbsSimpleNumFieldElem)
+    F = parent(obj)
+    @req Nemo.is_cyclo_type(F) "the element does not lie in a cyclotomic field"
+    N = get_attribute(F, :cyclo)
+    v = zeros(QQFieldElem, N)
+    for i in 1:degree(F) # we can use `coefficients(obj)` if this method is eventually migrated from Hecke
+        v[i] = coeff(obj, i-1)
+    end
+    return GAP.Wrappers.CycList(GapObj(v; recursive = true))
+end
+
+
+## matrix of elements of cyclotomic field to GAP matrix of cyclotomics
+GAP.@install function GapObj(obj::Nemo.Generic.MatSpaceElem{AbsSimpleNumFieldElem})
+    F = base_ring(obj)
+    @req Nemo.is_cyclo_type(F) "the matrix entries do not lie in a cyclotomic field"
+    mat = [GapObj(obj[i,j]) for i in 1:nrows(obj), j in 1:ncols(obj)]
+    return GapObj(mat)
 end

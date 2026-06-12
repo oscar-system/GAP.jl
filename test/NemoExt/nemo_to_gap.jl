@@ -134,6 +134,28 @@ import AbstractAlgebra
     @test GapObj(x) == val
     @test GAP.Obj(x) == val
   end
+
+  @testset "single cyclotomics" begin
+    # from cyclotomic fields
+    F, z = cyclotomic_field(5)
+    e5 = GAP.Globals.E(5)
+    @test GAP.Obj(z^2+z+1) == e5^2 + e5 + 1
+    
+    # not supported conversions
+    R, x = polynomial_ring(QQ, :x; cached=false)
+    F, z = number_field(x^2 + 5)
+    @test_throws ArgumentError GAP.Obj(z)
+  end
+
+  @testset "matrices over a cyclotomic field" begin
+    F, z = cyclotomic_field(5)
+    @test GAP.Obj(matrix(F, 2, 2, [z^0, z, z^2, z^3])) == GAP.evalstr("[ [ 1, E(5) ], [ E(5)^2, E(5)^3 ] ]")
+    
+    # not supported conversions
+    R, x = polynomial_ring(QQ, :x; cached=false)
+    F, z = number_field(x^2 + 5)
+    @test_throws ArgumentError GAP.Obj(matrix(F, 1, 1, [z]))
+  end
 end
 
 @testset "fpMatrix" begin
