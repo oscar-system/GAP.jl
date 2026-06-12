@@ -140,6 +140,10 @@ import AbstractAlgebra
     F, z = cyclotomic_field(5)
     e5 = GAP.Globals.E(5)
     @test GAP.Obj(z^2+z+1) == e5^2 + e5 + 1
+    
+    # not supported conversions
+    F, z = quadratic_field(5)
+    @test_throws ArgumentError GAP.Obj(z)
   end
 
   @testset "matrices over a cyclotomic field" begin
