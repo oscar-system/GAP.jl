@@ -63,8 +63,19 @@ jobs:
         uses: julia-actions/julia-buildpkg@v1
       - name: "Run tests"
         uses: julia-actions/julia-runtest@v1
+        env:
+          CFLAGS: "--coverage"
+          LDFLAGS: "--coverage"
+          FORCE_JULIAINTERFACE_COMPILATION: "${{ github.workspace }}/pkg/JuliaInterface/tmp"
         with:
           depwarn: error
+      - name: "Process JuliaInterface C coverage from Julia tests"
+        run: |
+          JuliaInterfaceSo=$(find "${{ github.workspace }}/pkg/JuliaInterface/tmp/bin" -name JuliaInterface.so -type f | head -n 1)
+          test -n "${JuliaInterfaceSo}"
+          echo "GAP_JL_JULIAINTERFACE_SO=${JuliaInterfaceSo}" >> "${GITHUB_ENV}"
+          cd pkg/JuliaInterface
+          gcov -o "${{ github.workspace }}/pkg/JuliaInterface/tmp/gen/src/" src/*.c*
       - name: "Test REPL integration"
         if: matrix.julia-version != '1.10'
         run: etc/expect.sh --project=@. --code-coverage
