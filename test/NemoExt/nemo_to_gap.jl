@@ -142,7 +142,8 @@ import AbstractAlgebra
     @test GAP.Obj(z^2+z+1) == e5^2 + e5 + 1
     
     # not supported conversions
-    F, z = quadratic_field(5)
+    R, x = polynomial_ring(QQ, :x; cached=false)
+    F, z = number_field(x^2 + 5)
     @test_throws ArgumentError GAP.Obj(z)
   end
 
