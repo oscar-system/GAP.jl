@@ -145,6 +145,10 @@ import AbstractAlgebra
   @testset "matrices over a cyclotomic field" begin
     F, z = cyclotomic_field(5)
     @test GAP.Obj(matrix(F, 2, 2, [z^0, z, z^2, z^3])) == GAP.evalstr("[ [ 1, E(5) ], [ E(5)^2, E(5)^3 ] ]")
+    
+    # not supported conversions
+    F, z = quadratic_field(5)
+    @test_throws ArgumentError GAP.Obj(matrix(F, 1, 1, [z]))
   end
 end
 
