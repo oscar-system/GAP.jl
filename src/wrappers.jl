@@ -26,6 +26,7 @@ import GAP: @wrap
 @wrap Characteristic(x::Any)::GapInt
 @wrap CHAR_FFE_DEFAULT(x::Any)::GapInt
 @wrap CopyToStringRep(x::Any)::GapObj
+@wrap CycList(x::GapObj)::GapInt
 @wrap DenominatorRat(x::Any)::GapInt
 @wrap DIFF(x::Any, y::Any)::Any
 @wrap Difference(x::Any, y::Any)::Any
