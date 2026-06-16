@@ -26,12 +26,15 @@ build_JuliaInterface_for_coverage() {
     # Force recompilation of JuliaInterface with coverage instrumentation.
     # Use a fixed build directory so that gcov can find .gcno/.gcda files.
     export FORCE_JULIAINTERFACE_COMPILATION="${JuliaInterfaceBuildDir}"
-    ${GAP} --nointeract
+
+    # Run GAP through Julia to get it to create JuliaInterface.so, and then
+    # write the path to it into a file for use later on.
+    ${GAP} --nointeract -c 'FileString("juliainterface.path", JuliaToGAP(IsString, GAP_jl.JuliaInterface_path)); QUIT;'
 
     # Tell subsequent GAP.jl sessions to load this instrumented library instead
     # of rebuilding or using the JLL-provided JuliaInterface.so.
-    JuliaInterfaceSo=$(find "${JuliaInterfaceBuildDir}/bin" -name JuliaInterface.so -type f | head -n 1)
-    test -n "${JuliaInterfaceSo}"
+    JuliaInterfaceSo=$(cat juliainterface.path)
+    test -f "${JuliaInterfaceSo}"
     export GAP_JL_JULIAINTERFACE_SO="${JuliaInterfaceSo}"
     unset FORCE_JULIAINTERFACE_COMPILATION
     RemoveJuliaInterfaceBuildDir=Yes
