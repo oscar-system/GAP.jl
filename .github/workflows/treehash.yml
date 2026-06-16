@@ -59,10 +59,11 @@ jobs:
           depwarn: error
       - name: "Process JuliaInterface C coverage"
         run: |
-          JuliaInterfaceSo=$(find "${{ github.workspace }}/pkg/JuliaInterface/tmp/bin" -name JuliaInterface.so -type f | head -n 1)
-          test -n "${JuliaInterfaceSo}"
+          JuliaInterfaceSo=$(cat juliainterface.path)
+          test -f "${JuliaInterfaceSo}"
+          JuliaInterfaceBuildDir=$(cd "$(dirname "${JuliaInterfaceSo}")/../.." && pwd)
           cd pkg/JuliaInterface
-          gcov -o "${{ github.workspace }}/pkg/JuliaInterface/tmp/gen/src/" src/*.c*
+          gcov -o "${JuliaInterfaceBuildDir}/gen/src/" src/*.c*
       - name: "Process code coverage"
         uses: julia-actions/julia-processcoverage@v1
       - name: "Upload coverage data to Codecov"
