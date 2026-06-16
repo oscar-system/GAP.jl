@@ -9,6 +9,21 @@ DefaultJuliaInterfaceBuildDir="${PWD}/pkg/JuliaInterface/tmp"
 JuliaInterfaceBuildDir="${DefaultJuliaInterfaceBuildDir}"
 RemoveJuliaInterfaceBuildDir=No
 
+build_JuliaInterface_for_coverage() {
+    JuliaInterfaceBuildDir="${DefaultJuliaInterfaceBuildDir}"
+    mkdir -p "${JuliaInterfaceBuildDir}"
+    JuliaInterfaceBuildDir=$(cd "${JuliaInterfaceBuildDir}" && pwd)
+    # Force recompilation of JuliaInterface with coverage instrumentation.
+    # Use a fixed build directory so that gcov can find .gcno/.gcda files.
+    export FORCE_JULIAINTERFACE_COMPILATION="${JuliaInterfaceBuildDir}"
+    ${GAP} --nointeract
+    JuliaInterfaceSo=$(find "${JuliaInterfaceBuildDir}/bin" -name JuliaInterface.so -type f | head -n 1)
+    test -n "${JuliaInterfaceSo}"
+    export GAP_JL_JULIAINTERFACE_SO="${JuliaInterfaceSo}"
+    unset FORCE_JULIAINTERFACE_COMPILATION
+    RemoveJuliaInterfaceBuildDir=Yes
+}
+
 export CFLAGS="${CFLAGS:+${CFLAGS} }--coverage"
 export LDFLAGS="${LDFLAGS:+${LDFLAGS} }--coverage"
 
@@ -24,26 +39,13 @@ then
     if [ -d "${JuliaInterfaceBuildDir}/gen/src" ] && ls "${JuliaInterfaceBuildDir}"/gen/src/*.gcno >/dev/null 2>&1
     then
         unset FORCE_JULIAINTERFACE_COMPILATION
+        RemoveJuliaInterfaceBuildDir=No
     else
         unset GAP_JL_JULIAINTERFACE_SO
+        build_JuliaInterface_for_coverage
     fi
-fi
-if [ -z "${GAP_JL_JULIAINTERFACE_SO:-}" ]
-then
-    JuliaInterfaceBuildDir="${DefaultJuliaInterfaceBuildDir}"
-    mkdir -p "${JuliaInterfaceBuildDir}"
-    JuliaInterfaceBuildDir=$(cd "${JuliaInterfaceBuildDir}" && pwd)
-    # Force recompilation of JuliaInterface with coverage instrumentation.
-    # Use a fixed build directory so that gcov can find .gcno/.gcda files.
-    export FORCE_JULIAINTERFACE_COMPILATION="${JuliaInterfaceBuildDir}"
-    ${GAP} --nointeract
-    JuliaInterfaceSo=$(find "${JuliaInterfaceBuildDir}/bin" -name JuliaInterface.so -type f | head -n 1)
-    test -n "${JuliaInterfaceSo}"
-    export GAP_JL_JULIAINTERFACE_SO="${JuliaInterfaceSo}"
-    unset FORCE_JULIAINTERFACE_COMPILATION
-    RemoveJuliaInterfaceBuildDir=Yes
 else
-    RemoveJuliaInterfaceBuildDir=No
+    build_JuliaInterface_for_coverage
 fi
 test -d "${JuliaInterfaceBuildDir}/gen/src"
 
