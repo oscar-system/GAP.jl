@@ -5,7 +5,8 @@ set -x
 
 AnyFailures=No
 
-JuliaInterfaceBuildDir="${JULIAINTERFACE_COVERAGE_BUILD_DIR:-${PWD}/pkg/JuliaInterface/tmp}"
+DefaultJuliaInterfaceBuildDir="${PWD}/pkg/JuliaInterface/tmp"
+JuliaInterfaceBuildDir="${DefaultJuliaInterfaceBuildDir}"
 RemoveJuliaInterfaceBuildDir=No
 
 export CFLAGS="${CFLAGS:+${CFLAGS} }--coverage"
@@ -29,7 +30,7 @@ then
 fi
 if [ -z "${GAP_JL_JULIAINTERFACE_SO:-}" ]
 then
-    JuliaInterfaceBuildDir="${JULIAINTERFACE_COVERAGE_BUILD_DIR:-${PWD}/../../pkg/JuliaInterface/tmp}"
+    JuliaInterfaceBuildDir="${DefaultJuliaInterfaceBuildDir}"
     mkdir -p "${JuliaInterfaceBuildDir}"
     JuliaInterfaceBuildDir=$(cd "${JuliaInterfaceBuildDir}" && pwd)
     # Force recompilation of JuliaInterface with coverage instrumentation.
