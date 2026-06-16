@@ -73,6 +73,10 @@ function show_gap_error(io::IO, err::GAPError)
         print(io, ": ", err.message)
     end
 
+    if has_unsupported_recursive_gap_julia_gap_traceback(err)
+        print(io, "\nJulia/GAP stacktraces for recursive GAP -> Julia -> GAP error paths are not supported yet.")
+    end
+
     if !isempty(err.gap_frames)
         print(io, "\nGAP stacktrace:")
         for (i, frame) in enumerate(err.gap_frames)
@@ -93,6 +97,13 @@ function show_gap_error(io::IO, err::GAPError)
         # extra blank line here.
         print(io, "\n", chomp(err.raw_text))
     end
+end
+
+function has_unsupported_recursive_gap_julia_gap_traceback(err::GAPError)
+    isempty(err.gap_frames) || return false
+    isempty(err.julia_stacktrace) || return false
+    occursin("Error thrown by GAP:", err.raw_text) || return false
+    return occursin("not in any function at *defin*:0", err.raw_text)
 end
 
 # Capture the Julia stack before ThrowObserver rewrites the control flow through

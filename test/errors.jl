@@ -226,4 +226,29 @@ end
         @test isempty(String(GAP.Globals._JULIAINTERFACE_ERROR_BUFFER))
         @test isempty(GAP.capture_gap_error_frames())
     end
+
+    @testset "unsupported recursive GAP Julia GAP errors are labeled" begin
+        @eval module GapTracebackTest
+            using ..GAP
+
+            recursive_gap_julia_gap_inner(n) = GAP.Globals.SymmetricGroup(n)
+        end
+
+        recursive_gap_julia_gap_outer(n) =
+            GAP.evalstr("Julia.GapTracebackTest.recursive_gap_julia_gap_inner($n)")
+
+        err = capture_exception() do
+            recursive_gap_julia_gap_outer(-3)
+        end
+
+        @test err isa GAPError
+
+        shown = sprint(showerror, err)
+        @test occursin("Error thrown by GAP: Error thrown by GAP: no method found!", shown)
+        @test occursin(
+            "Julia/GAP stacktraces for recursive GAP -> Julia -> GAP error paths are not supported yet.",
+            shown,
+        )
+        @test occursin("not in any function at *defin*:0", shown)
+    end
 end
