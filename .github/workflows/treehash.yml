@@ -61,9 +61,8 @@ jobs:
         run: |
           JuliaInterfaceSo=$(cat juliainterface.path)
           test -f "${JuliaInterfaceSo}"
-          JuliaInterfaceBuildDir=$(cd "$(dirname "${JuliaInterfaceSo}")/../.." && pwd)
           cd pkg/JuliaInterface
-          gcov -o "${JuliaInterfaceBuildDir}/gen/src/" src/*.c*
+          gcov -o ./tmp/gen/src/ src/*.c*
       - name: "Process code coverage"
         uses: julia-actions/julia-processcoverage@v1
       - name: "Upload coverage data to Codecov"
