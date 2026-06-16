@@ -43,14 +43,20 @@ jobs:
       # next verify that GAP.jl still runs when forced to rebuild juliainterface;
       # as a side effect this also reduce code coverage fluctuation when
       # updating GAP_pkg_juliainterface_jll
-      - name: "Run tests"
-        uses: julia-actions/julia-runtest@v1
-        with:
-          depwarn: error
+      - name: "Build JuliaInterface for C coverage"
         env:
           CFLAGS: "--coverage"
           LDFLAGS: "--coverage"
           FORCE_JULIAINTERFACE_COMPILATION: "${{ github.workspace }}/pkg/JuliaInterface/tmp"
+        run: |
+          julia --project=. --color=yes -e 'import GAP; write("juliainterface.path", GAP.JuliaInterface_path)'
+          JuliaInterfaceSo=$(cat juliainterface.path)
+          test -f "${JuliaInterfaceSo}"
+          echo "GAP_JL_JULIAINTERFACE_SO=${JuliaInterfaceSo}" >> "${GITHUB_ENV}"
+      - name: "Run tests"
+        uses: julia-actions/julia-runtest@v1
+        with:
+          depwarn: error
       - name: "Process JuliaInterface C coverage"
         run: |
           JuliaInterfaceSo=$(find "${{ github.workspace }}/pkg/JuliaInterface/tmp/bin" -name JuliaInterface.so -type f | head -n 1)

@@ -20,8 +20,18 @@ then
     JuliaInterfaceSo="${GAP_JL_JULIAINTERFACE_SO}"
     test -f "${JuliaInterfaceSo}"
     JuliaInterfaceBuildDir=$(cd "$(dirname "${JuliaInterfaceSo}")/../.." && pwd)
-    unset FORCE_JULIAINTERFACE_COMPILATION
-else
+    if [ -d "${JuliaInterfaceBuildDir}/gen/src" ] && ls "${JuliaInterfaceBuildDir}"/gen/src/*.gcno >/dev/null 2>&1
+    then
+        unset FORCE_JULIAINTERFACE_COMPILATION
+    else
+        unset GAP_JL_JULIAINTERFACE_SO
+    fi
+fi
+if [ -z "${GAP_JL_JULIAINTERFACE_SO:-}" ]
+then
+    JuliaInterfaceBuildDir="${JULIAINTERFACE_COVERAGE_BUILD_DIR:-${PWD}/../../pkg/JuliaInterface/tmp}"
+    mkdir -p "${JuliaInterfaceBuildDir}"
+    JuliaInterfaceBuildDir=$(cd "${JuliaInterfaceBuildDir}" && pwd)
     # Force recompilation of JuliaInterface with coverage instrumentation.
     # Use a fixed build directory so that gcov can find .gcno/.gcda files.
     export FORCE_JULIAINTERFACE_COMPILATION="${JuliaInterfaceBuildDir}"
@@ -31,6 +41,8 @@ else
     export GAP_JL_JULIAINTERFACE_SO="${JuliaInterfaceSo}"
     unset FORCE_JULIAINTERFACE_COMPILATION
     RemoveJuliaInterfaceBuildDir=Yes
+else
+    RemoveJuliaInterfaceBuildDir=No
 fi
 test -d "${JuliaInterfaceBuildDir}/gen/src"
 

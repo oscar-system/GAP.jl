@@ -54,9 +54,6 @@ end
     GAP.create_gap_sh(tmpdir)
     cmd = Cmd(`$(joinpath("etc", "ci_test.sh"))`; dir=dirname(dirname(pathof(GAP))))
     cmd = addenv(cmd, "GAP" => "$(joinpath(tmpdir, "gap.sh")) -A --quitonbreak --norepl")
-    if haskey(ENV, "FORCE_JULIAINTERFACE_COMPILATION")
-      cmd = addenv(cmd, "GAP_JL_JULIAINTERFACE_SO" => GAP.JuliaInterface_path)
-    end
     @test success(pipeline(cmd; stdout, stderr))
   end
 end
