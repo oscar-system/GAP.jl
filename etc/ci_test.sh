@@ -45,7 +45,7 @@ mkdir -p coverage
 # Enter the JuliaInterface GAP package directory. makedoc.g, tst/testall.g,
 # and the later gcov invocation are all relative to this directory.
 cd pkg/JuliaInterface
-pwd
+pwd  # for debugging
 
 # Some callers, notably the treehash workflow, prebuild an instrumented
 # JuliaInterface.so and pass it in GAP_JL_JULIAINTERFACE_SO. Reuse it only if
