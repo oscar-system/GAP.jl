@@ -112,4 +112,23 @@ gap> MatchURLs("This does not exist");
 [  ]
 
 ##
+gap> _WrapJuliaFunction(1);
+Error, argument is not a julia object
+
+##
+gap> _JuliaGetGlobalVariableByModule(1,1);
+Error, _JuliaGetGlobalVariableByModule: <name> must be a string (not the integ\
+er 1)
+gap> _JuliaGetGlobalVariableByModule("foo",1);
+Error, _JuliaGetGlobalVariableByModule: <module> must be a Julia module
+
+##
+gap> Int64 := Julia.Int64;
+<Julia: Int64>
+gap> StructuralCopy(Int64);
+<Julia: Int64>
+gap> IsIdenticalObj(last, Int64);
+true
+
+##
 gap> STOP_TEST( "utils.tst" );
