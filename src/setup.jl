@@ -216,6 +216,13 @@ function build_JuliaInterface(builddir::String)
 end
 
 function locate_JuliaInterface_so()
+    if haskey(ENV, "GAP_JL_JULIAINTERFACE_SO")
+        path = abspath(ENV["GAP_JL_JULIAINTERFACE_SO"])
+        isfile(path) || error("GAP_JL_JULIAINTERFACE_SO does not point to a file: $(path)")
+        @debug "Use JuliaInterface.so from GAP_JL_JULIAINTERFACE_SO=$(path)"
+        return path
+    end
+
     # compare the C sources used to build GAP_pkg_juliainterface_jll with bundled copies
     # by comparing tree hashes
     jll = GAP_pkg_juliainterface_jll.find_artifact_dir()
@@ -259,7 +266,8 @@ function locate_JuliaInterface_so()
 end
 
 """
-    create_gap_sh(dstdir::String, dstname::String="gap.sh")
+    create_gap_sh(dstdir::String, dstname::String="gap.sh";
+                  code_coverage::Union{Nothing,String}=nothing)
 
 Given a directory path, create three files in that directory:
 - a shell script named `dstname` which acts like the `gap.sh` shipped with a
@@ -270,8 +278,14 @@ Given a directory path, create three files in that directory:
 - two TOML files, `Manifest.toml` and `Project.toml`, which are required by
   the script to function (they record the precise versions of GAP.jl and other
   Julia packages involved)
+
+If `code_coverage` is a string, the generated script appends
+`--code-coverage=\$(code_coverage)` when starting Julia. By default, it
+inherits the flags of the current Julia process.
 """
-function create_gap_sh(dstdir::String, dstname::String="gap.sh"; use_active_project::Bool=false)
+function create_gap_sh(dstdir::String, dstname::String="gap.sh";
+                       use_active_project::Bool=false,
+                       code_coverage::Union{Nothing,String}=nothing)
     dstname == basename(dstname) || error("`dstname` must be a file name, not a path")
 
     dstdir = expanduser(dstdir)
@@ -300,6 +314,10 @@ function create_gap_sh(dstdir::String, dstname::String="gap.sh"; use_active_proj
         @info "Generating gap.sh ..."
     end
 
+    julia_cmd = String.(Base.julia_cmd().exec)
+    if code_coverage !== nothing
+        push!(julia_cmd, "--code-coverage=$(code_coverage)")
+    end
 
     gap_sh_path = joinpath(dstdir, dstname)
     write(gap_sh_path,
@@ -317,7 +335,7 @@ function create_gap_sh(dstdir::String, dstname::String="gap.sh"; use_active_proj
         else
             READ_STARTUP_FILE="no"
         fi
-        exec $(join(Base.julia_cmd().exec, " ")) --startup-file=\$READ_STARTUP_FILE --project=\$(dirname \"\$0\") -i -- \"\$0\" "\$@"
+        exec $(join(julia_cmd, " ")) --startup-file=\$READ_STARTUP_FILE --project=\$(dirname \"\$0\") -i -- \"\$0\" "\$@"
         =#
 
         # pass command line arguments to GAP.jl via a small hack
