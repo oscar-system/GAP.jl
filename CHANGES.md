@@ -5,14 +5,19 @@
 - **Breaking:** Update to GAP 4.16.0
 - Update the GAP package distribution to 4.16.0
 - Update the `utils` GAP package to 0.96
-- Improve GAP-originated exceptions to include structured GAP stack traces
+- Add conversion from Nemo type `AbsSimpleNumFieldElem` to GAP objects
+- Improve handling of GAP errors substantially, so that the origin
+  of a GAP error is reported more accurately in the Julia REPL.
 
-## Version 0.16.7-DEV (released 2026-XX-XX)
+## Version 0.16.7 (released 2026-06-09)
 
 - Set a timeout of 30 seconds for GAP's `Download` function,
   except if the user's `gap.ini` file defines already a finite timeout value.
 - Make the manual of the `JuliaInterface` GAP package available for interactive
   access from a GAP session.
+- Provide conversion from Nemo types `fpMatrix` and `FpMatrix` to GAP objects
+- Declare compatibility with AbstractAlgebra 0.50
+- Declare compatibility with Nemo 0.56
 
 ## Version 0.16.6 (released 2026-04-30)
 
@@ -458,7 +463,7 @@
 
 ## Version 0.7.7 (released 2022-02-14)
 
-- Add `quiet` argument to `Packages.load` 
+- Add `quiet` argument to `Packages.load`
 - Fix compatibility with Julia nightly
 - Replace some calls to low-level GAP functions by high-level synonyms,
   for better compatibility with future GAP releases
