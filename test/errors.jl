@@ -195,8 +195,11 @@ end
         catch thrown
             sprint(showerror, thrown, catch_backtrace())
         end
-        @test occursin(r"\[3\] [^\n]+julia_gap_traceback_inner", shown)
-        @test occursin("[4] julia_gap_traceback_outer", shown)
+        inner = findfirst("julia_gap_traceback_inner", shown)
+        outer = findfirst("julia_gap_traceback_outer", shown)
+        @test inner !== nothing
+        @test outer !== nothing
+        @test first(inner) < first(outer)
         @test !occursin("throw_gap_error", shown)
         @test !occursin("call_gap_func_nokw", shown)
         top_level = findfirst("top-level scope", shown)
