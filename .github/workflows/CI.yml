@@ -125,7 +125,7 @@ jobs:
       - name: "Set up Julia"
         uses: julia-actions/setup-julia@v3
         with:
-          version: ${{ matrix.julia-version }}
+          version: 1
         id: setup-julia
       - name: "Cache artifacts"
         uses: julia-actions/cache@v3
