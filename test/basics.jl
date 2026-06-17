@@ -158,6 +158,20 @@ end
     @test GapObj([1, 2, 3, 4, 5, 6, 7]) == f(1, 2, 3, 4, 5, 6, 7)
 end
 
+@testset "gapcalls slow path" begin
+    f = GAP.evalstr("{x...} -> x")
+    slow_call(f, args...) = GAP._GAP_TO_JULIA(GAP.slow_call_gap_func_nokw(f, args))
+
+    @test GapObj([]) == slow_call(f)
+    @test GapObj([1]) == slow_call(f, 1)
+    @test GapObj([1, 2]) == slow_call(f, 1, 2)
+    @test GapObj([1, 2, 3]) == slow_call(f, 1, 2, 3)
+    @test GapObj([1, 2, 3, 4]) == slow_call(f, 1, 2, 3, 4)
+    @test GapObj([1, 2, 3, 4, 5]) == slow_call(f, 1, 2, 3, 4, 5)
+    @test GapObj([1, 2, 3, 4, 5, 6]) == slow_call(f, 1, 2, 3, 4, 5, 6)
+    @test GapObj([1, 2, 3, 4, 5, 6, 7]) == slow_call(f, 1, 2, 3, 4, 5, 6, 7)
+end
+
 @testset "gapcalls border cases" begin
     # check argument validation of internal helprs
     @test_throws MethodError GAP.slow_call_gap_func_nokw(1,1)
