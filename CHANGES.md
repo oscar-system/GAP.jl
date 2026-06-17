@@ -8,6 +8,7 @@
 - Add conversion from Nemo type `AbsSimpleNumFieldElem` to GAP objects
 - Improve handling of GAP errors substantially, so that the origin
   of a GAP error is reported more accurately in the Julia REPL.
+- Add keyword argument `code_coverage` to `create_gap_sh`
 
 ## Version 0.16.7 (released 2026-06-09)
 
