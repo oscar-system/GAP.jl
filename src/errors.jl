@@ -100,10 +100,8 @@ function show_gap_error(io::IO, err::GAPError)
 end
 
 function has_unsupported_recursive_gap_julia_gap_traceback(err::GAPError)
-    isempty(err.gap_frames) || return false
-    isempty(err.julia_stacktrace) || return false
     occursin("Error thrown by GAP:", err.raw_text) || return false
-    return occursin("not in any function at *defin*:0", err.raw_text)
+    return occursin("not in any function at ", err.raw_text)
 end
 
 # Capture the Julia stack before ThrowObserver rewrites the control flow through

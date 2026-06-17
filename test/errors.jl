@@ -157,6 +157,29 @@ end
         @test occursin("\n [1] framefunc\n     @ ~/tmp/frame.g:12", shown)
     end
 
+    @testset "unsupported recursive traceback note is keyed off raw fallback text" begin
+        err = GAP.GAPError(
+            "Error thrown by GAP: no method found! For debugging hints type ?Recovery from NoMethodFound",
+            GAP.GAPStackFrame[],
+            """
+            Error, Error thrown by GAP: no method found! For debugging hints type ?Recovery from NoMethodFound
+            GAP stacktrace:
+             [1] HANDLE_METHOD_NOT_FOUND
+                 @ /tmp/gap_jll_override/share/gap/lib/methsel2.g:257
+             [2] SymmetricGroup
+                 @ /tmp/gap_jll_override/share/gap/grp/basic.gd:740
+            not in any function at *defin*:0
+            """,
+            [(Base.StackTraces.StackFrame(:outer, Symbol("REPL[1]"), 1, nothing, false, false, C_NULL), 1)],
+        )
+
+        shown = sprint(showerror, err)
+        @test occursin(
+            "Julia/GAP stacktraces for recursive GAP -> Julia -> GAP error paths are not supported yet.",
+            shown,
+        )
+    end
+
     @testset "showerror prints the captured Julia stacktrace" begin
         julia_gap_traceback_inner() = GAP.Globals.SymmetricGroup(-3)
         julia_gap_traceback_outer() = julia_gap_traceback_inner()
