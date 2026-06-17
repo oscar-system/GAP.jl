@@ -99,6 +99,11 @@ function show_gap_error(io::IO, err::GAPError)
     end
 end
 
+# Recursive GAP -> Julia -> GAP failures currently do not preserve a usable
+# combined stack. In that path we often only get GAP's raw fallback text, and
+# the presence/absence of structured GAP or Julia frames varies across GAP
+# versions and unwind behavior. So detect this case from the stable text shape
+# instead of from the frame vectors.
 function has_unsupported_recursive_gap_julia_gap_traceback(err::GAPError)
     occursin("Error thrown by GAP:", err.raw_text) || return false
     return occursin("not in any function at ", err.raw_text)
