@@ -6,6 +6,8 @@
 - Update the GAP package distribution to 4.16.0
 - Update the `utils` GAP package to 0.96
 - Add conversion from Nemo type `AbsSimpleNumFieldElem` to GAP objects
+- Improve handling of GAP errors substantially, so that the origin
+  of a GAP error is reported more accurately in the Julia REPL.
 - Add keyword argument `code_coverage` to `create_gap_sh`
 
 ## Version 0.16.7 (released 2026-06-09)
