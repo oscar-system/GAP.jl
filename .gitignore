@@ -4,6 +4,10 @@ Manifest.toml
 /tags
 *.log
 /coverage/
+*.cov
+*.gcda
+*.gcno
 *.gcov
 /override/
 /docs/src/assets/
+/pkg/JuliaInterface/juliainterface.path
