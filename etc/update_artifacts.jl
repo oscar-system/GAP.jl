@@ -99,7 +99,7 @@ function add_artifacts_for_package(pkginfo, artifacts)
     tarball_path = download(url)
     tarball_hash = sha256sum(tarball_path)
     if sha256 != tarball_hash
-        error("SHA256 mismatch for $url")
+        error("SHA256 mismatch for $url: expected $(sha256), got $(tarball_hash)")
     end
 
     git_tree_sha1 = create_artifact() do artifact_dir
