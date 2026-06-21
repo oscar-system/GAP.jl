@@ -1,5 +1,9 @@
 # Changes in GAP.jl
 
+## Version 0.17.2 (released 2026-06-21)
+
+- Update the `alnuth` GAP package to 4.0.2
+
 ## Version 0.17.1 (released 2026-06-21)
 
 - Update the `alnuth` GAP package to 4.0.1
