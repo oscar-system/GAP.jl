@@ -49,14 +49,14 @@ git-tree-sha1 = "94ddf8435c30bc5108b5a015f204dc27aae49cb5"
     url = "https://files.gap-system.org/pkg/ALCO-1.1.2.tar.gz"
 
 [GAP_pkg_alnuth]
-git-tree-sha1 = "4f453d7867493d1c70bdb672631964c16b021a8d"
+git-tree-sha1 = "f3664e3c7230965981a2da61dca9554c5bf2e573"
 
     [[GAP_pkg_alnuth.download]]
-    sha256 = "4ccde980023c3e966b770468156ba4fbad6ec092a2d44cb1b0f01d71a6d94f62"
-    url = "https://github.com/gap-packages/alnuth/releases/download/v4.0.0/alnuth-4.0.0.tar.gz"
+    sha256 = "73bb248322a8c96f0b2528fcd71ce58952df9fd9d605a3cc75e908a7bf64ac46"
+    url = "https://github.com/gap-packages/alnuth/releases/download/v4.0.1/alnuth-4.0.1.tar.gz"
     [[GAP_pkg_alnuth.download]]
-    sha256 = "4ccde980023c3e966b770468156ba4fbad6ec092a2d44cb1b0f01d71a6d94f62"
-    url = "https://files.gap-system.org/pkg/alnuth-4.0.0.tar.gz"
+    sha256 = "73bb248322a8c96f0b2528fcd71ce58952df9fd9d605a3cc75e908a7bf64ac46"
+    url = "https://files.gap-system.org/pkg/alnuth-4.0.1.tar.gz"
 
 [GAP_pkg_anupq]
 git-tree-sha1 = "19d8742f55126ea3c6684857f02f61a39fe01378"
