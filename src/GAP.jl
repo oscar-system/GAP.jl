@@ -32,7 +32,7 @@ if Sys.iswindows()
 end
 
 import AbstractAlgebra # for should_show_banner()
-import Artifacts: find_artifacts_toml, load_artifacts_toml, artifact_path
+import Artifacts: find_artifacts_toml, load_artifacts_toml
 
 import GAP_jll: GAP_jll, libgap
 import GAP_lib_jll
@@ -217,10 +217,9 @@ function __init__()
     artifact_dict = load_artifacts_toml(artifacts_toml)
 
     pkgdirs = String[]
-    for (name, meta) in artifact_dict
+    for name in keys(artifact_dict)
         startswith(name, "GAP_pkg_") || continue
-        hash = Base.SHA1(meta["git-tree-sha1"]::String)
-        push!(pkgdirs, artifact_path(hash; honor_overrides=true))
+        push!(pkgdirs, gap_pkg_artifact_dir(name[9:end]))
     end
     push!(pkgdirs, abspath(@__DIR__, "..", "pkg", "JuliaInterface"))
     push!(pkgdirs, abspath(@__DIR__, "..", "pkg", "JuliaExperimental"))

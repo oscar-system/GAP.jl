@@ -43,3 +43,51 @@ end
     end
   end
 end
+
+@testset "gap package artifact overrides" begin
+  mktempdir() do tmpdir
+    artifacts_toml = joinpath(tmpdir, "Artifacts.toml")
+    override_dir = joinpath(tmpdir, "override", "alnuth")
+    mkpath(override_dir)
+    write(joinpath(override_dir, "PackageInfo.g"), "")
+    write(
+      artifacts_toml,
+      """
+      [GAP_pkg_alnuth]
+      git-tree-sha1 = "809593e819b916279aa515bc8644a9c1e5ab2a96"
+      """,
+    )
+
+    depot = joinpath(tmpdir, "depot")
+    overrides_toml = joinpath(depot, "artifacts", "Overrides.toml")
+    mkpath(dirname(overrides_toml))
+    write(
+      overrides_toml,
+      """
+      [c863536a-3901-11e9-33e7-d5cd0df7b904]
+      GAP_pkg_alnuth = "$(override_dir)"
+      """,
+    )
+
+    old_depot_path = copy(DEPOT_PATH)
+    artifact_stdlib = Base.require(
+      Base.PkgId(
+        Base.UUID("56f22d72-fd6d-98f1-02f0-08ddc0907c33"),
+        "Artifacts",
+      ),
+    )
+    old_artifact_overrides = deepcopy(artifact_stdlib.ARTIFACT_OVERRIDES[])
+
+    try
+      empty!(DEPOT_PATH)
+      push!(DEPOT_PATH, depot)
+      artifact_stdlib.ARTIFACT_OVERRIDES[] = nothing
+
+      @test GAP.gap_pkg_artifact_dir("alnuth") == override_dir
+    finally
+      empty!(DEPOT_PATH)
+      append!(DEPOT_PATH, old_depot_path)
+      artifact_stdlib.ARTIFACT_OVERRIDES[] = old_artifact_overrides
+    end
+  end
+end

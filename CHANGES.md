@@ -3,6 +3,8 @@
 ## Version 0.17.2 (released 2026-06-21)
 
 - Update the `alnuth` GAP package to 4.0.2
+- Honor `Overrides.toml` UUID/name overrides for `GAP_pkg_*` artifacts
+  when locating GAP package directories
 
 ## Version 0.17.1 (released 2026-06-21)
 
