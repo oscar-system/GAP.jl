@@ -135,8 +135,10 @@ jobs:
         env:
           CFLAGS: "--coverage"
           LDFLAGS: "--coverage"
-          FORCE_JULIAINTERFACE_COMPILATION: "${{ github.workspace }}/pkg/JuliaInterface/tmp"
+          JULIAINTERFACE_BUILD_DIR: "${{ github.workspace }}/pkg/JuliaInterface/tmp"
         run: |
+          mkdir -p pkg/JuliaInterface/src/force-treehash-mismatch
+          touch pkg/JuliaInterface/src/force-treehash-mismatch/nonempty
           julia --project=. --color=yes -e 'import GAP; write("juliainterface.path", GAP.JuliaInterface_path)'
           JuliaInterfaceSo=$(cat juliainterface.path)
           test -f "${JuliaInterfaceSo}"
