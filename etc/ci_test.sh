@@ -25,7 +25,8 @@ build_JuliaInterface_for_coverage() {
 
     # Force recompilation of JuliaInterface with coverage instrumentation.
     # Use a fixed build directory so that gcov can find .gcno/.gcda files.
-    export FORCE_JULIAINTERFACE_COMPILATION="${JuliaInterfaceBuildDir}"
+    export FORCE_JULIAINTERFACE_COMPILATION=
+    export JULIAINTERFACE_BUILD_DIR="${JuliaInterfaceBuildDir}"
 
     # Run GAP through Julia to get it to create JuliaInterface.so, and then
     # write the path to it into a file for use later on.
@@ -37,6 +38,7 @@ build_JuliaInterface_for_coverage() {
     test -f "${JuliaInterfaceSo}"
     export GAP_JL_JULIAINTERFACE_SO="${JuliaInterfaceSo}"
     unset FORCE_JULIAINTERFACE_COMPILATION
+    unset JULIAINTERFACE_BUILD_DIR
     RemoveJuliaInterfaceBuildDir=Yes
 }
 
@@ -65,6 +67,7 @@ then
     if [ -d "${JuliaInterfaceBuildDir}/gen/src" ] && ls "${JuliaInterfaceBuildDir}"/gen/src/*.gcno >/dev/null 2>&1
     then
         unset FORCE_JULIAINTERFACE_COMPILATION
+        unset JULIAINTERFACE_BUILD_DIR
         RemoveJuliaInterfaceBuildDir=No
     else
         unset GAP_JL_JULIAINTERFACE_SO

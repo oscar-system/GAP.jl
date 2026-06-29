@@ -215,6 +215,22 @@ function build_JuliaInterface(builddir::String)
     return normpath(joinpath(builddir, "bin", GAP.sysinfo["GAParch"]))
 end
 
+function juliainterface_builddir()
+    # If JULIAINTERFACE_BUILD_DIR is set,
+    # its value is assumed to be a path in which we perform an "out-of-tree" build
+    # of JuliaInterface. That is, its build system reads files from its source dir,
+    # but writes .o files etc. into the builddir or subdirectories (that is, it
+    # writes .o files into the `gen/src` subdir, and the kernel extension ends up
+    # as `bin/ARCH/JuliaInterface.so`.
+    if haskey(ENV, "JULIAINTERFACE_BUILD_DIR")
+        builddir = abspath(ENV["JULIAINTERFACE_BUILD_DIR"])
+        mkpath(builddir)
+        return builddir
+    end
+
+    return mktempdir()
+end
+
 function locate_JuliaInterface_so()
     if haskey(ENV, "GAP_JL_JULIAINTERFACE_SO")
         path = abspath(ENV["GAP_JL_JULIAINTERFACE_SO"])
@@ -230,36 +246,18 @@ function locate_JuliaInterface_so()
     bundled = joinpath(@__DIR__, "..", "pkg", "JuliaInterface")
     bundled_hash = TreeHash.tree_hash(joinpath(bundled, "src"))
 
-    # If FORCE_JULIAINTERFACE_COMPILATION then we always compile JuliaInterface.
-    # This is useful for debugging or for code coverage tracking. If the variable
-    # is set but empty, or set to "true", then we compile into a tempdir. Otherwise,
-    # its value is assumed to be a path in which we perform an "out-of-tree" build
-    # of JuliaInterface. That is, its build system reads files from its source dir,
-    # but writes .o files etc. into the builddir or subdirectories (that is, it
-    # writes .o files into the `gen/src` subdir, and the kernel extension ends up
-    # as `bin/ARCH/JuliaInterface.so`.
-    if haskey(ENV, "FORCE_JULIAINTERFACE_COMPILATION")
-        # requested re-compilation via ENV -> re-compile
-        forcedir = ENV["FORCE_JULIAINTERFACE_COMPILATION"]
-        if isempty(forcedir) || forcedir == "true"
-            builddir = mktempdir()
-        else
-            builddir = abspath(forcedir)
-            mkpath(builddir)
-        end
-        @debug "FORCE_JULIAINTERFACE_COMPILATION is set -> compile in $(builddir)"
-        # take a pidlock to protect users who call FORCE_JULIAINTERFACE_COMPILATION with
-        # the same fixed path from multiple concurrent processes
-        path = Pidfile.mkpidlock(joinpath(builddir, "JuliaInterface.lock"); stale_age=300) do
-            build_JuliaInterface(builddir)
-        end
-    elseif jll_hash == bundled_hash
+    if jll_hash == bundled_hash && !haskey(ENV, "FORCE_JULIAINTERFACE_COMPILATION")
         # tree hashes of bundled C sources and GAP_pkg_juliainterface_jll match -> use JuliaInterface.so from the JLL
         @debug "Use JuliaInterface.so from GAP_pkg_juliainterface_jll"
         path = joinpath(jll, "lib", "gap")
     else
-        # fall-back case -> re-compile
-        path = build_JuliaInterface(mktempdir())
+        builddir = juliainterface_builddir()
+        @debug "Compile JuliaInterface in $(builddir)"
+        # take a pidlock to protect users who use the same fixed build directory
+        # from multiple concurrent processes
+        path = Pidfile.mkpidlock(joinpath(builddir, "JuliaInterface.lock"); stale_age=300) do
+            build_JuliaInterface(builddir)
+        end
     end
     @debug "Use JuliaInterface.so from $(path)"
     return joinpath(path, "JuliaInterface.so")
