@@ -46,17 +46,9 @@ end
 
 @testset "gap package artifact overrides" begin
   mktempdir() do tmpdir
-    artifacts_toml = joinpath(tmpdir, "Artifacts.toml")
     override_dir = joinpath(tmpdir, "override", "alnuth")
     mkpath(override_dir)
     write(joinpath(override_dir, "PackageInfo.g"), "")
-    write(
-      artifacts_toml,
-      """
-      [GAP_pkg_alnuth]
-      git-tree-sha1 = "809593e819b916279aa515bc8644a9c1e5ab2a96"
-      """,
-    )
 
     depot = joinpath(tmpdir, "depot")
     overrides_toml = joinpath(depot, "artifacts", "Overrides.toml")
