@@ -64,6 +64,8 @@ const pkg_bindirs = Dict{String, String}()
 
 function gap_pkg_artifact_dir(pkgname)
   d = @artifact_str("GAP_pkg_$(pkgname)")
+  # Artifact overrides may point directly at the GAP package root.
+  isfile(joinpath(d, "PackageInfo.g")) && return d
   return joinpath(d, only(readdir(d)))
 end
 
@@ -119,4 +121,3 @@ function find_override(installationpath::String)
     end
     return joinpath(installationpath, "bin", String(GAP.Globals.GAPInfo.Architecture))
 end
-
