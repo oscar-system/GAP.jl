@@ -17,7 +17,7 @@
 #     julia --project=etc etc/update_artifacts.jl local/path/meta.json
 #
 
-using Downloads: download
+using Downloads: download, RequestError
 import Pkg
 using Pkg.Artifacts
 import Pkg.PlatformEngines
@@ -73,47 +73,67 @@ function add_artifacts_for_package(pkginfo, artifacts)
     #
     # extract info about the package tarball
     #
-    sha256 = pkginfo["ArchiveSHA256"]
-    url = pkginfo["ArchiveURL"]
-    formats = split(pkginfo["ArchiveFormats"], r"[,\s]+")
-    url *= first(formats)  # this matches what the PackageDistro does, and allow us to use ArchiveSHA256
-    url2 = "https://files.gap-system.org/pkg/" * basename(url)
+    formats = intersect(split(pkginfo["ArchiveFormats"], r"[,\s]+"), [".tar.gz", ".tar.bz2"])
+    isempty(formats) && error("  No supported archive formats found for $(gap_pkgname)")
 
-    # check if this file is already registered
-    if haskey(artifacts, artifact_name)
-        downloads = artifacts[artifact_name]["download"]
-        d = Dict("sha256" => sha256, "url" => url)
-        if d in downloads
-            println("  already present")
-            d2 = Dict("sha256" => sha256, "url" => url2)
-            if !(d2 in downloads)
-                println("  added backup URL $(url2)")
-                push!(downloads, d2)
+    git_tree_sha1s = String[]
+    urls = Dict{String,String}[]
+
+    baseurls = [pkginfo["ArchiveURL"], "https://files.gap-system.org/pkg/" * basename(pkginfo["ArchiveURL"])]
+    for (i, format) in enumerate(formats)
+        sha256 = i == 1 ? pkginfo["ArchiveSHA256"] : nothing
+
+        for baseurl in baseurls
+            url = baseurl * format
+            tarball_path = try
+                download(url)
+            catch e
+                if e isa RequestError && e.response.status == 404
+                    println("  $(url) not found, skipping")
+                    continue
+                else
+                    rethrow(e)
+                end
             end
-            return
+            tarball_hash = sha256sum(tarball_path)
+            if isnothing(sha256)
+                sha256 = tarball_hash
+            elseif sha256 != tarball_hash
+                error("  SHA256 mismatch for $url: expected $(sha256), got $(tarball_hash)")
+            end
+
+            git_tree_sha1 = create_artifact() do artifact_dir
+                Pkg.PlatformEngines.unpack(tarball_path, artifact_dir)
+            end
+            push!(git_tree_sha1s, bytes2hex(git_tree_sha1.bytes))
+
+            push!(urls, Dict("url" => url, "sha256" => sha256))
+
+            rm(tarball_path)
         end
     end
 
-    # add the artifact
-    println("  importing new archive $url")
-    tarball_path = download(url)
-    tarball_hash = sha256sum(tarball_path)
-    if sha256 != tarball_hash
-        error("SHA256 mismatch for $url: expected $(sha256), got $(tarball_hash)")
+    allequal(git_tree_sha1s) || error("  unpacked tarballs have different git-tree-sha1 values for $(gap_pkgname)")
+
+    # prefer .tar.gz over .tar.bz2 for the download URL, see https://github.com/JuliaPackaging/PkgServer.jl/issues/238
+    if any(url -> endswith(url["url"], ".tar.gz"), urls)
+        filter!(url -> endswith(url["url"], ".tar.gz"), urls)
     end
 
-    git_tree_sha1 = create_artifact() do artifact_dir
-        Pkg.PlatformEngines.unpack(tarball_path, artifact_dir)
-    end
-
-    rm(tarball_path)
-    #clear && remove_artifact(git_tree_sha1)
-
-    artifacts[artifact_name] = Dict{String,Any}(
-        "git-tree-sha1" => bytes2hex(git_tree_sha1.bytes),
-        "download" => [ Dict("sha256" => sha256, "url" => url),
-                        Dict("sha256" => sha256, "url" => url2) ]
+    artifact_entry = Dict{String,Any}(
+        "git-tree-sha1" => first(git_tree_sha1s),
+        "download" => urls,
     )
+
+    if artifacts[artifact_name] == artifact_entry
+        println("  artifact entry already present")
+    elseif !haskey(artifacts, artifact_name)
+        artifacts[artifact_name] = artifact_entry
+        println("  added artifact entry for $(artifact_name)")
+    else
+        artifacts[artifact_name] = artifact_entry
+        println("  updated artifact entry for $(artifact_name)")
+    end
 
     return
 end
