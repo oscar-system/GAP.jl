@@ -75,7 +75,7 @@ function add_artifacts_for_package(pkginfo, artifacts)
     #
     sha256 = pkginfo["ArchiveSHA256"]
     url = pkginfo["ArchiveURL"]
-    formats = split(pkginfo["ArchiveFormats"], " ")
+    formats = split(pkginfo["ArchiveFormats"], r"[,\s]+")
     url *= first(formats)  # this matches what the PackageDistro does, and allow us to use ArchiveSHA256
     url2 = "https://files.gap-system.org/pkg/" * basename(url)
 
