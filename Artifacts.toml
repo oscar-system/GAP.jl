@@ -119,14 +119,14 @@ git-tree-sha1 = "5dce18381dca34b8630578c7ae4985adc8a1ea8f"
     url = "https://files.gap-system.org/pkg/autpgrp-1.12.0.tar.gz"
 
 [GAP_pkg_browse]
-git-tree-sha1 = "eadf6b3d3655ba9bd89084bbe9300095c2c0b1c8"
+git-tree-sha1 = "e000ccbe88c130a318766e8d4e12d5e3d12e3d7f"
 
     [[GAP_pkg_browse.download]]
-    sha256 = "4ff36bb787f7da968a920d657a615d601615a3dc0780d31f7bbdb3ff995748ae"
-    url = "https://www.math.rwth-aachen.de/~Browse/Browse-1.8.22.tar.bz2"
+    sha256 = "90f2e8f71aa4b9276a80370fc2503daeba9d3555e159a968559731da18be6b60"
+    url = "https://www.math.rwth-aachen.de/~Browse/Browse-1.8.23.tar.gz"
     [[GAP_pkg_browse.download]]
-    sha256 = "4ff36bb787f7da968a920d657a615d601615a3dc0780d31f7bbdb3ff995748ae"
-    url = "https://files.gap-system.org/pkg/Browse-1.8.22.tar.bz2"
+    sha256 = "90f2e8f71aa4b9276a80370fc2503daeba9d3555e159a968559731da18be6b60"
+    url = "https://files.gap-system.org/pkg/Browse-1.8.23.tar.gz"
 
 [GAP_pkg_cap]
 git-tree-sha1 = "460d1f79d3e01e3f12bc8215dfc58c8f1830d8c4"
