@@ -512,11 +512,11 @@ git-tree-sha1 = "5d19a3b3edc35af358430483c53232aa29b79857"
 git-tree-sha1 = "b48bc43492416cba88eb3066634c32e1d08005b3"
 
     [[GAP_pkg_gapdoc.download]]
-    sha256 = "eb760738ca43a2dc5d0a891f0308303e51943745157cc27b3dd8da9a45004681"
-    url = "https://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc/GAPDoc-1.6.10.tar.bz2"
+    sha256 = "058c83fee15ea99852cfe8171b468342008a10f5532c414d70ab18b246a02dee"
+    url = "https://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc/GAPDoc-1.6.10.tar.gz"
     [[GAP_pkg_gapdoc.download]]
-    sha256 = "eb760738ca43a2dc5d0a891f0308303e51943745157cc27b3dd8da9a45004681"
-    url = "https://files.gap-system.org/pkg/GAPDoc-1.6.10.tar.bz2"
+    sha256 = "058c83fee15ea99852cfe8171b468342008a10f5532c414d70ab18b246a02dee"
+    url = "https://files.gap-system.org/pkg/GAPDoc-1.6.10.tar.gz"
 
 [GAP_pkg_gauss]
 git-tree-sha1 = "419a0430d13b945f7a1d00cfaaf9078ddcfc5831"
