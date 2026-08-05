@@ -1,6 +1,6 @@
 # Changes in GAP.jl
 
-## Version 0.17.3-DEV (released 2026-MM-DD)
+## Version 0.17.3 (released 2026-08-05)
 
 - Honor `Overrides.toml` UUID/name overrides for `GAP_pkg_*` artifacts
   when locating GAP package directories
