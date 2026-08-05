@@ -243,7 +243,7 @@ git-tree-sha1 = "85ac41f54aedd09fb370d977dd6ee3309684056d"
 
     [[GAP_pkg_crisp.download]]
     sha256 = "3360e17c1611a2ab1654d982aade5566a1c048c795675e321cbf15d06248d569"
-    url = "https://github.com/bh11/crisp/releases/latest/download/crisp-1.4.8.tar.bz2"
+    url = "https://github.com/bh11/crisp/releases/download/CrISP-1.4.8/crisp-1.4.8.tar.bz2"
     [[GAP_pkg_crisp.download]]
     sha256 = "3360e17c1611a2ab1654d982aade5566a1c048c795675e321cbf15d06248d569"
     url = "https://files.gap-system.org/pkg/crisp-1.4.8.tar.bz2"
