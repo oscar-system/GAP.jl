@@ -12,7 +12,6 @@
 #include "convert.h"
 
 #include "calls.h"
-#include "sync.h"
 #include "JuliaInterface.h"
 
 // Turn a GAP object into a Julia object.
