@@ -4,6 +4,7 @@
 
 - Honor `Overrides.toml` UUID/name overrides for `GAP_pkg_*` artifacts
   when locating GAP package directories
+- Fix the download URL of the `crisp` GAP package.
 
 ## Version 0.17.2 (released 2026-06-21)
 
