@@ -114,8 +114,7 @@ static Obj JuliaObjectTypeFunc(Obj o)
 
 Obj NewJuliaObj(jl_value_t * v)
 {
-    if (is_gapobj(v))
-        return (Obj)v;
+    GAP_ASSERT(!is_gapobj(v));
     JL_GC_PUSH1(&v);
     Obj o = NewBag(T_JULIA_OBJ, 1 * sizeof(Obj));
     ADDR_OBJ(o)[0] = (Obj)v;
