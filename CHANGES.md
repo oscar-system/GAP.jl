@@ -1,5 +1,11 @@
 # Changes in GAP.jl
 
+## Version 0.17.4-DEV (released 2026-XX-XX)
+
+- Update the `browse` GAP package from 1.8.22 to 1.8.23
+- Update the `crips` GAP package from 1.4.8 to 1.4.11
+- Update the `irredsol` GAP package from 1.4.4 to 1.4.6
+
 ## Version 0.17.3 (released 2026-08-05)
 
 - Honor `Overrides.toml` UUID/name overrides for `GAP_pkg_*` artifacts
