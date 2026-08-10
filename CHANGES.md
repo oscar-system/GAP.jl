@@ -1,6 +1,6 @@
 # Changes in GAP.jl
 
-## Version 0.17.4-DEV (released 2026-XX-XX)
+## Version 0.17.4 (released 2026-08-11)
 
 - Update the `browse` GAP package from 1.8.22 to 1.8.23
 - Update the `crips` GAP package from 1.4.8 to 1.4.11
