@@ -769,14 +769,14 @@ git-tree-sha1 = "bb744cc593f062ee26032830a4a08377d71e3954"
     url = "https://files.gap-system.org/pkg/IO_ForHomalg-2025.12-01.tar.gz"
 
 [GAP_pkg_irredsol]
-git-tree-sha1 = "a9f1d456b752a9af625cc9765a08533f394efab9"
+git-tree-sha1 = "89e9e2eeca8499a9899be8d0a6dcb940ebda233a"
 
     [[GAP_pkg_irredsol.download]]
-    sha256 = "2e1f79f5da5b268f6ffd64f67ff60c1292653535672ce51b91c057cd781bbe98"
-    url = "https://github.com/bh11/irredsol/releases/download/IRREDSOL-1.4.4/irredsol-1.4.4.tar.bz2"
+    sha256 = "16b901e6a0c648b7a1834a898a989f313cd855ca685c85c8322c4ae15e0447a1"
+    url = "https://github.com/bh11/irredsol/releases/download/IRREDSOL-1.4.6/irredsol-1.4.6.tar.gz"
     [[GAP_pkg_irredsol.download]]
-    sha256 = "2e1f79f5da5b268f6ffd64f67ff60c1292653535672ce51b91c057cd781bbe98"
-    url = "https://files.gap-system.org/pkg/irredsol-1.4.4.tar.bz2"
+    sha256 = "16b901e6a0c648b7a1834a898a989f313cd855ca685c85c8322c4ae15e0447a1"
+    url = "https://files.gap-system.org/pkg/irredsol-1.4.6.tar.gz"
 
 [GAP_pkg_itc]
 git-tree-sha1 = "dba572f45d162daa9e0f1137b520eca1e73565d9"
