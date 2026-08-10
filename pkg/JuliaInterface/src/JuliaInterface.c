@@ -14,7 +14,6 @@
 
 #include "calls.h"
 #include "convert.h"
-#include "sync.h"
 
 // With gap 4.15, the header julia_gc.h is available through gap_all.h.
 // To still support GAP 4.14, we include it conditionally.
@@ -44,9 +43,7 @@ void handle_jl_exception(void)
     jl_value_t * string_object =
         jl_call1(JULIA_FUNC_take_inplace, JULIA_ERROR_IOBuffer);
     string_object = jl_array_to_string((jl_array_t *)string_object);
-    BEGIN_GAP_SYNC();
     ErrorMayQuit("%s", (Int)jl_string_data(string_object), 0);
-    END_GAP_SYNC();
 }
 
 jl_value_t * gap_box_gapffe(Obj value)
@@ -154,11 +151,9 @@ static Obj FuncIS_JULIA_FUNC(Obj self, Obj obj)
 // Executes the string <string> in the current julia session.
 static Obj FuncJuliaEvalString(Obj self, Obj string)
 {
-    BEGIN_GAP_SYNC();
     RequireStringRep("JuliaEvalString", string);
 
     jl_value_t * result = jl_eval_string(CONST_CSTR_STRING(string));
-    END_GAP_SYNC();
     if (jl_exception_occurred()) {
         handle_jl_exception();
     }
@@ -179,7 +174,6 @@ static int gap_jl_boundp(jl_module_t * m, jl_sym_t * var)
 // currently bound to the julia identifier <moduleName>.<name>.
 static Obj Func_JuliaGetGlobalVariableByModule(Obj self, Obj name, Obj module)
 {
-    BEGIN_GAP_SYNC();
     RequireStringRep("_JuliaGetGlobalVariableByModule", name);
 
     jl_module_t * m = 0;
@@ -194,7 +188,6 @@ static Obj Func_JuliaGetGlobalVariableByModule(Obj self, Obj name, Obj module)
                      0, 0);
     }
     jl_sym_t * symbol = jl_symbol(CONST_CSTR_STRING(name));
-    END_GAP_SYNC();
 
 #if JULIA_VERSION_MAJOR == 1 && JULIA_VERSION_MINOR >= 12
     // WORKAROUND issue #1132
@@ -277,8 +270,6 @@ static Int InitKernel(StructInitInfo * module)
     if (!JULIA_GAPFFE_type) {
         ErrorMayQuit("Could not locate the GAP.FFE datatype", 0, 0);
     }
-
-    InitGapSync();
 
     // init filters and functions
     InitHdlrFuncsFromTable(GVarFuncs);

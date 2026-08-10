@@ -12,7 +12,6 @@
 
 #include "calls.h"
 #include "convert.h"
-#include "sync.h"
 #include "JuliaInterface.h"
 
 
@@ -35,7 +34,6 @@ Obj call_gap_func(Obj func, jl_value_t * args)
 
     size_t len = jl_nfields(args);
     Obj    return_value = NULL;
-    BEGIN_GAP_SYNC();
     if (IS_FUNC(func) && len <= 6) {
         switch (len) {
         case 0:
@@ -85,7 +83,6 @@ Obj call_gap_func(Obj func, jl_value_t * args)
         }
         return_value = CallFuncList(func, arg_list);
     }
-    END_GAP_SYNC();
     return return_value;
 }
 
@@ -199,7 +196,6 @@ static Obj DoCallJuliaFuncXArg(Obj func, Obj args)
 //
 Obj WrapJuliaFunc(jl_value_t * function)
 {
-    BEGIN_GAP_SYNC();
     Obj name = MakeImmString(jl_symbol_name(jl_gf_name(function)));
     Obj func = NewFunctionT(T_FUNCTION, sizeof(JuliaFuncBag), name, -1,
                             ArgStringToList("arg"), 0);
@@ -225,7 +221,6 @@ Obj WrapJuliaFunc(jl_value_t * function)
     SET_BODY_FUNC(func, body);
     CHANGED_BAG(body);
     CHANGED_BAG(func);
-    END_GAP_SYNC();
 
     return func;
 }
