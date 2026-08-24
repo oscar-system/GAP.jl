@@ -2,6 +2,12 @@
 # This script updates the `GAP*_jll` entries in the `[compat]` section of
 # Project.toml to match a given GAP release. Run it after `update_artifacts.jl`.
 #
+# Setup: the `etc` environment must be instantiated before first use. Its
+# Manifest.toml is gitignored, so an old one may be stale; deleting it is safe.
+#
+#     rm -f etc/Manifest.toml
+#     julia --project=etc -e 'using Pkg; Pkg.instantiate()'
+#
 # Usage:
 #
 #     julia --project=etc etc/update_jll_versions.jl 4.16.1

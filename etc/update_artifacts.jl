@@ -1,6 +1,12 @@
 #
 # This script is used to update Artifacts.toml
 #
+# Setup: the `etc` environment must be instantiated before first use. Its
+# Manifest.toml is gitignored, so an old one may be stale; deleting it is safe.
+#
+#     rm -f etc/Manifest.toml
+#     julia --project=etc -e 'using Pkg; Pkg.instantiate()'
+#
 # Usage variants:
 # 1. Specify `packages-infos.json` to update all packages. This removes all
 #    artifacts for packages not contained in that file.
