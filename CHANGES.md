@@ -1,6 +1,6 @@
 # Changes in GAP.jl
 
-## Version 0.17.5-DEV (released YYYY-MM-DD)
+## Version 0.17.5 (released 2026-08-24)
 
 - Update to GAP 4.16.1
 
