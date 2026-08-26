@@ -527,6 +527,101 @@ end
 Base.IteratorEltype(::Type{GapObj}) = Base.EltypeUnknown()
 Base.IteratorSize(::Type{GapObj}) = Base.SizeUnknown()
 
+# Optimized `collect` for `GapObj`. The generic `collect` for iterators of
+# unknown size and eltype assembles the result via `Base.grow_to!`, which
+# performs several dynamically dispatched calls per collect. Iterating a
+# `GapObj` always has unknown size and eltype, so nothing is lost by
+# gathering the elements ourselves instead.
+#
+# The element type of the result is determined as by the generic code: it
+# starts out as the type of the first element and is widened via
+# `promote_typejoin` whenever an element does not fit; holes in lists are
+# skipped (as iteration does); and if there is no element at all, the type
+# comes from inference (`ET`, the caller's `Base.@default_eltype`). Note
+# that the `isa` checks let the compiler drop the widening branches when
+# the element type is known and concrete, so that e.g.
+# `[f(x)::T for x in gaplist]` is inferred as `Vector{T}`.
+
+# fast path for GAP lists: the length is known in advance
+function _collect_list(f::F, x::GapObj, len::Int, ::Type{ET}) where {F,ET}
+    for i in 1:len
+        el = ElmList(x, i)  # returns 'nothing' for holes in the list
+        el === nothing && continue
+        y = f(el)
+        v = Vector{typeof(y)}(undef, len)
+        v[1] = y
+        return _collect_list!(f, x, len, v, 1, i+1)
+    end
+    return ET[]  # no bound entries
+end
+
+function _collect_list!(f::F, x::GapObj, len::Int, v::Vector{T}, n::Int, i::Int) where {F,T}
+    while i <= len
+        el = ElmList(x, i)
+        if el !== nothing
+            y = f(el)
+            if !(y isa T)
+                # widen the element type, then carry on where we left off
+                w = Vector{Base.promote_typejoin(T, typeof(y))}(undef, len)
+                copyto!(w, 1, v, 1, n)
+                w[n+1] = y
+                return _collect_list!(f, x, len, w, n+1, i+1)
+            end
+            n += 1
+            v[n] = y
+        end
+        i += 1
+    end
+    resize!(v, n)
+    return v
+end
+
+# for everything else (GAP iterators, collections, generators over these)
+# gather via the iteration protocol
+function _collect_iter(itr, ::Type{ET}) where {ET}
+    y = iterate(itr)
+    y === nothing && return ET[]
+    el = y[1]
+    v = Vector{typeof(el)}()
+    push!(v, el)
+    return _collect_iter!(itr, v, y[2])
+end
+
+function _collect_iter!(itr, v::Vector{T}, state) where {T}
+    y = iterate(itr, state)
+    while y !== nothing
+        el = y[1]
+        if !(el isa T)
+            w = Vector{Base.promote_typejoin(T, typeof(el))}()
+            append!(w, v)
+            push!(w, el)
+            return _collect_iter!(itr, w, y[2])
+        end
+        push!(v, el)
+        y = iterate(itr, y[2])
+    end
+    return v
+end
+
+function Base.collect(x::GapObj)
+    ET = Base.@default_eltype(x)
+    if Wrappers.IsList(x)
+        len = Wrappers.Length(x)
+        len isa Int && return _collect_list(identity, x, len, ET)
+    end
+    return _collect_iter(x, ET)
+end
+
+function Base.collect(g::Base.Generator{GapObj,F}) where {F}
+    x = g.iter
+    ET = Base.@default_eltype(g)
+    if Wrappers.IsList(x)
+        len = Wrappers.Length(x)
+        len isa Int && return _collect_list(g.f, x, len, ET)
+    end
+    return _collect_iter(g, ET)
+end
+
 # copy and deepcopy:
 # The following is just a preliminary solution,
 # in order to avoid Julia crashes when one calls `deepcopy` for a `GapObj`.
