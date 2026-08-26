@@ -415,13 +415,26 @@ macro wrap(ex)
     lhsargs = map(first, tempargs)
     rhsargs = map(last, tempargs)
 
+    # On Julia >= 1.12 pass the return type into the call, so that the
+    # low-level GAP-to-Julia conversion can avoid boxing e.g. immediate
+    # integer results (see `call_gap_func_nokw`). Older versions drop the
+    # IR of the small helper functions involved when precompiling GAP.jl,
+    # so this call chain cannot be inlined there and ends up slower than
+    # the plain call, whose hot path is compiled as one unit already
+    # during precompilation.
+    call = if VERSION >= v"1.12-"
+        MacroTools.@qq GAP.call_gap_func_nokw($retval, $newsym[], $(rhsargs...))::$retval
+    else
+        MacroTools.@qq $newsym[]($(rhsargs...))::$retval
+    end
+
     # the "outer" part of the body
     body = MacroTools.@qq begin
                global $newsym
                if !isassigned($newsym)
                    $newsym[] = GAP.Globals.$name::GapObj
                end
-               return $newsym[]($(rhsargs...))::$retval
+               return $call
            end
 
 

@@ -505,7 +505,11 @@ function Base.iterate(obj::GapObj)
     end
 end
 
-function Base.iterate(obj::GapObj, (i, len)::Tuple{Int,Int})
+# `@inline` so that in iteration loops the tuple returned here can be
+# elided by the compiler; e.g. `sum` over a list of immediate integers
+# then allocates only the boxes for the values, not also two tuples
+# per iteration
+@inline function Base.iterate(obj::GapObj, (i, len)::Tuple{Int,Int})
     i > len && return nothing
     res = ElmList(obj, i)
     while res === nothing  # dangerous if `len` is *larger* than the length
@@ -515,7 +519,7 @@ function Base.iterate(obj::GapObj, (i, len)::Tuple{Int,Int})
     return res, (i+1, len)
 end
 
-function Base.iterate(obj::GapObj, iter::GapObj)
+@inline function Base.iterate(obj::GapObj, iter::GapObj)
     if Wrappers.IsDoneIterator(iter)
         nothing
     else
