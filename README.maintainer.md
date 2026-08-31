@@ -176,18 +176,20 @@ all of the JLL packages that depend on GAP.
    `GAP_pkg_*_jll` packages.
 
 7. In `GAP.jl`, create a PR with the following changes:
-   1. In the `Project.toml` update the compat bounds as follows:
-      - For `GAP_jll` to the `version` from step 1, with a `~` prefix.
-      - For `GAP_lib_jll` to the `version` from step 3, with a `~` prefix.
-      - For `GAP_pkg_juliainterface_jll` to the new version number, with a `=` prefix.
-        You can find the new version number in the registry PR from step 6.
-      - For each other `GAP_pkg_*_jll` package that was updated in step 6, update to the new version
-        with a `~` prefix. You can find the new version numbers in the registry PRs from step 6.
-   2. Run `julia --project=etc etc/update_artifacts.jl` with the new GAP version as argument to update the `Artifacts.toml` file.
+   1. Run `julia --project=etc etc/update_artifacts.jl` with the new GAP version as argument to update the `Artifacts.toml` file.
       See the top of that script for instructions.
-   3. If the GAP release is not ABI-compatible with the previous one, update the minor part of the version
+   2. Run `julia --project=etc etc/update_jll_versions.jl` with the new GAP version as argument to update the
+      `GAP*_jll` compat bounds in `Project.toml`. It pins every JLL to the newest registered build of the
+      package version shipped by this GAP release, so the registry must already have picked up all versions
+      from step 6; whatever is still missing is reported instead of written. The script prints its proposal
+      and only edits `Project.toml` when passed `--write`.
+      See the top of that script for instructions.
+   3. Update the compat bound for `GAP_pkg_juliainterface_jll` by hand, with a `=` prefix. You can find the
+      new version number in the registry PR from step 6. The script skips it as long as the `version` in
+      `Project.toml` still differs from the juliainterface `upstream_version` chosen in step 5.
+   4. If the GAP release is not ABI-compatible with the previous one, update the minor part of the version
       of `GAP.jl` in its `Project.toml`
-   4. If the GAP release was created from a new release branch (e.g. `stable-4.15` instead of `stable-4.14`),
+   5. If the GAP release was created from a new release branch (e.g. `stable-4.15` instead of `stable-4.14`),
       then update occurrences in `.github/workflows/gap.yml` accordingly. Furthermore, rename the subfolders
       of `.github/workflows/GAP_patches/` accordingly.
    Wait for the PR to pass CI (including the `treehash` job) and merge it.

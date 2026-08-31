@@ -1,6 +1,12 @@
 #
 # This script is used to update Artifacts.toml
 #
+# Setup: the `etc` environment must be instantiated before first use. Its
+# Manifest.toml is gitignored, so an old one may be stale; deleting it is safe.
+#
+#     rm -f etc/Manifest.toml
+#     julia --project=etc -e 'using Pkg; Pkg.instantiate()'
+#
 # Usage variants:
 # 1. Specify `packages-infos.json` to update all packages. This removes all
 #    artifacts for packages not contained in that file.
@@ -18,6 +24,7 @@
 #
 
 using Downloads: download
+include("pkginfos.jl")
 import Pkg
 using Pkg.Artifacts
 import Pkg.PlatformEngines
@@ -122,18 +129,7 @@ end
 # https://github.com/gap-system/gap/releases/download/v4.14.0/package-infos.json.gz.sha256
 
 if length(ARGS) > 0
-    desc = ARGS[1]
-    if startswith(desc, "http")
-        pkginfos_url = desc
-        println("Download package-infos from $(pkginfos_url)")
-        pkginfos_path = download(pkginfos_url)
-    elseif startswith(desc, "4.")
-        pkginfos_url = "https://github.com/gap-system/gap/releases/download/v$desc/package-infos.json.gz"
-        println("Download package-infos from $(pkginfos_url)")
-        pkginfos_path = download(pkginfos_url)
-    else
-        pkginfos_path = desc
-    end
+    pkginfos_path = resolve_pkginfos_path(ARGS[1])
 
     println("processing $(pkginfos_path)")
     add_artifacts_for_packages(; pkginfos_path)
