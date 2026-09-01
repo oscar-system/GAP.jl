@@ -22,6 +22,7 @@ run_configure = true
 overwrite_allow = false
 verbose = false
 debugmode = false
+validate_marking = false
 left_ARGS = String[]
 while !isempty(ARGS)
    arg = popfirst!(ARGS)
@@ -33,6 +34,8 @@ while !isempty(ARGS)
       global verbose = true
    elseif arg == "--debug"
       global debugmode = true
+   elseif arg == "--validate-marking"
+      global validate_marking = true
    else
       push!(left_ARGS, arg)
    end
@@ -88,7 +91,12 @@ if run_configure
 
    juliabin = joinpath(Sys.BINDIR, Base.julia_exename())
 
-   extraargs = ["CPPFLAGS=-DUSE_GAP_INSIDE_JULIA=1"]
+   cppflags = "-DUSE_GAP_INSIDE_JULIA=1"
+   if validate_marking
+      # abort if the GC marking code encounters an invalid reference
+      cppflags *= " -DVALIDATE_MARKING"
+   end
+   extraargs = ["CPPFLAGS=" * cppflags]
 
    if debugmode
       # compile GAP in debug mode (enables many additional assertions in the kernel)

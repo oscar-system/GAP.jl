@@ -21,7 +21,7 @@ concurrency:
 
 jobs:
   test:
-    name: Julia ${{ matrix.julia-version }} - GAP ${{ matrix.gap-version }} - ${{ matrix.os }}
+    name: Julia ${{ matrix.julia-version }} - GAP ${{ matrix.gap-version }} - ${{ matrix.os }}${{ matrix.validate-marking && ' - VALIDATE_MARKING' || '' }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
     continue-on-error: ${{ matrix.julia-version == 'nightly' }}
@@ -37,6 +37,8 @@ jobs:
           - 'nightly'
         os:
           - ubuntu-latest
+        validate-marking:
+          - false
         include:
           # Add a few macOS jobs (the number we can run in parallel is limited)
           - gap-version: 'master'
@@ -45,6 +47,12 @@ jobs:
           - gap-version: 'stable-4.16'
             julia-version: '1'
             os: macOS-latest
+          # build the Julia GC integration with VALIDATE_MARKING, to detect
+          # invalid references during GC marking (see issue #1364)
+          - gap-version: 'master'
+            julia-version: '1'
+            os: ubuntu-latest
+            validate-marking: true
 
     steps:
       - uses: actions/checkout@v7
@@ -92,7 +100,7 @@ jobs:
           make -j`nproc`
       - name: "Override bundled GAP"
         run: |
-          julia --project etc/setup_override_dir.jl /tmp/GAPROOT /tmp/gap_jll_override
+          julia --project etc/setup_override_dir.jl /tmp/GAPROOT /tmp/gap_jll_override ${{ matrix.validate-marking && '--validate-marking' || '' }}
       - name: "Run tests"
         run: |
            julia --project etc/run_with_override.jl /tmp/gap_jll_override --depwarn=error -e "using Pkg; Pkg.test(\"GAP\")"
