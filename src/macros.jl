@@ -422,10 +422,10 @@ macro wrap(ex)
     # so this call chain cannot be inlined there and ends up slower than
     # the plain call, whose hot path is compiled as one unit already
     # during precompilation.
-    call = if VERSION >= v"1.12-"
-        MacroTools.@qq GAP.call_gap_func_nokw($retval, $newsym[], $(rhsargs...))::$retval
+    @static if VERSION >= v"1.12-"
+        call = MacroTools.@qq GAP.call_gap_func_nokw($retval, $newsym[], $(rhsargs...))::$retval
     else
-        MacroTools.@qq $newsym[]($(rhsargs...))::$retval
+        call = MacroTools.@qq $newsym[]($(rhsargs...))::$retval
     end
 
     # the "outer" part of the body
