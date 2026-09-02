@@ -54,6 +54,7 @@
     @test collect(GAP.evalstr("[]")) isa Vector{Any}
     l = GAP.evalstr("[1,,3]")
     @test collect(l) isa Vector{Int}
+    @test collect(l) == [1, 3]
     @test [2 * x for x in l] == [2, 6]
     @test [x for x in GAP.evalstr("[1, 2, 3]")] isa Vector{Int}
 
