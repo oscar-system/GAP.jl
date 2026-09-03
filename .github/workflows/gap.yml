@@ -88,7 +88,7 @@ jobs:
         run: |
           mv GAPROOT /tmp/GAPROOT
           cd /tmp/GAPROOT
-          patchdir=${GITHUB_WORKSPACE}/.github/workflows/GAP_patches/${{ matrix.gap-version }}
+          patchdir=.github/workflows/GAP_patches/${{ matrix.gap-version }}
           if [ -d $patchdir ]; then
             for f in $patchdir/*.patch; do
               echo "Applying patch ${f}"
