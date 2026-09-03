@@ -65,6 +65,24 @@ function SIZE_OBJ(obj::GapObj)
     return reinterpret(Int, (header >> 16))
 end
 
+"""
+    ADDR_TNUM_SIZE_OBJ(obj::GapObj)
+
+Return the address of the data of `obj` together with its type number and its
+size, reading the bag header only once.
+
+Calling `ADDR_OBJ`, `TNUM_OBJ` and `SIZE_OBJ` separately chases the same two
+pointers again for each of them. LLVM merges those accesses in simple cases,
+but not once the caller is inlined into a loop such as the one in
+`collect_to!`; a caller that needs more than one of the three values is three
+times slower there.
+"""
+function ADDR_TNUM_SIZE_OBJ(obj::GapObj)
+    addr = ADDR_OBJ(obj)
+    header = unsafe_load(addr, 0)
+    return addr, reinterpret(Int, header & 0xFF), reinterpret(Int, (header >> 16))
+end
+
 # given a GAP T_FUNCTION object, fetch its n-th function handler (handler 0-6
 # are for calls with that many arguments, handler 7 is for any higher number
 # of arguments)
