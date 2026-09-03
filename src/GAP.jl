@@ -128,6 +128,8 @@ function initialize(argv::Vector{String})
     g = cglobal((:gap_module, JuliaInterface_path), Ptr{Cvoid})
     unsafe_store!(g, mptr)
 
+    _install_interrupt_bridge(handle_signals)
+
     # also declare a global GAP variable with the path to JuliaInterface.so
     AssignGlobalVariable("_path_JuliaInterface_so", MakeString(JuliaInterface_path))
 

@@ -23,6 +23,9 @@
 
 #include <julia_gcext.h>    // Julia header
 
+#include <signal.h>
+#include <string.h>
+
 jl_module_t * gap_module;
 
 static jl_value_t *    JULIA_ERROR_IOBuffer;
@@ -126,6 +129,77 @@ Obj NewJuliaObj(jl_value_t * v)
 void ResetUserHasQUIT(void)
 {
     STATE(UserHasQUIT) = 0;
+}
+
+
+/*
+ * Interrupt bridge (see docs/src/signals.md in GAP.jl).
+ *
+ * Julia blocks SIGINT on all of its threads and consumes it on a listener
+ * thread, which re-raises every SIGINT on itself through the process-wide
+ * disposition before deciding whether to deliver an InterruptException.
+ * Installing a chaining handler thus lets GAP.jl see every Ctrl-C without
+ * touching the signal mask:
+ *
+ *   Ctrl-C --> Julia listener thread --> chained_sigint_handler
+ *                  |                        |
+ *                  |          gap_interrupt_depth > 0 ?
+ *                  |            yes: InterruptExecStat()  (GAP raises
+ *                  |                 "user interrupt" at the next statement)
+ *                  |            no:  Julia's own handler  (Julia delivers an
+ *                  v                 InterruptException as usual)
+ *          jl_sigint_passed set?  -> continue / ignore
+ *
+ * gap_interrupt_depth is maintained by GAP.jl around every entry into GAP
+ * and reset to zero by DoCallJuliaFunc while GAP calls back into Julia.
+ */
+int gap_interrupt_depth = 0;
+
+static struct sigaction julia_sigint_action;
+
+// readline's state word, if GAP uses readline. Its RL_STATE_TERMPREPPED bit
+// is set for the whole duration of a readline() call, i.e. while GAP waits
+// for input at a prompt; GAP's own handler ignores Ctrl-C then (the GAP-level
+// line editor runs GAP statements which must not be interrupted), and so do
+// we. The bit value is fixed by readline's API (readline.h).
+#define RL_STATE_TERMPREPPED 0x0000004
+static volatile unsigned long * rl_state = NULL;
+
+static int gap_is_reading_input(void)
+{
+    return rl_state && (*rl_state & RL_STATE_TERMPREPPED);
+}
+
+static void chained_sigint_handler(int sig, siginfo_t * info, void * context)
+{
+    if (gap_interrupt_depth > 0) {
+        if (!gap_is_reading_input())
+            InterruptExecStat();
+        return;
+    }
+    if (julia_sigint_action.sa_flags & SA_SIGINFO)
+        julia_sigint_action.sa_sigaction(sig, info, context);
+    else if (julia_sigint_action.sa_handler != SIG_DFL &&
+             julia_sigint_action.sa_handler != SIG_IGN)
+        julia_sigint_action.sa_handler(sig);
+}
+
+// <readline_state> is the address of readline's rl_readline_state, or NULL
+// if libgap does not use readline
+void JuliaInterface_InstallSigintHandler(void * readline_state)
+{
+    struct sigaction action;
+
+    rl_state = readline_state;
+
+    sigaction(SIGINT, NULL, &julia_sigint_action);
+
+    memset(&action, 0, sizeof(action));
+    sigemptyset(&action.sa_mask);
+    action.sa_sigaction = chained_sigint_handler;
+    action.sa_flags = SA_SIGINFO | (julia_sigint_action.sa_flags &
+                                    (SA_RESTART | SA_ONSTACK | SA_NODEFER));
+    sigaction(SIGINT, &action, NULL);
 }
 
 
