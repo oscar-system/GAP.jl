@@ -179,6 +179,9 @@ boundary. GAP.jl uses it as follows (the *interrupt bridge*):
   owns Ctrl-C. Maintaining it costs a few nanoseconds per call.
 - If GAP is active, the handler calls `InterruptExecStat`; otherwise it
   forwards to Julia's handler, and Julia behaves as usual.
+- While GAP waits for input at a prompt (detected through readline's
+  state word, since GAP's command line editor runs GAP code for every
+  key), Ctrl-C is dropped — the behavior of a standalone GAP session.
 - The resulting GAP `user interrupt` error travels through GAP.jl's
   normal error bridge and is converted into a Julia `InterruptException`
   at the boundary, so that generic Julia code handles Ctrl-C uniformly.

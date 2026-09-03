@@ -203,6 +203,64 @@ function _with_saved_signal_state(f, signals)
     end
 end
 
+#############################################################################
+##
+## Interrupt bridge (Ctrl-C)
+##
+## JuliaInterface installs a SIGINT handler that chains onto Julia's and
+## consults the counter `gap_interrupt_depth`: if GAP code is executing, it
+## interrupts GAP (which raises a "user interrupt" error, converted into a
+## Julia InterruptException by throw_gap_error); otherwise Julia handles the
+## signal as usual. The counter lives in JuliaInterface.so; every entry from
+## Julia into GAP is wrapped in `@gap_active`, and GAP resets the counter to
+## zero while it calls back into Julia.
+
+const _gap_depth_ptr = Ref{Ptr{Cint}}(C_NULL)
+
+@inline function _adjust_gap_depth(delta::Cint)
+    p = _gap_depth_ptr[]
+    p == C_NULL && return nothing
+    unsafe_store!(p, unsafe_load(p) + delta)
+    return nothing
+end
+
+@inline function _set_gap_depth(value::Cint)
+    p = _gap_depth_ptr[]
+    p == C_NULL && return nothing
+    unsafe_store!(p, value)
+    return nothing
+end
+
+# Evaluate `expr` with GAP marked as active for the interrupt bridge.
+#
+# Deliberately no try/finally: GAP may longjmp across this frame (a GAP
+# error inside a nested Julia -> GAP -> Julia -> GAP call unwinds to GAP's
+# own catch), which would skip popping a Julia exception handler and corrupt
+# the handler chain. The counter stays consistent without it: GAP errors
+# arise while GAP is active, so landing in a GAP catch needs no adjustment,
+# and ThrowObserver resets the counter before throwing into Julia.
+macro gap_active(expr)
+    quote
+        _adjust_gap_depth(Cint(1))
+        local result = $(esc(expr))
+        _adjust_gap_depth(Cint(-1))
+        result
+    end
+end
+
+# Called during initialization once JuliaInterface.so is loaded. In
+# standalone mode (gap.sh) GAP installs its own SIGINT handler instead.
+function _install_interrupt_bridge(standalone::Bool)
+    _gap_depth_ptr[] = cglobal((:gap_interrupt_depth, JuliaInterface_path), Cint)
+    standalone && return nothing
+    # readline's state word lets the handler tell "GAP waits for input at a
+    # prompt" (Ctrl-C is dropped, as in standalone GAP) from "GAP computes"
+    readline_state = Libdl.dlsym(Libdl.dlopen(libgap), :rl_readline_state; throw_error = false)
+    @ccall JuliaInterface_path.JuliaInterface_InstallSigintHandler(
+        something(readline_state, C_NULL)::Ptr{Cvoid})::Cvoid
+    return nothing
+end
+
 # Signals whose handlers GAP or autoloaded packages install at startup even
 # though Julia owns them in an embedded session: SIGCHLD (GAP kernel,
 # iostream.c; io package), SIGTSTP (ncurses, via Browse), SIGWINCH (GAP kernel,

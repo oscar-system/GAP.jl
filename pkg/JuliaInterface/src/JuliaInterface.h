@@ -20,6 +20,14 @@
 // internal helper
 NOINLINE void handle_jl_exception(void);
 
+// Interrupt bridge: > 0 while GAP code is executing (maintained by GAP.jl
+// around every entry into GAP); Ctrl-C then interrupts GAP instead of Julia.
+extern int gap_interrupt_depth;
+
+// Install the chaining SIGINT handler of the interrupt bridge; the argument
+// is the address of readline's rl_readline_state, or NULL.
+void JuliaInterface_InstallSigintHandler(void * readline_state);
+
 // Internal Julia access functions
 
 // GET_JULIA_OBJ(o)
