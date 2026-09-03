@@ -35,6 +35,7 @@ GAP_docs_pages = [
         "conversion.md",
         "packages.md",
         "other.md",
+        "signals.md",
         "examples.md",
         "internal.md",
         "manualindex.md",

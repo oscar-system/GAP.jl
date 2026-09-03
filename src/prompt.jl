@@ -36,19 +36,24 @@ function prompt()
     # enable break loop
     Globals.BreakOnError = true
 
-    # start GAP repl
-    Globals.SESSION()
+    # GAP's REPL takes over the terminal (raw mode, SIGTSTP/SIGWINCH handlers);
+    # hand it back to Julia afterwards, even if SESSION exits abnormally.
+    try
+        _with_saved_signal_state(_SIGNALS_OWNED_BY_JULIA) do
+            Globals.SESSION()
+        end
+    finally
+        # disable break loop
+        Globals.BreakOnError = false
 
-    # disable break loop
-    Globals.BreakOnError = false
+        # restore signal handler
+        @ccall signal(Base.SIGINT::Cint, old_sigint::Ptr{Cvoid})::Ptr{Cvoid}
 
-    # restore signal handler
-    @ccall signal(Base.SIGINT::Cint, old_sigint::Ptr{Cvoid})::Ptr{Cvoid}
-
-    # Leaving the GAP prompt returns control to ordinary Julia code, so turn
-    # GAP.jl's custom error capture back on for subsequent Julia -> GAP calls.
-    set_error_handler_disabled(false)
-    replace_global!(:ERROR_OUTPUT, Globals._JULIAINTERFACE_ERROR_OUTPUT)
+        # Leaving the GAP prompt returns control to ordinary Julia code, so turn
+        # GAP.jl's custom error capture back on for subsequent Julia -> GAP calls.
+        set_error_handler_disabled(false)
+        replace_global!(:ERROR_OUTPUT, Globals._JULIAINTERFACE_ERROR_OUTPUT)
+    end
 end
 
 # helper function for `gap.sh` scripts created by create_gap_sh()
