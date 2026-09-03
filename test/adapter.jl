@@ -45,6 +45,29 @@
 
     # some things cannot be iterated over
     @test_throws ArgumentError collect(GAP.Globals.GAPInfo)
+
+    # `collect` over GAP lists narrows the element type like the generic
+    # iteration based code does
+    @test collect(GAP.evalstr("[SymmetricGroup(3), SymmetricGroup(4)]")) isa Vector{GapObj}
+    @test collect(GAP.evalstr("[1, 2, true]")) isa Vector{Integer}
+    @test collect(GAP.evalstr("[1, SymmetricGroup(3)]")) isa Vector{Any}
+    @test collect(GAP.evalstr("[]")) isa Vector{Any}
+    l = GAP.evalstr("[1,,3]")
+    @test collect(l) isa Vector{Int}
+    @test collect(l) == [1, 3]
+    @test [2 * x for x in l] == [2, 6]
+    @test [x for x in GAP.evalstr("[1, 2, 3]")] isa Vector{Int}
+
+    # an empty result gets its element type from inference,
+    # just like the generic iteration based code
+    @test [(a::GapObj) for a in GAP.evalstr("[]")] isa Vector{GapObj}
+    @test [2 * (a::Int) for a in GAP.evalstr("[]")] isa Vector{Int}
+
+    # comprehensions with a concrete element type stay inferrable
+    # (Oscar.jl has `@inferred` tests relying on this)
+    f(l::GapObj) = [string(a::GapObj) for a in l]
+    @test @inferred(f(GAP.evalstr("[(1,2), (1,2,3)]"))) isa Vector{String}
+    @test @inferred(f(GAP.evalstr("[]"))) isa Vector{String}
 end
 
 @testset "deepcopy" begin
