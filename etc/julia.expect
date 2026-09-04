@@ -48,6 +48,24 @@ expect "GAP_jl;\r"
 expect "<Julia module GAP>\r"
 expect "gap> "
 
+# Ctrl-C at an idle GAP prompt must not interrupt the next command
+send -- "\003"
+sleep 0.5
+send -- "1+1;\r"
+expect "1+1;\r"
+expect "2\r"
+expect "gap> "
+
+# Ctrl-C during a GAP computation enters the break loop
+send -- "while true do od;\r"
+expect "while true do od;\r"
+sleep 1
+send -- "\003"
+expect "brk> "
+send -- "quit;\r"
+expect "quit;\r"
+expect "gap> "
+
 # test returning to Julia prompt
 send -- "quit;\r"
 expect "quit;\r"

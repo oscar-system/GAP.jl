@@ -1,5 +1,16 @@
 # Changes in GAP.jl
 
+## Version 0.17.6-DEV (released YYYY-MM-DD)
+
+- Ctrl-C now interrupts a running GAP computation (as an `InterruptException`
+  in Julia, or a break loop inside `GAP.prompt()`) instead of being deferred
+  until GAP returns to Julia
+- Restore Julia's `SIGCHLD`, `SIGTSTP` and `SIGWINCH` handling and the
+  terminal attributes after GAP startup and after `GAP.prompt()`
+- Add `GAP.signal_report()` and a manual page on signal handling
+- Exclude the `utils` and `curlinterface` GAP packages from the package
+  distro tests until an io release fixes signal delivery to forked children
+
 ## Version 0.17.5 (released 2026-08-24)
 
 - Update to GAP 4.16.1
