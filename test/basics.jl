@@ -55,10 +55,10 @@ end
     for x in [GAP.evalstr("(1,2)"), GAP.evalstr("(1,2)(3,70000)"),
               GAP.evalstr("[1,2,3]"), GAP.evalstr("rec(a := 1)"),
               GAP.evalstr("SymmetricGroup(3)"), GAP.Globals.Print]
-        addr, tnum, size = GAP.ADDR_TNUM_SIZE_OBJ(x)
+        addr, tnum, bagsize = GAP.ADDR_TNUM_SIZE_OBJ(x)
         @test addr == GAP.ADDR_OBJ(x)
         @test tnum == GAP.TNUM_OBJ(x)
-        @test size == GAP.SIZE_OBJ(x)
+        @test bagsize == GAP.SIZE_OBJ(x)
     end
 end
 
