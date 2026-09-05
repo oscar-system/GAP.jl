@@ -52,6 +52,12 @@ function init_packagemanager()
          :name => "via Julia's Downloads.download",
          :isAvailable => Globals.ReturnTrue,
          :download => function(url, opt)
+            if hasproperty(opt, :resume) && opt.resume == true &&
+               hasproperty(opt, :target) && Wrappers.IsString(opt.target)
+              return GapObj(Dict{Symbol, Any}(:success => false,
+                                              :error => GapObj("no support for resuming")),
+                            recursive=true)
+            end
             try
               timeout = hasproperty(opt, :maxTime) ? Real(opt.maxTime) : Inf
               if hasproperty(opt, :target)
