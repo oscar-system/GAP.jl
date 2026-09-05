@@ -5,6 +5,7 @@
 - Speed up `collect` and list comprehensions for GAP lists
 - Avoid boxing immediate integers in wrapped GAP calls (reduces
   allocations and improves performance)
+- Avoid `Core.Box` allocations in closures
 
 ## Version 0.17.5 (released 2026-08-24)
 
