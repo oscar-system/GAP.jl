@@ -1,5 +1,11 @@
 # Changes in GAP.jl
 
+## Version 0.17.6-DEV (released YYYY-MM-DD)
+
+- Speed up `collect` and list comprehensions for GAP lists
+- Avoid boxing immediate integers in wrapped GAP calls (reduces
+  allocations and improves performance)
+
 ## Version 0.17.5 (released 2026-08-24)
 
 - Update to GAP 4.16.1
