@@ -86,9 +86,12 @@ jobs:
           echo "${shimdir}" >> "${GITHUB_PATH}"
       - name: "Build GAP"
         run: |
+          # absolute path: the patches are applied from inside the GAP
+          # checkout below, where a relative path would not be found and the
+          # patches would silently be skipped
+          patchdir=${GITHUB_WORKSPACE}/.github/workflows/GAP_patches/${{ matrix.gap-version }}
           mv GAPROOT /tmp/GAPROOT
           cd /tmp/GAPROOT
-          patchdir=.github/workflows/GAP_patches/${{ matrix.gap-version }}
           if [ -d $patchdir ]; then
             for f in $patchdir/*.patch; do
               echo "Applying patch ${f}"
