@@ -26,6 +26,7 @@ include("packages.jl")
 include("help.jl")
 include("setup.jl")
 include("rand.jl")
+include("gc.jl")
 
 if !(VERSION.major == 1 && VERSION.minor == 10) || Base.JLOptions().code_coverage == 0
   # REPL completion doesn't work in Julia 1.10 when code coverage
