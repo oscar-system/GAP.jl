@@ -50,6 +50,18 @@ using IOCapture
     @test_throws ErrorException hash(x)
 end
 
+# the combined accessor must agree with the individual ones
+@testset "ADDR_TNUM_SIZE_OBJ" begin
+    for x in [GAP.evalstr("(1,2)"), GAP.evalstr("(1,2)(3,70000)"),
+              GAP.evalstr("[1,2,3]"), GAP.evalstr("rec(a := 1)"),
+              GAP.evalstr("SymmetricGroup(3)"), GAP.Globals.Print]
+        addr, tnum, size = GAP.ADDR_TNUM_SIZE_OBJ(x)
+        @test addr == GAP.ADDR_OBJ(x)
+        @test tnum == GAP.TNUM_OBJ(x)
+        @test size == GAP.SIZE_OBJ(x)
+    end
+end
+
 @testset "globals" begin
 
     @test Symbol("Print") in propertynames(GAP.Globals, false)
