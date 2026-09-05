@@ -110,9 +110,28 @@ jobs:
 
 
   test-with-juliainterface-rebuild:
-    name: "Test with JuliaInterface rebuild"
-    runs-on: ubuntu-latest
+    name: JuliaInterface rebuild - Julia ${{ matrix.julia-version }} - ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Collect C coverage with Julia LTS on Linux. Restricting C coverage
+          # to GCC on Linux avoids merging incompatible executable-line maps.
+          - julia-version: lts
+            os: ubuntu-latest
+
+          # Also test the rebuild with the latest stable Julia on Linux.
+          - julia-version: '1'
+            os: ubuntu-latest
+
+          # Cover platform-specific Julia setup code on macOS as well. Do not
+          # collect C coverage here: Clang on macOS and GCC on Linux disagree
+          # about which C source lines are executable, and merging their reports
+          # makes Codecov mark covered continuation lines as uncovered.
+          - julia-version: '1'
+            os: macOS-latest
     steps:
       - uses: actions/checkout@v7
         with:
@@ -125,40 +144,48 @@ jobs:
       - name: "Set up Julia"
         uses: julia-actions/setup-julia@v3
         with:
-          version: 1
+          version: ${{ matrix.julia-version }}
         id: setup-julia
       - name: "Cache artifacts"
         uses: julia-actions/cache@v3
       - name: "Build package"
         uses: julia-actions/julia-buildpkg@v1
-      - name: "Build JuliaInterface for C coverage"
+      - name: "Build JuliaInterface with coverage"
         env:
-          CFLAGS: "--coverage"
-          LDFLAGS: "--coverage"
+          CFLAGS: ${{ runner.os == 'Linux' && matrix.julia-version == 'lts' && '--coverage' || '' }}
+          LDFLAGS: ${{ runner.os == 'Linux' && matrix.julia-version == 'lts' && '--coverage' || '' }}
           JULIAINTERFACE_BUILD_DIR: "${{ github.workspace }}/pkg/JuliaInterface/tmp"
         run: |
           mkdir -p pkg/JuliaInterface/src/force-treehash-mismatch
           touch pkg/JuliaInterface/src/force-treehash-mismatch/nonempty
-          julia --project=. --color=yes -e 'import GAP; write("juliainterface.path", GAP.JuliaInterface_path)'
+          julia --project=. --color=yes --code-coverage=user -e 'import GAP; write("juliainterface.path", GAP.JuliaInterface_path)'
           JuliaInterfaceSo=$(cat juliainterface.path)
           test -f "${JuliaInterfaceSo}"
           echo "GAP_JL_JULIAINTERFACE_SO=${JuliaInterfaceSo}" >> "${GITHUB_ENV}"
       - name: "Run tests"
         uses: julia-actions/julia-runtest@v1
+        env:
+          # Emit C reports only for the Julia LTS job using GCC on Linux.
+          JULIAINTERFACE_COVERAGE: ${{ runner.os == 'Linux' && matrix.julia-version == 'lts' && 'Yes' || 'No' }}
         with:
           depwarn: error
       - name: "Process JuliaInterface C coverage"
+        if: runner.os == 'Linux' && matrix.julia-version == 'lts'
         run: |
           JuliaInterfaceSo=$(cat juliainterface.path)
           test -f "${JuliaInterfaceSo}"
           cd pkg/JuliaInterface
           gcov -o ./tmp/gen/src/ src/*.c*
-      - name: "Process code coverage"
+      - name: "Process Julia code coverage"
         uses: julia-actions/julia-processcoverage@v1
       - name: "Upload coverage data to Codecov"
         continue-on-error: true
         uses: codecov/codecov-action@v7
         with:
+          # We run gcov ourselves after the tests so its reports contain all
+          # accumulated counters. Disable the plugin to prevent Codecov from
+          # running gcov again and creating duplicate reports.
+          plugins: noop
           token: ${{ secrets.CODECOV_TOKEN }}
 
 
