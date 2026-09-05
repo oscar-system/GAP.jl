@@ -17,13 +17,11 @@
 ## GAP integer to `ZZRingElem`
 ##
 function ZZRingElem(obj::GapObj)
-  GAP.GAP_IS_INT(obj) || throw(GAP.ConversionError(obj, ZZRingElem))
-  result = GC.@preserve obj ZZRingElem(GAP.ADDR_OBJ(obj), div(GAP.SIZE_OBJ(obj), sizeof(Int)))
-  if obj < 0 
-    return Nemo.neg!(result)
-  else
-    return result
-  end
+  addr, tnum, bagsize = GAP.ADDR_TNUM_SIZE_OBJ(obj)
+  tnum <= GAP.T_INTNEG || throw(GAP.ConversionError(obj, ZZRingElem))
+  result = GC.@preserve obj ZZRingElem(addr, div(bagsize, sizeof(Int)))
+  # the type number already carries the sign, no need to ask GAP for it
+  return tnum == GAP.T_INTNEG ? Nemo.neg!(result) : result
 end
 
 GAP.gap_to_julia_internal(::Type{ZZRingElem}, obj::GapInt, ::GAP.JuliaCacheDict, ::Val{recursive}) where recursive = ZZRingElem(obj)
