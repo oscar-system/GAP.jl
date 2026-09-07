@@ -57,13 +57,13 @@ import AbstractAlgebra
 
   @testset "QQFieldElem" begin
     # small (GAP) integer
-    x = ZZRingElem(17)
+    x = QQFieldElem(17)
     val = 17
     @test GapObj(x) == val
     @test GAP.Obj(x) == val
 
     # large GAP integer
-    x = ZZRingElem(2)^65
+    x = QQFieldElem(2)^65
     val = GAP.evalstr("2^65")
     @test GapObj(x) == val
     @test GAP.Obj(x) == val
