@@ -58,9 +58,10 @@ Persons := [
 
 PackageWWWHome := "https://github.com/oscar-system/GAP.jl",
 
-ArchiveURL     := Concatenation( ~.PackageWWWHome, "JuliaExperimental-", ~.Version ),
-README_URL     := Concatenation( ~.PackageWWWHome, "README" ),
-PackageInfoURL := Concatenation( ~.PackageWWWHome, "PackageInfo.g" ),
+# GAP.jl does not publish separate archives of this package.
+ArchiveURL     := Concatenation( ~.PackageWWWHome, "/JuliaExperimental-", ~.Version ),
+README_URL     := Concatenation( ~.PackageWWWHome, "/raw/v", ~.Version, "/pkg/JuliaExperimental/README.md" ),
+PackageInfoURL := Concatenation( ~.PackageWWWHome, "/raw/v", ~.Version, "/pkg/JuliaExperimental/PackageInfo.g" ),
 
 ArchiveFormats := ".tar.gz",
 

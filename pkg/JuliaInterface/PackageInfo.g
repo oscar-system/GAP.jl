@@ -75,12 +75,13 @@ Persons := [
 ],
 
 SourceRepository := rec( Type := "git", URL := "https://github.com/oscar-system/GAP.jl" ),
-IssueTrackerURL := "https://github.com/oscar-system/GAP.jl",
-PackageWWWHome := "https://github.com/oscar-system/GAP.jl/issues",
+IssueTrackerURL := Concatenation( ~.SourceRepository.URL, "/issues" ),
+PackageWWWHome := ~.SourceRepository.URL,
 
-ArchiveURL     := Concatenation( ~.PackageWWWHome, "JuliaInterface-", ~.Version ),
-PackageInfoURL := Concatenation( ~.PackageWWWHome, "PackageInfo.g" ),
-README_URL     := Concatenation( ~.PackageWWWHome, "README.md" ),
+# GAP.jl does not publish separate archives of this package.
+ArchiveURL     := Concatenation( ~.PackageWWWHome, "/JuliaInterface-", ~.Version ),
+PackageInfoURL := Concatenation( ~.PackageWWWHome, "/raw/v", ~.Version, "/pkg/JuliaInterface/PackageInfo.g" ),
+README_URL     := Concatenation( ~.PackageWWWHome, "/raw/v", ~.Version, "/pkg/JuliaInterface/README.md" ),
 
 ArchiveFormats := ".tar.gz",
 
