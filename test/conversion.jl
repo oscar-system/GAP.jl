@@ -333,6 +333,14 @@
     @test isa(y[:a], GAP.Obj)
     @test isa(y[:b], GAP.Obj)
     @test y[:a] == y[:c]
+
+    # Non-recursive conversion stops once the target type is reached,
+    # as it does for lists.
+    x = GAP.evalstr("rec( a:= [ [ 1, 2 ] ] )")
+    y = GAP.gap_to_julia(Dict{Symbol,Vector{Any}}, x)
+    @test isa(y[:a][1], GapObj)
+    y = GAP.gap_to_julia(Dict{Symbol,Vector{Any}}, x; recursive = true)
+    @test isa(y[:a][1], Vector)
   end
 
   @testset "Julia Functions" begin
