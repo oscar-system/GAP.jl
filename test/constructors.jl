@@ -94,6 +94,9 @@
     x = GAP.evalstr("(1,2,3)")
     @test_throws GAP.ConversionError Char(x)
     @test_throws GAP.ConversionError Cuchar(x)
+
+    x = GAP.evalstr("2^100")
+    @test_throws InexactError Cuchar(x)
   end
 
   @testset "Strings" begin
