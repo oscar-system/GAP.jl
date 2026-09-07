@@ -27,12 +27,17 @@ git diff-index --quiet HEAD -- || error "uncommitted changes detected"
 echo "Setting version to $relvers, released $reldate_iso"
 
 # check that CHANGES.md has correct entry
-if egrep -q "^## Version ${relvers}(-DEV)? " CHANGES.md ; then
+if grep -Eq "^## Version ${relvers}(-DEV)? " CHANGES.md ; then
     perl -pi -e "s;^## Version ${relvers}(-DEV)? \([^)]+\)$;## Version ${relvers} (released ${reldate_iso});" CHANGES.md
-elif [[ ${relvers} = *-DEV ]] ; then
-    perl -pi -e "s;^(# Changes in GAP.jl)$;\1\n\n## Version ${relvers} (released YYYY-MM-DD);" CHANGES.md
 else
-    error "Error, CHANGES.md has no section for version ${relvers}"
+    case "${relvers}" in
+        *-DEV)
+            perl -pi -e "s;^(# Changes in GAP.jl)$;\1\n\n## Version ${relvers} (released YYYY-MM-DD);" CHANGES.md
+            ;;
+        *)
+            error "Error, CHANGES.md has no section for version ${relvers}"
+            ;;
+    esac
 fi
 
 # update version in several files
