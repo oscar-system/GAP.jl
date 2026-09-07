@@ -225,43 +225,37 @@ function gap_to_julia_internal(
     end
 
     len = length(parameters)
+    last_param = parameters[len]
+    # A last entry `Vararg{S}` or `Vararg{S,N}` means that the trailing
+    # entries of `obj` shall get converted to `S`.
+    is_vararg = last_param isa Core.TypeofVararg
 
-    if parameters[len] isa Core.TypeofVararg
-      # The last entry is `Vararg{S}` or `Vararg{S,N}` for some type `S`,
-      # meaning that the last entries of `obj` shall get converted to `S`.
-      S = parameters[len].T
-      if isdefined(parameters[len], :N)
-        length(obj) == len-1+parameters[len].N ||
-          throw(ArgumentError("length of $obj does not match type $TT"))
-      else
-        length(obj) >= len-1 ||
-          throw(ArgumentError("length of $obj does not match type $TT"))
-      end
+    if !is_vararg
+      length(obj) == len ||
+        throw(ArgumentError("length of $obj does not match type $TT"))
+    elseif isdefined(last_param, :N)
+      length(obj) == len-1+last_param.N ||
+        throw(ArgumentError("length of $obj does not match type $TT"))
+    else
+      length(obj) >= len-1 ||
+        throw(ArgumentError("length of $obj does not match type $TT"))
+    end
 
-      recursive && recursion_dict !== nothing && haskey(recursion_dict, (obj, TT)) && return recursion_dict[(obj, TT)]
+    recursive && recursion_dict !== nothing && haskey(recursion_dict, (obj, TT)) && return recursion_dict[(obj, TT)]
 
-      # Switch off recursion if none of the entry types needs recursion.
-      rec = recursive && (_needs_tracking_gap_to_julia(S) || any(X ->_needs_tracking_gap_to_julia(X), parameters[1:(len-1)]))
-      rec_dict = recursion_info_j(TT, obj, rec, recursion_dict)
+    # Switch off recursion if none of the entry types needs recursion.
+    entry_types = is_vararg ? Any[parameters[1:(len-1)]..., last_param.T] : Any[parameters...]
+    rec = recursive && any(_needs_tracking_gap_to_julia, entry_types)
+    rec_dict = recursion_info_j(TT, obj, rec, recursion_dict)
 
+    if is_vararg
+      S = last_param.T
       list = [
         gap_to_julia_internal(parameters[i], obj[i], rec_dict, BoolVal(rec))
         for i = 1:(len-1)
       ]
       append!(list, [gap_to_julia_internal(S, obj[i], rec_dict, BoolVal(rec)) for i in len:length(obj)])
-
     else
-      # The parameters correspond to the entries of `obj`.
-      length(obj) == len ||
-        throw(ArgumentError("length of $obj does not match type $TT"))
-
-      recursive && recursion_dict !== nothing && haskey(recursion_dict, (obj, TT)) && return recursion_dict[(obj, TT)]
-
-      # Switch off recursion if none of the entry types needs recursion.
-      rec = recursive && any(X ->_needs_tracking_gap_to_julia(X), parameters[1:len])
-
-      rec_dict = recursion_info_j(TT, obj, rec, recursion_dict)
-
       list = [
         gap_to_julia_internal(parameters[i], obj[i], rec_dict, BoolVal(rec))
         for i = 1:len

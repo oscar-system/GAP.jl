@@ -168,7 +168,7 @@ macro gapwrap(ex)
     symdict = IdDict{Symbol,Symbol}()
     body = MacroTools.postwalk(body) do x
         MacroTools.@capture(x, GAP.Globals.sym_) || return x
-        new_sym = get!(() -> gensym(sym), symdict, sym)
+        new_sym = get!(symdict, sym, gensym(sym))
         return Expr(:ref, new_sym)
     end
 

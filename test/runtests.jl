@@ -61,6 +61,8 @@ end
 
 using Nemo
 
+include("ClosureBoxes.jl")
+
 include("NemoExt/misc.jl")
 include("NemoExt/gap_to_nemo.jl")
 include("NemoExt/nemo_to_gap.jl")
