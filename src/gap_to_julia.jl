@@ -301,7 +301,7 @@ function gap_to_julia_internal(
       current_obj = getproperty(obj, key)
       if (rec || !(current_obj isa T)) && !isbitstype(typeof(current_obj))
         ret_val[key] =
-          gap_to_julia_internal(T, current_obj, recursion_dict, Val(true))
+          gap_to_julia_internal(T, current_obj, recursion_dict, BoolVal(rec))
       else
         ret_val[key] = current_obj
       end
