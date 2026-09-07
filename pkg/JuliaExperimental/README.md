@@ -1,4 +1,4 @@
-# The GAP package `JuliaExperimental'
+# The GAP package `JuliaExperimental`
 
 JuliaExperimental provides experimental code to test and explore the
 capabilities of the JuliaInterface package, and the general combination of

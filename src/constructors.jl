@@ -101,7 +101,7 @@ ERROR: InexactError: Int64(15511210043330985984000000)
 
 Return the rational converted from
 the [GAP integer](GAP_ref(ref:Integers)) or
-the [GAP rational](GAP_ref(ref:Rationals)) `obj`,
+the [GAP rational](GAP_ref(ref:Rationals)) `obj`.
 
 # Examples
 ```jldoctest

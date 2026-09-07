@@ -131,7 +131,7 @@ create_type(T::Type, paras::Vector) = T{paras...}
 ## convenience function
 
 function Base.functionloc(f::GapObj)
-    GAP.Globals.IsFunction(f) || throw(ArgumentError("`f` must be GAP function"))
+    GAP.Globals.IsFunction(f) || throw(ArgumentError("`f` must be a GAP function"))
     file = GAP.Globals.FilenameFunc(f)::GapObj
     if file == GAP.Globals.fail
         error("could not determine file of GAP function definition")

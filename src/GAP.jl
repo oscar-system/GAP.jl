@@ -134,7 +134,7 @@ function initialize(argv::Vector{String})
     f = @cfunction(ThrowObserver, Cvoid, (Cint, ))
     @ccall libgap.RegisterThrowObserver(f::Ptr{Cvoid})::Cvoid
 
-    # detect if GAP quit early (e.g due `-h` or `-c` command line arguments)
+    # detect if GAP quit early (e.g. due to `-h` or `-c` command line arguments)
     # TODO: restrict this to "standalone" mode?
     # HACK: GAP resp. libgap currently offers no good way to detect this
     # (perhaps this could be a return value for GAP_Initialize?),
@@ -204,7 +204,7 @@ function __init__()
     global JuliaInterface_path = Setup.locate_JuliaInterface_so()
 
     roots = [
-            # GAP root for the the actual GAP library, from GAP_lib_jll
+            # GAP root for the actual GAP library, from GAP_lib_jll
             abspath(GAP_lib_jll.find_artifact_dir(), "share", "gap"),
             # GAP root into which PackageManager installs packages by default
             Packages.gap_packages_rootdir(),

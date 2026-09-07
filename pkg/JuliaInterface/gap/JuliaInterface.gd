@@ -394,7 +394,7 @@ DeclareGlobalFunction( "CallJuliaFunctionWithKeywordArguments" );
 #! @EndExampleSession
 #!  Note that in &Julia; any object (not just functions) is potentially callable
 #!  (in fact this is the same as in &GAP;), for example &Julia; types can be
-##  called like functions. This is also fully supported on the GAP side:
+#!  called like functions. This is also fully supported on the &GAP; side:
 #! @BeginExampleSession
 #! gap> smalltype:= Julia.Int32;
 #! <Julia: Int32>

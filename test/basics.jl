@@ -185,7 +185,7 @@ end
 end
 
 @testset "gapcalls border cases" begin
-    # check argument validation of internal helprs
+    # check argument validation of internal helpers
     @test_throws MethodError GAP.slow_call_gap_func_nokw(1,1)
     @test_throws ErrorException GAP.slow_call_gap_func_nokw(GAP.Globals.SymmetricGroup,1)
     @test GAP.slow_call_gap_func_nokw(GAP.Globals.SymmetricGroup,(1,)) isa Ptr

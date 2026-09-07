@@ -87,8 +87,8 @@ function recursion_info_g(::Type{T}, obj, ret_val, ::Val{recursive}, recursion_d
     else
         rec_dict = recursion_dict
     end
-    
-   if rec_dict !== nothing
+
+    if rec_dict !== nothing
         # We assume that `obj` is not yet cached.
         rec_dict[obj] = ret_val
     end
