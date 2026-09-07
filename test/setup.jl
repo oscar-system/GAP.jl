@@ -19,6 +19,12 @@
     else
       @test !occursin("--code-coverage", gap_sh)
     end
+
+    # the script must run in the active project, not in its own directory
+    outfile = joinpath(tmpdir, "active_project.txt")
+    gap_sh_cmd = `$(joinpath(tmpdir, "gap.sh")) -A -b --quitonbreak --norepl -c "FileString(\"$(outfile)\", JuliaToGAP(IsString, Julia.Base.active_project()));"`
+    run(pipeline(gap_sh_cmd; stdout=devnull))
+    @test read(outfile, String) == Base.active_project()
   end
 
   mktempdir() do tmpdir

@@ -6,6 +6,9 @@
 - Avoid boxing immediate integers in wrapped GAP calls (reduces
   allocations and improves performance)
 - Avoid `Core.Box` allocations in closures
+- Fix the `gap.sh` script that GAP.jl generates for building GAP packages
+  to run in the Julia project that was active when it was created, instead
+  of falling back to the default environment
 
 ## Version 0.17.5 (released 2026-08-24)
 
