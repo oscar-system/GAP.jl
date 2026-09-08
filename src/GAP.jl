@@ -65,6 +65,7 @@ macro include(path)
 end
 
 include("errors.jl")
+include("signals.jl")
 
 # path to JuliaInterface.so
 JuliaInterface_path::String = "" # will be set in __init__()
@@ -98,6 +99,13 @@ function initialize(argv::Vector{String})
     # as this is kept in the global SyOriginalArgv pointer in GAP
     _saved_argv[] = Base.cconvert(Ptr{Ptr{UInt8}}, argv)
 
+    # In embedded mode Julia keeps ownership of signal handling and of the
+    # terminal; GAP's kernel and autoloaded packages nevertheless install
+    # handlers during startup (see signals.jl), so put Julia's state back
+    # once initialization is complete. In standalone mode GAP runs its own
+    # REPL and needs its handlers.
+    signal_state = handle_signals ? nothing : _save_signal_state(_SIGNALS_OWNED_BY_JULIA)
+
     @ccall libgap.GAP_Initialize(
         length(argv)::Int32,
         _saved_argv[]::Ptr{Ptr{UInt8}},
@@ -119,6 +127,8 @@ function initialize(argv::Vector{String})
     mptr = pointer_from_objref(@__MODULE__)
     g = cglobal((:gap_module, JuliaInterface_path), Ptr{Cvoid})
     unsafe_store!(g, mptr)
+
+    _install_interrupt_bridge(handle_signals)
 
     # also declare a global GAP variable with the path to JuliaInterface.so
     AssignGlobalVariable("_path_JuliaInterface_so", MakeString(JuliaInterface_path))
@@ -184,6 +194,8 @@ function initialize(argv::Vector{String})
     # Redirect error messages, in order not to print them to the screen.
     GAP.@include("../gap/err.g")
     @debug "finished reading gap/err.g"
+
+    _restore_signal_state(signal_state)
 
     return nothing
 end
