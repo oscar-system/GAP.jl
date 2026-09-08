@@ -109,7 +109,7 @@ with the following meaning.
   and `false` otherwise.
 - If the first entry is `true`, then the second entry is bound to the
   result of the statement if there was one, and unbound otherwise.
-- The third entry is unbound if an error occured,
+- The third entry is unbound if an error occurred,
   `true` if the statement ends in a double semicolon,
   and `false` otherwise.
 - The fourth entry currently is always unbound.
@@ -177,7 +177,7 @@ and the return values of the command(s).
 
 In general we recommend to avoid using `evalstr`, but it sometimes can
 be a useful escape hatch to access GAP functionality that is otherwise
-impossible to difficult to reach. But in most typical scenarios it
+impossible or difficult to reach. But in most typical scenarios it
 should not be necessary to use it at all.
 
 Instead, use `GapObj` or `GAP.Obj` for constructing GAP objects
@@ -407,7 +407,7 @@ end
 function _call_gap_func(func::GapObj, a1)
     fptr = GET_FUNC_PTR(func, 1)
     ret = @ccall $fptr(
-        func::GapObj, 
+        func::GapObj,
         _JULIA_TO_GAP(a1)::Ptr{Cvoid},
     )::Ptr{Cvoid}
     return ret

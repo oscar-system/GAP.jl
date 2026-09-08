@@ -256,7 +256,7 @@ In all other cases the newest released version of the package will get
 installed.
 
 Return `true` if the installation is successful or if
-(a version compatible with `version`) of the package was already installed,
+a version of the package compatible with `version` was already installed,
 and `false` otherwise.
 
 The function uses [the function `InstallPackage` from GAP's package

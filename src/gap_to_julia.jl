@@ -377,7 +377,7 @@ end
 Try to convert the object `x` to a Julia object of type `type`.
 If `x` is a `GapObj` then the conversion rules are defined in
 [the manual of the GAP package JuliaInterface](assets/html/JuliaInterface/chap0_mj.html).
-If `x` is another `GAP.Obj` (for example a `Int64`) then the result is
+If `x` is another `GAP.Obj` (for example an `Int64`) then the result is
 defined in Julia by `type`.
 
 For GAP lists and records, it makes sense to either convert also the subobjects

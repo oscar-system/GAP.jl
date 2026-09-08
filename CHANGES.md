@@ -17,7 +17,7 @@
 ## Version 0.17.4 (released 2026-08-11)
 
 - Update the `browse` GAP package from 1.8.22 to 1.8.23
-- Update the `crips` GAP package from 1.4.8 to 1.4.11
+- Update the `crisp` GAP package from 1.4.8 to 1.4.11
 - Update the `irredsol` GAP package from 1.4.4 to 1.4.6
 
 ## Version 0.17.3 (released 2026-08-05)
@@ -113,7 +113,7 @@
   non-recursive conversion.
 - **Breaking:** Do not support the optional `GapCacheDict` argument for
   `GapObj` anymore, because recursive conversion to GAP is handled by
-  `GAP.GapObj_internal` and does not involve cals to `GapObj`.
+  `GAP.GapObj_internal` and does not involve calls to `GapObj`.
   We had always stated in the documentation that users should not enter
   this argument because it gets created automatically in recursive conversions.
 - Add `GAP.@include(filepath)` as a counterpart to julia's `include(filepath)`,
@@ -383,7 +383,7 @@
 
 ## Version 0.9.8 (released 2023-09-11)
 
-- Allow GAP.Obj(x,true) for recursive conversion (#910. #925)
+- Allow GAP.Obj(x,true) for recursive conversion (#910, #925)
 - Improve documentation on special GAP syntax (#922, #929, #932)
 - Work around a potential crash when GAP launches subprocesses (#906)
 - If the environment variable `GAP_BARE_DEPS` is set, then GAP skips loading
@@ -437,7 +437,7 @@
 ## Version 0.9.1 (released 2022-11-23)
 
 - Added a longer example for using GAP.jl, based around the Rubik's cube
-- Fix some type minor stability issues
+- Fix some minor type stability issues
 
 ## Version 0.9.0 (released 2022-11-01)
 
@@ -492,7 +492,7 @@
   so e.g. typing `Julia.GA` followed by a tab key press is completed to
   `Julia.GAP`, and `Julia.GAP.` then suggests the names of all members
   of the `GAP` module
-- Fix a bug where a warning issues when no C/C++ compiler could be found
+- Fix a bug where a warning issued when no C/C++ compiler could be found
   was accidentally turned into an error that prevented loading GAP.jl.
   Note that installing certain GAP packages still requires a C/C++ compiler.
 
@@ -505,7 +505,7 @@
 
 ## Version 0.7.6 (released 2022-02-07)
 
-- Improve how we show the error messaged triggered by a user trying to
+- Improve how we show the error message triggered by a user trying to
   load GAP.jl on native Windows (which isn't supported)
 - Rewrite `@wrap`, `@gapwrap` and `@gapattribute` to be better compatible
   with future Julia versions.

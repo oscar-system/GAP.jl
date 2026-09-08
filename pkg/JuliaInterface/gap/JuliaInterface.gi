@@ -69,7 +69,7 @@ InstallMethod( IsBound\.,
     rnam := NameRNam( rnum );
     if IsIdenticalObj(module, Julia) and rnam = "GAP" then
         ## Ensure that the Julia module GAP is always accessible as GAP_jl,
-        ## even while it is still being initialized, and also if it not actually
+        ## even while it is still being initialized, and also if it is not actually
         ## exported to the Julia Main module
         return true;
     fi;

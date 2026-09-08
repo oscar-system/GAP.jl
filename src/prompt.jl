@@ -16,15 +16,15 @@ Start a GAP prompt where you can enter GAP commands as in a regular GAP
 session. This prompt can be left as any GAP prompt by either entering `quit;`
 or pressing ctrl-D, which returns to the Julia prompt.
 
-This GAP prompt allows to quickly switch between writing Julia and GAP code in
+This GAP prompt allows one to quickly switch between writing Julia and GAP code in
 a session where all data is shared.
 """
 function prompt()
     # save the current SIGINT handler
     # (we pass NULL as signal handler; strictly speaking, we should be passing `SIG_DFL`
-    # but it's not clearly how to access this from here, and anyway on the list
+    # but it's not clear how to access this from here, and anyway on the list
     # of platforms we support, it is NULL)
-    old_sigint = @ccall signal(Base.SIGINT::Cint, C_NULL::Ptr{Cvoid})::Ptr{Cvoid} 
+    old_sigint = @ccall signal(Base.SIGINT::Cint, C_NULL::Ptr{Cvoid})::Ptr{Cvoid}
 
     # install GAP's SIGINT handler
     @ccall libgap.SyInstallAnswerIntr()::Cvoid
@@ -66,7 +66,7 @@ function run_session()
 
     # Reset the GAP kernel variable `UserHasQUIT` so that GAP's exit handlers
     # can run. This is necessary if the user passed a file on the command line
-    # that has a `QUIT` statements, thus ending GAP during ProcessInitFiles,
+    # that has a `QUIT` statement, thus ending GAP during ProcessInitFiles,
     # hence before the first SESSION.
     #
     # Note that in this case, even our manual call to SESSION above actually

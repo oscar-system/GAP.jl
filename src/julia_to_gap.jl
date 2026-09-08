@@ -127,7 +127,7 @@ GAP.@install GapObj(x::Bool) = x    # Default for actual GAP objects is to do no
 ## We do not want to track conversion for any concrete integer types.
 @install GapObj(x::Integer) = x in -1<<60:(1<<60-1) ? Int64(x) : GapObj(BigInt(x))
 
-## Small integers types always fit into GAP immediate integers, and thus are
+## Small integer types always fit into GAP immediate integers, and thus are
 ## represented by Int64 on the Julia side.
 GAP.@install GapObj(x::Int64) = x
 GAP.@install GapObj(x::Int32) = Int64(x)

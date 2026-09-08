@@ -15,7 +15,7 @@ and corresponding Julia objects. This is typically done by "type coercion",
 also just called "coercion": to convert a Julia object `x` into a GAP object,
 you may write `GapObj(x)`, see [`GapObj`](@ref). Conversely, if `y` is a GAP
 object, then e.g. `Vector{Int}(y)` will attempt to convert it into a
-`Vector{Int}`. This will success if e.g. `y` is a GAP range or a plain list of
+`Vector{Int}`. This will succeed if e.g. `y` is a GAP range or a plain list of
 integers. See also [Constructor Methods for GAP-to-Julia Conversions](@ref).
 
 For interactive use it may also be convenient to use the function

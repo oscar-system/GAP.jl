@@ -9,7 +9,7 @@ Some information for maintainers of the GAP.jl packages
 
 2. Update the version of the Julia and GAP packages by invoking the script
    `etc/update_version.sh` with the new version as argument. Example:
-   `etc/update_version.sh 0.3.0` (by the way, this is shell script which calls
+   `etc/update_version.sh 0.3.0` (by the way, this is a shell script which calls
    `perl` right now; it would make sense to rewrite it as a Julia script to avoid
    the need for perl).
 
@@ -27,7 +27,7 @@ make the release automatically.
 
 ## Using GAP.jl with a different version of GAP than what `GAP_jll` provides
 
-This can be useful for various reasons e.g.,
+This can be useful for various reasons, e.g.
 
 - you need to test GAP.jl with a newer GAP version, perhaps even its master branch,
 - you need to test with a newer Julia version that breaks binary compatibility,
@@ -38,11 +38,11 @@ For this to work, follow these instructions:
 1. Obtain a copy of the GAP sources, probably from a clone of the GAP git repository.
    Let's say this is in directory `GAPROOT`.
 
-2. Compiled GAP inside GAPROOT once (this is to ensure `build/c_oper1.c` and
+2. Compile GAP inside GAPROOT once (this is to ensure `build/c_oper1.c` and
   `build/c_type1.c` are present).
 
 3. Build GAP with the Julia version of your choice by executing the `etc/setup_override_dir.jl`
-   script. It takes as first argument the GAPROOT, and as second argument the places where
+   script. It takes as first argument the GAPROOT, and as second argument the place where
    the result shall be installed.
 
    To give a concrete example you could invoke
@@ -97,7 +97,7 @@ repository fails in a PR.
    to pick up the new version of `GAP_pkg_juliainterface_jll`.
    > ex: <https://github.com/JuliaRegistries/General/pull/134045>
 
-4. Bump the dependence in `GAP.jl` to whatever version number was used in Step 2.
+4. Bump the dependency in `GAP.jl` to whatever version number was used in Step 2.
    In this PR, the `treehash` CI job should succeed.
    > ex: <https://github.com/oscar-system/GAP.jl/pull/1200>
 

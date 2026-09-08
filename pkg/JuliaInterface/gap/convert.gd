@@ -96,16 +96,16 @@
 #!  To this end, the interface converts &GAP; immediate integers into
 #!  &Julia; <C>Int64</C> objects, and vice versa.
 #!  However, &GAP; immediate integers on a 64 bit system can only store
-#!  61 bits, so not all <C>Int64</C>objects can be converted into immediate
+#!  61 bits, so not all <C>Int64</C> objects can be converted into immediate
 #!  integers;
 #!  integers exceeding the 61 bits limit are therefore wrapped like any other
 #!  &Julia; object.
 #!  Other &Julia; integer types, like <C>UInt64</C>, <C>Int32</C>,
 #!  are also wrapped by default,
-#!  in order to ensure that conversion round trips do not arbitrary change
+#!  in order to ensure that conversion round trips do not arbitrarily change
 #!  object types.
 #!  <P/>
-#!  All automatic conversions and wrappings are handled on the C functions
+#!  All automatic conversions and wrappings are handled by the C functions
 #!  <C>julia_gap</C> and <C>gap_julia</C>
 #!  in <Package>JuliaInterface</Package>.
 #!  <!-- What is meant by this:
@@ -253,7 +253,7 @@
 #!  </Item>
 #!  <Item>
 #!    <C>IsList</C> to
-#!    <C>Vector{Union{Any,Nothing}}</C> (default),
+#!    <C>Vector{Any}</C> (default),
 #!    <C>Vector{T}</C>,
 #!    <C>Matrix{T}</C>,
 #!    or <C>T &lt;: Tuple</C>,
@@ -284,7 +284,7 @@
 #!  indicating recursive conversion of nested objects.
 #!  The chosen method depends on the &Julia; type of the first argument.
 #!
-#!  The function <Ref Constr="JuliaToGAP" Label="for IsObject, IsObject"/>.
+#!  The function <Ref Constr="JuliaToGAP" Label="for IsObject, IsObject"/>
 #!  takes two or three arguments,
 #!  a &GAP; filter and an object to be converted,
 #!  and optionally the value <K>true</K> indicating recursive conversion
@@ -360,7 +360,7 @@
 #!      <Item>records</Item>
 #!    </Row>
 #!    <Row>
-#!      <Item><C>UnitRange{T}</C>, <C>StepRange{T}</C></Item>
+#!      <Item><C>UnitRange{T}</C>, <C>StepRange{T,S}</C></Item>
 #!      <Item><C>IsRange</C></Item>
 #!      <Item>ranges</Item>
 #!    </Row>
@@ -415,7 +415,7 @@
 #! @Arguments filt, juliaobj[, recursive]
 #! @Returns a &GAP; object in the filter <A>filt</A>
 #! @Description
-#!  Let <A>juliaobj</A> be a Julia object in
+#!  Let <A>juliaobj</A> be a &Julia; object
 #!  for which a conversion to &GAP; is provided,
 #!  in the sense of Section <Ref Sect="Section_Conversion_rules"/>,
 #!  such that the corresponding &GAP; object is in the filter <A>filt</A>.

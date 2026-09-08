@@ -31,10 +31,10 @@ in order to support special GAP syntax beyond function calls with arguments.
   `GAP.Globals.Cyc(GAP.Obj(1.41421356); bits=20)` in Julia.
 
 - Access list/matrix entries via [`getindex`](@ref) and [`setindex!`](@ref)
-  respectively the corresponding Julia syntax (described there).
+  or the corresponding Julia syntax (described there).
 
 - Access record components via [`getproperty`](@ref) and [`setproperty!`](@ref)
-  respectively the corresponding Julia syntax (described there).
+  or the corresponding Julia syntax (described there).
 
 - Check for bound record components via [`hasproperty`](@ref).
 

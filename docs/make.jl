@@ -29,7 +29,7 @@ function copy_JuliaInterface_manual()
 
   # clear the destination directory first
   rm(dst_dir; recursive=true, force=true)
-  
+
   mkpath(dst_dir)
   for file in readdir(src_dir; sort=false)
     if endswith(file, ".html") || endswith(file, ".css") || endswith(file, ".js")

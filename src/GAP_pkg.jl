@@ -78,7 +78,7 @@ function setup_overrides()
         pkg = pkg[9:end-4]
 
         # Crude heuristic: if the JLL has a `bin` directory then we assume it
-        # contains executables the packages uses; otherwise assume it contains
+        # contains executables the package uses; otherwise assume it contains
         # a kernel extension `lib/gap/BLAH.so`.
         #
         # This fails if a package has both executables and a kernel extension.
