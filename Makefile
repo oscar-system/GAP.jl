@@ -1,4 +1,4 @@
-# TODO: ensure JulieInterface is up-to-date
+# TODO: ensure JuliaInterface is up-to-date
 default:
 	@echo "Use 'make doc' or 'make check' or 'make tags'"
 

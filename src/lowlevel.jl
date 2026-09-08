@@ -74,7 +74,7 @@ size, reading the bag header only once.
 Calling `ADDR_OBJ`, `TNUM_OBJ` and `SIZE_OBJ` separately chases the same two
 pointers again for each of them. LLVM merges those accesses in simple cases,
 but not once the caller is inlined into a loop such as the one in
-`collect_to!`; a caller that needs more than one of the three values is three
+`_collect_list!`; a caller that needs more than one of the three values is three
 times slower there.
 """
 function ADDR_TNUM_SIZE_OBJ(obj::GapObj)

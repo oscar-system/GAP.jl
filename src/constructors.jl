@@ -101,7 +101,7 @@ ERROR: InexactError: Int64(15511210043330985984000000)
 
 Return the rational converted from
 the [GAP integer](GAP_ref(ref:Integers)) or
-the [GAP rational](GAP_ref(ref:Rationals)) `obj`,
+the [GAP rational](GAP_ref(ref:Rationals)) `obj`.
 
 # Examples
 ```jldoctest
@@ -193,7 +193,7 @@ julia> Cuchar(val)
 """
 function Base.Cuchar(obj::GapObj)
     GAP_IS_CHAR(obj) && return trunc(Cuchar, Wrappers.INT_CHAR(obj))
-    GAP_IS_INT(obj) && return throw(InexactError(nameof(Cuchar), Cuchar, obj))
+    GAP_IS_INT(obj) && throw(InexactError(nameof(Cuchar), Cuchar, obj))
     throw(ConversionError(obj, Cuchar))
 end
 

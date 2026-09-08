@@ -68,7 +68,7 @@ function add_artifacts_for_packages(; pkginfos_path::String = "package-infos.jso
     open(artifacts_toml, "w") do io
         TOML.print(io, artifacts; sorted=true)
     end
-    
+
     return nothing
 end
 

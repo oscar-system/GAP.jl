@@ -39,7 +39,7 @@ via `@gap(SymmetricGroup)`, then calls that function with the argument `3`.
 Due to Julia's way of handing over arguments into the code of macros,
 not all expressions representing valid GAP code can be processed.
 For example, the GAP syntax of permutations consisting of more than one cycle
-cause problems, as well as the GAP syntax of non-dense lists.
+causes problems, as well as the GAP syntax of non-dense lists.
 
 ```
 julia> @gap (1,2,3)
@@ -305,7 +305,7 @@ macro gapattribute(ex)
         """
             $($settername)(x, v)
 
-        Set the value for `$($julianame)(x)` to `v` if it has't been
+        Set the value for `$($julianame)(x)` to `v` if it hasn't been
         set already.
         """
         GAP.@gapwrap $settername($juliaarg,v) = GAP.Globals.$gapsetter($gaparg,v)::Nothing
@@ -453,7 +453,7 @@ When applied to a unary method definition for the function `GapObj`,
 with argument of type `T`,
 this macro installs instead a three argument method for
 `GAP.GapObj_internal`, with second argument of type
-`GAP.GapCacheDict` and third argument of type `Bool`.
+`GAP.GapCacheDict` and third argument of type `Val{recursive}`.
 
 This way, the intended `GapObj(x::T)` method becomes available,
 and additionally its code is applicable in recursive calls,
@@ -495,7 +495,7 @@ macro install(ex)
     # assemble the method definition again
     ex = MacroTools.combinedef(def_dict)
 
-    # install the `needs_conversion_tracking` method that returns `false`
+    # install the `_needs_tracking_julia_to_gap` method that returns `false`
     x = def_dict[:args][1]
     if x isa Symbol || !(x.head == :(::) && length(x.args) == 2)
       error("argument of GapObj needs a type annotation")

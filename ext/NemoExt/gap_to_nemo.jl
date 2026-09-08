@@ -9,7 +9,7 @@
 ##  SPDX-License-Identifier: LGPL-3.0-or-later
 ##
 
-## conversions of Nemo objects to Oscar objects
+## conversions of GAP objects to Nemo objects
 ## (extends the conversions from GAP.jl's `src/gap_to_julia.jl` and
 ## `src/constructors.jl`, where low level Julia objects are treated)
 

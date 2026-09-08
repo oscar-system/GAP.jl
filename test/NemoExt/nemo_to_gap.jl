@@ -57,13 +57,13 @@ import AbstractAlgebra
 
   @testset "QQFieldElem" begin
     # small (GAP) integer
-    x = ZZRingElem(17)
+    x = QQFieldElem(17)
     val = 17
     @test GapObj(x) == val
     @test GAP.Obj(x) == val
 
     # large GAP integer
-    x = ZZRingElem(2)^65
+    x = QQFieldElem(2)^65
     val = GAP.evalstr("2^65")
     @test GapObj(x) == val
     @test GAP.Obj(x) == val
@@ -140,7 +140,7 @@ import AbstractAlgebra
     F, z = cyclotomic_field(5)
     e5 = GAP.Globals.E(5)
     @test GAP.Obj(z^2+z+1) == e5^2 + e5 + 1
-    
+
     # not supported conversions
     R, x = polynomial_ring(QQ, :x; cached=false)
     F, z = number_field(x^2 + 5)
@@ -150,7 +150,7 @@ import AbstractAlgebra
   @testset "matrices over a cyclotomic field" begin
     F, z = cyclotomic_field(5)
     @test GAP.Obj(matrix(F, 2, 2, [z^0, z, z^2, z^3])) == GAP.evalstr("[ [ 1, E(5) ], [ E(5)^2, E(5)^3 ] ]")
-    
+
     # not supported conversions
     R, x = polynomial_ring(QQ, :x; cached=false)
     F, z = number_field(x^2 + 5)

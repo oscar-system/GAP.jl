@@ -40,7 +40,7 @@ GAP: SymmetricGroup( [ 1 .. 3 ] )
 ```
 
 The Julia types `Int64` and `Bool` are automatically converted to GAP
-objects when passed as arguments to GAP functions. Several others basic
+objects when passed as arguments to GAP functions. Several other basic
 types of objects can be converted using the `GapObj` constructor. For
 example, here we convert a `Vector{Int}` to a GAP list:
 ```julia
@@ -89,7 +89,7 @@ to report any issues you may encounter when using it. You can also submit
 feature requests and general help requests via that tracker.
 
 GAP.jl is being maintained by
-- Thomas Breuer <sam@math.rwth-aachen.de>>
+- Thomas Breuer <sam@math.rwth-aachen.de>
 - Lars Göttgens <goettgens@art.rwth-aachen.de>
 - Max Horn <mhorn@rptu.de>
 
@@ -107,10 +107,10 @@ or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
 License for more details.
 
 You should have received a copy of the GNU Lesser General Public License
-along with GAP.jl in form of the file `LICENSE`, or see
+along with GAP.jl in the form of the file `LICENSE`, or see
 <https://www.gnu.org/licenses/lgpl.html>.
 
-Copyright (C) 2017-2025 by its authors, which include:
+Copyright (C) 2017-2026 by its authors, which include:
 - Thomas Breuer
 - Sebastian Gutsche
 - Lars Göttgens

@@ -154,7 +154,7 @@ function create_sysinfo_gap_and_gac(dir::String)
     sysinfo["GAP"] = joinpath(dir, "bin", "gap.sh")
     sysinfo["GAC"] = joinpath(dir, "gac")
 
-    # the following sysinfo entries are intentional left as they are:
+    # the following sysinfo entries are intentionally left as they are:
     # - GAParch
     # - GAC_CFLAGS
     # - GAC_LDFLAGS
@@ -193,9 +193,9 @@ function build_JuliaInterface(builddir::String)
     @info "Compiling JuliaInterface ..."
 
     # run code in julia-config.jl to determine compiler and linker flags for Julia;
-    # remove apostrophes, they mess up quoting when used in shell code(although
+    # remove apostrophes, they mess up quoting when used in shell code (although
     # they are fine inside of Makefiles); this could cause problems if any
-    # paths involve spaces, but then we likely will haves problem in other
+    # paths involve spaces, but then we likely will have problems in other
     # places; in any case, if anybody ever cares about this, we can work on
     # finding a better solution.
     JULIA_CFLAGS = filter(c -> c != '\'', cflags())
@@ -301,7 +301,7 @@ function create_gap_sh(dstdir::String, dstname::String="gap.sh";
         @info "Generating custom Julia project ..."
         gaproot_gapjl = abspath(@__DIR__, "..")
         # workaround: pre-populate Project.toml, otherwise the `run` command
-        # afterwards complaints about Pkg not being in the environment.
+        # afterwards complains about Pkg not being in the environment.
         write(joinpath(projectdir, "Project.toml"),
                 """
                 [deps]
@@ -325,7 +325,7 @@ function create_gap_sh(dstdir::String, dstname::String="gap.sh";
     write(gap_sh_path,
         """
         #!/bin/sh
-        # This is a a Julia script which also is a valid bash script; if executed by
+        # This is a Julia script which also is a valid bash script; if executed by
         # bash, it will execute itself by invoking `julia`. Of course this only works
         # right if `julia` exists in the PATH and is the "correct" julia executable.
         # But you can always instead load this file as if it was a .jl file via any
