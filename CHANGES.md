@@ -6,6 +6,7 @@
 - Avoid boxing immediate integers in wrapped GAP calls (reduces
   allocations and improves performance)
 - Avoid `Core.Box` allocations in closures
+- Several "behind the scenes" changes that should be invisible for most users
 - Fix non-recursive conversion of GAP records to `Dict{Symbol,T}`: nested
   entries are now treated like those of lists, i.e. no further conversion
   happens once the target type is reached

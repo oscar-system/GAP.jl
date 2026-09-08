@@ -317,6 +317,10 @@ function create_gap_sh(dstdir::String, dstname::String="gap.sh";
         push!(julia_cmd, "--code-coverage=$(code_coverage)")
     end
 
+    # A script for the active project refers to it by path; otherwise the
+    # project sits next to the script and moves with it.
+    project = use_active_project ? "\"$(projectdir)\"" : "\$(dirname \"\$0\")"
+
     gap_sh_path = joinpath(dstdir, dstname)
     write(gap_sh_path,
         """
@@ -333,7 +337,7 @@ function create_gap_sh(dstdir::String, dstname::String="gap.sh";
         else
             READ_STARTUP_FILE="no"
         fi
-        exec $(join(julia_cmd, " ")) --startup-file=\$READ_STARTUP_FILE --project=\$(dirname \"\$0\") -i -- \"\$0\" "\$@"
+        exec $(join(julia_cmd, " ")) --startup-file=\$READ_STARTUP_FILE --project=$(project) -i -- \"\$0\" "\$@"
         =#
 
         # pass command line arguments to GAP.jl via a small hack
