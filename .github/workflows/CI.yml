@@ -121,10 +121,12 @@ jobs:
           # to GCC on Linux avoids merging incompatible executable-line maps.
           - julia-version: lts
             os: ubuntu-latest
+            c-coverage: true
 
           # Also test the rebuild with the latest stable Julia on Linux.
           - julia-version: '1'
             os: ubuntu-latest
+            c-coverage: false
 
           # Cover platform-specific Julia setup code on macOS as well. Do not
           # collect C coverage here: Clang on macOS and GCC on Linux disagree
@@ -132,6 +134,7 @@ jobs:
           # makes Codecov mark covered continuation lines as uncovered.
           - julia-version: '1'
             os: macOS-latest
+            c-coverage: false
     steps:
       - uses: actions/checkout@v7
         with:
@@ -152,12 +155,15 @@ jobs:
         uses: julia-actions/julia-buildpkg@v1
       - name: "Build JuliaInterface with coverage"
         env:
-          CFLAGS: ${{ runner.os == 'Linux' && matrix.julia-version == 'lts' && '--coverage' || '' }}
-          LDFLAGS: ${{ runner.os == 'Linux' && matrix.julia-version == 'lts' && '--coverage' || '' }}
+          CFLAGS: ${{ matrix.c-coverage && '--coverage' || '' }}
+          LDFLAGS: ${{ matrix.c-coverage && '--coverage' || '' }}
           JULIAINTERFACE_BUILD_DIR: "${{ github.workspace }}/pkg/JuliaInterface/tmp"
         run: |
+          # Exercise the automatic rebuild when the bundled sources differ from the JLL.
           mkdir -p pkg/JuliaInterface/src/force-treehash-mismatch
           touch pkg/JuliaInterface/src/force-treehash-mismatch/nonempty
+          # Collect Julia coverage in every rebuild job, including macOS-specific
+          # setup code. The c-coverage matrix field controls C instrumentation only.
           julia --project=. --color=yes --code-coverage=user -e 'import GAP; write("juliainterface.path", GAP.JuliaInterface_path)'
           JuliaInterfaceSo=$(cat juliainterface.path)
           test -f "${JuliaInterfaceSo}"
@@ -165,16 +171,17 @@ jobs:
       - name: "Run tests"
         uses: julia-actions/julia-runtest@v1
         env:
-          # Emit C reports only for the Julia LTS job using GCC on Linux.
-          JULIAINTERFACE_COVERAGE: ${{ runner.os == 'Linux' && matrix.julia-version == 'lts' && 'Yes' || 'No' }}
+          JULIAINTERFACE_COVERAGE: ${{ matrix.c-coverage && 'Yes' || 'No' }}
         with:
           depwarn: error
       - name: "Process JuliaInterface C coverage"
-        if: runner.os == 'Linux' && matrix.julia-version == 'lts'
+        if: matrix.c-coverage
         run: |
           JuliaInterfaceSo=$(cat juliainterface.path)
           test -f "${JuliaInterfaceSo}"
           cd pkg/JuliaInterface
+          # Refresh the reports after the Julia test process exits and flushes
+          # its C counters; ci_test.sh runs while that process is still alive.
           gcov -o ./tmp/gen/src/ src/*.c*
       - name: "Process Julia code coverage"
         uses: julia-actions/julia-processcoverage@v1

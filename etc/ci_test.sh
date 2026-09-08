@@ -5,10 +5,9 @@ set -x
 
 AnyFailures=No
 
-# C coverage is deliberately opt-in. Clang on macOS and GCC on Linux disagree
-# about which source lines are executable, so merging their reports can mark
-# covered continuation lines and case labels as uncovered. Only the Julia LTS
-# rebuild job using GCC on Linux sets JULIAINTERFACE_COVERAGE=Yes.
+# Set JULIAINTERFACE_COVERAGE=Yes to build or reuse an instrumented library
+# and generate C coverage reports. Otherwise, run the tests with the library
+# GAP.jl would normally load. The caller decides when to collect C coverage.
 if [ "${JULIAINTERFACE_COVERAGE:-No}" = Yes ]
 then
     # If this script has to build JuliaInterface itself, use a predictable
@@ -62,9 +61,9 @@ pwd  # for debugging
 
 if [ "${JULIAINTERFACE_COVERAGE:-No}" = Yes ]
 then
-    # The Linux LTS rebuild job passes its instrumented JuliaInterface.so in
-    # GAP_JL_JULIAINTERFACE_SO. Reuse it only if it comes from a gcov build:
-    # the .so path alone does not prove that it was instrumented.
+    # A caller may pass a prebuilt JuliaInterface.so in GAP_JL_JULIAINTERFACE_SO.
+    # Check for gcov metadata before reusing it; the .so path alone does not
+    # prove that it was instrumented.
     if [ -n "${GAP_JL_JULIAINTERFACE_SO:-}" ]
     then
         JuliaInterfaceSo="${GAP_JL_JULIAINTERFACE_SO}"
@@ -96,16 +95,17 @@ ${GAP} --cover ../../coverage/JuliaInterface.coverage -r tst/testall.g || AnyFai
 cd ../..
 
 # Build docs and run the JuliaExperimental GAP tests as part of the bundled
-# GAP package checks. The coverage job reuses its instrumented library here.
+# GAP package checks. With C coverage enabled, both suites reuse the same
+# instrumented library.
 cd pkg/JuliaExperimental
 pwd
 ${GAP} makedoc.g
 ${GAP} --cover ../../coverage/JuliaExperimental.coverage -r tst/testall.g || AnyFailures=Yes
 cd ../..
 
-# Only the Linux LTS rebuild job emits JuliaInterface C coverage. Convert its
-# counters before deleting a build created here; caller-owned builds remain
-# available for later workflow steps.
+# When C coverage is enabled, convert the counters before deleting a build
+# created here. Keep caller-owned builds so the caller can collect counters
+# from any processes that are still running.
 if [ "${JULIAINTERFACE_COVERAGE:-No}" = Yes ]
 then
     cd pkg/JuliaInterface
