@@ -23,16 +23,21 @@
 
 #include <julia_gcext.h>    // Julia header
 
-jl_module_t * gap_module;
+// Set from Julia before the package loads; modules are rooted for good.
+jl_module_t * gap_module GAP_GC_GLOBALLY_ROOTED;
 
-static jl_value_t *    JULIA_ERROR_IOBuffer;
-static jl_value_t *    JULIA_FUNC_take_inplace;
-static jl_value_t *    JULIA_FUNC_showerror;
-static jl_datatype_t * JULIA_GAPFFE_type;
-static jl_datatype_t * JULIA_GAPError_type;
-static jl_value_t *    JULIA_ERROR_HANDLER_DISABLED;    // a Ref{Bool}
+// A constant of GAP.jl (error_buffer) and functions of Base: kept alive by
+// their modules.
+static jl_value_t *    JULIA_ERROR_IOBuffer GAP_GC_GLOBALLY_ROOTED;
+static jl_value_t *    JULIA_FUNC_take_inplace GAP_GC_GLOBALLY_ROOTED;
+static jl_value_t *    JULIA_FUNC_showerror GAP_GC_GLOBALLY_ROOTED;
+static jl_datatype_t * JULIA_GAPFFE_type GAP_GC_GLOBALLY_ROOTED;
+// GAP.jl's GAPError type and its disable_error_handler Ref: kept alive by the
+// GAP module.
+static jl_datatype_t * JULIA_GAPError_type GAP_GC_GLOBALLY_ROOTED;
+static jl_value_t *    JULIA_ERROR_HANDLER_DISABLED GAP_GC_GLOBALLY_ROOTED;
 
-static jl_datatype_t * gap_datatype_mptr;
+static jl_datatype_t * gap_datatype_mptr GAP_GC_GLOBALLY_ROOTED;
 
 static Obj  TheTypeOfJuliaModules;
 static Obj  TheTypeJuliaObject;
@@ -41,31 +46,37 @@ static UInt T_JULIA_OBJ;
 // Whether <exception> is a GAP error that GAP has reported itself: with
 // GAP.jl's error handler disabled, GAP prints every error before it becomes a
 // Julia exception.
-static int IsReportedGAPError(jl_value_t * exception)
+static int IsReportedGAPError(jl_value_t * exception GAP_GC_MAYBE_UNROOTED)
+    GAP_GC_CANSAFEPOINT
 {
     return jl_typeis(exception, JULIA_GAPError_type) &&
            jl_unbox_bool(jl_get_nth_field(JULIA_ERROR_HANDLER_DISABLED, 0));
 }
 
-void handle_jl_exception(void)
+void handle_jl_exception(void) GAP_GC_CANSAFEPOINT
 {
     // Unwind to GAP's catch point without reporting the error again, which
     // would also open a second break loop.
     if (IsReportedGAPError(jl_exception_occurred()))
         GAP_THROW();
 
-    JuliaCall call;
+    jl_value_t * string_object = 0;
+    JuliaCall    call;
     BeginJuliaCall(&call);
+    // Both are needed after calls into Julia, which can collect; the string
+    // must also outlive the allocations ErrorMayQuit makes before it copies
+    // the message. ErrorMayQuit does not return, GAP's error handling unwinds
+    // the frame.
+    GAP_GC_PUSH2(&call.lvars, &string_object);
     jl_call2(JULIA_FUNC_showerror, JULIA_ERROR_IOBuffer,
              jl_exception_occurred());
-    jl_value_t * string_object =
-        jl_call1(JULIA_FUNC_take_inplace, JULIA_ERROR_IOBuffer);
+    string_object = jl_call1(JULIA_FUNC_take_inplace, JULIA_ERROR_IOBuffer);
     EndJuliaCall(&call);
     string_object = jl_array_to_string((jl_array_t *)string_object);
     ErrorMayQuit("%s", (Int)jl_string_data(string_object), 0);
 }
 
-jl_value_t * gap_box_gapffe(Obj value)
+jl_value_t * gap_box_gapffe(Obj value) GAP_GC_CANSAFEPOINT
 {
 #if (JULIA_VERSION_MAJOR * 100 + JULIA_VERSION_MINOR) <= 106
     jl_ptls_t ptls = jl_get_ptls_states();
@@ -77,19 +88,19 @@ jl_value_t * gap_box_gapffe(Obj value)
     return v;
 }
 
-Obj gap_unbox_gapffe(jl_value_t * gapffe)
+Obj gap_unbox_gapffe(jl_value_t * gapffe) GAP_GC_NOTSAFEPOINT
 {
     return *(Obj *)jl_data_ptr(gapffe);
 }
 
 //
-int is_gapffe(jl_value_t * v)
+int is_gapffe(jl_value_t * v) GAP_GC_NOTSAFEPOINT
 {
     return jl_typeis(v, JULIA_GAPFFE_type);
 }
 
 //
-int is_gapobj(jl_value_t * v)
+int is_gapobj(jl_value_t * v) GAP_GC_NOTSAFEPOINT
 {
     return jl_typeis(v, gap_datatype_mptr);
 }
@@ -97,33 +108,33 @@ int is_gapobj(jl_value_t * v)
 /*
  * utilities for wrapped Julia objects and functions
  */
-static Obj JuliaObjCopyFunc(Obj obj, Int mut)
+static Obj JuliaObjCopyFunc(Obj obj, Int mut) GAP_GC_NOTSAFEPOINT
 {
     /* always immutable in GAP, so nothing to do */
     return obj;
 }
 
-static void JuliaObjCleanFunc(Obj obj)
+static void JuliaObjCleanFunc(Obj obj) GAP_GC_NOTSAFEPOINT
 {
 }
 
-static BOOL JuliaObjIsMutableFunc(Obj obj)
+static BOOL JuliaObjIsMutableFunc(Obj obj) GAP_GC_NOTSAFEPOINT
 {
     /* always immutable as GAP object */
     return 0L;
 }
 
-inline int IS_JULIA_OBJ(Obj o)
+inline int IS_JULIA_OBJ(Obj o) GAP_GC_NOTSAFEPOINT
 {
     return TNUM_OBJ(o) == T_JULIA_OBJ;
 }
 
-jl_value_t * GET_JULIA_OBJ(Obj o)
+jl_value_t * GET_JULIA_OBJ(Obj o GAP_GC_PROPAGATES_ROOT) GAP_GC_NOTSAFEPOINT
 {
     return (jl_value_t *)(CONST_ADDR_OBJ(o)[0]);
 }
 
-static Obj JuliaObjectTypeFunc(Obj o)
+static Obj JuliaObjectTypeFunc(Obj o) GAP_GC_NOTSAFEPOINT
 {
     if (jl_typeis(GET_JULIA_OBJ(o), jl_module_type))
         return TheTypeOfJuliaModules;
@@ -131,13 +142,13 @@ static Obj JuliaObjectTypeFunc(Obj o)
         return TheTypeJuliaObject;
 }
 
-Obj NewJuliaObj(jl_value_t * v)
+Obj NewJuliaObj(jl_value_t * v GAP_GC_MAYBE_UNROOTED) GAP_GC_CANSAFEPOINT
 {
     GAP_ASSERT(!is_gapobj(v));
-    JL_GC_PUSH1(&v);
+    GAP_GC_PUSH1(&v);
     Obj o = NewBag(T_JULIA_OBJ, 1 * sizeof(Obj));
     ADDR_OBJ(o)[0] = (Obj)v;
-    JL_GC_POP();
+    GAP_GC_POP();
     return o;
 }
 
@@ -151,7 +162,7 @@ void ResetUserHasQUIT(void)
 /*
  * Wrap Julia object <func> into a GAP function.
  */
-static Obj Func_WrapJuliaFunction(Obj self, Obj func)
+static Obj Func_WrapJuliaFunction(Obj self, Obj func) GAP_GC_CANSAFEPOINT
 {
     if (!IS_JULIA_OBJ(func))
         ErrorMayQuit("argument is not a julia object", 0, 0);
@@ -161,20 +172,22 @@ static Obj Func_WrapJuliaFunction(Obj self, Obj func)
 }
 
 // Export 'IS_JULIA_FUNC' to the GAP level.
-static Obj FuncIS_JULIA_FUNC(Obj self, Obj obj)
+static Obj FuncIS_JULIA_FUNC(Obj self, Obj obj) GAP_GC_NOTSAFEPOINT
 {
     return IS_JULIA_FUNC(obj) ? True : False;
 }
 
 // Executes the string <string> in the current julia session.
-static Obj FuncJuliaEvalString(Obj self, Obj string)
+static Obj FuncJuliaEvalString(Obj self, Obj string) GAP_GC_CANSAFEPOINT
 {
     RequireStringRep("JuliaEvalString", string);
 
     JuliaCall call;
     BeginJuliaCall(&call);
+    GAP_GC_PUSH1(&call.lvars);
     jl_value_t * result = jl_eval_string(CONST_CSTR_STRING(string));
     EndJuliaCall(&call);
+    GAP_GC_POP();
     if (jl_exception_occurred()) {
         handle_jl_exception();
     }
@@ -182,7 +195,7 @@ static Obj FuncJuliaEvalString(Obj self, Obj string)
 }
 
 // internal wrapper for jl_boundp to deal with API change in Julia 1.12
-static int gap_jl_boundp(jl_module_t * m, jl_sym_t * var)
+static int gap_jl_boundp(jl_module_t * m, jl_sym_t * var) GAP_GC_CANSAFEPOINT
 {
 #if JULIA_VERSION_MAJOR == 1 && JULIA_VERSION_MINOR >= 12
     return jl_boundp(m, var, 1);
@@ -194,6 +207,7 @@ static int gap_jl_boundp(jl_module_t * m, jl_sym_t * var)
 // Returns the julia object GAP object that holds a pointer to the value
 // currently bound to the julia identifier <moduleName>.<name>.
 static Obj Func_JuliaGetGlobalVariableByModule(Obj self, Obj name, Obj module)
+    GAP_GC_CANSAFEPOINT
 {
     RequireStringRep("_JuliaGetGlobalVariableByModule", name);
 
@@ -231,12 +245,12 @@ static Obj Func_JuliaGetGlobalVariableByModule(Obj self, Obj name, Obj module)
     return result;
 }
 
-static Obj Func_JuliaGetGapModule(Obj self)
+static Obj Func_JuliaGetGapModule(Obj self) GAP_GC_CANSAFEPOINT
 {
     return NewJuliaObj((jl_value_t *)gap_module);
 }
 
-static Obj Func_JuliaGetMainModule(Obj self)
+static Obj Func_JuliaGetMainModule(Obj self) GAP_GC_CANSAFEPOINT
 {
     return NewJuliaObj((jl_value_t *)jl_main_module);
 }
@@ -244,7 +258,7 @@ static Obj Func_JuliaGetMainModule(Obj self)
 // Mark the Julia pointer inside the GAP JuliaObj
 #ifdef GAP_MARK_FUNC_WITH_REF
 // for GAP >= 4.13.0
-static void MarkJuliaObject(Bag bag, void * ref)
+static void MarkJuliaObject(Bag bag, void * ref) GAP_GC_NOTSAFEPOINT
 {
 #ifdef DEBUG_MASTERPOINTERS
     MarkJuliaObjSafe((void *)GET_JULIA_OBJ(bag), ref);
@@ -254,7 +268,7 @@ static void MarkJuliaObject(Bag bag, void * ref)
 }
 #else
 // for GAP <= 4.12.x
-static void MarkJuliaObject(Bag bag)
+static void MarkJuliaObject(Bag bag) GAP_GC_NOTSAFEPOINT
 {
 #ifdef DEBUG_MASTERPOINTERS
     MarkJuliaObjSafe((void *)GET_JULIA_OBJ(bag));
@@ -280,7 +294,7 @@ static StructGVarFunc GVarFuncs[] = {
 **
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
-static Int InitKernel(StructInitInfo * module)
+static Int InitKernel(StructInitInfo * module) GAP_GC_CANSAFEPOINT
 {
     if (!gap_module) {
         ErrorMayQuit("gap_module was not set", 0, 0);
@@ -318,8 +332,11 @@ static Int InitKernel(StructInitInfo * module)
     JULIA_ERROR_IOBuffer =
         jl_call0(jl_get_function(jl_base_module, "IOBuffer"));
     GAP_ASSERT(JULIA_ERROR_IOBuffer);
-    // store the IO buffer object to protect it from being garbage collected
+    // store the IO buffer object to protect it from being garbage collected;
+    // until then the frame keeps it alive
+    GAP_GC_PUSH1(&JULIA_ERROR_IOBuffer);
     jl_set_const(gap_module, jl_symbol("error_buffer"), JULIA_ERROR_IOBuffer);
+    GAP_GC_POP();
 
     JULIA_FUNC_take_inplace = jl_get_function(jl_base_module, "take!");
     GAP_ASSERT(JULIA_FUNC_take_inplace);
@@ -350,7 +367,7 @@ static Int InitKernel(StructInitInfo * module)
 **
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-static Int InitLibrary(StructInitInfo * module)
+static Int InitLibrary(StructInitInfo * module) GAP_GC_CANSAFEPOINT
 {
     // init filters and functions
     InitGVarFuncsFromTable(GVarFuncs);

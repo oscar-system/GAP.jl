@@ -17,38 +17,40 @@
 #include <julia.h>
 #include <libgap-api.h>
 
-// internal helper
-NOINLINE void handle_jl_exception(void);
+#include "gc_compat.h"
+
+// internal helper: reports the pending Julia exception as a GAP error
+NOINLINE NORETURN void handle_jl_exception(void) GAP_GC_CANSAFEPOINT;
 
 // Internal Julia access functions
 
 // GET_JULIA_OBJ(o)
 //
 // Returns the julia value pointer
-// from the julia object GAP object o.
-jl_value_t * GET_JULIA_OBJ(Obj);
+// from the julia object GAP object o, which keeps it alive.
+jl_value_t * GET_JULIA_OBJ(Obj o GAP_GC_PROPAGATES_ROOT) GAP_GC_NOTSAFEPOINT;
 
 // IS_JULIA_OBJ(o)
 //
 // Checks if o is a julia object GAP object.
-int IS_JULIA_OBJ(Obj o);
+int IS_JULIA_OBJ(Obj o) GAP_GC_NOTSAFEPOINT;
 
 // NewJuliaObj(v)
 //
 // Creates a new julia object GAP object
-// from the julia value pointer v.
-Obj NewJuliaObj(jl_value_t *);
+// from the julia value pointer v, which it roots itself.
+Obj NewJuliaObj(jl_value_t * v GAP_GC_MAYBE_UNROOTED) GAP_GC_CANSAFEPOINT;
 
 //
-jl_value_t * gap_box_gapffe(Obj value);
+jl_value_t * gap_box_gapffe(Obj value) GAP_GC_CANSAFEPOINT;
 
 //
-Obj gap_unbox_gapffe(jl_value_t * gapffe);
+Obj gap_unbox_gapffe(jl_value_t * gapffe) GAP_GC_NOTSAFEPOINT;
 
 //
-int is_gapffe(jl_value_t * v);
+int is_gapffe(jl_value_t * v) GAP_GC_NOTSAFEPOINT;
 
 //
-int is_gapobj(jl_value_t * v);
+int is_gapobj(jl_value_t * v) GAP_GC_NOTSAFEPOINT;
 
 #endif
