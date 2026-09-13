@@ -99,6 +99,59 @@ inline jl_value_t * GET_JULIA_FUNC(Obj func)
         ((const JuliaFuncBag *)CONST_ADDR_OBJ(func))->juliaFunc);
 }
 
+// Calls from GAP into Julia that have not returned yet, innermost last.
+//
+// A GAP error raised in GAP code called from such a call must not longjmp
+// across the Julia frames in between: that skips Julia's own exception
+// handling and leaves it pointing at a dead frame. GAP.jl's throw observer
+// asks gap_error_unwinds_into_julia whether that would happen, and if so
+// raises a Julia exception instead. The GAP code between the error and the
+// Julia code catching that exception is abandoned, so when the call into
+// Julia returns, GAP's local variables are switched back to those of the
+// GAP code that made it.
+//
+//   GAP_TRY          TryCatchDepth 1
+//     BeginJuliaCall   records 1
+//       Julia code
+//         GAP code
+//           error      TryCatchDepth still 1: the catch point is below the
+//                      Julia frames, so raise a Julia exception
+typedef struct {
+    int tryCatchDepth;    // GAP's TryCatchDepth when the call was made
+} JuliaCall;
+
+enum { MAX_JULIA_CALLS = 1 << 12 };
+static JuliaCall JuliaCalls[MAX_JULIA_CALLS];
+static int       JuliaCallCount = 0;
+
+// Returns the local variables bag of the calling GAP code, to be passed to
+// EndJuliaCall.
+Obj BeginJuliaCall(void)
+{
+    if (JuliaCallCount >= MAX_JULIA_CALLS)
+        ErrorMayQuit("too many nested calls from GAP into Julia", 0, 0);
+    JuliaCalls[JuliaCallCount].tryCatchDepth = STATE(TryCatchDepth);
+    JuliaCallCount++;
+    return STATE(CurrLVars);
+}
+
+void EndJuliaCall(Obj lvars)
+{
+    JuliaCallCount--;
+    SWITCH_TO_OLD_LVARS(lvars);
+}
+
+// Called by GAP.jl's throw observer when a GAP error is about to longjmp to
+// the catch point at <tryCatchDepth>. Returns 1 if the innermost call into
+// Julia was made after that catch point was entered, or if there is no catch
+// point at all, so that the error must be raised as a Julia exception.
+int gap_error_unwinds_into_julia(int tryCatchDepth)
+{
+    int callTryCatchDepth =
+        JuliaCallCount > 0 ? JuliaCalls[JuliaCallCount - 1].tryCatchDepth : 0;
+    return tryCatchDepth <= callTryCatchDepth;
+}
+
 static ALWAYS_INLINE Obj DoCallJuliaFunc(Obj func, const int narg, Obj * a)
 {
     jl_value_t * result;
@@ -107,6 +160,7 @@ static ALWAYS_INLINE Obj DoCallJuliaFunc(Obj func, const int narg, Obj * a)
         a[i] = (Obj)julia_gap(a[i]);
     }
 
+    Obj lvars = BeginJuliaCall();
     jl_value_t * f = (jl_value_t *)GET_JULIA_FUNC(func);
     switch (narg) {
     case 0:
@@ -125,6 +179,7 @@ static ALWAYS_INLINE Obj DoCallJuliaFunc(Obj func, const int narg, Obj * a)
     default:
         result = jl_call(f, (jl_value_t **)a, narg);
     }
+    EndJuliaCall(lvars);
     if (jl_exception_occurred()) {
         handle_jl_exception();
     }

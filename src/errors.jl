@@ -309,8 +309,13 @@ function ThrowObserver(depth::Cint)
     # interpreter state before throwing back into Julia.
     @ccall libgap.ClearError()::Cvoid
     @ccall libgap.SWITCH_TO_BOTTOM_LVARS()::Cvoid
-    # Only the outermost observer turns the GAP failure into a Julia exception.
-    if depth <= 0
+    # GAP is about to longjmp to its innermost catch point. If Julia frames
+    # lie in between, because GAP called into Julia after entering it, the
+    # longjmp would skip Julia's own exception handling and corrupt it. Raise
+    # a Julia exception instead; the call from GAP into Julia catches it and
+    # re-raises it as a GAP error, which then reaches the catch point without
+    # crossing Julia frames.
+    if @ccall(JuliaInterface_path.gap_error_unwinds_into_julia(depth::Cint)::Cint) != 0
         snapshot = take_or_capture_gap_error_snapshot()
         throw(snapshot)
     end
