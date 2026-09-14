@@ -38,10 +38,13 @@ static UInt T_JULIA_OBJ;
 
 void handle_jl_exception(void)
 {
+    JuliaCall call;
+    BeginJuliaCall(&call);
     jl_call2(JULIA_FUNC_showerror, JULIA_ERROR_IOBuffer,
              jl_exception_occurred());
     jl_value_t * string_object =
         jl_call1(JULIA_FUNC_take_inplace, JULIA_ERROR_IOBuffer);
+    EndJuliaCall(&call);
     string_object = jl_array_to_string((jl_array_t *)string_object);
     ErrorMayQuit("%s", (Int)jl_string_data(string_object), 0);
 }
@@ -152,7 +155,10 @@ static Obj FuncJuliaEvalString(Obj self, Obj string)
 {
     RequireStringRep("JuliaEvalString", string);
 
+    JuliaCall call;
+    BeginJuliaCall(&call);
     jl_value_t * result = jl_eval_string(CONST_CSTR_STRING(string));
+    EndJuliaCall(&call);
     if (jl_exception_occurred()) {
         handle_jl_exception();
     }
