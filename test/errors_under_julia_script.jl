@@ -40,6 +40,12 @@ function exception_of(f)
     return nothing
 end
 
+# GAP counts nested calls of GAP functions and stops at a limit. The GAP
+# functions a GAP error abandons never decrement that count, so it must end
+# up where it was before each test.
+recursion_depth() = GAP.Globals.GetRecursionDepth()
+const depth_at_start = recursion_depth()
+
 # GAP code can call a Julia function in two ways, which reach Julia along
 # different paths: as Julia.Main.<name>, which calls it directly, or through
 # a GAP global holding it, which calls it through a GAP method.
@@ -122,8 +128,36 @@ GAP.Globals.gapjl_swallow = swallow_gap_error
             () -> GAP.evalstr("JuliaEvalString(\"GAP.Globals.SymmetricGroup(-3)\")")))
     end
 
+    @testset "GAP's recursion depth is restored" begin
+        # raise the error ten GAP calls deep, from GAP code called by Julia
+        # or by GAP code, and catch it in Julia or in GAP
+        GAP.evalstr_ex("""
+        gapjl_deep := function(n, raise)
+            if n = 0 then
+                return raise();
+            fi;
+            return gapjl_deep(n - 1, raise);
+        end;;
+        gapjl_in_gap := function() return SymmetricGroup(-3); end;;
+        """)
+        deep(raise) = GAP.Globals.gapjl_deep(10, raise)
+        deep_below_julia() = deep(GAP.Globals.gapjl_raise)
+        GAP.Globals.gapjl_deep_below_julia = deep_below_julia
+        GAP.Globals.gapjl_catch_deep = () -> (exception_of(deep_below_julia); 0)
+        for _ in 1:20
+            @test is_raised_error(exception_of(() -> deep(GAP.Globals.gapjl_in_gap)))
+            @test is_raised_error(exception_of(() -> deep(GAP.Globals.gapjl_raise)))
+            @test is_raised_error(exception_of(
+                () -> GAP.Globals.gapjl_deep(10, GAP.Globals.gapjl_deep_below_julia)))
+            @test GAP.Globals.gapjl_deep(10, GAP.Globals.gapjl_catch_deep) == 0
+        end
+        @test recursion_depth() == depth_at_start
+    end
+
     @testset "GAP's own error handling still works afterwards" begin
         @test exception_of(() -> GAP.evalstr("1/0")) isa GAPError
         @test GAP.evalstr("1 + 1") == 2
+        # covers every testset above
+        @test recursion_depth() == depth_at_start
     end
 end

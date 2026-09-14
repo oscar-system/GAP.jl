@@ -29,6 +29,10 @@ extern void EndJuliaCall(Obj lvars);
 // must be raised as a Julia exception instead; used by GAP.jl.
 extern int gap_error_unwinds_into_julia(int tryCatchDepth);
 
+// Reset GAP's recursion depth before such an error is raised in Julia; used
+// by GAP.jl.
+extern void restore_recursion_depth_for_julia(void);
+
 // Creates a new julia function GAP object from the julia function pointer f.
 extern Obj WrapJuliaFunc(jl_value_t * f);
 

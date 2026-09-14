@@ -317,6 +317,9 @@ function ThrowObserver(depth::Cint)
     # crossing Julia frames.
     if @ccall(JuliaInterface_path.gap_error_unwinds_into_julia(depth::Cint)::Cint) != 0
         snapshot = take_or_capture_gap_error_snapshot()
+        # the GAP functions this exception abandons never decrement GAP's
+        # recursion depth
+        @ccall JuliaInterface_path.restore_recursion_depth_for_julia()::Cvoid
         throw(snapshot)
     end
 end

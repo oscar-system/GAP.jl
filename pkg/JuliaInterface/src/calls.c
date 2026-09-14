@@ -106,9 +106,10 @@ inline jl_value_t * GET_JULIA_FUNC(Obj func)
 // handling and leaves it pointing at a dead frame. GAP.jl's throw observer
 // asks gap_error_unwinds_into_julia whether that would happen, and if so
 // raises a Julia exception instead. The GAP code between the error and the
-// Julia code catching that exception is abandoned, so when the call into
-// Julia returns, GAP's local variables are switched back to those of the
-// GAP code that made it.
+// Julia code catching that exception is abandoned: GAP's recursion depth is
+// reset when the exception is raised, and when the call into Julia returns,
+// GAP's local variables are switched back to those of the GAP code that
+// made it.
 //
 //   GAP_TRY          TryCatchDepth 1
 //     BeginJuliaCall   records 1
@@ -117,7 +118,8 @@ inline jl_value_t * GET_JULIA_FUNC(Obj func)
 //           error      TryCatchDepth still 1: the catch point is below the
 //                      Julia frames, so raise a Julia exception
 typedef struct {
-    int tryCatchDepth;    // GAP's TryCatchDepth when the call was made
+    int tryCatchDepth;     // GAP's TryCatchDepth when the call was made
+    Int recursionDepth;    // GAP's recursion depth when the call was made
 } JuliaCall;
 
 enum { MAX_JULIA_CALLS = 1 << 12 };
@@ -131,6 +133,7 @@ Obj BeginJuliaCall(void)
     if (JuliaCallCount >= MAX_JULIA_CALLS)
         ErrorMayQuit("too many nested calls from GAP into Julia", 0, 0);
     JuliaCalls[JuliaCallCount].tryCatchDepth = STATE(TryCatchDepth);
+    JuliaCalls[JuliaCallCount].recursionDepth = GetRecursionDepth();
     JuliaCallCount++;
     return STATE(CurrLVars);
 }
@@ -150,6 +153,18 @@ int gap_error_unwinds_into_julia(int tryCatchDepth)
     int callTryCatchDepth =
         JuliaCallCount > 0 ? JuliaCalls[JuliaCallCount - 1].tryCatchDepth : 0;
     return tryCatchDepth <= callTryCatchDepth;
+}
+
+// Called by GAP.jl's throw observer just before it raises a GAP error as a
+// Julia exception. The GAP functions between the error and the Julia code
+// catching the exception never return, so they never decrement GAP's
+// recursion depth. Reset it to its value at the innermost call into Julia,
+// where that Julia code runs, or to 0 if Julia called GAP from top level.
+void restore_recursion_depth_for_julia(void)
+{
+    SetRecursionDepth(JuliaCallCount > 0
+                          ? JuliaCalls[JuliaCallCount - 1].recursionDepth
+                          : 0);
 }
 
 static ALWAYS_INLINE Obj DoCallJuliaFunc(Obj func, const int narg, Obj * a)
