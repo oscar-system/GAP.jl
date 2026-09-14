@@ -104,7 +104,7 @@ inline jl_value_t * GET_JULIA_FUNC(Obj func)
 // A GAP error raised in GAP code called from such a call must not longjmp
 // across the Julia frames in between: that skips Julia's own exception
 // handling and leaves it pointing at a dead frame. GAP.jl's throw observer
-// asks gap_error_unwinds_into_julia whether that would happen, and if so
+// asks gap_error_skips_julia_call whether that would happen, and if so
 // raises a Julia exception instead.
 //
 //   GAP_TRY          TryCatchDepth 1
@@ -141,13 +141,11 @@ void EndJuliaCall(JuliaCall * call)
 
 // Called by GAP.jl's throw observer when a GAP error is about to longjmp to
 // the catch point at <tryCatchDepth>. Returns 1 if the innermost call into
-// Julia was made after that catch point was entered, or if there is no catch
-// point at all, so that the error must be raised as a Julia exception.
-int gap_error_unwinds_into_julia(int tryCatchDepth)
+// Julia was made after that catch point was entered.
+int gap_error_skips_julia_call(int tryCatchDepth)
 {
-    int callTryCatchDepth =
-        InnermostJuliaCall ? InnermostJuliaCall->tryCatchDepth : 0;
-    return tryCatchDepth <= callTryCatchDepth;
+    return InnermostJuliaCall &&
+           tryCatchDepth <= InnermostJuliaCall->tryCatchDepth;
 }
 
 // Called by GAP.jl's throw observer just before it raises a GAP error as a

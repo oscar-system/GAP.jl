@@ -128,6 +128,33 @@ GAP.Globals.gapjl_swallow = swallow_gap_error
             () -> GAP.evalstr("JuliaEvalString(\"GAP.Globals.SymmetricGroup(-3)\")")))
     end
 
+    @testset "with GAP.jl's error handler disabled" begin
+        # as in GAP.prompt(): GAP reports errors itself and handles them at its
+        # own catch points, but must not skip Julia frames to reach one
+        function reports_of(f)
+            output = GapObj("")
+            GAP.replace_global!(:ERROR_OUTPUT, GAP.Globals.OutputTextString(output, true))
+            f()
+            return count("no method found", String(output))
+        end
+        result = nothing
+        GAP.set_error_handler_disabled(true)
+        try
+            @test reports_of(() -> (result = GAP.evalstr("gapjl_via_global(5)"))) == 1
+            @test Vector{Int}(result) == [5, 6]
+            @test reports_of(() -> (result = GAP.evalstr("gapjl_via_julia_main(5)"))) == 1
+            @test Vector{Int}(result) == [5, 6]
+
+            # uncaught in Julia, the error reaches GAP's catch point, reported once
+            @test reports_of(() -> (result = GAP.evalstr_ex("gapjl_raise(); 7;"))) == 1
+            @test result[1][1] === false
+            @test result[2][2] == 7
+        finally
+            GAP.set_error_handler_disabled(false)
+            GAP.replace_global!(:ERROR_OUTPUT, GAP.Globals._JULIAINTERFACE_ERROR_OUTPUT)
+        end
+    end
+
     @testset "GAP's recursion depth is restored" begin
         # raise the error ten GAP calls deep, from GAP code called by Julia
         # or by GAP code, and catch it in Julia or in GAP
