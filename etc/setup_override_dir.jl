@@ -23,6 +23,7 @@ overwrite_allow = false
 verbose = false
 debugmode = false
 validate_marking = false
+precise = false
 left_ARGS = String[]
 while !isempty(ARGS)
    arg = popfirst!(ARGS)
@@ -36,6 +37,8 @@ while !isempty(ARGS)
       global debugmode = true
    elseif arg == "--validate-marking"
       global validate_marking = true
+   elseif arg == "--precise"
+      global precise = true
    else
       push!(left_ARGS, arg)
    end
@@ -97,6 +100,10 @@ if run_configure
       cppflags *= " -DVALIDATE_MARKING"
    end
    extraargs = ["CPPFLAGS=" * cppflags]
+   if precise
+      # root C locals explicitly instead of scanning the C stack (GAP >= 4.16)
+      push!(extraargs, "--enable-precise-gc")
+   end
 
    if debugmode
       # compile GAP in debug mode (enables many additional assertions in the kernel)
