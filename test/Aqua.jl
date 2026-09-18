@@ -14,6 +14,5 @@ using Aqua
 @testset "Aqua.jl" begin
     Aqua.test_all(
         GAP;
-        ambiguities=false, # some from AbstractAlgebra.jl show up here
     )
 end
