@@ -60,6 +60,7 @@ jobs:
           - gap-package: 'atlasrep'                   # random gc-related segfaults during testing
           - gap-package: 'autodoc'                    # tries and fails to build its own documentation, inside the (partially write protected) artifacts dir
           - gap-package: 'ctbllib'                    # random gc-related segfaults during testing
+          - gap-package: 'curlinterface'              # hangs: tests fork an HTTP server via `io`, but the forked child never receives the SIGTERM meant to stop it (julia blocks signals; its signal listener thread does not survive the fork), so a blocking IO_WaitPid never returns
           - gap-package: 'example'                    # no jll
           - gap-package: 'examplesforhomalg'          # `Error, found no GAP executable in PATH`
           - gap-package: 'io'                         # segfaults, most likely due to child process handling
@@ -68,6 +69,7 @@ jobs:
           - gap-package: 'packagemanager'             # many "#I  No sysinfo.gap found" warnings
           - gap-package: 'profiling'                  # segfaults during testing
           - gap-package: 'ringsforhomalg'             # `Error, found no GAP executable in PATH`
+          - gap-package: 'utils'                      # hangs: same forked HTTP test server problem as curlinterface (see above)
           - gap-package: 'xgap'                       # no jll
 
     steps:
