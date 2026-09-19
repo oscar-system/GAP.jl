@@ -1,5 +1,9 @@
 # Changes in GAP.jl
 
+## Version 0.17.7 (released 2026-09-20)
+
+- Updated for compatibility with latest Julia nightly builds
+
 ## Version 0.17.6 (released 2026-09-10)
 
 - Speed up `collect` and list comprehensions for GAP lists
