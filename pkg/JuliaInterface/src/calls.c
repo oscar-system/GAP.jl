@@ -108,6 +108,11 @@ static ALWAYS_INLINE Obj DoCallJuliaFunc(Obj func, const int narg, Obj * a)
     }
 
     jl_value_t * f = (jl_value_t *)GET_JULIA_FUNC(func);
+
+    // Ctrl-C belongs to Julia while Julia code runs. jl_call* return even
+    // if that code throws, so the restore below is always reached.
+    int saved_interrupt_depth = gap_interrupt_depth;
+    gap_interrupt_depth = 0;
     switch (narg) {
     case 0:
         result = jl_call0(f);
@@ -125,6 +130,7 @@ static ALWAYS_INLINE Obj DoCallJuliaFunc(Obj func, const int narg, Obj * a)
     default:
         result = jl_call(f, (jl_value_t **)a, narg);
     }
+    gap_interrupt_depth = saved_interrupt_depth;
     if (jl_exception_occurred()) {
         handle_jl_exception();
     }
