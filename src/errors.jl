@@ -302,6 +302,19 @@ function take_or_capture_gap_error_snapshot()
     return snapshot
 end
 
+# GAP reports Ctrl-C as an error with this message (ExecIntrStat in GAP's
+# src/stats.c); an InterruptException in Julia code called from GAP comes
+# back as a GAP error starting with the exception's name.
+const GAP_USER_INTERRUPT_MESSAGE = "user interrupt"
+
+is_user_interrupt(err::GAPError) =
+    err.message == GAP_USER_INTERRUPT_MESSAGE || startswith(err.message, "InterruptException")
+
+function throw_gap_error(err::GAPError)
+    is_user_interrupt(err) && throw(InterruptException())
+    throw(err)
+end
+
 function ThrowObserver(depth::Cint)
     is_error_handler_disabled() && return nothing
 
@@ -312,6 +325,9 @@ function ThrowObserver(depth::Cint)
     # Only the outermost observer turns the GAP failure into a Julia exception.
     if depth <= 0
         snapshot = take_or_capture_gap_error_snapshot()
-        throw(snapshot)
+        # the exception lands in Julia code: GAP is inactive for the
+        # interrupt bridge
+        _set_gap_depth(Cint(0))
+        throw_gap_error(snapshot)
     end
 end
