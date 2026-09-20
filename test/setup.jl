@@ -87,6 +87,42 @@ end
   end
 end
 
+@testset "sysinfo follows a GAP_jll override" begin
+  # GAP.sysinfo must be read when GAP.jl is loaded, not baked in when it is
+  # precompiled -- an artifact override does not invalidate the package image.
+  mktempdir() do tmpdir
+    gapdir = joinpath(tmpdir, "gap")
+    cp(GAP.GAP_jll.find_artifact_dir(), gapdir)
+    chmod(gapdir, 0o755; recursive=true)
+
+    open(joinpath(gapdir, "lib", "gap", "sysinfo.gap"), "a") do f
+      println(f, "GAP_JL_OVERRIDE_MARKER=\"42\"")
+    end
+
+    depot = joinpath(tmpdir, "depot")
+    mkpath(joinpath(depot, "artifacts"))
+    write(
+      joinpath(depot, "artifacts", "Overrides.toml"),
+      """
+      [$(Base.PkgId(GAP.GAP_jll).uuid)]
+      GAP = "$(gapdir)"
+      """,
+    )
+
+    # GAP writes to stdout while starting up, so report via a file
+    outfile = joinpath(tmpdir, "marker.txt")
+    code = """using GAP; write("$(outfile)", get(GAP.sysinfo, "GAP_JL_OVERRIDE_MARKER", "missing"))"""
+    withenv(
+      "JULIA_DEPOT_PATH" => join([depot; DEPOT_PATH], ":"),
+      # the override forces a JuliaInterface rebuild; reuse ours instead
+      "GAP_JL_JULIAINTERFACE_SO" => GAP.JuliaInterface_path,
+    ) do
+      run(pipeline(`$(Base.julia_cmd()) --startup-file=no --project=$(Base.active_project()) -e $(code)`; stdout=devnull))
+    end
+    @test read(outfile, String) == "42"
+  end
+end
+
 @testset "gap package artifact overrides" begin
   mktempdir() do tmpdir
     override_dir = joinpath(tmpdir, "override", "alnuth")

@@ -46,8 +46,11 @@ include("setup.jl")
 import Libdl
 import Random
 
-const sysinfo = Setup.read_sysinfo_gap(joinpath(GAP_jll.find_artifact_dir(), "lib", "gap", "sysinfo.gap"))
-const GAP_VERSION = VersionNumber(sysinfo["GAP_VERSION"])
+# Both describe the GAP in GAP_jll, which an artifact override can redirect
+# after GAP.jl was precompiled, so they are filled in by __init__(). Left
+# undefined until then, so that reading them too early errors out.
+global sysinfo::Dict{String,String}
+global GAP_VERSION::VersionNumber
 
 include("types.jl")
 
@@ -200,6 +203,11 @@ function __init__()
     if Sys.iswindows()
         windows_error()
     end
+
+    # must come first, everything below reads these
+    global sysinfo = Setup.read_sysinfo_gap(joinpath(GAP_jll.find_artifact_dir(), "lib", "gap", "sysinfo.gap"))
+    global GAP_VERSION = VersionNumber(sysinfo["GAP_VERSION"])
+    Packages.init_pkgdir()
 
     global JuliaInterface_path = Setup.locate_JuliaInterface_so()
 

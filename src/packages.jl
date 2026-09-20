@@ -22,10 +22,14 @@ import ...GAP.Setup: gaproot_for_building
 
 gap_packages_rootdir() = @get_scratch!("gap_packagedir_v$(GAP_VERSION.major).$(GAP_VERSION.minor)")
 
-const DEFAULT_PKGDIR = Ref(joinpath(gap_packages_rootdir(), "pkg"))
+const DEFAULT_PKGDIR = Ref{String}("")
 const DOWNLOAD_HELPER = Ref{Downloads.Downloader}()
 
-function __init__()
+# `GAP_VERSION` is only known once `GAP.__init__` has read sysinfo, which
+# happens after the `__init__` of this submodule would run; so GAP calls this.
+function init_pkgdir()
+    DEFAULT_PKGDIR[] = joinpath(gap_packages_rootdir(), "pkg")
+
     # ensure DEFAULT_PKGDIR exists, otherwise GAP will skip it when populating
     # the list of package directories
     mkpath(DEFAULT_PKGDIR[])
