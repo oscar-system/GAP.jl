@@ -50,6 +50,43 @@ end
   end
 end
 
+@testset "gap_jll_is_overridden" begin
+  # The prebuilt JuliaInterface.so must not be reused against a GAP_jll that
+  # has been overridden with a custom GAP build.
+  mktempdir() do tmpdir
+    depot = joinpath(tmpdir, "depot")
+    overrides_toml = joinpath(depot, "artifacts", "Overrides.toml")
+    mkpath(dirname(overrides_toml))
+    write(
+      overrides_toml,
+      """
+      [$(Base.PkgId(GAP.GAP_jll).uuid)]
+      GAP = "$(joinpath(tmpdir, "gap_override"))"
+      """,
+    )
+
+    artifacts = GAP.Setup.Artifacts
+    old_depot_path = copy(DEPOT_PATH)
+    old_artifact_overrides = deepcopy(artifacts.ARTIFACT_OVERRIDES[])
+
+    try
+      empty!(DEPOT_PATH)
+      push!(DEPOT_PATH, depot)
+      artifacts.ARTIFACT_OVERRIDES[] = nothing
+      @test GAP.Setup.gap_jll_is_overridden()
+
+      # same depot, but without the override
+      rm(overrides_toml)
+      artifacts.ARTIFACT_OVERRIDES[] = nothing
+      @test !GAP.Setup.gap_jll_is_overridden()
+    finally
+      empty!(DEPOT_PATH)
+      append!(DEPOT_PATH, old_depot_path)
+      artifacts.ARTIFACT_OVERRIDES[] = old_artifact_overrides
+    end
+  end
+end
+
 @testset "gap package artifact overrides" begin
   mktempdir() do tmpdir
     override_dir = joinpath(tmpdir, "override", "alnuth")

@@ -12,6 +12,7 @@
 module Setup
 
 using ..GAP: GAP
+import Artifacts
 import GAP_jll
 import GAP_pkg_juliainterface_jll
 import FileWatching: Pidfile
@@ -231,6 +232,24 @@ function juliainterface_builddir()
     return mktempdir()
 end
 
+"""
+    gap_jll_is_overridden()
+
+Return whether GAP_jll resolves to something other than its own artifact,
+either via an `Overrides.toml` or via a dev'ed GAP_jll carrying an `override`
+directory.
+"""
+function gap_jll_is_overridden()
+    pkgid = Base.PkgId(GAP_jll)
+
+    Artifacts.query_override(pkgid.uuid, "GAP") === nothing || return true
+
+    # JLLWrappers resolves a dev'ed JLL to `<package dir>/override` if present
+    src = Base.locate_package(pkgid)
+    src === nothing && return false
+    return isdir(joinpath(dirname(dirname(src)), "override"))
+end
+
 function locate_JuliaInterface_so()
     if haskey(ENV, "GAP_JL_JULIAINTERFACE_SO")
         path = abspath(ENV["GAP_JL_JULIAINTERFACE_SO"])
@@ -246,7 +265,12 @@ function locate_JuliaInterface_so()
     bundled = joinpath(@__DIR__, "..", "pkg", "JuliaInterface")
     bundled_hash = TreeHash.tree_hash(joinpath(bundled, "src"))
 
-    if jll_hash == bundled_hash && !haskey(ENV, "FORCE_JULIAINTERFACE_COMPILATION")
+    # The JLL's JuliaInterface.so was compiled against the GAP kernel in GAP_jll.
+    # An overridden GAP_jll may have a different kernel ABI, and a mismatch is not
+    # diagnosed -- it crashes at runtime. So never reuse the JLL's copy then.
+    force = haskey(ENV, "FORCE_JULIAINTERFACE_COMPILATION") || gap_jll_is_overridden()
+
+    if jll_hash == bundled_hash && !force
         # tree hashes of bundled C sources and GAP_pkg_juliainterface_jll match -> use JuliaInterface.so from the JLL
         @debug "Use JuliaInterface.so from GAP_pkg_juliainterface_jll"
         path = joinpath(jll, "lib", "gap")

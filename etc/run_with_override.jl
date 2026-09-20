@@ -28,10 +28,6 @@ function add_jll_override(depot, pkgname, newdir)
         $(pkgname) = "$(newdir)"
         """)
     end
-
-    # we need to make sure that precompilation is run again with the override in place
-    # (just running Pkg.precompile() does not seem to suffice)
-    run(`touch $(Base.locate_package(pkgid))`)
 end
 
 tmpdepot = mktempdir(; cleanup=true)
@@ -44,7 +40,10 @@ add_jll_override(tmpdepot, "GAP_lib", gapoverride)
 # HACK: use the documentation from GAP_lib_jll instead of rebuilding it
 run(`ln -sf $(abspath(GAP_lib_jll.find_artifact_dir(), "share", "gap", "doc")) $(abspath(gapoverride, "share", "gap", "doc"))`)
 
-# prepend our temporary depot to the depot list...
+# Use the temporary depot alone: a trailing separator appends only the system
+# depots, not ~/.julia. Nothing precompiled against the unoverridden JLLs is
+# visible, so everything below is built with the override in place. This matters
+# because an artifact override by itself does not invalidate a package image.
 withenv("JULIA_DEPOT_PATH"=>tmpdepot*":", "FORCE_JULIAINTERFACE_COMPILATION" => "true") do
 
     # ... make sure all dependencies are installed ...
