@@ -53,7 +53,7 @@ end
 
 @testset "JuliaInterface tests" begin
   mktempdir() do tmpdir
-    GAP.create_gap_sh(tmpdir)
+    GAP.create_gap_sh(tmpdir; use_active_project=true)
     cmd = Cmd(`$(joinpath("etc", "ci_test.sh"))`; dir=dirname(dirname(pathof(GAP))))
     cmd = addenv(cmd, "GAP" => "$(joinpath(tmpdir, "gap.sh")) -A --quitonbreak --norepl")
     @test success(pipeline(cmd; stdout, stderr))
