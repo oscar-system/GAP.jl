@@ -207,7 +207,7 @@ function __init__()
             # GAP root for the actual GAP library, from GAP_lib_jll
             abspath(GAP_lib_jll.find_artifact_dir(), "share", "gap"),
             # GAP root into which PackageManager installs packages by default
-            Packages.gap_packages_rootdir(),
+            realpath(Packages.gap_packages_rootdir()), # `realpath` due to https://github.com/gap-system/gap/pull/5930#issuecomment-5731681277
             ]
     cmdline_options = ["", "-l", join(roots, ";")]
 
