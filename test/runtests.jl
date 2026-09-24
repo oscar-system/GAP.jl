@@ -16,6 +16,7 @@ using GAP
 include("Aqua.jl")
 
 include("basics.jl")
+include("signals.jl")
 include("errors.jl")
 include("adapter.jl")
 include("convenience.jl")
