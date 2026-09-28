@@ -99,6 +99,65 @@ inline jl_value_t * GET_JULIA_FUNC(Obj func)
         ((const JuliaFuncBag *)CONST_ADDR_OBJ(func))->juliaFunc);
 }
 
+// Calls from GAP into Julia that have not returned yet.
+//
+// A GAP error raised in GAP code called from such a call must not longjmp
+// across the Julia frames in between: that skips Julia's own exception
+// handling and leaves it pointing at a dead frame. GAP.jl's throw observer
+// asks gap_error_skips_julia_call whether that would happen, and if so
+// raises a Julia exception instead.
+//
+//   GAP_TRY          TryCatchDepth 1
+//     BeginJuliaCall   records 1
+//       Julia code
+//         GAP code
+//           error      TryCatchDepth still 1: the catch point is below the
+//                      Julia frames, so raise a Julia exception
+//
+// The GAP code between the error and the Julia code catching that exception
+// never returns. So GAP's recursion depth is reset when the exception is
+// raised, and GAP's local variables are switched back when the call into
+// Julia returns, both to their values at the call.
+//
+// Each call keeps its record in the C frame making it; the records form a
+// list from the innermost call outwards.
+static JuliaCall * InnermostJuliaCall = 0;
+
+void BeginJuliaCall(JuliaCall * call)
+{
+    call->prev = InnermostJuliaCall;
+    call->tryCatchDepth = STATE(TryCatchDepth);
+    call->recursionDepth = GetRecursionDepth();
+    call->lvars = STATE(CurrLVars);
+    InnermostJuliaCall = call;
+}
+
+void EndJuliaCall(JuliaCall * call)
+{
+    GAP_ASSERT(call == InnermostJuliaCall);
+    InnermostJuliaCall = call->prev;
+    SWITCH_TO_OLD_LVARS(call->lvars);
+}
+
+// Called by GAP.jl's throw observer when a GAP error is about to longjmp to
+// the catch point at <tryCatchDepth>. Returns 1 if the innermost call into
+// Julia was made after that catch point was entered.
+int gap_error_skips_julia_call(int tryCatchDepth)
+{
+    return InnermostJuliaCall &&
+           tryCatchDepth <= InnermostJuliaCall->tryCatchDepth;
+}
+
+// Called by GAP.jl's throw observer just before it raises a GAP error as a
+// Julia exception: resets GAP's recursion depth to its value at the
+// innermost call into Julia, where the Julia code catching the exception
+// runs, or to 0 if Julia called GAP from top level.
+void restore_recursion_depth_for_julia(void)
+{
+    SetRecursionDepth(InnermostJuliaCall ? InnermostJuliaCall->recursionDepth
+                                         : 0);
+}
+
 static ALWAYS_INLINE Obj DoCallJuliaFunc(Obj func, const int narg, Obj * a)
 {
     jl_value_t * result;
@@ -107,6 +166,8 @@ static ALWAYS_INLINE Obj DoCallJuliaFunc(Obj func, const int narg, Obj * a)
         a[i] = (Obj)julia_gap(a[i]);
     }
 
+    JuliaCall call;
+    BeginJuliaCall(&call);
     jl_value_t * f = (jl_value_t *)GET_JULIA_FUNC(func);
     switch (narg) {
     case 0:
@@ -125,6 +186,7 @@ static ALWAYS_INLINE Obj DoCallJuliaFunc(Obj func, const int narg, Obj * a)
     default:
         result = jl_call(f, (jl_value_t **)a, narg);
     }
+    EndJuliaCall(&call);
     if (jl_exception_occurred()) {
         handle_jl_exception();
     }

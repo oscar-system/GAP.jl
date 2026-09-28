@@ -20,6 +20,30 @@
 extern Int          IS_JULIA_FUNC(Obj obj);
 extern jl_value_t * GET_JULIA_FUNC(Obj obj);
 
+// GAP's state at a call from GAP into Julia, kept in the C frame making the
+// call for as long as it lasts. Bracket every call from GAP into Julia with
+// BeginJuliaCall and EndJuliaCall; see calls.c.
+//
+// TODO: collect the GAP and Julia backtraces of each call an error passes, so
+// that it can show them interleaved; GAPError holds one of each.
+typedef struct JuliaCall {
+    struct JuliaCall * prev;              // the enclosing call, if any
+    int                tryCatchDepth;     // GAP's TryCatchDepth
+    Int                recursionDepth;    // GAP's recursion depth
+    Obj                lvars;             // the caller's local variables
+} JuliaCall;
+
+extern void BeginJuliaCall(JuliaCall * call);
+extern void EndJuliaCall(JuliaCall * call);
+
+// Whether a GAP error longjmping to the catch point at <tryCatchDepth> would
+// skip the Julia frames of a call from GAP into Julia; used by GAP.jl.
+extern int gap_error_skips_julia_call(int tryCatchDepth);
+
+// Reset GAP's recursion depth before such an error is raised in Julia; used
+// by GAP.jl.
+extern void restore_recursion_depth_for_julia(void);
+
 // Creates a new julia function GAP object from the julia function pointer f.
 extern Obj WrapJuliaFunc(jl_value_t * f);
 
