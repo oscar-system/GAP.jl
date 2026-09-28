@@ -69,8 +69,14 @@ function gap_pkg_artifact_dir(pkgname)
   return joinpath(d, only(readdir(d)))
 end
 
+# GAP kernel major version the `GAP_pkg_*_jll` kernel extensions are built
+# against; bump together with the `GAP_jll` compat bound
+const GAP_JLL_KERNEL_MAJOR_VERSION = 11
+
+kernel_major_versions_match() = parse(Int, sysinfo["GAP_KERNEL_MAJOR_VERSION"]) == GAP_JLL_KERNEL_MAJOR_VERSION
+
 """
-    setup_overrides(; kernel_extensions::Bool = true)
+    setup_overrides(; kernel_extensions::Bool = <kernel major versions match>)
 
 Fill the global variable `pkg_bindirs`, which maps GAP package directories
 to the JLL directories holding their executables and kernel extensions, for
@@ -81,9 +87,15 @@ This function should not be called in any other place.
 
 If `kernel_extensions` is `false`, no entries for kernel extensions are
 added, so GAP loads them from the `bin` directories of the packages
-themselves, e.g. to use extensions compiled against a different GAP kernel.
+themselves. This is the default if the GAP kernel major version differs from
+the global variable `GAP_JLL_KERNEL_MAJOR_VERSION`, which is only
+allowed in sessions started via `etc/run_with_override.jl`.
 """
-function setup_overrides(; kernel_extensions::Bool = true)
+function setup_overrides(; kernel_extensions::Bool = kernel_major_versions_match())
+    if !kernel_extensions
+        @debug "Not using kernel extensions from GAP_pkg_*_jll due to GAP kernel version mismatch: " *
+               "expected $(GAP_JLL_KERNEL_MAJOR_VERSION), have $(sysinfo["GAP_KERNEL_MAJOR_VERSION"])"
+    end
     gap_pkg_jll_names = filter(startswith("GAP_pkg"), String.(names(GAP; imported=true)))
     for pkg in gap_pkg_jll_names
         jll = getproperty(GAP, Symbol(pkg))
