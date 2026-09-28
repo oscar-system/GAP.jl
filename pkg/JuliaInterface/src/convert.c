@@ -16,7 +16,7 @@
 
 // Turn a GAP object into a Julia object.
 // This function is used by GAP.jl and also by `DoCallJuliaFunc`.
-jl_value_t * julia_gap(Obj obj)
+jl_value_t * julia_gap(Obj obj) GAP_GC_CANSAFEPOINT
 {
     if (obj == 0) {
         return jl_nothing;
@@ -42,7 +42,7 @@ jl_value_t * julia_gap(Obj obj)
 // Turn a Julia object into a GAP object.
 // This function is used by GAP.jl (via `call_gap_func`) and also by
 // `DoCallJuliaFunc`.
-Obj gap_julia(jl_value_t * julia_obj)
+Obj gap_julia(jl_value_t * julia_obj GAP_GC_MAYBE_UNROOTED) GAP_GC_CANSAFEPOINT
 {
     if (jl_typeis(julia_obj, jl_int64_type)) {
         int64_t v = jl_unbox_int64(julia_obj);

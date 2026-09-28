@@ -141,9 +141,14 @@ function create_sysinfo_gap_and_gac(dir::String)
     haskey(ENV, "GAP_CXX") && pushfirst!(cxx_candidates, ENV["GAP_CXX"])
     CXX = sysinfo["GAP_CXX"] = select_compiler("C++", cxx_candidates, ".cc")
 
-    # set include flags
+    # set include flags; keep the defines of the GAP we link against, which
+    # record how it was configured (USE_JULIA_GC, and DISABLE_STACK_SCAN for a
+    # GAP built with --enable-precise-gc), and which kernel extensions must
+    # see to match it
     gap_include = joinpath(gap_prefix, "include", "gap", "extra")
-    sysinfo["GAP_CPPFLAGS"] = "-I$(gap_include) -DUSE_JULIA_GC=1 -DUSE_GAP_INSIDE_JULIA=1"
+    defines = filter(startswith("-D"), split(sysinfo["GAP_CPPFLAGS"]))
+    union!(defines, ["-DUSE_JULIA_GC=1", "-DUSE_GAP_INSIDE_JULIA=1"])
+    sysinfo["GAP_CPPFLAGS"] = join(["-I$(gap_include)"; defines], " ")
 
     # set linker flags; since these are meant for use for GAP packages,
     # add the necessary flags to link against libgap

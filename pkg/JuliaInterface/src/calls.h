@@ -17,8 +17,11 @@
 #include <julia.h>
 #include <libgap-api.h>
 
-extern Int          IS_JULIA_FUNC(Obj obj);
-extern jl_value_t * GET_JULIA_FUNC(Obj obj);
+#include "gc_compat.h"
+
+extern Int          IS_JULIA_FUNC(Obj obj) GAP_GC_NOTSAFEPOINT;
+// the function object keeps the Julia function alive
+extern jl_value_t * GET_JULIA_FUNC(Obj obj GAP_GC_PROPAGATES_ROOT) GAP_GC_NOTSAFEPOINT;
 
 // GAP's state at a call from GAP into Julia, kept in the C frame making the
 // call for as long as it lasts. Bracket every call from GAP into Julia with
@@ -33,18 +36,18 @@ typedef struct JuliaCall {
     Obj                lvars;             // the caller's local variables
 } JuliaCall;
 
-extern void BeginJuliaCall(JuliaCall * call);
-extern void EndJuliaCall(JuliaCall * call);
+extern void BeginJuliaCall(JuliaCall * call) GAP_GC_NOTSAFEPOINT;
+extern void EndJuliaCall(JuliaCall * call) GAP_GC_NOTSAFEPOINT;
 
 // Whether a GAP error longjmping to the catch point at <tryCatchDepth> would
 // skip the Julia frames of a call from GAP into Julia; used by GAP.jl.
-extern int gap_error_skips_julia_call(int tryCatchDepth);
+extern int gap_error_skips_julia_call(int tryCatchDepth) GAP_GC_NOTSAFEPOINT;
 
 // Reset GAP's recursion depth before such an error is raised in Julia; used
 // by GAP.jl.
-extern void restore_recursion_depth_for_julia(void);
+extern void restore_recursion_depth_for_julia(void) GAP_GC_NOTSAFEPOINT;
 
 // Creates a new julia function GAP object from the julia function pointer f.
-extern Obj WrapJuliaFunc(jl_value_t * f);
+extern Obj WrapJuliaFunc(jl_value_t * f) GAP_GC_CANSAFEPOINT;
 
 #endif
