@@ -45,7 +45,11 @@ add_jll_override(tmpdepot, "GAP_lib", gapoverride)
 run(`ln -sf $(abspath(GAP_lib_jll.find_artifact_dir(), "share", "gap", "doc")) $(abspath(gapoverride, "share", "gap", "doc"))`)
 
 # prepend our temporary depot to the depot list...
-withenv("JULIA_DEPOT_PATH"=>tmpdepot*":", "FORCE_JULIAINTERFACE_COMPILATION" => "true") do
+withenv(
+        "JULIA_DEPOT_PATH"=>tmpdepot*":",
+        "FORCE_JULIAINTERFACE_COMPILATION" => "true",
+        "GAP_JL_RUN_WITH_OVERRIDE" => "true",
+    ) do
 
     # ... make sure all dependencies are installed ...
     run(`$(Base.julia_cmd()) --project=$(Base.active_project()) -e "using Pkg; Pkg.instantiate()"`)

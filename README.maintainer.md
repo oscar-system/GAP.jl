@@ -56,6 +56,12 @@ For this to work, follow these instructions:
 5. This configures the override in-process; pass code via `-e` or a script file.
    For example, `-e "using GAP"` loads GAP.jl with the override in effect.
 
+NOTE: If the GAP kernel major version of the override differs from
+`GAP_JLL_KERNEL_MAJOR_VERSION` in `src/GAP_pkg.jl`, the kernel extensions
+from the `GAP_pkg_*_jll`s are not used. GAP packages then need kernel
+extensions compiled in their own `bin` directories, otherwise they fail to
+load. Outside of `etc/run_with_override.jl`, such a mismatch is an error.
+
 
 ## Directions for updating GAP.jl
 
@@ -189,7 +195,9 @@ all of the JLL packages that depend on GAP.
       `Project.toml` still differs from the juliainterface `upstream_version` chosen in step 5.
    4. If the GAP release is not ABI-compatible with the previous one, update the minor part of the version
       of `GAP.jl` in its `Project.toml`
-   5. If the GAP release was created from a new release branch (e.g. `stable-4.15` instead of `stable-4.14`),
+   5. If the GAP kernel major version changed, update `GAP_JLL_KERNEL_MAJOR_VERSION`
+      in `src/GAP_pkg.jl` accordingly.
+   6. If the GAP release was created from a new release branch (e.g. `stable-4.15` instead of `stable-4.14`),
       then update occurrences in `.github/workflows/gap.yml` accordingly. Furthermore, rename the subfolders
       of `.github/workflows/GAP_patches/` accordingly.
    Wait for the PR to pass CI (including the `treehash` job) and merge it.

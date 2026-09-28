@@ -201,6 +201,11 @@ function __init__()
         windows_error()
     end
 
+    # only `etc/run_with_override.jl` may use a GAP with a different kernel
+    if !kernel_major_versions_match() && get(ENV, "GAP_JL_RUN_WITH_OVERRIDE", "") != "true"
+        error("Unexpected GAP kernel major version: expected $(GAP_JLL_KERNEL_MAJOR_VERSION), have $(sysinfo["GAP_KERNEL_MAJOR_VERSION"])")
+    end
+
     global JuliaInterface_path = Setup.locate_JuliaInterface_so()
 
     roots = [

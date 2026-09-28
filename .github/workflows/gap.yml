@@ -21,7 +21,7 @@ concurrency:
 
 jobs:
   test:
-    name: Julia ${{ matrix.julia-version }} - GAP ${{ matrix.gap-version }} - ${{ matrix.os }}${{ matrix.validate-marking && ' - VALIDATE_MARKING' || '' }}
+    name: Julia ${{ matrix.julia-version }} - GAP ${{ matrix.gap-version }} - ${{ matrix.os }}${{ matrix.validate-marking && ' - VALIDATE_MARKING' || '' }}${{ matrix.kernel-version-mismatch && ' - kernel version mismatch' || '' }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
     continue-on-error: ${{ matrix.julia-version == 'nightly' }}
@@ -37,6 +37,8 @@ jobs:
           - 'nightly'
         os:
           - ubuntu-latest
+        kernel-version-mismatch:
+          - false
         validate-marking:
           - false
         include:
@@ -53,6 +55,12 @@ jobs:
             julia-version: '1'
             os: ubuntu-latest
             validate-marking: true
+          # raise GAP's kernel major version, so the JLL kernel extensions
+          # are ignored and packages use their own compiled ones
+          - gap-version: 'master'
+            julia-version: '1'
+            os: ubuntu-latest
+            kernel-version-mismatch: true
 
     steps:
       - uses: actions/checkout@v7
@@ -97,6 +105,10 @@ jobs:
               echo "Applying patch ${f}"
               patch -p1 -d . < ${f}
             done
+          fi
+          if [ "${{ matrix.kernel-version-mismatch }}" = "true" ]; then
+            sed -i 's/^m4_define(\[kernel_major_version\], \[[0-9]*\])$/m4_define([kernel_major_version], [9999])/' configure.ac
+            grep -n '^m4_define(\[kernel_major_version\], \[9999\])$' configure.ac  # fail if sed did not replace anything
           fi
           ./autogen.sh
           ./configure
