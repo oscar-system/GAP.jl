@@ -37,6 +37,8 @@ jobs:
           - 'nightly'
         os:
           - ubuntu-latest
+        kernel-version-mismatch:
+          - false
         validate-marking:
           - false
         include:
