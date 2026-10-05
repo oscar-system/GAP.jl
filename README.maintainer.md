@@ -63,6 +63,53 @@ extensions compiled in their own `bin` directories, otherwise they fail to
 load. Outside of `etc/run_with_override.jl`, such a mismatch is an error.
 
 
+## Using GAP.jl with a different version of a GAP package
+
+GAP.jl bundles many GAP packages: their GAP code as artifacts of GAP.jl, and
+their kernel extensions resp. executables in `GAP_pkg_*_jll` packages. To
+test a modified copy of such a package (say, with a patched C file), use the
+`etc/setup_pkg_override.jl` script. A C compiler and `make` are required.
+
+1. Put the package into a directory `PKGDIR`. To start from the bundled
+   version, copy it; the files of an artifact are read-only, hence the `chmod`:
+
+        julia --project -e 'using GAP; cp(GAP.Packages.locate_package("browse"), "PKGDIR")'
+        chmod -R u+w PKGDIR
+
+   A git clone of a package may need `./autogen.sh` to be run first.
+
+2. Run the script with `PKGDIR` and a directory `DEPOT` it may create:
+
+        julia --project etc/setup_pkg_override.jl PKGDIR DEPOT
+
+   If the package has a JLL, this runs `./configure` and `make` in `PKGDIR`
+   against the GAP from `GAP_jll`. Then it writes `DEPOT/artifacts/Overrides.toml`,
+   which redirects the GAP.jl artifact to `PKGDIR` and the JLL artifact to
+   the compiled binaries in `PKGDIR/bin`.
+
+   Packages using external libraries need extra arguments, given via
+   `--configure-arg=ARG` and `--make-arg=ARG`. Look them up in the
+   [build recipe](https://github.com/JuliaPackaging/Yggdrasil/tree/master/G/GAP_pkg)
+   of the JLL; where the recipe refers to `${prefix}`, write `@Foo_jll@` for
+   the directory of the dependency `Foo_jll`. For Browse this gives
+
+        julia --project etc/setup_pkg_override.jl PKGDIR DEPOT \
+            '--make-arg=CFLAGS=-I@Ncurses_jll@/include -I@Ncurses_jll@/include/ncurses' \
+            '--make-arg=LDFLAGS=-L@Ncurses_jll@/lib'
+
+   With `--no-build` nothing is compiled: only the GAP code is taken from
+   `PKGDIR`, the binaries still come from the JLL.
+
+3. Start Julia with the `JULIA_DEPOT_PATH` printed by the script, which puts
+   `DEPOT` in front of the regular depots. Nothing is reinstalled or
+   precompiled again, and sessions started without it are unaffected. Check
+   the result with `GAP.Packages.locate_package("browse")`.
+
+After changing GAP code in `PKGDIR`, restart Julia; after changing C code,
+rerun step 2 first. To override several packages, use one `DEPOT` for each
+and put all of them in front of `JULIA_DEPOT_PATH`.
+
+
 ## Directions for updating GAP.jl
 
 `GAP.jl` depends on the GAP kernel, the GAP library,
