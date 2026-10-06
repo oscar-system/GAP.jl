@@ -15,7 +15,7 @@
 #include "JuliaInterface.h"
 
 
-static Obj DoCallJuliaFunc0Arg(Obj func);
+static Obj DoCallJuliaFunc0Arg(Obj func) GAP_GC_CANSAFEPOINT;
 
 
 typedef struct {
@@ -27,7 +27,7 @@ typedef struct {
 // Helper used to call GAP functions from Julia.
 //
 // This function is used by GAP.jl
-Obj call_gap_func(Obj func, jl_value_t * args)
+Obj call_gap_func(Obj func, jl_value_t * args) GAP_GC_CANSAFEPOINT
 {
     if (!jl_is_tuple(args))
         jl_error("<args> must be a tuple");
@@ -35,64 +35,59 @@ Obj call_gap_func(Obj func, jl_value_t * args)
     size_t len = jl_nfields(args);
     Obj    return_value = NULL;
     if (IS_FUNC(func) && len <= 6) {
+        // converting one argument can collect, so the ones converted before
+        // it must already be rooted
+        Obj a[6] = { 0 };
+        GAP_GC_PUSH6(&a[0], &a[1], &a[2], &a[3], &a[4], &a[5]);
+        for (size_t i = 0; i < len; i++)
+            a[i] = gap_julia(jl_fieldref(args, i));
         switch (len) {
         case 0:
             return_value = CALL_0ARGS(func);
             break;
         case 1:
-            return_value = CALL_1ARGS(func, gap_julia(jl_fieldref(args, 0)));
+            return_value = CALL_1ARGS(func, a[0]);
             break;
         case 2:
-            return_value = CALL_2ARGS(func, gap_julia(jl_fieldref(args, 0)),
-                                      gap_julia(jl_fieldref(args, 1)));
+            return_value = CALL_2ARGS(func, a[0], a[1]);
             break;
         case 3:
-            return_value = CALL_3ARGS(func, gap_julia(jl_fieldref(args, 0)),
-                                      gap_julia(jl_fieldref(args, 1)),
-                                      gap_julia(jl_fieldref(args, 2)));
+            return_value = CALL_3ARGS(func, a[0], a[1], a[2]);
             break;
         case 4:
-            return_value = CALL_4ARGS(func, gap_julia(jl_fieldref(args, 0)),
-                                      gap_julia(jl_fieldref(args, 1)),
-                                      gap_julia(jl_fieldref(args, 2)),
-                                      gap_julia(jl_fieldref(args, 3)));
+            return_value = CALL_4ARGS(func, a[0], a[1], a[2], a[3]);
             break;
         case 5:
-            return_value = CALL_5ARGS(func, gap_julia(jl_fieldref(args, 0)),
-                                      gap_julia(jl_fieldref(args, 1)),
-                                      gap_julia(jl_fieldref(args, 2)),
-                                      gap_julia(jl_fieldref(args, 3)),
-                                      gap_julia(jl_fieldref(args, 4)));
+            return_value = CALL_5ARGS(func, a[0], a[1], a[2], a[3], a[4]);
             break;
         case 6:
-            return_value = CALL_6ARGS(func, gap_julia(jl_fieldref(args, 0)),
-                                      gap_julia(jl_fieldref(args, 1)),
-                                      gap_julia(jl_fieldref(args, 2)),
-                                      gap_julia(jl_fieldref(args, 3)),
-                                      gap_julia(jl_fieldref(args, 4)),
-                                      gap_julia(jl_fieldref(args, 5)));
+            return_value =
+                CALL_6ARGS(func, a[0], a[1], a[2], a[3], a[4], a[5]);
             break;
         }
+        GAP_GC_POP();
     }
     else {
         Obj arg_list = NEW_PLIST(T_PLIST, len);
+        GAP_GC_PUSH1(&arg_list);
         SET_LEN_PLIST(arg_list, len);
         for (size_t i = 0; i < len; i++) {
             SET_ELM_PLIST(arg_list, i + 1, gap_julia(jl_fieldref(args, i)));
             CHANGED_BAG(arg_list);
         }
         return_value = CallFuncList(func, arg_list);
+        GAP_GC_POP();
     }
     return return_value;
 }
 
 
-inline Int IS_JULIA_FUNC(Obj obj)
+inline Int IS_JULIA_FUNC(Obj obj) GAP_GC_NOTSAFEPOINT
 {
     return IS_FUNC(obj) && (HDLR_FUNC(obj, 0) == DoCallJuliaFunc0Arg);
 }
 
-inline jl_value_t * GET_JULIA_FUNC(Obj func)
+inline jl_value_t * GET_JULIA_FUNC(Obj func GAP_GC_PROPAGATES_ROOT) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(IS_JULIA_FUNC(func));
     return GET_JULIA_OBJ(
@@ -123,7 +118,7 @@ inline jl_value_t * GET_JULIA_FUNC(Obj func)
 // list from the innermost call outwards.
 static JuliaCall * InnermostJuliaCall = 0;
 
-void BeginJuliaCall(JuliaCall * call)
+void BeginJuliaCall(JuliaCall * call) GAP_GC_NOTSAFEPOINT
 {
     call->prev = InnermostJuliaCall;
     call->tryCatchDepth = STATE(TryCatchDepth);
@@ -132,7 +127,7 @@ void BeginJuliaCall(JuliaCall * call)
     InnermostJuliaCall = call;
 }
 
-void EndJuliaCall(JuliaCall * call)
+void EndJuliaCall(JuliaCall * call) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(call == InnermostJuliaCall);
     InnermostJuliaCall = call->prev;
@@ -142,7 +137,7 @@ void EndJuliaCall(JuliaCall * call)
 // Called by GAP.jl's throw observer when a GAP error is about to longjmp to
 // the catch point at <tryCatchDepth>. Returns 1 if the innermost call into
 // Julia was made after that catch point was entered.
-int gap_error_skips_julia_call(int tryCatchDepth)
+int gap_error_skips_julia_call(int tryCatchDepth) GAP_GC_NOTSAFEPOINT
 {
     return InnermostJuliaCall &&
            tryCatchDepth <= InnermostJuliaCall->tryCatchDepth;
@@ -152,45 +147,56 @@ int gap_error_skips_julia_call(int tryCatchDepth)
 // Julia exception: resets GAP's recursion depth to its value at the
 // innermost call into Julia, where the Julia code catching the exception
 // runs, or to 0 if Julia called GAP from top level.
-void restore_recursion_depth_for_julia(void)
+void restore_recursion_depth_for_julia(void) GAP_GC_NOTSAFEPOINT
 {
     SetRecursionDepth(InnermostJuliaCall ? InnermostJuliaCall->recursionDepth
                                          : 0);
 }
 
-static ALWAYS_INLINE Obj DoCallJuliaFunc(Obj func, const int narg, Obj * a)
+static ALWAYS_INLINE Obj
+DoCallJuliaFunc(Obj func, const int narg, Obj * a) GAP_GC_CANSAFEPOINT
 {
-    jl_value_t * result;
-
+    // Converting an argument can allocate, and so collect, while the ones
+    // converted before it are held nowhere else: convert into a GC frame.
+    jl_value_t ** args;
+    GAP_GC_PUSHARGS(args, narg);
     for (int i = 0; i < narg; i++) {
-        a[i] = (Obj)julia_gap(a[i]);
+        args[i] = julia_gap(a[i]);
     }
 
-    JuliaCall call;
-    BeginJuliaCall(&call);
     jl_value_t * f = (jl_value_t *)GET_JULIA_FUNC(func);
-    switch (narg) {
-    case 0:
-        result = jl_call0(f);
-        break;
-    case 1:
-        result = jl_call1(f, (jl_value_t *)a[0]);
-        break;
-    case 2:
-        result = jl_call2(f, (jl_value_t *)a[0], (jl_value_t *)a[1]);
-        break;
-    case 3:
-        result = jl_call3(f, (jl_value_t *)a[0], (jl_value_t *)a[1],
-                          (jl_value_t *)a[2]);
-        break;
-    default:
-        result = jl_call(f, (jl_value_t **)a, narg);
+    jl_value_t * result;
+    {
+        // the caller's local variables bag can lose its other references
+        // while Julia runs, if a GAP error abandons the GAP code in between
+        JuliaCall call;
+        BeginJuliaCall(&call);
+        GAP_GC_PUSH1(&call.lvars);
+        switch (narg) {
+        case 0:
+            result = jl_call0(f);
+            break;
+        case 1:
+            result = jl_call1(f, args[0]);
+            break;
+        case 2:
+            result = jl_call2(f, args[0], args[1]);
+            break;
+        case 3:
+            result = jl_call3(f, args[0], args[1], args[2]);
+            break;
+        default:
+            result = jl_call(f, args, narg);
+        }
+        EndJuliaCall(&call);
+        GAP_GC_POP();
     }
-    EndJuliaCall(&call);
     if (jl_exception_occurred()) {
         handle_jl_exception();
     }
-    return gap_julia(result);
+    Obj ret = gap_julia(result);
+    GAP_GC_POP();
+    return ret;
 }
 
 //
@@ -198,24 +204,25 @@ static ALWAYS_INLINE Obj DoCallJuliaFunc(Obj func, const int narg, Obj * a)
 //
 
 
-static Obj DoCallJuliaFunc0Arg(Obj func)
+static Obj DoCallJuliaFunc0Arg(Obj func) GAP_GC_CANSAFEPOINT
 {
     return DoCallJuliaFunc(func, 0, 0);
 }
 
-static Obj DoCallJuliaFunc1Arg(Obj func, Obj arg1)
+static Obj DoCallJuliaFunc1Arg(Obj func, Obj arg1) GAP_GC_CANSAFEPOINT
 {
     Obj a[] = { arg1 };
     return DoCallJuliaFunc(func, 1, a);
 }
 
-static Obj DoCallJuliaFunc2Arg(Obj func, Obj arg1, Obj arg2)
+static Obj DoCallJuliaFunc2Arg(Obj func, Obj arg1, Obj arg2) GAP_GC_CANSAFEPOINT
 {
     Obj a[] = { arg1, arg2 };
     return DoCallJuliaFunc(func, 2, a);
 }
 
 static Obj DoCallJuliaFunc3Arg(Obj func, Obj arg1, Obj arg2, Obj arg3)
+    GAP_GC_CANSAFEPOINT
 {
     Obj a[] = { arg1, arg2, arg3 };
     return DoCallJuliaFunc(func, 3, a);
@@ -223,6 +230,7 @@ static Obj DoCallJuliaFunc3Arg(Obj func, Obj arg1, Obj arg2, Obj arg3)
 
 static Obj
 DoCallJuliaFunc4Arg(Obj func, Obj arg1, Obj arg2, Obj arg3, Obj arg4)
+    GAP_GC_CANSAFEPOINT
 {
     Obj a[] = { arg1, arg2, arg3, arg4 };
     return DoCallJuliaFunc(func, 4, a);
@@ -230,6 +238,7 @@ DoCallJuliaFunc4Arg(Obj func, Obj arg1, Obj arg2, Obj arg3, Obj arg4)
 
 static Obj DoCallJuliaFunc5Arg(
     Obj func, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5)
+    GAP_GC_CANSAFEPOINT
 {
     Obj a[] = { arg1, arg2, arg3, arg4, arg5 };
     return DoCallJuliaFunc(func, 5, a);
@@ -237,12 +246,13 @@ static Obj DoCallJuliaFunc5Arg(
 
 static Obj DoCallJuliaFunc6Arg(
     Obj func, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6)
+    GAP_GC_CANSAFEPOINT
 {
     Obj a[] = { arg1, arg2, arg3, arg4, arg5, arg6 };
     return DoCallJuliaFunc(func, 6, a);
 }
 
-static Obj DoCallJuliaFuncXArg(Obj func, Obj args)
+static Obj DoCallJuliaFuncXArg(Obj func, Obj args) GAP_GC_CANSAFEPOINT
 {
     const int len = LEN_PLIST(args);
     Obj       a[len];
@@ -256,11 +266,17 @@ static Obj DoCallJuliaFuncXArg(Obj func, Obj args)
 //
 //
 //
-Obj WrapJuliaFunc(jl_value_t * function)
+Obj WrapJuliaFunc(jl_value_t * function) GAP_GC_CANSAFEPOINT
 {
-    Obj name = MakeImmString(jl_symbol_name(jl_gf_name(function)));
-    Obj func = NewFunctionT(T_FUNCTION, sizeof(JuliaFuncBag), name, -1,
-                            ArgStringToList("arg"), 0);
+    Obj name = 0;
+    Obj args = 0;
+    Obj func = 0;
+    Obj body = 0;
+    Obj filename = 0;
+    GAP_GC_PUSH5(&name, &args, &func, &body, &filename);
+    name = MakeImmString(jl_symbol_name(jl_gf_name(function)));
+    args = ArgStringToList("arg");
+    func = NewFunctionT(T_FUNCTION, sizeof(JuliaFuncBag), name, -1, args, 0);
 
     SET_HDLR_FUNC(func, 0, DoCallJuliaFunc0Arg);
     SET_HDLR_FUNC(func, 1, DoCallJuliaFunc1Arg);
@@ -277,13 +293,15 @@ Obj WrapJuliaFunc(jl_value_t * function)
     // add a function body so that we can store some meta data about the
     // origin of this function, for slightly more helpful printing of the
     // function.
-    Obj body = NewBag(T_BODY, sizeof(BodyHeader));
-    SET_FILENAME_BODY(body, MakeImmString("Julia"));
+    body = NewBag(T_BODY, sizeof(BodyHeader));
+    filename = MakeImmString("Julia");
+    SET_FILENAME_BODY(body, filename);
     SET_LOCATION_BODY(body, name);
     SET_BODY_FUNC(func, body);
     CHANGED_BAG(body);
     CHANGED_BAG(func);
 
+    GAP_GC_POP();
     return func;
 }
 
@@ -291,7 +309,7 @@ Obj WrapJuliaFunc(jl_value_t * function)
 //
 //
 //
-jl_value_t * UnwrapJuliaFunc(Obj func)
+jl_value_t * UnwrapJuliaFunc(Obj func) GAP_GC_NOTSAFEPOINT
 {
     // if it is a wrapped Julia function, return that
     if (IS_JULIA_FUNC(func))

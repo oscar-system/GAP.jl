@@ -16,7 +16,11 @@
 #include <julia.h>
 #include <libgap-api.h>
 
-extern jl_value_t * julia_gap(Obj obj);
-extern Obj          gap_julia(jl_value_t * julia_obj);
+#include "gc_compat.h"
+
+extern jl_value_t * julia_gap(Obj obj) GAP_GC_CANSAFEPOINT;
+// <julia_obj> need not be rooted: it is either returned as is, unboxed, or
+// wrapped by NewJuliaObj, which roots it.
+extern Obj gap_julia(jl_value_t * julia_obj GAP_GC_MAYBE_UNROOTED) GAP_GC_CANSAFEPOINT;
 
 #endif
