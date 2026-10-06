@@ -152,6 +152,7 @@ InstallMethod( ContextGAPNemo,
       MatrixWrapped:= function( C, mat )
         return ObjectifyWithAttributes( rec(), C!.MatrixType,
                    JuliaPointer, mat,
+                   ConstructingFilter, IsNemoObject,
                    BaseDomain, C!.GAPDomain );
       end,
     ) );
