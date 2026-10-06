@@ -361,8 +361,7 @@ julia> Matrix{Int64}(val)
  1  2
  3  4
 
-julia> val = GAP.evalstr( "NewMatrix( IsPlistMatrixRep, Integers, 2, [ 0, 1, 2, 3 ] )" )
-GAP: <2x2-matrix over Integers>
+julia> val = GAP.evalstr( "NewMatrix( IsPlistMatrixRep, Integers, 2, [ 0, 1, 2, 3 ] )" );
 
 julia> Matrix{Int64}(val)
 2×2 Matrix{Int64}:
