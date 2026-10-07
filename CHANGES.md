@@ -1,5 +1,10 @@
 # Changes in GAP.jl
 
+## Version 0.17.8 (released 2026-XX-XX)
+
+- Declare compatibility with AbstractAlgebra 0.51
+- Declare compatibility with Nemo 0.57
+
 ## Version 0.17.7 (released 2026-09-24)
 
 - Updated for compatibility with latest Julia nightly builds
