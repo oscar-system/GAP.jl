@@ -9,10 +9,27 @@
 ##  SPDX-License-Identifier: LGPL-3.0-or-later
 ##
 
-# Regression tests for conservative scanning of task stacks by the GAP
-# garbage collector integration; see test/gc_common.jl for the technique.
+# Regression tests for the GAP garbage collector integration. Those for the
+# conservative scanning of task stacks use the technique described in
+# test/gc_common.jl.
 
 include("gc_common.jl")
+
+# Run a test script in a subprocess, as some failures are crashes; returns
+# whether it succeeded and its output.
+function run_gc_script(name, flags = ``)
+    script = joinpath(@__DIR__, name)
+    cmd = `$(Base.julia_cmd()) $flags --project=$(Base.active_project()) $(script)`
+    mktemp() do path, out
+        p = run(pipeline(cmd; stdout = out, stderr = out); wait = false)
+        if timedwait(() -> !process_running(p), 300) == :timed_out
+            kill(p)
+            wait(p)
+        end
+        close(out)
+        return success(p), read(path, String)
+    end
+end
 
 @testset "GC and task stacks" begin
     victim = GCTestHelpers.make_gap_victim("Julia.Main.GCTestHelpers.jwait(jch)")
@@ -52,24 +69,19 @@ include("gc_common.jl")
     # only in a C stack temporary; needs a multi-threaded subprocess, and
     # --gcthreads=2 additionally exercises the task scanner callback on
     # parallel GC mark threads
-    script = joinpath(@__DIR__, "gc_threads_script.jl")
-    function run_threads_script()
-        cmd = `$(Base.julia_cmd()) -t2 --gcthreads=2 --project=$(Base.active_project()) $(script)`
-        mktemp() do path, out
-            p = run(pipeline(cmd; stdout = out, stderr = out); wait = false)
-            if timedwait(() -> !process_running(p), 300) == :timed_out
-                kill(p)
-                wait(p)
-            end
-            close(out)
-            return success(p), read(path, String)
-        end
-    end
+    run_threads_script() = run_gc_script("gc_threads_script.jl", `-t2 --gcthreads=2`)
     ok, output = run_threads_script()
     if !ok
         # retry once, e.g. after a timeout from an unlucky scheduling
         ok, output = run_threads_script()
     end
+    ok || println(output)
+    @test ok
+end
+
+@testset "GC marking" begin
+    # a dead master pointer on the stack whose bag body has been freed
+    ok, output = run_gc_script("gc_freed_body_script.jl")
     ok || println(output)
     @test ok
 end

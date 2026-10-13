@@ -1,0 +1,65 @@
+From 396eada32ade94ed5c3e80510671c60e0ac79b0f Mon Sep 17 00:00:00 2001
+From: Max Horn <max@quendi.de>
+Date: Tue, 13 Oct 2026 19:09:21 +0200
+Subject: [PATCH 1/2] julia-gc: Do not mark freed bag bodies
+
+`MPtrMarkFunc` took the Julia type tag of a bag body as proof that the
+body is still allocated. But Julia leaves the cells of a page untouched
+when it frees the page as a whole, so the tag of a freed small bag can
+stay in place.
+
+A quick sweep can free the page of a dead body and skip the page of its
+master pointer. When the conservative stack scan found that master
+pointer later, the freed body was queued for marking. Since Julia 1.10
+this crashes in `gc_setmark_pool_`, as a freed page has no metadata.
+This is the backtrace collected in oscar-system/GAP.jl#1224.
+
+Ask `jl_gc_internal_obj_base_ptr` whether the body of a small bag is
+allocated. Large bags are not checked, as that function only knows pool
+objects.
+
+A full collection scans every master pointer and got 5% to 14% slower
+in seven runs with one GC thread. A quick collection that marks one
+million new lists took 61 to 64 ms before and 64 to 65 ms after.
+
+Before:
+
+    julia> using GAP, Chairmarks
+
+    julia> l = GAP.evalstr("List([1..3000000], i -> [i])");
+
+    julia> GC.gc(true); GC.gc(true)
+
+    julia> @b GC.gc(true)
+    303.664 ms (98.08% gc time, without a warmup)
+
+After:
+
+    julia> @b GC.gc(true)
+    347.464 ms (98.28% gc time, without a warmup)
+
+Assisted-by: Claude Code (Opus 5.5)
+---
+ src/julia_gc.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/src/julia_gc.c b/src/julia_gc.c
+index 23c988ab0..dc182ebcf 100644
+--- a/src/julia_gc.c
++++ b/src/julia_gc.c
+@@ -642,6 +642,12 @@ static uintptr_t MPtrMarkFunc(jl_ptls_t ptls, jl_value_t * obj)
+     void * ty = jl_typeof(header);
+     if (ty != DatatypeSmallBag && ty != DatatypeLargeBag)
+         return 0;
++    // The tag alone does not prove that a small bag is still allocated:
++    // Julia leaves the cells of a page untouched when it frees the page as
++    // a whole.
++    if (ty == DatatypeSmallBag &&
++        jl_gc_internal_obj_base_ptr(header) != header)
++        return 0;
+     if (JMark(ptls, header))
+         return 1;
+     return 0;
+-- 
+2.56.0
+
