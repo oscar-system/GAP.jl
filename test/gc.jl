@@ -89,4 +89,9 @@ end
     ok, output = run_gc_script("gc_parallel_mark_script.jl", `--gcthreads=2`)
     ok || println(output)
     @test ok
+
+    # young Julia objects in old bags, reached through another reference first
+    ok, output = run_gc_script("gc_julia_obj_script.jl", `--gcthreads=1`)
+    ok || println(output)
+    @test ok
 end

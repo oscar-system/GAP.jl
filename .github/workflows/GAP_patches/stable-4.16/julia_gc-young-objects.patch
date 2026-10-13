@@ -1,0 +1,80 @@
+From ff2f3cc02cde9fa7719fbbdcc0af334f8c6c94e4 Mon Sep 17 00:00:00 2001
+From: Max Horn <max@quendi.de>
+Date: Tue, 13 Oct 2026 22:23:33 +0200
+Subject: [PATCH 2/2] julia-gc: Report young objects marked by someone else
+
+Mark functions count the young objects a bag references, so that an
+old bag stays in the remembered set. `JMark`, `JMarkTyped` and
+`MarkJuliaObjSafe` took the return value of `jl_gc_mark_queue_obj` for
+"the object is young". Up to Julia 1.9 it was. Since Julia 1.10
+(JuliaLang/julia#47292) it tells whether the call set the mark bit,
+which it does not if the object was marked before.
+
+With several GC threads another thread can mark a young bag between
+the check in `MarkBag` and the call. With one GC thread the same
+happens to a young Julia object in an old bag, which `CLONE_OBJ` can
+produce, if the collection reaches the object through another
+reference first. In both cases the old bag left the remembered set,
+and the next quick collection that did not reach the young object in
+another way freed it.
+
+Read from the GC bits whether the object is young.
+
+Assisted-by: Claude Code (Opus 5.5)
+---
+ src/julia_gc.c | 20 +++++++++++++++++---
+ 1 file changed, 17 insertions(+), 3 deletions(-)
+
+diff --git a/src/julia_gc.c b/src/julia_gc.c
+index ee9e1ed55..364fcadf3 100644
+--- a/src/julia_gc.c
++++ b/src/julia_gc.c
+@@ -265,12 +265,26 @@ static void MarkAllSubBagsDefault(Bag bag, void * ref)
+     MarkArrayOfBags(CONST_PTR_BAG(bag), SIZE_BAG(bag) / sizeof(Bag), ref);
+ }
+ 
++// Queue `obj` for marking and return whether it is young. Mark functions
++// count the young objects a bag references, so that an old bag stays in
++// the remembered set. The return value of jl_gc_mark_queue_obj is of no
++// use for this: since Julia 1.10 it tells whether the call set the mark
++// bit, which it does not if `obj` was marked before, be it by another GC
++// thread.
++static inline int MarkQueueObj(jl_ptls_t ptls, void * obj)
++{
++    // 2 is GC_OLD
++    int young = !(jl_astaggedvalue(obj)->bits.gc & 2);
++    jl_gc_mark_queue_obj(ptls, (jl_value_t *)obj);
++    return young;
++}
++
+ static inline int JMarkTyped(jl_ptls_t ptls, void * obj, jl_datatype_t * ty)
+ {
+     // only traverse objects internally used by GAP
+     if (!jl_typeis(obj, ty))
+         return 0;
+-    return jl_gc_mark_queue_obj(ptls, (jl_value_t *)obj);
++    return MarkQueueObj(ptls, obj);
+ }
+ 
+ static inline int JMark(jl_ptls_t ptls, void * obj)
+@@ -285,7 +299,7 @@ static inline int JMark(jl_ptls_t ptls, void * obj)
+     if (!jl_typeis(ty, jl_datatype_type))
+         abort();
+ #endif
+-    return jl_gc_mark_queue_obj(ptls, (jl_value_t *)obj);
++    return MarkQueueObj(ptls, obj);
+ }
+ 
+ // helper called directly by GAP.jl / JuliaInterface
+@@ -301,7 +315,7 @@ void MarkJuliaObjSafe(void * obj, void * ref)
+         return;
+     if (!jl_typeis(ty, jl_datatype_type))
+         return;
+-    if (jl_gc_mark_queue_obj(((MarkData *)ref)->ptls, (jl_value_t *)obj))
++    if (MarkQueueObj(((MarkData *)ref)->ptls, obj))
+         ((MarkData *)ref)->youngRef++;
+ }
+ 
+-- 
+2.56.0
+
