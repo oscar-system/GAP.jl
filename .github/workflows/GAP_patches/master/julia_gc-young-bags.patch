@@ -1,0 +1,54 @@
+From bd8b056af74a4317ae6367d69501f8e429cb8e80 Mon Sep 17 00:00:00 2001
+From: Max Horn <max@quendi.de>
+Date: Tue, 13 Oct 2026 19:09:21 +0200
+Subject: [PATCH 2/2] julia-gc: Count young bags marked by another thread
+
+`MarkBag` counted a young, unmarked bag as a young reference only if
+`jl_gc_mark_queue_obj` returned 1. Up to Julia 1.9 that return value
+told whether the object is young. Since Julia 1.10
+(JuliaLang/julia#47292) it tells whether the call set the mark bit,
+and with several GC threads another thread can set it first.
+
+The reference then went uncounted, the old bag holding it was not put
+into the remembered set, and the next quick collection freed the young
+bag while the old one still referenced it.
+
+Count the reference whenever the GC bits say that the bag is young.
+
+Assisted-by: Claude Code (Opus 5.5)
+---
+ src/julia_gc.c | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
+
+diff --git a/src/julia_gc.c b/src/julia_gc.c
+index dc182ebcf..604d6624b 100644
+--- a/src/julia_gc.c
++++ b/src/julia_gc.c
+@@ -1020,16 +1020,17 @@ inline void MarkBag(Bag bag, void * ref)
+ #endif
+     }
+ #endif
+-    // The following code is a performance optimization and
+-    // relies on Julia internals. It is functionally equivalent
+-    // to:
+-    //
+-    //     if (JMarkTyped(p, DatatypeGapObj)) ((MarkData *)ref)->youngRef++;
+-    //
++    // Mark `p` and count it if it is young: an old bag referencing a young
++    // one has to stay in the remembered set. The GC bits tell whether `p`
++    // is young, which relies on Julia internals. The return value of
++    // jl_gc_mark_queue_obj does not tell: it is 0 for a young bag that
++    // another GC thread marked first.
+     switch (jl_astaggedvalue(p)->bits.gc) {
+     case 0:
+-        if (JMarkTyped(((MarkData *)ref)->ptls, p, DatatypeGapObj))
++        if (jl_typeis(p, DatatypeGapObj)) {
++            jl_gc_mark_queue_obj(((MarkData *)ref)->ptls, p);
+             ((MarkData *)ref)->youngRef++;
++        }
+         break;
+     case 1:
+         ((MarkData *)ref)->youngRef++;
+-- 
+2.56.0
+

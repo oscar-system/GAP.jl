@@ -84,4 +84,9 @@ end
     ok, output = run_gc_script("gc_freed_body_script.jl")
     ok || println(output)
     @test ok
+
+    # young bags referenced from two old bags that different GC threads scan
+    ok, output = run_gc_script("gc_parallel_mark_script.jl", `--gcthreads=2`)
+    ok || println(output)
+    @test ok
 end
