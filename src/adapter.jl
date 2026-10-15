@@ -486,7 +486,14 @@ Random.Sampler(::Type{<:AbstractGAPRNG}, x::AbstractVector, ::Random.Repetition)
 Base.literal_pow(::typeof(^), x::GapObj, ::Val{-1}) = Wrappers.InverseSameMutability(x)
 
 # iteration
-function Base.iterate(obj::GapObj)
+#
+# Both `iterate` methods are `@inline` so that in iteration loops the
+# `(x, state)` tuples can be elided by the compiler; e.g. `sum` over a
+# list of immediate integers then allocates only the boxes for the
+# values, not also two tuples per iteration. With this method not
+# inlined the loop state stays a union of tuple types, and the compiler
+# allocates the tuples even though the second method is inlined.
+@inline function Base.iterate(obj::GapObj)
     if Wrappers.IsList(obj)
         len = Wrappers.Length(obj)
         if len isa Int
@@ -505,10 +512,6 @@ function Base.iterate(obj::GapObj)
     end
 end
 
-# `@inline` so that in iteration loops the tuple returned here can be
-# elided by the compiler; e.g. `sum` over a list of immediate integers
-# then allocates only the boxes for the values, not also two tuples
-# per iteration
 @inline function Base.iterate(obj::GapObj, (i, len)::Tuple{Int,Int})
     i > len && return nothing
     res = ElmList(obj, i)
