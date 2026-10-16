@@ -486,46 +486,48 @@ Random.Sampler(::Type{<:AbstractGAPRNG}, x::AbstractVector, ::Random.Repetition)
 Base.literal_pow(::typeof(^), x::GapObj, ::Val{-1}) = Wrappers.InverseSameMutability(x)
 
 # iteration
-function Base.iterate(obj::GapObj)
+#
+# Lists, GAP iterators and collections share one state type: `(i, len, it)`
+# with `len == -1` for stepping a GAP iterator `it`, else position `i` in
+# the list `obj`. Wrappers like `enumerate` splat the state back into
+# `iterate`; with a union of state types that splat is a dynamic call per
+# element.
+#
+# Both `iterate` methods are `@inline` so that in iteration loops the
+# `(x, state)` tuples can be elided by the compiler; e.g. `sum` over a
+# list of immediate integers then allocates only the boxes for the
+# values, not also two tuples per iteration.
+@inline function Base.iterate(obj::GapObj)
     if Wrappers.IsList(obj)
         len = Wrappers.Length(obj)
         if len isa Int
-            iterate(obj, (1, len::Int))
+            iterate(obj, (1, len::Int, obj))
         else
             # we won't be able to iterate over this many elements anyway, but
             # we can still allow iteration until some large bound
-            iterate(obj, (1, typemax(Int)))
+            iterate(obj, (1, typemax(Int), obj))
         end
     elseif Wrappers.IsIterator(obj)
-        iterate(obj, Wrappers.ShallowCopy(obj))
+        iterate(obj, (0, -1, Wrappers.ShallowCopy(obj)))
     elseif Wrappers.IsCollection(obj)
-        iterate(obj, Wrappers.Iterator(obj)::GapObj)
+        iterate(obj, (0, -1, Wrappers.Iterator(obj)))
     else
         throw(ArgumentError("object cannot be iterated"))
     end
 end
 
-# `@inline` so that in iteration loops the tuple returned here can be
-# elided by the compiler; e.g. `sum` over a list of immediate integers
-# then allocates only the boxes for the values, not also two tuples
-# per iteration
-@inline function Base.iterate(obj::GapObj, (i, len)::Tuple{Int,Int})
+@inline function Base.iterate(obj::GapObj, (i, len, it)::Tuple{Int,Int,GapObj})
+    if len == -1
+        Wrappers.IsDoneIterator(it) && return nothing
+        return Wrappers.NextIterator(it), (i, len, it)
+    end
     i > len && return nothing
     res = ElmList(obj, i)
     while res === nothing  # dangerous if `len` is *larger* than the length
       i = i+1
       res = ElmList(obj, i)
     end
-    return res, (i+1, len)
-end
-
-@inline function Base.iterate(obj::GapObj, iter::GapObj)
-    if Wrappers.IsDoneIterator(iter)
-        nothing
-    else
-        x = Wrappers.NextIterator(iter)
-        (x, iter)
-    end
+    return res, (i+1, len, it)
 end
 
 Base.IteratorEltype(::Type{GapObj}) = Base.EltypeUnknown()
