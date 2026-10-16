@@ -84,7 +84,7 @@ import GAP: @wrap
 @wrap RNamObj(x::Any)::Int
 @wrap SetInfoLevel(x::GapObj, y::Int)::Nothing
 @wrap SetPackagePath(x::GapObj, y::GapObj)::Nothing
-@wrap ShallowCopy(x::Any)::Any
+@wrap ShallowCopy(x::GapObj)::GapObj
 @wrap Sort(x::GapObj)::Nothing
 @wrap String(x::Any)::Any
 @wrap StringViewObj(x::Any)::GapObj

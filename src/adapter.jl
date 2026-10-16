@@ -508,9 +508,9 @@ Base.literal_pow(::typeof(^), x::GapObj, ::Val{-1}) = Wrappers.InverseSameMutabi
             iterate(obj, (1, typemax(Int), obj))
         end
     elseif Wrappers.IsIterator(obj)
-        iterate(obj, (0, -1, Wrappers.ShallowCopy(obj)::GapObj))
+        iterate(obj, (0, -1, Wrappers.ShallowCopy(obj)))
     elseif Wrappers.IsCollection(obj)
-        iterate(obj, (0, -1, Wrappers.Iterator(obj)::GapObj))
+        iterate(obj, (0, -1, Wrappers.Iterator(obj)))
     else
         throw(ArgumentError("object cannot be iterated"))
     end
