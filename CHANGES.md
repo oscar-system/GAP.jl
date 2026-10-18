@@ -1,6 +1,6 @@
 # Changes in GAP.jl
 
-## Version 0.17.9 (released 2026-10-17)
+## Version 0.17.9 (released 2026-10-18)
 
 - Make iteration over GAP lists, iterators and collections allocation-free;
   `for x in obj`, `enumerate` and `zip` now cost the same as indexing
