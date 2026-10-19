@@ -33,7 +33,7 @@ jobs:
           - 'stable-4.16'
         julia-version:
           - '1'         # latest stable release
-          - '1.13-nightly'
+          - '1.14-nightly'
           - 'nightly'
         os:
           - ubuntu-latest
