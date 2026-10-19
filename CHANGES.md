@@ -1,5 +1,9 @@
 # Changes in GAP.jl
 
+## Version 0.17.10-DEV (released YYYY-MM-DD)
+
+- Updated for compatibility with Julia 1.15 nightly builds
+
 ## Version 0.17.9 (released 2026-10-18)
 
 - Make iteration over GAP lists, iterators and collections allocation-free;
