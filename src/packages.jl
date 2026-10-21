@@ -31,6 +31,22 @@ function __init__()
     mkpath(DEFAULT_PKGDIR[])
 end
 
+# Download `url` to `path` through a temporary file in the same directory,
+# so that a failed download leaves an existing file at `path` alone.
+function download_to_file(url::String, path::String, timeout::Real)
+    # `mv` with `force = true` would delete a directory at `path`
+    isdir(path) && throw(ArgumentError("target is a directory: $path"))
+
+    tmp = tempname(dirname(abspath(path)); cleanup = false)
+    try
+        Downloads.download(url, tmp; downloader = DOWNLOAD_HELPER[], timeout = timeout)
+        mv(tmp, path; force = true)
+    catch
+        rm(tmp; force = true)
+        rethrow()
+    end
+end
+
 function init_packagemanager()
     res = load("PackageManager")
     @assert res
@@ -59,10 +75,10 @@ function init_packagemanager()
                             recursive=true)
             end
             try
-              timeout = hasproperty(opt, :maxTime) ? Real(opt.maxTime) : Inf
+              # `maxTime := 0` means no timeout
+              timeout = hasproperty(opt, :maxTime) && opt.maxTime != 0 ? Real(opt.maxTime) : Inf
               if hasproperty(opt, :target)
-                Downloads.download(String(url), String(opt.target);
-                  downloader=DOWNLOAD_HELPER[], timeout=timeout)
+                download_to_file(String(url), String(opt.target), timeout)
                 return GapObj(Dict{Symbol, Any}(:success => true), recursive=true)
               else
                 buffer = Downloads.download(String(url), IOBuffer();
