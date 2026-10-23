@@ -6,7 +6,7 @@
 - Fix the Julia-based method for `Download` deleting an existing target
   file when a download fails
 - Treat `maxTime := 0` in the Julia-based method for `Download` as "no
-  timeout", as documented in the utils package
+  timeout", as documented in GAP's utils package
 
 ## Version 0.17.9 (released 2026-10-18)
 

@@ -75,7 +75,7 @@ function init_packagemanager()
                             recursive=true)
             end
             try
-              # `maxTime := 0` means no timeout
+              # a `maxTime` of 0 means no timeout
               timeout = hasproperty(opt, :maxTime) && opt.maxTime != 0 ? Real(opt.maxTime) : Inf
               if hasproperty(opt, :target)
                 download_to_file(String(url), String(opt.target), timeout)
