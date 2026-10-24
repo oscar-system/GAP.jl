@@ -142,7 +142,7 @@ end
     @test isdir(target)
     rm(target, force = true)
 
-    # `maxTime := 0` means no timeout
+    # a `maxTime` of 0 means no timeout
     r = dl(url, maxTime = 0)
     @test r.success && string(r.result) == "CONTENT\n"
     @test dl(url, target = target, maxTime = 0).success
