@@ -104,3 +104,47 @@
     @test GAP.Packages.remove("orb", interactive = false)
     @test GAP.Packages.remove("genss", interactive = false)
 end
+
+@testset "Download method via Julia" begin
+    meth = GAP.Globals.Download_Methods[1]
+    @test string(meth.name) == "via Julia's Downloads.download"
+    dl(url; opt...) = meth.download(GapObj(url), GapObj(Dict{Symbol, Any}(opt), recursive = true))
+
+    dir = mktempdir()
+    src = joinpath(dir, "src")
+    write(src, "CONTENT\n")
+    url = "file://" * src
+    bad_url = "file://" * joinpath(dir, "missing")
+    target = joinpath(dir, "target")
+    content(path) = isfile(path) ? read(path, String) : nothing
+
+    # download into a string, or into a new or an existing file
+    r = dl(url)
+    @test r.success && string(r.result) == "CONTENT\n"
+    @test dl(url, target = target).success
+    @test content(target) == "CONTENT\n"
+    write(target, "OLD\n")
+    @test dl(url, target = target).success
+    @test content(target) == "CONTENT\n"
+    @test readdir(dir) == ["src", "target"]
+
+    # a failed download leaves an existing target alone and creates no file
+    write(target, "PRECIOUS\n")
+    @test ! dl(bad_url, target = target).success
+    @test content(target) == "PRECIOUS\n"
+    rm(target, force = true)
+    @test ! dl(bad_url, target = target).success
+    @test readdir(dir) == ["src"]
+
+    # a directory is not replaced
+    mkdir(target)
+    @test ! dl(url, target = target).success
+    @test isdir(target)
+    rm(target, force = true)
+
+    # a `maxTime` of 0 means no timeout
+    r = dl(url, maxTime = 0)
+    @test r.success && string(r.result) == "CONTENT\n"
+    @test dl(url, target = target, maxTime = 0).success
+    @test content(target) == "CONTENT\n"
+end
