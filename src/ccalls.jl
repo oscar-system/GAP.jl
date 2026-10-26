@@ -36,14 +36,14 @@ Base.@assume_effects :foldable !:consistent @inline function _GAP_TO_JULIA(::Typ
     as_int & 1 == 1 && return (as_int >> 2)::T
     as_int & 2 == 2 && return reinterpret(FFE, ptr)::T
     tnum = TNUM_OBJ(ptr)
-    if tnum < FIRST_EXTERNAL_TNUM
-        if tnum == T_BOOL
-            ptr == _GAP_True[] && return true::T
-            ptr == _GAP_False[] && return false::T
-        end
-        return unsafe_pointer_to_objref(ptr)::T
+    if tnum == T_BOOL
+        ptr == _GAP_True[] && return true::T
+        ptr == _GAP_False[] && return false::T
+    elseif tnum == T_JULIA_OBJ
+        # unwrap the Julia object referenced by the first data word
+        ptr = unsafe_load(unsafe_load(Ptr{Ptr{Ptr{Cvoid}}}(ptr)))
     end
-    return (@ccall JuliaInterface_path.julia_gap(ptr::Ptr{Cvoid})::Any)::T
+    return unsafe_pointer_to_objref(ptr)::T
 end
 
 @static if VERSION >= v"1.12-"
@@ -63,14 +63,14 @@ Base.@assume_effects :foldable !:consistent function _GAP_TO_JULIA(ptr::Ptr{Cvoi
     as_int & 1 == 1 && return as_int >> 2
     as_int & 2 == 2 && return reinterpret(FFE, ptr)
     tnum = TNUM_OBJ(ptr)
-    if tnum < FIRST_EXTERNAL_TNUM
-        if tnum == T_BOOL
-            ptr == _GAP_True[] && return true
-            ptr == _GAP_False[] && return false
-        end
-        return unsafe_pointer_to_objref(ptr)
+    if tnum == T_BOOL
+        ptr == _GAP_True[] && return true
+        ptr == _GAP_False[] && return false
+    elseif tnum == T_JULIA_OBJ
+        # unwrap the Julia object referenced by the first data word
+        ptr = unsafe_load(unsafe_load(Ptr{Ptr{Ptr{Cvoid}}}(ptr)))
     end
-    return @ccall JuliaInterface_path.julia_gap(ptr::Ptr{Cvoid})::Any
+    return unsafe_pointer_to_objref(ptr)
 end
 
 # ... and for the same reason the untyped conversion is used for `Any`
@@ -82,7 +82,7 @@ end
 # low-level Julia -> GAP conversion
 #
 _JULIA_TO_GAP(val::Any) = @ccall JuliaInterface_path.gap_julia(val::Any)::Ptr{Cvoid}
-#_JULIA_TO_GAP(x::Bool) = x ? gap_true : gap_false
+_JULIA_TO_GAP(x::Bool) = x ? _GAP_True[] : _GAP_False[]
 _JULIA_TO_GAP(x::FFE) = reinterpret(Ptr{Cvoid}, x)
 _JULIA_TO_GAP(x::GapObj) = pointer_from_objref(x)
 
