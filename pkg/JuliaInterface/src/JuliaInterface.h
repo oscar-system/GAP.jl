@@ -20,6 +20,13 @@
 // internal helper
 NOINLINE void handle_jl_exception(void);
 
+// Interrupt bridge, see JuliaInterface.c
+extern volatile int gap_interrupt_depth;
+extern volatile int gap_interrupt_requested;
+void JuliaInterface_InstallSigintHandler(void * readline_state);
+void JuliaInterface_RequestGapInterrupt(void);
+int  JuliaInterface_TakeUnhandledGapInterrupt(void);
+
 // Internal Julia access functions
 
 // GET_JULIA_OBJ(o)

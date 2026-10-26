@@ -20,15 +20,6 @@ This GAP prompt allows one to quickly switch between writing Julia and GAP code 
 a session where all data is shared.
 """
 function prompt()
-    # save the current SIGINT handler
-    # (we pass NULL as signal handler; strictly speaking, we should be passing `SIG_DFL`
-    # but it's not clear how to access this from here, and anyway on the list
-    # of platforms we support, it is NULL)
-    old_sigint = @ccall signal(Base.SIGINT::Cint, C_NULL::Ptr{Cvoid})::Ptr{Cvoid}
-
-    # install GAP's SIGINT handler
-    @ccall libgap.SyInstallAnswerIntr()::Cvoid
-
     # restore GAP's error output
     set_error_handler_disabled(true)
     replace_global!(:ERROR_OUTPUT, Globals._JULIAINTERFACE_ORIGINAL_ERROR_OUTPUT)
@@ -36,19 +27,20 @@ function prompt()
     # enable break loop
     Globals.BreakOnError = true
 
-    # start GAP repl
-    Globals.SESSION()
+    # GAP's REPL takes over the terminal; hand it back to Julia afterwards
+    try
+        _with_saved_signal_state(_SIGNALS_OWNED_BY_JULIA) do
+            Globals.SESSION()
+        end
+    finally
+        # disable break loop
+        Globals.BreakOnError = false
 
-    # disable break loop
-    Globals.BreakOnError = false
-
-    # restore signal handler
-    @ccall signal(Base.SIGINT::Cint, old_sigint::Ptr{Cvoid})::Ptr{Cvoid}
-
-    # Leaving the GAP prompt returns control to ordinary Julia code, so turn
-    # GAP.jl's custom error capture back on for subsequent Julia -> GAP calls.
-    set_error_handler_disabled(false)
-    replace_global!(:ERROR_OUTPUT, Globals._JULIAINTERFACE_ERROR_OUTPUT)
+        # Leaving the GAP prompt returns control to ordinary Julia code, so turn
+        # GAP.jl's custom error capture back on for subsequent Julia -> GAP calls.
+        set_error_handler_disabled(false)
+        replace_global!(:ERROR_OUTPUT, Globals._JULIAINTERFACE_ERROR_OUTPUT)
+    end
 end
 
 # helper function for `gap.sh` scripts created by create_gap_sh()
