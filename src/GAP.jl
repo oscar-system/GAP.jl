@@ -147,33 +147,17 @@ function initialize(argv::Vector{String})
     end
 
     # verify our TNUMs are still correct
-    @assert T_INT == ValueGlobalVariable(:T_INT)
-    @assert T_INTPOS == ValueGlobalVariable(:T_INTPOS)
-    @assert T_INTNEG == ValueGlobalVariable(:T_INTNEG)
-    @assert T_RAT == ValueGlobalVariable(:T_RAT)
-    @assert T_CYC == ValueGlobalVariable(:T_CYC)
-    @assert T_FFE == ValueGlobalVariable(:T_FFE)
-    @assert T_MACFLOAT == ValueGlobalVariable(:T_MACFLOAT)
-    @assert T_PERM2 == ValueGlobalVariable(:T_PERM2)
-    @assert T_PERM4 == ValueGlobalVariable(:T_PERM4)
-    @assert T_TRANS2 == ValueGlobalVariable(:T_TRANS2)
-    @assert T_TRANS4 == ValueGlobalVariable(:T_TRANS4)
-    @assert T_PPERM2 == ValueGlobalVariable(:T_PPERM2)
-    @assert T_PPERM4 == ValueGlobalVariable(:T_PPERM4)
-    @assert T_BOOL == ValueGlobalVariable(:T_BOOL)
-    @assert T_CHAR == ValueGlobalVariable(:T_CHAR)
-    @assert T_FUNCTION == ValueGlobalVariable(:T_FUNCTION)
-    @assert T_BODY == ValueGlobalVariable(:T_BODY)
-    @assert T_FLAGS == ValueGlobalVariable(:T_FLAGS)
-    @assert T_LVARS == ValueGlobalVariable(:T_LVARS)
-    @assert T_HVARS == ValueGlobalVariable(:T_HVARS)
-    @assert FIRST_EXTERNAL_TNUM == ValueGlobalVariable(:FIRST_EXTERNAL_TNUM)
+    for name in TNUM_NAMES
+        @assert getglobal(GAP, name) == ValueGlobalVariable(name) "TNUM $name differs from GAP's"
+    end
 
     # check that JuliaInterface has been loaded
     # (it binds the GAP variable `Julia`)
-    if _ValueGlobalVariable("Julia") == C_NULL
+    julia = _ValueGlobalVariable("Julia")
+    if julia == C_NULL
         error("JuliaInterface could not be loaded")
     end
+    @assert TNUM_OBJ(julia) == T_JULIA_OBJ
 
     # If we are in "stand-alone mode", stop here
     if handle_signals
