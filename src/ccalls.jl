@@ -40,8 +40,9 @@ Base.@assume_effects :foldable !:consistent @inline function _GAP_TO_JULIA(::Typ
         ptr == _GAP_True[] && return true::T
         ptr == _GAP_False[] && return false::T
     elseif tnum == T_JULIA_OBJ
-        # unwrap the Julia object referenced by the first data word
-        ptr = unsafe_load(unsafe_load(Ptr{Ptr{Ptr{Cvoid}}}(ptr)))
+        # the first data word references the wrapped Julia object, see
+        # `NewJuliaObj` and `GET_JULIA_OBJ` in JuliaInterface.c
+        ptr = unsafe_load(Ptr{Ptr{Cvoid}}(ADDR_OBJ(ptr)))
     end
     return unsafe_pointer_to_objref(ptr)::T
 end
@@ -67,8 +68,9 @@ Base.@assume_effects :foldable !:consistent function _GAP_TO_JULIA(ptr::Ptr{Cvoi
         ptr == _GAP_True[] && return true
         ptr == _GAP_False[] && return false
     elseif tnum == T_JULIA_OBJ
-        # unwrap the Julia object referenced by the first data word
-        ptr = unsafe_load(unsafe_load(Ptr{Ptr{Ptr{Cvoid}}}(ptr)))
+        # the first data word references the wrapped Julia object, see
+        # `NewJuliaObj` and `GET_JULIA_OBJ` in JuliaInterface.c
+        ptr = unsafe_load(Ptr{Ptr{Cvoid}}(ADDR_OBJ(ptr)))
     end
     return unsafe_pointer_to_objref(ptr)
 end

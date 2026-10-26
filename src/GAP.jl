@@ -158,6 +158,7 @@ function initialize(argv::Vector{String})
         error("JuliaInterface could not be loaded")
     end
     @assert TNUM_OBJ(julia) == T_JULIA_OBJ
+    @assert _GAP_TO_JULIA(julia) === Main
 
     # If we are in "stand-alone mode", stop here
     if handle_signals
