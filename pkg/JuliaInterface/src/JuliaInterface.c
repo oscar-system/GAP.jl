@@ -29,6 +29,8 @@ static jl_value_t *    JULIA_ERROR_IOBuffer;
 static jl_value_t *    JULIA_FUNC_take_inplace;
 static jl_value_t *    JULIA_FUNC_showerror;
 static jl_datatype_t * JULIA_GAPFFE_type;
+static jl_datatype_t * JULIA_GAPError_type;
+static jl_value_t *    JULIA_ERROR_HANDLER_DISABLED;    // a Ref{Bool}
 
 static jl_datatype_t * gap_datatype_mptr;
 
@@ -36,12 +38,29 @@ static Obj  TheTypeOfJuliaModules;
 static Obj  TheTypeJuliaObject;
 static UInt T_JULIA_OBJ;
 
+// Whether <exception> is a GAP error that GAP has reported itself: with
+// GAP.jl's error handler disabled, GAP prints every error before it becomes a
+// Julia exception.
+static int IsReportedGAPError(jl_value_t * exception)
+{
+    return jl_typeis(exception, JULIA_GAPError_type) &&
+           jl_unbox_bool(jl_get_nth_field(JULIA_ERROR_HANDLER_DISABLED, 0));
+}
+
 void handle_jl_exception(void)
 {
+    // Unwind to GAP's catch point without reporting the error again, which
+    // would also open a second break loop.
+    if (IsReportedGAPError(jl_exception_occurred()))
+        GAP_THROW();
+
+    JuliaCall call;
+    BeginJuliaCall(&call);
     jl_call2(JULIA_FUNC_showerror, JULIA_ERROR_IOBuffer,
              jl_exception_occurred());
     jl_value_t * string_object =
         jl_call1(JULIA_FUNC_take_inplace, JULIA_ERROR_IOBuffer);
+    EndJuliaCall(&call);
     string_object = jl_array_to_string((jl_array_t *)string_object);
     ErrorMayQuit("%s", (Int)jl_string_data(string_object), 0);
 }
@@ -152,7 +171,10 @@ static Obj FuncJuliaEvalString(Obj self, Obj string)
 {
     RequireStringRep("JuliaEvalString", string);
 
+    JuliaCall call;
+    BeginJuliaCall(&call);
     jl_value_t * result = jl_eval_string(CONST_CSTR_STRING(string));
+    EndJuliaCall(&call);
     if (jl_exception_occurred()) {
         handle_jl_exception();
     }
@@ -268,6 +290,14 @@ static Int InitKernel(StructInitInfo * module)
         (jl_datatype_t *)jl_get_global(gap_module, jl_symbol("FFE"));
     if (!JULIA_GAPFFE_type) {
         ErrorMayQuit("Could not locate the GAP.FFE datatype", 0, 0);
+    }
+
+    JULIA_GAPError_type =
+        (jl_datatype_t *)jl_get_global(gap_module, jl_symbol("GAPError"));
+    JULIA_ERROR_HANDLER_DISABLED =
+        jl_get_global(gap_module, jl_symbol("disable_error_handler"));
+    if (!JULIA_GAPError_type || !JULIA_ERROR_HANDLER_DISABLED) {
+        ErrorMayQuit("Could not locate GAP.jl's error handler state", 0, 0);
     }
 
     // init filters and functions

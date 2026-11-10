@@ -303,15 +303,36 @@ function take_or_capture_gap_error_snapshot()
 end
 
 function ThrowObserver(depth::Cint)
-    is_error_handler_disabled() && return nothing
+    # GAP is about to longjmp to its innermost catch point. If Julia frames
+    # lie in between, because GAP called into Julia after entering it, the
+    # longjmp would skip Julia's own exception handling and corrupt it. Raise
+    # a Julia exception instead; the call from GAP into Julia catches it and
+    # re-raises it as a GAP error, which then reaches the catch point without
+    # crossing Julia frames.
+    skips_julia_frames =
+        @ccall(JuliaInterface_path.gap_error_skips_julia_call(depth::Cint)::Cint) != 0
+
+    # With the handler disabled, GAP has reported the error and handles it at
+    # its catch point, unless reaching that skips Julia frames.
+    is_error_handler_disabled() && !skips_julia_frames && return nothing
 
     # Tell GAP that the error was handled on the Julia side, then restore GAP's
     # interpreter state before throwing back into Julia.
     @ccall libgap.ClearError()::Cvoid
     @ccall libgap.SWITCH_TO_BOTTOM_LVARS()::Cvoid
-    # Only the outermost observer turns the GAP failure into a Julia exception.
-    if depth <= 0
-        snapshot = take_or_capture_gap_error_snapshot()
-        throw(snapshot)
+
+    if is_error_handler_disabled()
+        # the call into Julia re-raises this without reporting it again
+        exception = GAPError("", GAPStackFrame[], "")
+    elseif depth == 0 || skips_julia_frames
+        # depth 0: no catch point, so Julia called GAP directly
+        exception = take_or_capture_gap_error_snapshot()
+    else
+        return nothing
     end
+
+    # the GAP functions this exception abandons never decrement GAP's
+    # recursion depth
+    @ccall JuliaInterface_path.restore_recursion_depth_for_julia()::Cvoid
+    throw(exception)
 end
