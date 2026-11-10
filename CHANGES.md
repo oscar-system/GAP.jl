@@ -1,6 +1,6 @@
 # Changes in GAP.jl
 
-## Version 0.17.11-DEV (released YYYY-MM-DD)
+## Version 0.17.11 (released 2026-11-10)
 
 - Updated for compatibility with Julia 1.14 and 1.15 nightly builds
 
