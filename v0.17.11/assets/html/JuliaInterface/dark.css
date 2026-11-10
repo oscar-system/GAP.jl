@@ -1,0 +1,178 @@
+/* dark.css                                             Frank Luebeck */
+/* Initial dark theme contributed by kiryph in issue #75.            */
+
+/* colors */
+body {
+  background: #121212;
+  color: #eee;
+}
+
+a:link {
+  color: #576cad;
+}
+
+a:visited {
+  color: #576cad;
+}
+
+a:active {
+  color: #eee;
+}
+
+a:hover {
+  background: #eee;
+}
+
+pre {
+  color: black;
+}
+
+tt, code {
+  color: #eee;
+}
+
+/* layout for the definitions of functions, variables, ... */
+div.func {
+  background: #909090;
+}
+
+/* Example elements (for old converted manuals, now in div+pre */
+table.example {
+  background: #efefef;
+}
+
+/* becomes ... */
+div.example {
+  background: #efefef;
+  color: black;
+}
+
+/* Links to chapters in all files at top and bottom. */
+div.chlinktop {
+  background: #22272e;
+  border-color: #3a414a;
+  color: #d7dde5;
+}
+
+div.chlinktop a:hover {
+  background: #2f3742;
+}
+
+div.chlinkbot {
+  background: #22272e;
+  border-color: #3a414a;
+  color: #d7dde5;
+}
+
+/* and this is for the "Top", "Prev", "Next" links */
+div.chlinkprevnexttop {
+  background: #22272e;
+  border-color: #3a414a;
+  color: #d7dde5;
+}
+
+div.chlinkprevnexttop a:hover {
+  background: #2f3742;
+}
+
+div.chlinkprevnextbot {
+  background: #22272e;
+  border-color: #3a414a;
+  color: #d7dde5;
+}
+
+div.chlinkprevnextbot a:hover {
+  background: #2f3742;
+}
+
+div.ContChap div.ContSect:hover div.ContSSBlock {
+  background: #eee;
+  border-color: #666;
+  color: #000;
+}
+
+div.ContSSBlock a:hover {
+  background: #fff;
+}
+
+/* and here for the side menu of contents in the chapter files */
+div.ChapSects a:hover {
+  background: #eee;
+  color: #000;
+}
+
+div.ChapSects div.ContSect:hover div.ContSSBlock {
+  background: #b5b5b5;
+  border-color: #666;
+  color: #000;
+}
+
+div.ChapSects div.ContSect:hover div.ContSSBlock a:hover {
+  background: #828282;
+}
+
+/* Table elements */
+table.GAPDocTable {
+  border-color: black;
+}
+
+table.GAPDocTable td, table.GAPDocTable th {
+  border-color: #555;
+}
+
+table.GAPDocTablenoborder td, table.GAPDocTable th {
+  border-color: #555;
+}
+
+/* Colors and fonts can be overwritten for some types of elements. */
+/* Verb elements */
+pre.normal {
+  color: #eee;
+}
+
+/* Func-like elements and Ref to Func-like */
+code.func {
+  color: #eee;
+}
+
+/* K elements */
+code.keyw {
+  color: #983d3d;
+}
+
+/* F elements */
+code.file {
+  color: #8e4510;
+}
+
+/* Arg elements */
+var.Arg {
+  color: #060;
+}
+
+/* colors for ColorPrompt like examples */
+span.GAPprompt {
+  color: #000097;
+}
+
+span.GAPbrkprompt {
+  color: #970000;
+}
+
+span.GAPinput {
+  color: #970000;
+}
+
+/* Bib entries */
+span.BibKey {
+  color: #052;
+}
+
+/* for light and dark mode pictures */
+.only-on-dark {
+  display: block;
+}
+
+.only-on-light {
+  display: none;
+}
