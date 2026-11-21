@@ -105,6 +105,12 @@ function init_packagemanager()
     end)
 end
 
+# point PackageManager to `pkgdir`
+function set_packagemanager_dir(pkgdir::AbstractString)
+    mkpath(pkgdir)
+    Globals.PKGMAN_CustomPackageDir = GapObj(realpath(pkgdir)) # `realpath` due to https://github.com/gap-system/gap/pull/5930#issuecomment-5731681277
+end
+
 # helper for temporarily setting the info levels
 function with_info_level(f, infoclass, infolevel)
     infolevel === nothing && return f()
@@ -292,9 +298,7 @@ function install(spec::String, version::String = "";
                                interactive::Bool = true, quiet::Bool = false,
                                debug::Bool = false,
                                pkgdir::AbstractString = DEFAULT_PKGDIR[])
-    # point PackageManager to the given pkg dir
-    mkpath(pkgdir)
-    Globals.PKGMAN_CustomPackageDir = GapObj(realpath(pkgdir)) # `realpath` due to https://github.com/gap-system/gap/pull/5930#issuecomment-5731681277
+    set_packagemanager_dir(pkgdir)
     # inject our custom sysinfo.gap into the package manager
     Globals.PKGMAN_Sysinfo = GapObj(joinpath(gaproot_for_building(), "sysinfo.gap"))
 
@@ -357,9 +361,7 @@ For details, please refer to its documentation.
 function update(spec::String; interactive::Bool = true, quiet::Bool = false,
                               debug::Bool = false,
                               pkgdir::AbstractString = DEFAULT_PKGDIR[])
-    # point PackageManager to the given pkg dir
-    mkpath(pkgdir)
-    Globals.PKGMAN_CustomPackageDir = GapObj(realpath(pkgdir)) # `realpath` due to https://github.com/gap-system/gap/pull/5930#issuecomment-5731681277
+    set_packagemanager_dir(pkgdir)
 
     with_info_level(Globals.InfoPackageManager, quiet ? 0 : debug ? 3 : nothing) do
       return Globals.UpdatePackage(GapObj(spec), interactive; keepDirectory=debug)
@@ -390,9 +392,7 @@ For details, please refer to its documentation.
 function remove(spec::String; interactive::Bool = true, quiet::Bool = false,
                               debug::Bool = false,
                               pkgdir::AbstractString = DEFAULT_PKGDIR[])
-    # point PackageManager to the given pkg dir
-    mkpath(pkgdir)
-    Globals.PKGMAN_CustomPackageDir = GapObj(realpath(pkgdir)) # `realpath` due to https://github.com/gap-system/gap/pull/5930#issuecomment-5731681277
+    set_packagemanager_dir(pkgdir)
 
     with_info_level(Globals.InfoPackageManager, quiet ? 0 : debug ? 3 : nothing) do
       return Globals.RemovePackage(GapObj(spec), interactive; keepDirectory=debug)
@@ -423,9 +423,7 @@ The info messages shown by this function can be suppressed by passing
 function build(name::String; quiet::Bool = false,
                              debug::Bool = false,
                              pkgdir::AbstractString = DEFAULT_PKGDIR[])
-  # point PackageManager to the given pkg dir
-  mkpath(pkgdir)
-  Globals.PKGMAN_CustomPackageDir = GapObj(realpath(pkgdir)) # `realpath` due to https://github.com/gap-system/gap/pull/5930#issuecomment-5731681277
+  set_packagemanager_dir(pkgdir)
 
   gname = GapObj(name)
   Globals.TestPackageAvailability(gname) != Globals.fail && return true # already available, build not necessary
@@ -467,9 +465,7 @@ All keyword arguments are passed on to [`build`](@ref).
 function build_recursive(name::String; quiet::Bool = false,
                              debug::Bool = false,
                              pkgdir::AbstractString = DEFAULT_PKGDIR[])
-  # point PackageManager to the given pkg dir
-  mkpath(pkgdir)
-  Globals.PKGMAN_CustomPackageDir = GapObj(realpath(pkgdir)) # `realpath` due to https://github.com/gap-system/gap/pull/5930#issuecomment-5731681277
+  set_packagemanager_dir(pkgdir)
 
   todo = Set{String}((name,))
   done = Set{String}()
