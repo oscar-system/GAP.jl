@@ -1139,14 +1139,14 @@ git-tree-sha1 = "726607ed2d97212f9b5039fcce458fe52fcf84a8"
     url = "https://files.gap-system.org/pkg/PackageMaker-1.0.2.tar.gz"
 
 [GAP_pkg_packagemanager]
-git-tree-sha1 = "65a0217c485e701537d1aa60cf8a90fb69f626ac"
+git-tree-sha1 = "4336e4cdcafc7c9d8c5c4f39794544f59ab2e0d0"
 
     [[GAP_pkg_packagemanager.download]]
-    sha256 = "f1ee46655ad6befdf4821e4b19d754d99ff7532a6badb26f427833fbd0651638"
-    url = "https://github.com/gap-packages/PackageManager/releases/download/v1.6.4/PackageManager-1.6.4.tar.gz"
+    sha256 = "34e95a4167da47ce5902d4d8f2d4796e29caf01d56abfd311913456d42f6ddd9"
+    url = "https://github.com/gap-packages/PackageManager/releases/download/v2.0.0/PackageManager-2.0.0.tar.gz"
     [[GAP_pkg_packagemanager.download]]
-    sha256 = "f1ee46655ad6befdf4821e4b19d754d99ff7532a6badb26f427833fbd0651638"
-    url = "https://files.gap-system.org/pkg/PackageManager-1.6.4.tar.gz"
+    sha256 = "34e95a4167da47ce5902d4d8f2d4796e29caf01d56abfd311913456d42f6ddd9"
+    url = "https://files.gap-system.org/pkg/PackageManager-2.0.0.tar.gz"
 
 [GAP_pkg_patternclass]
 git-tree-sha1 = "fee90f5d2b6a3b57ab2a64a9da71bfc9b59d57ae"
