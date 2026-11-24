@@ -346,8 +346,9 @@ or if no newer version is available, and `false` otherwise.
 `spec` can be either the name of a package or the URL of an archive or repository
 containing a package, or the URL of a `PackageInfo.g` file.
 
-The function uses [the function `UpdatePackage` from GAP's package
-`PackageManager`](GAP_ref(PackageManager:UpdatePackage)).
+The function uses [the function `InstallPackage` from GAP's package
+`PackageManager`](GAP_ref(PackageManager:InstallPackage)),
+which also updates the dependencies of the package.
 The info messages shown by this function can be suppressed by passing
 `true` as the value of `quiet`. Specifying `interactive = false` will
 prevent `PackageManager` from prompting the user for input interactively.
@@ -359,7 +360,14 @@ function update(spec::String; interactive::Bool = true, quiet::Bool = false,
     set_packagemanager_dir(pkgdir)
 
     with_info_level(Globals.InfoPackageManager, quiet ? 0 : debug ? 3 : nothing) do
-      return Globals.UpdatePackage(GapObj(spec), interactive; keepDirectory=debug)
+      # `InstallPackage` would install a package that is not installed yet
+      if !occursin('/', spec) &&
+         isempty(Globals.PKGMAN_UserPackageInfo(GapObj(spec); warnIfNone = true))
+        return false
+      end
+      return Globals.InstallPackage(GapObj(spec),
+                                    pkgman_prefs(; interactive, upgrade = true);
+                                    keepDirectory=debug)
     end
 end
 # note that the updated version cannot be used in the current GAP session,
