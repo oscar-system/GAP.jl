@@ -287,7 +287,7 @@ a version of the package compatible with `version` was already installed,
 and `false` otherwise.
 
 The function uses [the function `InstallPackage` from GAP's package
-`PackageManager`](GAP_ref(PackageManager:InstallPackage)).
+`PackageManager`](GAP_ref(PackageManager:InstallPackage for a string)).
 The info messages shown by this function can be suppressed by passing
 `true` as the value of `quiet`. Specifying `interactive = false` will
 prevent `PackageManager` from prompting the user for input interactively.
@@ -351,7 +351,7 @@ or if no newer version is available, and `false` otherwise.
 containing a package, or the URL of a `PackageInfo.g` file.
 
 The function uses [the function `InstallPackage` from GAP's package
-`PackageManager`](GAP_ref(PackageManager:InstallPackage)),
+`PackageManager`](GAP_ref(PackageManager:InstallPackage for a string)),
 which also updates the dependencies of the package.
 The info messages shown by this function can be suppressed by passing
 `true` as the value of `quiet`. Specifying `interactive = false` will
@@ -389,7 +389,7 @@ Remove the GAP package with name `spec` that is installed in the
 Return `true` if the removal was successful, and `false` otherwise.
 
 The function uses [the function `RemovePackage` from GAP's package
-`PackageManager`](GAP_ref(PackageManager:RemovePackage)).
+`PackageManager`](GAP_ref(PackageManager:RemovePackage for a string)).
 The info messages shown by this function can be suppressed by passing
 `true` as the value of `quiet`. Specifying `interactive = false` will
 prevent `PackageManager` from prompting the user for input interactively.
@@ -422,7 +422,7 @@ Return `true` if the build was successful or the package was already
 built, and `false` otherwise.
 
 The function uses [the function `CompilePackage` from GAP's package
-`PackageManager`](GAP_ref(PackageManager:CompilePackage)).
+`PackageManager`](GAP_ref(PackageManager:CompilePackage for a string)).
 The info messages shown by this function can be suppressed by passing
 `true` as the value of `quiet`.
 """
