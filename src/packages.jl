@@ -448,7 +448,8 @@ function build(name::String; quiet::Bool = false,
   end
   with_info_level(Globals.InfoPackageManager, quiet ? 0 : debug ? 3 : nothing) do
     Globals.PKGMAN_RefreshPackageInfo()
-    return Globals.CompilePackage(gname)::Bool
+    # `build_recursive` handles the dependencies
+    return Globals.CompilePackage(gname, pkgman_prefs(; compileDeps = false))::Bool
   end
 end
 
