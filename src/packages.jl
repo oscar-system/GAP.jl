@@ -100,7 +100,11 @@ end
 # point PackageManager to `pkgdir`
 function set_packagemanager_dir(pkgdir::AbstractString)
     mkpath(pkgdir)
-    Globals.PKGMAN_CustomPackageDir = GapObj(realpath(pkgdir)) # `realpath` due to https://github.com/gap-system/gap/pull/5930#issuecomment-5731681277
+    path = GapObj(realpath(pkgdir)) # `realpath` due to https://github.com/gap-system/gap/pull/5930#issuecomment-5731681277
+    # changing the directory rereads all `PackageInfo.g` files
+    Globals.PKGMAN_CustomPackageDir == path && return
+    Globals.ChangeDirectoryPackageManager(path) === true ||
+      error("cannot use '$pkgdir' as PackageManager directory")
 end
 
 # preferences record for PackageManager functions
