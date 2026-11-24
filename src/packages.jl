@@ -302,7 +302,7 @@ function install(spec::String, version::String = "";
     Pidfile.mkpidlock("$pkgdir.lock"; stale_age=300) do
       with_info_level(Globals.InfoPackageManager, quiet ? 0 : debug ? 3 : nothing) do
         if version == ""
-          return Globals.InstallPackage(GapObj(spec), pkgman_prefs(; interactive); keepDirectory=debug)
+          return Globals.InstallPackage(GapObj(spec), pkgman_prefs(; interactive, upgrade = interactive ? "ask" : false); keepDirectory=debug)
         end
         # We assume that `spec` is a package name.
         # If the required version is already installed and can be loaded
@@ -326,7 +326,7 @@ function install(spec::String, version::String = "";
           res = Globals.TestPackageAvailability(GapObj(spec), GapObj(version))
           res !== Globals.fail && return true
         end
-        return Globals.InstallPackage(GapObj(spec), pkgman_prefs(; interactive, version); keepDirectory=debug)
+        return Globals.InstallPackage(GapObj(spec), pkgman_prefs(; interactive, upgrade = interactive ? "ask" : false, version); keepDirectory=debug)
       end
     end
 end
