@@ -182,14 +182,18 @@ function ADDR_OBJ(obj::GapObj)
     return unsafe_load(mptr)
 end
 
+function ADDR_OBJ(ptr::Ptr)
+    mptr = Ptr{Ptr{Csize_t}}(ptr)
+    return unsafe_load(mptr)
+end
+
 function TNUM_OBJ(obj::GapObj)
     header = unsafe_load(ADDR_OBJ(obj), 0)
     return reinterpret(Int, header & 0xFF)
 end
 
 function TNUM_OBJ(ptr::Ptr)
-    mptr = Ptr{Ptr{Csize_t}}(ptr)
-    header = unsafe_load(unsafe_load(mptr), 0)
+    header = unsafe_load(ADDR_OBJ(ptr), 0)
     return reinterpret(Int, header & 0xFF)
 end
 
