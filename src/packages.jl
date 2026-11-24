@@ -103,6 +103,9 @@ function set_packagemanager_dir(pkgdir::AbstractString)
     Globals.PKGMAN_CustomPackageDir = GapObj(realpath(pkgdir)) # `realpath` due to https://github.com/gap-system/gap/pull/5930#issuecomment-5731681277
 end
 
+# preferences record for PackageManager functions
+pkgman_prefs(; kwargs...) = GapObj(Dict{Symbol, Any}(kwargs), recursive=true)
+
 # helper for temporarily setting the info levels
 function with_info_level(f, infoclass, infolevel)
     infolevel === nothing && return f()
@@ -299,7 +302,7 @@ function install(spec::String, version::String = "";
     Pidfile.mkpidlock("$pkgdir.lock"; stale_age=300) do
       with_info_level(Globals.InfoPackageManager, quiet ? 0 : debug ? 3 : nothing) do
         if version == ""
-          return Globals.InstallPackage(GapObj(spec), interactive; keepDirectory=debug)
+          return Globals.InstallPackage(GapObj(spec), pkgman_prefs(; interactive); keepDirectory=debug)
         end
         # We assume that `spec` is a package name.
         # If the required version is already installed and can be loaded
@@ -323,7 +326,7 @@ function install(spec::String, version::String = "";
           res = Globals.TestPackageAvailability(GapObj(spec), GapObj(version))
           res !== Globals.fail && return true
         end
-        return Globals.InstallPackage(GapObj(spec), GapObj(version), interactive; keepDirectory=debug)
+        return Globals.InstallPackage(GapObj(spec), pkgman_prefs(; interactive, version); keepDirectory=debug)
       end
     end
 end
@@ -387,7 +390,7 @@ function remove(spec::String; interactive::Bool = true, quiet::Bool = false,
     set_packagemanager_dir(pkgdir)
 
     with_info_level(Globals.InfoPackageManager, quiet ? 0 : debug ? 3 : nothing) do
-      return Globals.RemovePackage(GapObj(spec), interactive; keepDirectory=debug)
+      return Globals.RemovePackage(GapObj(spec), pkgman_prefs(; interactive); keepDirectory=debug)
     end
 end
 
