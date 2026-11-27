@@ -95,14 +95,6 @@ function init_packagemanager()
     # Put the new method in the first position.
     meths = Globals.Download_Methods
     Wrappers.Add(meths, GapObj(r, recursive=true), 1)
-
-    # monkey patch PackageManager so that we can disable removal of
-    # package directories for debugging purposes
-    orig_PKGMAN_RemoveDir = Globals.PKGMAN_RemoveDir
-    replace_global!(:PKGMAN_RemoveDir, function(dir)
-      Globals.ValueOption(GapObj("debug")) == true && return
-      orig_PKGMAN_RemoveDir(dir)
-    end)
 end
 
 # point PackageManager to `pkgdir`
