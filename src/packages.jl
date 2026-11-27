@@ -100,8 +100,15 @@ end
 # point PackageManager to `pkgdir`
 function set_packagemanager_dir(pkgdir::AbstractString)
     mkpath(pkgdir)
-    Globals.PKGMAN_CustomPackageDir = GapObj(realpath(pkgdir)) # `realpath` due to https://github.com/gap-system/gap/pull/5930#issuecomment-5731681277
+    path = GapObj(realpath(pkgdir)) # `realpath` due to https://github.com/gap-system/gap/pull/5930#issuecomment-5731681277
+    # changing the directory rereads all `PackageInfo.g` files
+    Globals.PKGMAN_CustomPackageDir == path && return
+    Globals.ChangeDirectoryPackageManager(path) === true ||
+      error("cannot use '$pkgdir' as PackageManager directory")
 end
+
+# preferences record for PackageManager functions
+pkgman_prefs(; kwargs...) = GapObj(Dict{Symbol, Any}(kwargs), recursive=true)
 
 # helper for temporarily setting the info levels
 function with_info_level(f, infoclass, infolevel)
@@ -280,7 +287,7 @@ a version of the package compatible with `version` was already installed,
 and `false` otherwise.
 
 The function uses [the function `InstallPackage` from GAP's package
-`PackageManager`](GAP_ref(PackageManager:InstallPackage)).
+`PackageManager`](GAP_ref(PackageManager:InstallPackage for a string)).
 The info messages shown by this function can be suppressed by passing
 `true` as the value of `quiet`. Specifying `interactive = false` will
 prevent `PackageManager` from prompting the user for input interactively.
@@ -299,7 +306,7 @@ function install(spec::String, version::String = "";
     Pidfile.mkpidlock("$pkgdir.lock"; stale_age=300) do
       with_info_level(Globals.InfoPackageManager, quiet ? 0 : debug ? 3 : nothing) do
         if version == ""
-          return Globals.InstallPackage(GapObj(spec), interactive; keepDirectory=debug)
+          return Globals.InstallPackage(GapObj(spec), pkgman_prefs(; interactive, upgrade = interactive ? "ask" : false))
         end
         # We assume that `spec` is a package name.
         # If the required version is already installed and can be loaded
@@ -323,7 +330,7 @@ function install(spec::String, version::String = "";
           res = Globals.TestPackageAvailability(GapObj(spec), GapObj(version))
           res !== Globals.fail && return true
         end
-        return Globals.InstallPackage(GapObj(spec), GapObj(version), interactive; keepDirectory=debug)
+        return Globals.InstallPackage(GapObj(spec), pkgman_prefs(; interactive, upgrade = interactive ? "ask" : false, version))
       end
     end
 end
@@ -343,8 +350,9 @@ or if no newer version is available, and `false` otherwise.
 `spec` can be either the name of a package or the URL of an archive or repository
 containing a package, or the URL of a `PackageInfo.g` file.
 
-The function uses [the function `UpdatePackage` from GAP's package
-`PackageManager`](GAP_ref(PackageManager:UpdatePackage)).
+The function uses [the function `InstallPackage` from GAP's package
+`PackageManager`](GAP_ref(PackageManager:InstallPackage for a string)),
+which also updates the dependencies of the package.
 The info messages shown by this function can be suppressed by passing
 `true` as the value of `quiet`. Specifying `interactive = false` will
 prevent `PackageManager` from prompting the user for input interactively.
@@ -356,7 +364,13 @@ function update(spec::String; interactive::Bool = true, quiet::Bool = false,
     set_packagemanager_dir(pkgdir)
 
     with_info_level(Globals.InfoPackageManager, quiet ? 0 : debug ? 3 : nothing) do
-      return Globals.UpdatePackage(GapObj(spec), interactive; keepDirectory=debug)
+      # `InstallPackage` would install a package that is not installed yet
+      if !occursin('/', spec) &&
+         isempty(Globals.PKGMAN_UserPackageInfo(GapObj(spec); warnIfNone = true))
+        return false
+      end
+      return Globals.InstallPackage(GapObj(spec),
+                                    pkgman_prefs(; interactive, upgrade = true))
     end
 end
 # note that the updated version cannot be used in the current GAP session,
@@ -375,7 +389,7 @@ Remove the GAP package with name `spec` that is installed in the
 Return `true` if the removal was successful, and `false` otherwise.
 
 The function uses [the function `RemovePackage` from GAP's package
-`PackageManager`](GAP_ref(PackageManager:RemovePackage)).
+`PackageManager`](GAP_ref(PackageManager:RemovePackage for a string)).
 The info messages shown by this function can be suppressed by passing
 `true` as the value of `quiet`. Specifying `interactive = false` will
 prevent `PackageManager` from prompting the user for input interactively.
@@ -387,7 +401,7 @@ function remove(spec::String; interactive::Bool = true, quiet::Bool = false,
     set_packagemanager_dir(pkgdir)
 
     with_info_level(Globals.InfoPackageManager, quiet ? 0 : debug ? 3 : nothing) do
-      return Globals.RemovePackage(GapObj(spec), interactive; keepDirectory=debug)
+      return Globals.RemovePackage(GapObj(spec), pkgman_prefs(; interactive))
     end
 end
 
@@ -408,7 +422,7 @@ Return `true` if the build was successful or the package was already
 built, and `false` otherwise.
 
 The function uses [the function `CompilePackage` from GAP's package
-`PackageManager`](GAP_ref(PackageManager:CompilePackage)).
+`PackageManager`](GAP_ref(PackageManager:CompilePackage for a string)).
 The info messages shown by this function can be suppressed by passing
 `true` as the value of `quiet`.
 """
@@ -437,7 +451,8 @@ function build(name::String; quiet::Bool = false,
   end
   with_info_level(Globals.InfoPackageManager, quiet ? 0 : debug ? 3 : nothing) do
     Globals.PKGMAN_RefreshPackageInfo()
-    return Globals.CompilePackage(gname)::Bool
+    # `build_recursive` handles the dependencies
+    return Globals.CompilePackage(gname, pkgman_prefs(; compileDeps = false))::Bool
   end
 end
 
