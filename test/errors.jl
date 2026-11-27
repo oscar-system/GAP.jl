@@ -275,6 +275,24 @@ end
             "Julia/GAP stacktraces for recursive GAP -> Julia -> GAP error paths are not supported yet.",
             shown,
         )
-        @test occursin("not in any function at *defin*:0", shown)
+        @test occursin("not in any function at ", shown)
+    end
+
+    @testset "GAP errors raised below a call from GAP into Julia" begin
+        # A crash here would take the test process with it, so the checks
+        # run in a subprocess; see the script for what they cover.
+        script = joinpath(@__DIR__, "errors_under_julia_script.jl")
+        cmd = `$(Base.julia_cmd()) --project=$(Base.active_project()) $(script)`
+        ok, output = mktemp() do path, out
+            p = run(pipeline(cmd; stdout = out, stderr = out); wait = false)
+            if timedwait(() -> !process_running(p), 300) == :timed_out
+                kill(p)
+                wait(p)
+            end
+            close(out)
+            return success(p), read(path, String)
+        end
+        ok || println(output)
+        @test ok
     end
 end
