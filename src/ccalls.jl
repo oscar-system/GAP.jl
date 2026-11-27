@@ -145,7 +145,7 @@ GAP: [  ]
 ```
 """
 function evalstr_ex(cmd::String)
-    res = @ccall libgap.GAP_EvalString(cmd::Cstring)::GapObj
+    res = @gap_active @ccall libgap.GAP_EvalString(cmd::Cstring)::GapObj
     return res
 end
 
@@ -200,7 +200,7 @@ function evalstr(cmd::String)
 
     snapshot = take_or_capture_gap_error_snapshot()
     if any(x::GapObj->x[1] === false, res)
-      throw(snapshot)
+      throw_gap_error(snapshot)
     end
 
     # Successful evalstr calls can still leave warning text in GAP's error
@@ -360,7 +360,7 @@ function call_gap_func(func::GapObj, args...; kwargs...)
 end
 
 function slow_call_gap_func_nokw(func::GapObj, args)
-    @ccall JuliaInterface_path.call_gap_func(func::Any, args::Any)::Ptr{Cvoid}
+    @gap_active @ccall JuliaInterface_path.call_gap_func(func::Any, args::Any)::Ptr{Cvoid}
 end
 
 is_func(func::GapObj) = TNUM_OBJ(func) == T_FUNCTION
@@ -401,14 +401,14 @@ end
 # 0 arguments
 function _call_gap_func(func::GapObj)
     fptr = GET_FUNC_PTR(func, 0)
-    ret = @ccall $fptr(func::GapObj)::Ptr{Cvoid}
+    ret = @gap_active @ccall $fptr(func::GapObj)::Ptr{Cvoid}
     return ret
 end
 
 # 1 argument
 function _call_gap_func(func::GapObj, a1)
     fptr = GET_FUNC_PTR(func, 1)
-    ret = @ccall $fptr(
+    ret = @gap_active @ccall $fptr(
         func::GapObj,
         _JULIA_TO_GAP(a1)::Ptr{Cvoid},
     )::Ptr{Cvoid}
@@ -418,7 +418,7 @@ end
 # 2 arguments
 function _call_gap_func(func::GapObj, a1, a2)
     fptr = GET_FUNC_PTR(func, 2)
-    ret = @ccall $fptr(
+    ret = @gap_active @ccall $fptr(
         func::GapObj,
         _JULIA_TO_GAP(a1)::Ptr{Cvoid},
         _JULIA_TO_GAP(a2)::Ptr{Cvoid},
@@ -429,7 +429,7 @@ end
 # 3 arguments
 function _call_gap_func(func::GapObj, a1, a2, a3)
     fptr = GET_FUNC_PTR(func, 3)
-    ret = @ccall $fptr(
+    ret = @gap_active @ccall $fptr(
         func::GapObj,
         _JULIA_TO_GAP(a1)::Ptr{Cvoid},
         _JULIA_TO_GAP(a2)::Ptr{Cvoid},
@@ -441,7 +441,7 @@ end
 # 4 arguments
 function _call_gap_func(func::GapObj, a1, a2, a3, a4)
     fptr = GET_FUNC_PTR(func, 4)
-    ret = @ccall $fptr(
+    ret = @gap_active @ccall $fptr(
         func::GapObj,
         _JULIA_TO_GAP(a1)::Ptr{Cvoid},
         _JULIA_TO_GAP(a2)::Ptr{Cvoid},
@@ -454,7 +454,7 @@ end
 # 5 arguments
 function _call_gap_func(func::GapObj, a1, a2, a3, a4, a5)
     fptr = GET_FUNC_PTR(func, 5)
-    ret = @ccall $fptr(
+    ret = @gap_active @ccall $fptr(
         func::GapObj,
         _JULIA_TO_GAP(a1)::Ptr{Cvoid},
         _JULIA_TO_GAP(a2)::Ptr{Cvoid},
@@ -468,7 +468,7 @@ end
 # 6 arguments
 function _call_gap_func(func::GapObj, a1, a2, a3, a4, a5, a6)
     fptr = GET_FUNC_PTR(func, 6)
-    ret = @ccall $fptr(
+    ret = @gap_active @ccall $fptr(
         func::GapObj,
         _JULIA_TO_GAP(a1)::Ptr{Cvoid},
         _JULIA_TO_GAP(a2)::Ptr{Cvoid},
